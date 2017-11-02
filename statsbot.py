@@ -28,6 +28,7 @@ from discord.ext import commands
 from ext.context import CustomContext
 from collections import defaultdict
 import datetime
+import traceback
 import asyncio
 import aiohttp
 import psutil
@@ -36,6 +37,7 @@ import json
 import sys
 import os
 import re
+import inspect
 
 
 
@@ -43,8 +45,8 @@ class StatsBot(commands.AutoShardedBot):
     '''
     Custom Client for cr-statsbot - Made by verix#7220
     '''
-    def __init__(self, **attrs):
-        super().__init__(command_prefix=self.get_pre, self_bot=True)
+    def __init__(self):
+        super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.cr = crasync.Client(self.session)
         self.uptime = datetime.datetime.utcnow()
@@ -52,19 +54,17 @@ class StatsBot(commands.AutoShardedBot):
         self.process = psutil.Process()
         self.messages_sent = 0
         self.remove_command('help')
-        self.add_commands()
         self.load_extensions()
 
-    def add_commands(self):
+    def _add_commands(self):
         '''Adds commands automatically'''
-        for attr in dir(self):
-            cmd = getattr(self, attr)
-            if isinstance(cmd, commands.Command):
-                self.add_command(cmd)
+        for name, attr in inspect.getmembers(self):
+            if isinstance(attr, commands.Command):
+                self.add_command(attr)
 
     def load_extensions(self, cogs=None, path='cogs.'):
         '''Loads the default set of extensions or a seperate one if given'''
-        base_extensions = [x.replace('.py', '') for x in os.listdir('cogs')]
+        base_extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         for extension in cogs or base_extensions:
             try:
                 self.load_extension(f'{path}{extension}')
@@ -76,19 +76,11 @@ class StatsBot(commands.AutoShardedBot):
     @property
     def token(self):
         '''Returns your token wherever it is'''
-        with open('data/config.json') as f:
-            return = json.load(f)['token'].strip('"')
-
-    async def get_prefix(self, message):
-        '''Returns the prefix.
-
-        Still need to do stuff with db to get server prefix.
-        '''
-        return '#'
-
-    def restart(self):
-        '''Forcefully restart the bot.'''
-        os.execv(sys.executable, ['python'] + sys.argv)
+        try:
+            with open('data/config.json') as f:
+                return json.load(f)['token'].strip('"')
+        except FileNotFoundError:
+            return None
 
     @classmethod
     def init(bot, token=None):
@@ -96,9 +88,20 @@ class StatsBot(commands.AutoShardedBot):
         bot = StatsBot()
         token = token or bot.token
         try:
-            bot.run(token.strip('"'), bot=False, reconnect=True)
+            bot.run(token.strip('"'), bot=True, reconnect=True)
         except Exception as e:
             print('Error in starting the bot. Check your token.')
+
+    def restart(self):
+        '''Forcefully restart the bot.'''
+        os.execv(sys.executable, ['python'] + sys.argv)
+
+    async def get_prefix(self, message):
+        '''Returns the prefix.
+
+        Still need to do stuff with db to get server prefix.
+        '''
+        return '#'
 
     async def on_connect(self):
         '''
@@ -108,6 +111,7 @@ class StatsBot(commands.AutoShardedBot):
         print('----------------------------')
         print('StatsBot connected!')
         print('----------------------------')
+        self._add_commands()
 
     async def on_ready(self):
         '''
@@ -117,10 +121,20 @@ class StatsBot(commands.AutoShardedBot):
         print('StatsBot is ready!')
         print('----------------------------')
         print(f'Logged in as: {self.user}')
+        print(f'Client ID: {self.user.id})')
+        print('----------------------------')
         print(f'Guilds: {len(self.guilds)}')
         print(f'Users: {len(self.users)}')
-        print(f'Channels: {len(self.channels)}')
         print('----------------------------')
+
+    async def on_shard_ready(self, shard_id):
+        '''
+        Called when a shard has successfuly 
+        connected to the gateway.
+        '''
+        print(f'Shard `{shard_id}` ready!')
+        print('----------------------------')
+
 
     async def on_command(self, ctx):
         '''Called when a command is invoked.'''
@@ -154,4 +168,4 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send(em.title + em.description)
 
 if __name__ == '__main__':
-    Selfbot.init()
+    StatsBot.init('MzQ3MDA2NDk5Njc3MTQzMDQx.DNxyKA.lgDHNP7BahaSqjcs9wwmfIYtOQI')
