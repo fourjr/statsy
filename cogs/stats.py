@@ -43,6 +43,7 @@ class Stats:
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
+        self.cremojis = self.get_cremojis()
 
     async def resolve_tag(self, ctx, tag_or_user):
         if not tag_or_user:
