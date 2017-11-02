@@ -111,7 +111,10 @@ class StatsBot(commands.AutoShardedBot):
         print('----------------------------')
         print('StatsBot connected!')
         print('----------------------------')
+
         self._add_commands()
+        # had to put this here due to an issue with the 
+        # latencies property
 
     async def on_ready(self):
         '''
@@ -168,4 +171,4 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send(em.title + em.description)
 
 if __name__ == '__main__':
-    StatsBot.init('MzQ3MDA2NDk5Njc3MTQzMDQx.DNxyKA.lgDHNP7BahaSqjcs9wwmfIYtOQI')
+    StatsBot.init()
