@@ -55,3 +55,38 @@ class CustomContext(commands.Context):
                 return discord.Color.dark_grey()
             
         return discord.Color.from_rgb(*color)
+
+    def load_json(self):
+        with open('data/stats.json') as f:
+            return json.load(f)
+
+    def save_json(self, data):
+        with open('data/stats.json', 'w') as f:
+            f.write(json.dumps(data))
+
+    def save_tag(self, tag, id=None):
+        id = id or self.id
+        data = self.load_json()
+        data[str(id)] = [tag]
+        self.save_json(data)
+
+    def add_tag(self, tag, id=None):
+        id = id or self.id
+        data = self.load_json()
+        if str(id) not in data:
+            data[str(id)] = []
+        data[str(id)].append(tag)
+        self.save_json(data)
+
+    def remove_tag(self, tag, id=None):
+        id = id or self.id
+        data = self.load_json()
+        tags = data[str(id)]
+        tags.remove(tag)
+        self.save_json(data)
+
+    def get_tag(self, id=None, *, index=0):
+        id = id or self.id
+        data = self.load_json()
+        tags = data(str(id))
+        return tags[index]
