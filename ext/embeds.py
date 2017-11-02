@@ -23,7 +23,7 @@ def emoji(ctx, name, emojiresp=False):
             return name
 
 async def format_profile(ctx, p):
-    embed = discord.Embed(description=f'[StatsRoyale p](https://statsroyale.com/p/{p.tag})', color=0xe74c3c)
+    embed = discord.Embed(description=f'[Profile online](https://cr-api.com/profile/{p.tag})', color=0xe74c3c)
     embed.set_author(name=f"{p.name} (#{p.tag})", icon_url = ctx.author.avatar_url)
     embed.set_thumbnail(url=p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png')
 
@@ -45,3 +45,22 @@ async def format_profile(ctx, p):
     
     return embed
     # TODO: Make embeds better.
+
+async def format_clan(ctx, c):
+    embed = discord.Embed(description = c.description, color=0x3498db)
+    embed.set_author(name=f"{c.name} (#{c.tag})")
+    embed.set_thumbnail(url=c.badge_url)
+
+    embeddict = OrderedDict({
+        'Type': c.type_name,
+        'Score': c.score + ' Trophies',
+        'Donations/Week': c.donations + ' Cards',
+        'Clan Chest': c.clan_chest.crowns + '/' + c.clan_chest.required,
+        'Location': c.region,
+        'Members': len(c.members) + '/50'
+        })
+
+    for f, v in embeddict.items():
+        embed.add_field(name=f, value=v)
+    
+    return embed
