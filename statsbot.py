@@ -53,7 +53,6 @@ class StatsBot(commands.AutoShardedBot):
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
         self.messages_sent = 0
-        self.remove_command('help')
         self.load_extensions()
 
     def _add_commands(self):
