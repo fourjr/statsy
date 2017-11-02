@@ -5,6 +5,7 @@ from colorthief import ColorThief
 from urllib.parse import urlparse
 import io
 import os
+import json
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
@@ -65,13 +66,13 @@ class CustomContext(commands.Context):
             f.write(json.dumps(data))
 
     def save_tag(self, tag, id=None):
-        id = id or self.id
+        id = id or self.author.id
         data = self.load_json()
         data[str(id)] = [tag]
         self.save_json(data)
 
     def add_tag(self, tag, id=None):
-        id = id or self.id
+        id = id or self.author.id
         data = self.load_json()
         if str(id) not in data:
             data[str(id)] = []
@@ -79,14 +80,14 @@ class CustomContext(commands.Context):
         self.save_json(data)
 
     def remove_tag(self, tag, id=None):
-        id = id or self.id
+        id = id or self.author.id
         data = self.load_json()
         tags = data[str(id)]
         tags.remove(tag)
         self.save_json(data)
 
     def get_tag(self, id=None, *, index=0):
-        id = id or self.id
+        id = id or self.author.id
         data = self.load_json()
-        tags = data(str(id))
+        tags = data[str(id)]
         return tags[index]
