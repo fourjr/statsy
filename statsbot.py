@@ -163,8 +163,8 @@ class StatsBot(commands.AutoShardedBot):
         """Pong! Returns your websocket latency."""
         em = discord.Embed()
         em.title ='Pong! Websocket Latency: '
-        em.description = f'{self.ws.latency * 1000:.4f} ms'
-        em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        em.description = f'{self.latency * 1000:.4f} ms'
+        em.color = await ctx.get_dominant_color(self.user.avatar_url)
         try:
             await ctx.send(embed=em)
         except discord.Forbidden:
