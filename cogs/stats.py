@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from ext import embeds
+import json
 
 class InvalidTag(commands.BadArgument):
     '''Raised when a tag is invalid.'''
@@ -43,21 +44,36 @@ class Stats:
         self.cr = bot.cr
         self.conv = TagCheck()
 
-    @commands.group(invoke_without_command=True)
-    async def profile(self, ctx, *, tag_or_user: TagCheck):
-        '''Get the clash royale profile of a player.'''
+    async def resolve_tag(self, ctx, tag_or_user):
+        if not tag_or_user:
+            try:
+                tag = ctx.get_tag()
+            except Exception as e:
+                print(e)
+                await ctx.send('You dont have a saved tag.')
+                raise e
+            else:
+                return tag
         if isinstance(tag_or_user, discord.Member):
             try:
                 tag = ctx.get_tag(tag_or_user.id)
-            except KeyError:
-                return await ctx.send('You dont have a saved tag!')
+            except KeyError as e:
+                await ctx.send('That person doesnt have a saved tag!')
+                raise e
+            else:
+                return TagCheck
         else:
-            tag = tag_or_user
+            return tag_or_user
 
-        profile = await self.cr.get_profile(tag)
-
+    @commands.group(invoke_without_command=True)
+    async def profile(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Get the clash royale profile of a player.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+        try:
+            profile = await self.cr.get_profile(tag)
+        except Exception as e:
+            await ctx.send(f'`{e}`')
         em = await embeds.format_profile(ctx, profile)
-
         await ctx.send(embed=em)
 
     @commands.command()
