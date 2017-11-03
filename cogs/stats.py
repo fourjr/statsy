@@ -43,15 +43,27 @@ class Stats:
         self.cr = bot.cr
         self.conv = TagCheck()
 
-    async def resolve_tag(self, ctx, tag_or_user):
+    async def get_clan_from_profile(self, ctx, tag, message):
+        profile = await self.cr.get_profile(tag)
+        clan_tag = profile.clan_tag
+        if clan_tag is None:
+            await ctx.send(message)
+            raise ValueError(message)
+        else:
+            return clan_tag
+
+
+    async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
             try:
                 tag = ctx.get_tag()
             except Exception as e:
                 print(e)
-                await ctx.send('You dont have a saved tag.')
+                await ctx.send('You don\'t have a saved tag.')
                 raise e
             else:
+                if clan is True:
+                    return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
@@ -60,6 +72,8 @@ class Stats:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise e
             else:
+                if clan is True:
+                    return await self.get_clan_from_profile(ctx, tag, 'That person does not have a clan!')
                 return tag
         else:
             return tag_or_user
@@ -73,11 +87,26 @@ class Stats:
             try:
                 profile = await self.cr.get_profile(tag)
             except Exception as e:
-                await ctx.send(f'`{e}`')
-                raise e
-            em = await embeds.format_profile(ctx, profile)
-        await ctx.send(embed=em)
+                return await ctx.send(f'`{e}`')
+            else:
+                em = await embeds.format_profile(ctx, profile)
+                await ctx.send(embed=em)
 
+    @commands.group(invoke_without_command=True)
+    async def clan(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Get a clan by tag or by profile.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        print(tag)
+
+        async with ctx.typing():
+            try:
+                clan = await self.cr.get_clan(tag)
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                em = await embeds.format_clan(ctx, clan)
+                await ctx.send(embed=em)
+            
     @commands.command()
     async def save(self, ctx, *, tag):
         '''Save a tag to your clash royale profile.
@@ -85,10 +114,11 @@ class Stats:
         Ability to save multiple tags coming soon.
         '''
         tag = self.conv.resolve_tag(tag)
+
         if not tag:
             return await ctx.send('Invalid Tag!') # TODO: Better message.
 
-        ctx.add_tag(tag)
+        ctx.save_tag(tag)
 
         await ctx.send('Successfuly saved tag.')
 
