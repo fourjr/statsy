@@ -238,7 +238,7 @@ class StatsBot(commands.AutoShardedBot):
         ctx.save_json(g_config, 'data/guild.json')
         await ctx.send(f'Changed the prefix to: `{prefix}`')
 
-    @commands.command()
+    @commands.command(aliases=['about'])
     async def bot(self, ctx):
         '''Shows information and stats about the bot.'''
         em = discord.Embed()
