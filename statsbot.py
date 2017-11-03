@@ -230,7 +230,7 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx, *, prefix):
-        '''Change the bot prefix.'''
+        '''Change the bot prefix for your server.'''
         id = str(ctx.guild.id)
         g_config = ctx.load_json('data/guild.json')
         g_config[id] = prefix
@@ -302,14 +302,24 @@ class StatsBot(commands.AutoShardedBot):
         """Shows the help message."""
         em = discord.Embed(color=embeds.random_color())
 
+        prefix = ctx.prefix
+
+        if ctx.message.mentions:
+            if ctx.prefix.strip() == ctx.message.mentions[0].mention:
+                prefix = '#'
+
         for cmd in sorted(self.commands, key=lambda x: x.cog_name):
             em.add_field(
-                        name=f'{ctx.prefix+cmd.signature}', 
+                        name=f'{prefix+cmd.signature}', 
                         value=cmd.short_doc, 
                         inline=False
                         )
 
-        em.set_author(name='Stats - Help', icon_url=self.user.avatar_url)
+        em.title = '`Stats - Help`'
+        em.description = 'Here is a list of commands you can use with this bot. ' \
+                         'Join the [support server here](https://discord.gg/maZqxnm) ' \
+                         'if you are having any issues.'
+        em.set_thumbnail(url=self.user.avatar_url)
 
             
         await ctx.send(embed=em)
