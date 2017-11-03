@@ -65,3 +65,23 @@ async def format_profile(ctx, p):
     
     return em
     # TODO: Make embeds better.
+
+async def format_clan(ctx, c):
+    embed = discord.Embed(description = c.description, color=0x3498db)
+    embed.set_author(name=f"{c.name} (#{c.tag})")
+    embed.set_thumbnail(url=c.badge_url)
+
+    embeddict = OrderedDict({
+        'Type': c.type_name,
+        'Score': c.score + ' Trophies',
+        'Donations/Week': c.donations + ' Cards',
+        'Clan Chest': c.clan_chest.crowns + '/' + c.clan_chest.required,
+        'Location': c.region,
+        'Members': len(c.members) + '/50'
+        })
+
+    for f, v in embeddict.items():
+        embed.add_field(name=f, value=v)
+    
+    return embed
+
