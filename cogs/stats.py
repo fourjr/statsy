@@ -107,6 +107,20 @@ class Stats:
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
+    async def chests(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Get the clash royale profile of a player.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        async with ctx.typing():
+            try:
+                profile = await self.cr.get_profile(tag)
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                em = await embeds.format_chests(ctx, profile)
+                await ctx.send(embed=em)
+
+    @commands.group(invoke_without_command=True)
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Get a clan by tag or by profile.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
