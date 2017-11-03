@@ -312,12 +312,13 @@ class StatsBot(commands.AutoShardedBot):
                 prefix = '!'
 
         for cmd in sorted(self.commands, key=lambda x: x.cog_name):
+            if cmd.hidden:
+                continue
             em.add_field(
                         name=f'{prefix+cmd.signature}', 
                         value=cmd.short_doc, 
                         inline=False
                         )
-            print(cmd, cmd.short_doc)
 
         em.title = '`Stats - Help`'
         em.description = 'Here is a list of commands you can use with this bot. ' \
@@ -329,7 +330,7 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
-        
+
         if ctx.author.id not in self.developers: return
         
         env = {
