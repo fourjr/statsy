@@ -138,18 +138,18 @@ class Stats:
         '''Gets the members of a clan. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
-        async with ctx.typing():
-            try:
-                clan = await self.cr.get_clan(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+        await ctx.trigger_typing()
+        try:
+            clan = await self.cr.get_clan(tag)
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
+            ems = await embeds.format_members(ctx, clan)
+            if len(ems) > 1:
+                session = PaginatorSession(ctx, pages=ems)
+                await session.run()
             else:
-                ems = await embeds.format_members(ctx, clan)
-                if len(ems) > 1:
-                    session = PaginatorSession(ctx, pages=ems)
-                    await session.run()
-                else:
-                    await ctx.send(embed=ems[0])
+                await ctx.send(embed=ems[0])
             
     @commands.command()
     async def save(self, ctx, *, tag):

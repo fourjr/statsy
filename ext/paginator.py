@@ -36,8 +36,11 @@ class PaginatorSession:
         self.base = None
         self.current = 0
         self.reaction_map = OrderedDict({
+            '⏮': self.first_page,
             '◀': self.previous_page,
-            '▶': self.next_page
+            '⏹': self.close,
+            '▶': self.next_page,
+            '⏭': self.last_page
             })
         self.help_color = help_color
         self.page_num_enabled = page_nums
@@ -116,3 +119,17 @@ class PaginatorSession:
         return m.author == self.ctx.author and \
             self.ctx.channel == m.channel and \
             m.content.isdigit()
+
+    def close(self, delete=True):
+        '''Delete this embed.'''
+        self.running = False
+        if delete:
+            return self.base.delete()
+
+    def first_page(self):
+        '''Go to immediately to the first page'''
+        return self.show_page(0)
+
+    def last_page(self):
+        '''Go to immediately to the last page'''
+        return self.show_page(len(self.pages)-1)
