@@ -31,6 +31,11 @@ async def format_profile(ctx, p):
     pos = cycle.position
     special = ''
     trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
+    try:
+        global_r = "N/A" if not p.seasons[0].end_global else p.seasons[0].end_global
+        season = f"Number: {p.seasons[0].number}\nHighest: {p.seasons[0].highest} {emoji(ctx, 'trophy')}\nFinish: {p.seasons[0].ending} {emoji(ctx, 'trophy')}\nGlobal Rank: {global_r}"
+    except:
+        season = 'N/A'
 
     for i, attr in enumerate(cdir(cycle)):
         if attr != 'position':
@@ -56,6 +61,7 @@ async def format_profile(ctx, p):
         (f'Chests ({pos} opened)', chests, False),
         ('Chests Until', special, True),
         ('Shop Offers (Days)', shop_offers, True),
+        ('Previous Season Results', season, True)
         ]
 
     for n, v, i in embed_fields:
