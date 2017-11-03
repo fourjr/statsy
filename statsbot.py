@@ -40,7 +40,6 @@ import re
 import inspect
 
 
-
 class StatsBot(commands.AutoShardedBot):
     '''
     Custom Client for cr-statsbot - Made by verix#7220
@@ -184,6 +183,18 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send(embed=em)
         except discord.Forbidden:
             await ctx.send(em.title + em.description)
+
+    @commands.command()
+    async def invite(self, ctx):
+        """Joins a server."""
+        perms = discord.Permissions.none()
+        perms.read_messages = True
+        perms.external_emojis = True
+        perms.send_messages = True
+        perms.embed_links = True
+        perms.attach_files = True
+        perms.add_reactions = True
+        await ctx.send(f'**Invite link:** \n<{discord.utils.oauth_url(self.user.id, perms)}>')
 
 if __name__ == '__main__':
     StatsBot.init()
