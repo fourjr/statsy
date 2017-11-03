@@ -1,7 +1,7 @@
 import discord
 from collections import OrderedDict
 import json
-
+import random
 
 def emoji(ctx, name):
     name = name.replace('.','').lower().replace(' ','').replace('_','')
@@ -13,12 +13,20 @@ def emoji(ctx, name):
 def cdir(obj):
     return [x for x in dir(obj) if not x.startswith('_')]
 
+def random_color():
+    random_colors = [
+        0xff6600, 0xff0000, 0xff3399, 0x9966ff, 
+        0x00ffff, 0x3366ff, 0x00ff00, 0xffff00, 
+        0x990099, 0x009933, 0x00cc66, 0x0000ff, 
+        0xff66cc] # (Good Colors)
+    return random.choice(random_colors)
+
 async def format_profile(ctx, p):
 
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     color = 0x00FFFF
-    em = discord.Embed(color=color)
+    em = discord.Embed(color=random_color())
     em.set_author(name=f"{p.name} (#{p.tag})", icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
@@ -94,13 +102,13 @@ async def format_profile(ctx, p):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value='No Clan')
 
-    em.set_footer(text='StatsBot - Powered by cr-api.com')
+    em.set_footer(text='CR-Stats - Powered by cr-api.com')
     
     return em
     # TODO: Make embeds better.
 
 async def format_clan(ctx, c):
-    embed = discord.Embed(description = c.description, color=0x00FFFF)
+    embed = discord.Embed(description = c.description, color=random_color())
     embed.set_author(name=f"{c.name} (#{c.tag})")
     embed.set_thumbnail(url=c.badge_url)
 
@@ -115,6 +123,8 @@ async def format_clan(ctx, c):
 
     for f, v in embeddict.items():
         embed.add_field(name=f, value=v)
+
+    embed.set_footer(text='CR-Stats - Powered by cr-api.com')
     
     return embed
 
