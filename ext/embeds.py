@@ -35,7 +35,15 @@ def get_deck(ctx, p):
 def get_chests(ctx, p):
     chests = '| '+str(emoji(ctx, 'chest' + p.get_chest(0).lower())) + ' | '
     chests += ''.join([str(emoji(ctx, 'chest' + p.get_chest(x).lower())) for x in range(1,10)])
-    return chests
+    special = ''
+    for i, attr in enumerate(cdir(cycle)):
+        if attr != 'position':
+            e = emoji(ctx, 'chest'+attr.replace('_',''))
+            if getattr(cycle, attr):
+                c_pos = int(getattr(cycle, attr))
+                until = c_pos-pos
+                special += f'{e}+{until} '
+    return (chests, special)
 
 async def format_deck(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
@@ -48,10 +56,12 @@ async def format_deck(ctx, p):
 
 async def format_chests(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
-    em = discord.Embed(color=random_color(), description=get_chests(ctx, p))
+    em = discord.Embed(color=random_color(), description=p.tag)
     em.set_author(name=p, icon_url=av)
     em.title = 'Chests'
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
+    em.add_field(name='Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
+    em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
     em.set_footer(text='CR-Stats - Powered by cr-api.com')
     return em
 
@@ -66,7 +76,7 @@ async def format_profile(ctx, p):
 
     deck = get_deck(ctx, p)
 
-    chests = get_chests(ctx, p)
+    chests = get_chests(ctx, p)[0]
 
 
     cycle = p.chest_cycle
@@ -87,13 +97,7 @@ async def format_profile(ctx, p):
         season = None
 
 
-    for i, attr in enumerate(cdir(cycle)):
-        if attr != 'position':
-            e = emoji(ctx, 'chest'+attr.replace('_',''))
-            if getattr(cycle, attr):
-                c_pos = int(getattr(cycle, attr))
-                until = c_pos-pos
-                special += f'{e}+{until} '
+    special = get_chests(ctx, p)[1]
 
     shop_offers = ''
     if p.shop_offers.legendary:
