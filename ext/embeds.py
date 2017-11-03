@@ -1,47 +1,67 @@
 import discord
 from collections import OrderedDict
+from crasync.models import CHESTS
 
-def emoji(ctx, name, emojiresp=False):
-    server_ids = [315043391081676810, 337918174475452426, 337919522163916815, 337975017469902848]
-    emojis = []
-    for id in server_ids:
-        g = ctx.bot.get_guild(id)
-        for e in g.emojis:
-            emojis.append(e)
-    if name is 'chestmagic': name = 'chestmagical'
-    name = name.replace('.','').replace(' ', '').lower()
-    emoji = discord.utils.get(emojis, name=name)
-    if emojiresp:
-        if emoji != None:
-            return emoji
-        else:
-            return name
-    else:
-        try:
-            return str(f'<:{emoji.name}:{emoji.id}>')
-        except:
-            return name
+
+def emoji(ctx, name):
+    name = name.replace('.','').lower().replace(' ','')
+    if name == 'chestmagic':
+        name = 'chestmagical'
+    e = discord.utils.get(ctx.bot.cremojis, name=name)
+    return str(e)
+
+def cdir(obj):
+    return [x for x in dir(obj) if not x.startswith('_')]
 
 async def format_profile(ctx, p):
-    embed = discord.Embed(description=f'[StatsRoyale p](https://statsroyale.com/p/{p.tag})', color=0xe74c3c)
-    embed.set_author(name=f"{p.name} (#{p.tag})", icon_url = ctx.author.avatar_url)
-    embed.set_thumbnail(url=p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png')
+
+    em = discord.Embed(color=discord.Color.gold())
+    em.set_author(name=f"{p.name} (#{p.tag})", icon_url=ctx.author.avatar_url)
+    em.set_thumbnail(url=p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png')
 
     deck = ''
-    for i in range(8):
-        deck += str(emoji(ctx, p.deck[i].name)) + str(p.deck[i].level)
-        
-    embeddict = OrderedDict({
-        'Trophies' : f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}",
-        'Clan Info' : f'Clan: {p.clan_name} (#{p.clan_tag}) \nRole: {p.clan_role}',
-        'Deck': deck,
-        f'Chests ({p.chest_cycle.position} opened)' : f"{' '.join([emoji(ctx, 'chest' + p.get_chest(x).lower()) for x in range(10)])} \n{emoji(ctx, 'chestsupermagical')} +{p.chest_cycle.super_magical or p.chest_cycle.super_magical-p.chest_cycle.position} {emoji(ctx, 'chestlegendary')} + {p.chest_cycle.legendary or p.chest_cycle.legendary-p.chest_cycle.position}{emoji(ctx, 'chestepic')} + {p.chest_cycle.epic or p.chest_cycle.super_magical-p.chest_cycle.position} {emoji(ctx, 'chestmagical')} + {p.chest_cycle.magical or p.chest_cycle.super_magical-p.chest_cycle.position}",
-        'Shop Offers (Days)': f"{emoji(ctx, 'chestlegendary')}{p.shop_offers.legendary} {emoji(ctx, 'chestepic')}{p.shop_offers.epic} {emoji(ctx, 'arena11')}{p.shop_offers.arena}",
-        'Wins/Losses/Draws': f'{p.wins}/{p.losses}/{p.draws} ({p.win_streak} win streak)'
-        })
+    for card in p.deck:
+        print(card.name)
+        deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
 
-    for f, v in embeddict.items():
-        embed.add_field(name=f, value=v)
+    chests = '| '+emoji(ctx, 'chest' + p.get_chest(0).lower()) + ' | '
+    chests += ' '.join([emoji(ctx, 'chest' + p.get_chest(x).lower()) for x in range(1,10)])
+
+    cycle = p.chest_cycle
+    pos = cycle.position
+    special = ''
+    trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
+
+    for i, attr in enumerate(cdir(cycle)):
+        if attr != 'position':
+            e = emoji(ctx, 'chest'+attr.replace('_',''))
+            c_pos = int(getattr(cycle, attr))
+            until = c_pos-pos
+            special += f'{e}+{until} '
+
+
+    shop_offers = f"{emoji(ctx, 'chestlegendary')}{p.shop_offers.legendary}" \
+                  f"{emoji(ctx, 'chestepic')}{p.shop_offers.epic} {emoji(ctx, 'arena11')}"\
+                  f"{p.shop_offers.arena}"
+
+
+    embed_fields = [
+        ('Trophies', trophies, True),
+        ('Wins/Losses/Draws', f'{p.wins}/{p.losses}/{p.draws}', True),
+        ('Win Streak', p.win_streak, True),
+        ('Clan Name', p.clan_name, True),
+        ('Clan Tag', f'#{p.clan_tag}' if p.clan_tag else 'None', True),
+        ('Clan Role', p.clan_role, True),
+        ('Deck', deck, True),
+        (f'Chests ({pos} opened)', chests, True),
+        ('Chests Until', special, True),
+        ('Shop Offers (Days)', shop_offers, False),
+        ]
+
+    for n, v, i in embed_fields:
+        em.add_field(name=n, value=v, inline=i)
+
+    em.set_footer(text='StatsBot - Powered by cr-api.com')
     
-    return embed
+    return em
     # TODO: Make embeds better.
