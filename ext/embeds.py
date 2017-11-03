@@ -40,7 +40,7 @@ async def format_profile(ctx, p):
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
 
     chests = '| '+emoji(ctx, 'chest' + p.get_chest(0).lower()) + ' | '
-    chests += ' '.join([emoji(ctx, 'chest' + p.get_chest(x).lower()) for x in range(1,10)])
+    chests += ''.join([emoji(ctx, 'chest' + p.get_chest(x).lower()) for x in range(1,10)])
 
     cycle = p.chest_cycle
 
@@ -63,9 +63,10 @@ async def format_profile(ctx, p):
     for i, attr in enumerate(cdir(cycle)):
         if attr != 'position':
             e = emoji(ctx, 'chest'+attr.replace('_',''))
-            c_pos = int(getattr(cycle, attr))
-            until = c_pos-pos
-            special += f'{e}+{until} '
+            if getattr(cycle, attr):
+                c_pos = int(getattr(cycle, attr))
+                until = c_pos-pos
+                special += f'{e}+{until} '
 
     shop_offers = ''
     if p.shop_offers.legendary:
