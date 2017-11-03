@@ -26,6 +26,7 @@ import discord
 import crasync
 from discord.ext import commands
 from ext.context import CustomContext
+from ext import embeds
 from collections import defaultdict
 import datetime
 import traceback
@@ -65,6 +66,7 @@ class StatsBot(commands.AutoShardedBot):
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
+        self.remove_command('help')
         self.messages_sent = 0
         self.load_extensions()
 
@@ -102,65 +104,7 @@ class StatsBot(commands.AutoShardedBot):
         except FileNotFoundError:
             return None
 
-    @commands.command(aliases=['bot'])
-    async def info(self, ctx):
-        '''Shows information and stats about the bot.'''
-        em = discord.Embed()
-        em.timestamp = datetime.datetime.utcnow()
-        status = str(ctx.guild.me.status)
-        if status == 'online':
-            em.set_author(name="Stats", icon_url='https://i.imgur.com/wlh1Uwb.png')
-            em.color = discord.Color.green()
-        elif status == 'dnd':
-            status = 'maintenance'
-            em.set_author(name="Stats", icon_url='https://i.imgur.com/lbMqojO.png')
-            em.color = discord.Color.purple()
-        else:
-            em.set_author(name="Stats", icon_url='https://i.imgur.com/dCLTaI3.png')
-            em.color = discord.Color.red()
 
-        total_online = len({m.id for m in self.get_all_members() if m.status is not discord.Status.offline})
-        total_unique = len(self.users)
-        channels = sum(1 for g in self.guilds for _ in g.channels)
-
-        now = datetime.datetime.utcnow()
-        delta = now - self.uptime
-        hours, remainder = divmod(int(delta.total_seconds()), 3600)
-        minutes, seconds = divmod(remainder, 60)
-        days, hours = divmod(hours, 24)
-
-        fmt = '{h}h {m}m {s}s'
-        if days:
-            fmt = '{d}d ' + fmt
-        uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-        saved_tags = len(ctx.load_json())
-        g_authors = 'verixx, fourjr, kwugfighter, FloatCobra, XAOS1502'
-        em.description = 'StatsBot by verixx, kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
-
-        em.add_field(name='Current Status', value=str(status).title())
-        em.add_field(name='Uptime', value=uptime)
-        em.add_field(name='Latency', value=f'{self.latency*1000:.2f} ms')
-        em.add_field(name='Guilds', value=len(self.guilds))
-        em.add_field(name='Members', value=f'{total_online}/{total_unique} online')
-        em.add_field(name='Channels', value=f'{channels} total')
-        memory_usage = self.process.memory_full_info().uss / 1024**2
-        cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
-        em.add_field(name='RAM Usage', value=f'{memory_usage:.2f} MiB')
-        em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
-        em.add_field(name='Commands Run', value=sum(self.commands_used.values()))
-        em.add_field(name='Saved Tags', value=saved_tags)
-        em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
-        perms = discord.Permissions.none()
-        perms.read_messages = True
-        perms.external_emojis = True
-        perms.send_messages = True
-        perms.embed_links = True
-        perms.attach_files = True
-        perms.add_reactions = True
-        em.add_field(name='Invite', value=f'[Click Here]({discord.utils.oauth_url(self.user.id, perms)})')
-        em.set_footer(text=f'Bot ID: {self.user.id}')
-
-        await ctx.send(embed=em)
 
     @classmethod
     def init(bot, token=None):
@@ -260,7 +204,7 @@ class StatsBot(commands.AutoShardedBot):
 
     @commands.command()
     async def ping(self, ctx):
-        """Pong! Returns your websocket latency."""
+        """Pong! Returns average shard latency."""
         em = discord.Embed()
         em.title ='Pong! Websocket Latency: '
         em.description = f'{self.latency * 1000:.4f} ms'
@@ -273,7 +217,7 @@ class StatsBot(commands.AutoShardedBot):
 
     @commands.command()
     async def invite(self, ctx):
-        """Joins a server."""
+        """Returns the invite url for the bot."""
         perms = discord.Permissions.none()
         perms.read_messages = True
         perms.external_emojis = True
@@ -292,6 +236,83 @@ class StatsBot(commands.AutoShardedBot):
         g_config[id] = prefix
         ctx.save_json(g_config, 'data/guild.json')
         await ctx.send(f'Changed the prefix to: `{prefix}`')
+
+    @commands.command()
+    async def bot(self, ctx):
+        '''Shows information and stats about the bot.'''
+        em = discord.Embed()
+        em.timestamp = datetime.datetime.utcnow()
+        status = str(ctx.guild.me.status)
+        if status == 'online':
+            em.set_author(name="Stats", icon_url='https://i.imgur.com/wlh1Uwb.png')
+            em.color = discord.Color.green()
+        elif status == 'dnd':
+            status = 'maintenance'
+            em.set_author(name="Stats", icon_url='https://i.imgur.com/lbMqojO.png')
+            em.color = discord.Color.purple()
+        else:
+            em.set_author(name="Stats", icon_url='https://i.imgur.com/dCLTaI3.png')
+            em.color = discord.Color.red()
+
+        total_online = len({m.id for m in self.get_all_members() if m.status is not discord.Status.offline})
+        total_unique = len(self.users)
+        channels = sum(1 for g in self.guilds for _ in g.channels)
+
+        now = datetime.datetime.utcnow()
+        delta = now - self.uptime
+        hours, remainder = divmod(int(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+
+        fmt = '{h}h {m}m {s}s'
+        if days:
+            fmt = '{d}d ' + fmt
+        uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
+        saved_tags = len(ctx.load_json())
+        g_authors = 'verixx, fourjr, kwugfighter, FloatCobra, XAOS1502'
+        em.description = 'StatsBot by verixx, kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
+
+        em.add_field(name='Current Status', value=str(status).title())
+        em.add_field(name='Uptime', value=uptime)
+        em.add_field(name='Latency', value=f'{self.latency*1000:.2f} ms')
+        em.add_field(name='Guilds', value=len(self.guilds))
+        em.add_field(name='Members', value=f'{total_online}/{total_unique} online')
+        em.add_field(name='Channels', value=f'{channels} total')
+        memory_usage = self.process.memory_full_info().uss / 1024**2
+        cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
+        em.add_field(name='RAM Usage', value=f'{memory_usage:.2f} MiB')
+        em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
+        em.add_field(name='Commands Run', value=sum(self.commands_used.values()))
+        em.add_field(name='Saved Tags', value=saved_tags)
+        em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
+        perms = discord.Permissions.none()
+        perms.read_messages = True
+        perms.external_emojis = True
+        perms.send_messages = True
+        perms.embed_links = True
+        perms.attach_files = True
+        perms.add_reactions = True
+        em.add_field(name='Invite', value=f'[Click Here]({discord.utils.oauth_url(self.user.id, perms)})')
+        em.set_footer(text=f'Bot ID: {self.user.id}')
+
+        await ctx.send(embed=em)
+
+    @commands.command()
+    async def help(self, ctx):
+        """Shows the help message."""
+        em = discord.Embed(color=embeds.random_color())
+
+        for cmd in sorted(self.commands, key=lambda x: x.cog_name):
+            em.add_field(
+                        name=f'{ctx.prefix+cmd.signature}', 
+                        value=cmd.short_doc, 
+                        inline=False
+                        )
+
+        em.set_author(name='Stats - Help', icon_url=self.user.avatar_url)
+
+            
+        await ctx.send(embed=em)
 
 
 if __name__ == '__main__':

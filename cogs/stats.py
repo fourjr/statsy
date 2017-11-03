@@ -78,7 +78,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def profile(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the clash royale profile of a player.'''
+        '''Gets the clash royale profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -92,7 +92,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def deck(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the current deck of a player.'''
+        '''Gets the current deck of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -106,7 +106,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def chests(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the next chests of a player.'''
+        '''Gets the next chests of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -120,7 +120,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get a clan by tag or by profile.'''
+        '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
@@ -134,7 +134,7 @@ class Stats:
             
     @commands.command()
     async def save(self, ctx, *, tag):
-        '''Save a tag to your clash royale profile.
+        '''Saves a tag to your clash royale profile.
 
         Ability to save multiple tags coming soon.
         '''
