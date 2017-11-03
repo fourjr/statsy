@@ -63,7 +63,7 @@ class CustomContext(commands.Context):
 
     def save_json(self, data):
         with open('data/stats.json', 'w') as f:
-            f.write(json.dumps(data))
+            f.write(json.dumps(data, indent=4))
 
     def save_tag(self, tag, id=None):
         id = id or self.author.id
