@@ -317,6 +317,7 @@ class StatsBot(commands.AutoShardedBot):
                         value=cmd.short_doc, 
                         inline=False
                         )
+            print(cmd, cmd.short_doc)
 
         em.title = '`Stats - Help`'
         em.description = 'Here is a list of commands you can use with this bot. ' \
@@ -327,11 +328,12 @@ class StatsBot(commands.AutoShardedBot):
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
-        if ctx.author.id not in self.developers: return
         """Evaluates python code"""
-
+        
+        if ctx.author.id not in self.developers: return
+        
         env = {
-            'bot': self.bot,
+            'bot': self,
             'ctx': ctx,
             'channel': ctx.channel,
             'author': ctx.author,

@@ -135,7 +135,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def members(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the members of a clan. (tagging the user)'''
+        '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         await ctx.trigger_typing()
