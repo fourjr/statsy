@@ -153,6 +153,7 @@ class StatsBot(commands.AutoShardedBot):
         self._add_commands()
         # had to put this here due to an issue with the 
         # latencies property
+        await self.change_presence(game=discord.Game(name='#help'))
 
     async def on_ready(self):
         '''
