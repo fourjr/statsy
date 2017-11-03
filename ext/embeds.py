@@ -73,7 +73,7 @@ async def format_members(ctx, c):
     embeds = []
     counter = 0
     for member in c.members:
-        if counter % 10 == 0:
+        if counter % 10 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description = c.description, color=random_color())
             em.set_author(name=f"{c.name} (#{c.tag})")
