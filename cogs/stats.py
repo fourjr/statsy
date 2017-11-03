@@ -160,7 +160,7 @@ class Stats:
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            return await ctx.send('Invalid Tag!') # TODO: Better message.
+            raise InvalidTag('Invalid tag') 
 
         ctx.save_tag(tag)
 
