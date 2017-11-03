@@ -146,20 +146,21 @@ async def format_clan(ctx, c):
 
     pushers = []
     for i in range(3):
-        pushers.append(f"{c.members[i].name}: {c.members[i].trophies} {emoji(ctx, 'trophy')}\n({c.members[i].tag}")
+        pushers.append(f"{c.members[i].name}: {c.members[i].trophies} {emoji(ctx, 'trophy')}\n#{c.members[i].tag}")
 
     contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
     ccc = []
+
     for i in range(3):
-        ccc.append(f"{c.members[i].name}: {c.members[i].crowns} {emoji(ctx, 'bluecrown')}\n({c.members[i].tag}")
+        ccc.append(f"{c.members[i].name}: {c.members[i].crowns} {emoji(ctx, 'crownred')}\n#{c.members[i].tag}")
 
     embeddict = OrderedDict({
         'Type': c.type_name,
-        'Score': str(c.score) + ' Trophies',
-        'Donations/Week': str(c.donations) + ' Cards',
-        'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required),
+        'Score': str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy')),
+        'Donations/Week': str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards')),
+        'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'crownblue')),
         'Location': c.region,
-        'Members': str(len(c.members)) + '/50'
+        'Members': str(len(c.members)) + '/50',
         'Top Players': '\n\n'.join(pushers),
         'Top Contributors': '\n\n'.join(ccc)
         })

@@ -124,7 +124,6 @@ class Stats:
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Get a clan by tag or by profile.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
-        print(tag)
 
         async with ctx.typing():
             try:
