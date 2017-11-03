@@ -58,9 +58,8 @@ async def format_deck(ctx, p):
 
 async def format_chests(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
-    em = discord.Embed(color=random_color(), description=p.tag)
+    em = discord.Embed(color=random_color())
     em.set_author(name=p, icon_url=av)
-    em.title = 'Chests'
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
     em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
@@ -68,7 +67,6 @@ async def format_chests(ctx, p):
     return em
 
 async def format_profile(ctx, p):
-
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     color = 0x00FFFF
