@@ -66,6 +66,23 @@ async def format_chests(ctx, p):
     em.set_footer(text='CR-Stats - Powered by cr-api.com')
     return em
 
+async def format_members(ctx, c):
+    em = discord.Embed(description = c.description, color=random_color())
+    em.set_author(name=f"{c.name} (#{c.tag})")
+    em.set_thumbnail(url=c.badge_url)
+    embeds = []
+    counter = 0
+    for member in c.members:
+        if counter == 25:
+            embeds.append(em)
+            em = discord.Embed(description = c.description, color=random_color())
+            em.set_author(name=f"{c.name} (#{c.tag})")
+            em.set_thumbnail(url=c.badge_url)
+        em.add_field(name=member.name, value=member.tag)
+        counter += 1
+    embeds.append(em)
+    return embeds
+
 async def format_profile(ctx, p):
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'

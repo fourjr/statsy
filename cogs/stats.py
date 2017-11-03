@@ -3,6 +3,7 @@ from discord.ext import commands
 from ext import embeds
 import json
 from __main__ import InvalidTag
+from ext.paginator import PaginatorSession
 
 
 class TagCheck(commands.MemberConverter):
@@ -131,6 +132,23 @@ class Stats:
             else:
                 em = await embeds.format_clan(ctx, clan)
                 await ctx.send(embed=em)
+
+    @commands.group(invoke_without_command=True)
+    async def members(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets a clan by tag or by profile. (tagging the user)'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+
+        async with ctx.typing():
+            try:
+                clan = await self.cr.get_clan(tag)
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                ems = await embeds.format_members(ctx, clan)
+                if len(ems) > 1:
+                    session = PaginatorSession(ctx, pages=ems)
+                else:
+                    await ctx.send(embed=ems[0])
             
     @commands.command()
     async def save(self, ctx, *, tag):
