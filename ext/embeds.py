@@ -15,11 +15,16 @@ def cdir(obj):
 
 def random_color():
     random_colors = [
-        0xff6600, 0xff0000, 0xff3399, 0x9966ff, 
-        0x00ffff, 0x3366ff, 0x00ff00, 0xffff00, 
-        0x990099, 0x009933, 0x00cc66, 0x0000ff, 
-        0xff66cc] # (Good Colors)
-    return random.choice(random_colors)
+            'blue', 'blurple', 'dark_blue', 'dark_gold', 
+            'dark_green', 'dark_grey', 'dark_magenta', 
+            'dark_orange', 'dark_purple', 'dark_red', 
+            'dark_teal', 'darker_grey', 'default', 'gold', 
+            'green', 'greyple', 'light_grey', 'lighter_grey', 
+            'magenta', 'orange', 'purple', 'red', 'teal'
+            ] # (Good Colors)
+    c = random.choice(random_colors)
+
+    return getattr(discord.Color, c)()
 
 async def format_profile(ctx, p):
 
