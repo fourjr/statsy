@@ -16,8 +16,8 @@ def cdir(obj):
 async def format_profile(ctx, p):
 
     em = discord.Embed(color=discord.Color.gold())
-    em.set_author(name=f"{p.name} (#{p.tag})", icon_url=ctx.author.avatar_url)
-    em.set_thumbnail(url=p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png')
+    em.set_author(name=f"{p.name} (#{p.tag})", icon_url=p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png')
+    em.set_thumbnail(url=p.arena.image_url)
 
     deck = ''
     for card in p.deck:
