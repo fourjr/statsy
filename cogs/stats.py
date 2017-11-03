@@ -7,11 +7,9 @@ class InvalidTag(commands.BadArgument):
     '''Raised when a tag is invalid.'''
     pass
 
-class TagCheck:
+class TagCheck(commands.MemberConverter):
 
-    def __init__(self):
-        self.to_user = commands.MemberConverter()
-        self.check = 'PYLQGRJCUV0289'
+    check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
         tag = tag.strip('#').upper().replace('O','0')
@@ -24,7 +22,7 @@ class TagCheck:
     async def convert(self, ctx, argument):
         # Try to convert it to a member.
         try:
-            user = await self.to_user.convert(ctx, argument)
+            user = await super().convert(ctx, argument)
         except commands.BadArgument:
             pass 
         else:
@@ -39,11 +37,11 @@ class TagCheck:
             return tag
 
 class Stats:
+
     def __init__(self, bot):
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
-        self.cremojis = self.get_cremojis()
 
     async def resolve_tag(self, ctx, tag_or_user):
         if not tag_or_user:
@@ -62,7 +60,7 @@ class Stats:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise e
             else:
-                return TagCheck
+                return tag
         else:
             return tag_or_user
 
@@ -70,11 +68,14 @@ class Stats:
     async def profile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Get the clash royale profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
-        try:
-            profile = await self.cr.get_profile(tag)
-        except Exception as e:
-            await ctx.send(f'`{e}`')
-        em = await embeds.format_profile(ctx, profile)
+
+        async with ctx.typing():
+            try:
+                profile = await self.cr.get_profile(tag)
+            except Exception as e:
+                await ctx.send(f'`{e}`')
+                raise e
+            em = await embeds.format_profile(ctx, profile)
         await ctx.send(embed=em)
 
     @commands.command()
