@@ -28,6 +28,7 @@ from discord.ext import commands
 from ext.context import CustomContext
 from ext import embeds
 from collections import defaultdict
+from contextlib import redirect_stdout
 import datetime
 import traceback
 import asyncio
@@ -39,6 +40,8 @@ import sys
 import os
 import re
 import inspect
+import io
+import textwrap
 
 class InvalidTag(commands.BadArgument):
     '''Raised when a tag is invalid.'''
@@ -103,8 +106,6 @@ class StatsBot(commands.AutoShardedBot):
                 return json.load(f)['token'].strip('"')
         except FileNotFoundError:
             return None
-
-
 
     @classmethod
     def init(bot, token=None):
@@ -320,10 +321,89 @@ class StatsBot(commands.AutoShardedBot):
                          'Join the [support server here](https://discord.gg/maZqxnm) ' \
                          'if you are having any issues.'
         em.set_thumbnail(url=self.user.avatar_url)
-
-            
         await ctx.send(embed=em)
 
+    @commands.command(pass_context=True, hidden=True, name='eval')
+    async def _eval(self, ctx, *, body: str):
+        """Evaluates python code"""
+
+        env = {
+            'bot': self.bot,
+            'ctx': ctx,
+            'channel': ctx.channel,
+            'author': ctx.author,
+            'guild': ctx.guild,
+            'message': ctx.message,
+            #'_': self._last_result,
+            'source': inspect.getsource
+        }
+
+        env.update(globals())
+
+        body = self.cleanup_code(body)
+        stdout = io.StringIO()
+        err = out = None
+
+        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
+
+        try:
+            exec(to_compile, env)
+        except Exception as e:
+            err = await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            return await err.add_reaction('\u2049')
+
+        func = env['func']
+        try:
+            with redirect_stdout(stdout):
+                ret = await func()
+        except Exception as e:
+            value = stdout.getvalue()
+            err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+        else:
+            value = stdout.getvalue()
+            if self.token in value:
+                value = value.replace(self.token,"[EXPUNGED]")
+            if ret is None:
+                if value:
+                    try:
+                        out = await ctx.send(f'```py\n{value}\n```')
+                    except:
+                        paginated_text = ctx.paginate(value)
+                        for page in paginated_text:
+                            if page == paginated_text[-1]:
+                                out = await ctx.send(f'```py\n{page}\n```')
+                                break
+                            await ctx.send(f'```py\n{page}\n```')
+            else:
+                self._last_result = ret
+                try:
+                    out = await ctx.send(f'```py\n{value}{ret}\n```')
+                except:
+                    paginated_text = ctx.paginate(f"{value}{ret}")
+                    for page in paginated_text:
+                        if page == paginated_text[-1]:
+                            out = await ctx.send(f'```py\n{page}\n```')
+                            break
+                        await ctx.send(f'```py\n{page}\n```')
+
+        if out:
+            await out.add_reaction('\u2705') #tick
+        if err:
+            await err.add_reaction('\u2049') #x
+
+    def cleanup_code(self, content):
+        """Automatically removes code blocks from the code."""
+        # remove ```py\n```
+        if content.startswith('```') and content.endswith('```'):
+            return '\n'.join(content.split('\n')[1:-1])
+
+        # remove `foo`
+        return content.strip('` \n')
+
+    def get_syntax_error(self, e):
+        if e.text is None:
+            return f'```py\n{e.__class__.__name__}: {e}\n```'
+        return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
 if __name__ == '__main__':
     StatsBot.init()
