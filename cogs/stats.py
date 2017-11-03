@@ -147,6 +147,7 @@ class Stats:
                 ems = await embeds.format_members(ctx, clan)
                 if len(ems) > 1:
                     session = PaginatorSession(ctx, pages=ems)
+                    await session.run()
                 else:
                     await ctx.send(embed=ems[0])
             
