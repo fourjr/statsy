@@ -33,6 +33,8 @@ def get_deck(ctx, p):
     return deck
 
 def get_chests(ctx, p):
+    cycle = p.chest_cycle
+    pos = cycle.position
     chests = '| '+str(emoji(ctx, 'chest' + p.get_chest(0).lower())) + ' | '
     chests += ''.join([str(emoji(ctx, 'chest' + p.get_chest(x).lower())) for x in range(1,10)])
     special = ''
@@ -60,7 +62,7 @@ async def format_chests(ctx, p):
     em.set_author(name=p, icon_url=av)
     em.title = 'Chests'
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
-    em.add_field(name='Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
+    em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
     em.set_footer(text='CR-Stats - Powered by cr-api.com')
     return em
