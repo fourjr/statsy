@@ -45,6 +45,13 @@ class StatsBot(commands.AutoShardedBot):
     '''
     Custom Client for cr-statsbot - Made by verix#7220
     '''
+    emoji_servers = [
+        315043391081676810, 
+        337918174475452426, 
+        337919522163916815, 
+        337975017469902848,
+        ]
+
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -54,6 +61,14 @@ class StatsBot(commands.AutoShardedBot):
         self.process = psutil.Process()
         self.messages_sent = 0
         self.load_extensions()
+
+    def get_cremojis(self):
+        emojis = []
+        for id in self.emoji_servers:
+            g = self.get_guild(id)
+            for e in g.emojis:
+                emojis.append(e)
+        return emojis
 
     def _add_commands(self):
         '''Adds commands automatically'''
@@ -128,6 +143,7 @@ class StatsBot(commands.AutoShardedBot):
         print(f'Guilds: {len(self.guilds)}')
         print(f'Users: {len(self.users)}')
         print('----------------------------')
+        self.cremojis = self.get_cremojis()
 
     async def on_shard_ready(self, shard_id):
         '''
