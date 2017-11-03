@@ -78,7 +78,7 @@ async def format_members(ctx, c):
             em = discord.Embed(description = c.description, color=random_color())
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge_url)
-        em.add_field(name=f'{member.name} (#{member.tag})', value=f"{member.trophies} {emoji(ctx, 'trophy')}\n{member.crowns} {emoji(ctx, 'crownblue')}")
+        em.add_field(name=member.name, value=f"#{member.tag}\n{member.trophies} {emoji(ctx, 'trophy')}\n{member.crowns} {emoji(ctx, 'crownblue')}")
         counter += 1
     embeds.append(em)
     return embeds
