@@ -39,6 +39,9 @@ import os
 import re
 import inspect
 
+class InvalidTag(commands.BadArgument):
+    '''Raised when a tag is invalid.'''
+    pass
 
 class StatsBot(commands.AutoShardedBot):
     '''
@@ -163,7 +166,6 @@ class StatsBot(commands.AutoShardedBot):
         print(f'Shard `{shard_id}` ready!')
         print('----------------------------')
 
-
     async def on_command(self, ctx):
         '''Called when a command is invoked.'''
         cmd = ctx.command.qualified_name.replace(' ', '_')
@@ -175,6 +177,13 @@ class StatsBot(commands.AutoShardedBot):
         if ctx.command is None:
             return
         await self.invoke(ctx)
+
+    async def on_command_error(self, ctx, error):
+        error_message = 'Player tags should only contain these characters:\n' \
+                        '**Numbers:** 0, 2, 8, 9\n' \
+                        '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
+        if isinstance(error, InvalidTag):
+            await ctx.send(error_message)
 
     async def on_message(self, message):
         '''Called when a message is sent/recieved.'''
@@ -216,6 +225,7 @@ class StatsBot(commands.AutoShardedBot):
         g_config[id] = prefix
         ctx.save_json(g_config, 'data/guild.json')
         await ctx.send(f'Changed the prefix to: `{prefix}`')
+
 
 if __name__ == '__main__':
     StatsBot.init()

@@ -2,10 +2,8 @@ import discord
 from discord.ext import commands
 from ext import embeds
 import json
+from __main__ import InvalidTag
 
-class InvalidTag(commands.BadArgument):
-    '''Raised when a tag is invalid.'''
-    pass
 
 class TagCheck(commands.MemberConverter):
 
@@ -94,7 +92,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def deck(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the clash royale profile of a player.'''
+        '''Get the current deck of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -108,7 +106,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True)
     async def chests(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the clash royale profile of a player.'''
+        '''Get the next chests of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
