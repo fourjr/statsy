@@ -159,7 +159,7 @@ class StatsBot(commands.AutoShardedBot):
         print('StatsBot is ready!')
         print('----------------------------')
         print(f'Logged in as: {self.user}')
-        print(f'Client ID: {self.user.id})')
+        print(f'Client ID: {self.user.id}')
         print('----------------------------')
         print(f'Guilds: {len(self.guilds)}')
         print(f'Users: {len(self.users)}')
