@@ -46,6 +46,15 @@ async def format_deck(ctx, p):
     em.set_footer(text='CR-Stats - Powered by cr-api.com')
     return em
 
+async def format_chests(ctx, p):
+    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    em = discord.Embed(color=random_color(), description=get_chests(ctx, p))
+    em.set_author(name=p, icon_url=av)
+    em.title = 'Chests'
+    em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
+    em.set_footer(text='CR-Stats - Powered by cr-api.com')
+    return em
+
 async def format_profile(ctx, p):
 
 
@@ -135,6 +144,15 @@ async def format_clan(ctx, c):
     embed.set_author(name=f"{c.name} (#{c.tag})")
     embed.set_thumbnail(url=c.badge_url)
 
+    pushers = []
+    for i in range(3):
+        pushers.append(f"{c.members[i].name}: {c.members[i].trophies} {emoji(ctx, 'trophy')}\n({c.members[i].tag}")
+
+    contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
+    ccc = []
+    for i in range(3):
+        ccc.append(f"{c.members[i].name}: {c.members[i].crowns} {emoji(ctx, 'bluecrown')}\n({c.members[i].tag}")
+
     embeddict = OrderedDict({
         'Type': c.type_name,
         'Score': str(c.score) + ' Trophies',
@@ -142,6 +160,8 @@ async def format_clan(ctx, c):
         'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required),
         'Location': c.region,
         'Members': str(len(c.members)) + '/50'
+        'Top Players': '\n\n'.join(pushers),
+        'Top Contributors': '\n\n'.join(ccc)
         })
 
     for f, v in embeddict.items():
