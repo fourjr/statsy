@@ -15,7 +15,7 @@ def cdir(obj):
 
 def random_color():
     random_colors = [
-            'blue', 'blurple', 'dark_blue', 'dark_gold', 
+        'blue', 'blurple', 'dark_blue', 'dark_gold', 
             'dark_green', 'dark_grey', 'dark_magenta', 
             'dark_orange', 'dark_purple', 'dark_red', 
             'dark_teal', 'darker_grey', 'default', 'gold', 
@@ -26,6 +26,24 @@ def random_color():
 
     return getattr(discord.Color, c)()
 
+def get_deck(ctx, p):
+    deck = ''
+    for card in p.deck:
+        deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
+    return deck
+
+def get_chests(ctx, p):
+    chests = '| '+emoji(ctx, 'chest' + p.get_chest(0).lower()) + ' | '
+    chests += ' '.join([emoji(ctx, 'chest' + p.get_chest(x).lower()) for x in range(1,10)])
+    return chests
+
+async def format_deck(ctx, p):
+    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    em = discord.Embed(color=random_color(), description=get_deck(ctx, p), title=f"{p.name}'s Battle Deck")
+    em.set_author(name=f"{p.name} (#{p.tag})", icon_url=av)
+    em.set_thumbnail(url=discord.utils.get(ctx.bot.cremojis, name=p.favourite_card.replace('_','').lower()).url)
+    em.set_footer(text='CR-Stats - Powered by cr-api.com')
+    return em
 async def format_profile(ctx, p):
 
 
@@ -35,12 +53,9 @@ async def format_profile(ctx, p):
     em.set_author(name=f"{p.name} (#{p.tag})", icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
-    deck = ''
-    for card in p.deck:
-        deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
+    deck = get_deck(ctx, p)
 
-    chests = '| '+emoji(ctx, 'chest' + p.get_chest(0).lower()) + ' | '
-    chests += ' '.join([emoji(ctx, 'chest' + p.get_chest(x).lower()) for x in range(1,10)])
+    chests = get_chests(ctx, p)
 
     cycle = p.chest_cycle
 
