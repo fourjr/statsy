@@ -57,12 +57,12 @@ class CustomContext(commands.Context):
             
         return discord.Color.from_rgb(*color)
 
-    def load_json(self):
-        with open('data/stats.json') as f:
+    def load_json(self, path=None):
+        with open(path or 'data/stats.json') as f:
             return json.load(f)
 
-    def save_json(self, data):
-        with open('data/stats.json', 'w') as f:
+    def save_json(self, data, path=None):
+        with open(path or 'data/stats.json', 'w') as f:
             f.write(json.dumps(data, indent=4))
 
     def save_tag(self, tag, id=None):

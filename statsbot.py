@@ -114,7 +114,18 @@ class StatsBot(commands.AutoShardedBot):
 
         Still need to do stuff with db to get server prefix.
         '''
-        return '#'
+        with open('data/guild.json') as f:
+            cfg = json.load(f)
+
+        id = str(message.guild.id)
+
+        prefixes = [
+            f'<@{self.user.id}> ', 
+            f'<@!{self.user.id}> ',
+            cfg.get(id, '#')
+            ]
+
+        return prefixes
 
     async def on_connect(self):
         '''
@@ -195,6 +206,16 @@ class StatsBot(commands.AutoShardedBot):
         perms.attach_files = True
         perms.add_reactions = True
         await ctx.send(f'**Invite link:** \n<{discord.utils.oauth_url(self.user.id, perms)}>')
+
+    @commands.command()
+    @commands.has_permissions(manage_guild=True)
+    async def prefix(self, ctx, *, prefix):
+        '''Change the bot prefix.'''
+        id = str(ctx.guild.id)
+        g_config = ctx.load_json('data/guild.json')
+        g_config[id] = prefix
+        ctx.save_json(g_config, 'data/guild.json')
+        await ctx.send(f'Changed the prefix to: `{prefix}`')
 
 if __name__ == '__main__':
     StatsBot.init()
