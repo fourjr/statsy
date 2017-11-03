@@ -33,7 +33,7 @@ async def format_profile(ctx, p):
     trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
     try:
         global_r = "N/A" if not p.seasons[0].end_global else p.seasons[0].end_global
-        season = f"Number: {p.seasons[0].number}\nHighest: {p.seasons[0].highest} {emoji(ctx, 'trophy')}\nFinish: {p.seasons[0].ending} {emoji(ctx, 'trophy')}\nGlobal Rank: {global_r}"
+        season = f"Number: {p.seasons[0].number}    Highest: {p.seasons[0].highest} {emoji(ctx, 'trophy')}    Finish: {p.seasons[0].ending} {emoji(ctx, 'trophy')}    Global Rank: {global_r}"
     except:
         season = 'N/A'
 
@@ -57,11 +57,11 @@ async def format_profile(ctx, p):
         ('Clan Name', p.clan_name, True),
         ('Clan Tag', f'#{p.clan_tag}' if p.clan_tag else 'None', True),
         ('Clan Role', p.clan_role, True),
+        ('Previous Season Results', season, False),
         ('Battle Deck', deck, True),
         (f'Chests ({pos} opened)', chests, False),
         ('Chests Until', special, True),
-        ('Shop Offers (Days)', shop_offers, True),
-        ('Previous Season Results', season, True)
+        ('Shop Offers (Days)', shop_offers, True)
         ]
 
     for n, v, i in embed_fields:
