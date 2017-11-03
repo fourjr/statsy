@@ -36,6 +36,7 @@ async def format_profile(ctx, p):
     special = ''
     trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
 
+    s = None
     if p.seasons:
         s = p.seasons[0]
         global_r = s.end_global
@@ -83,7 +84,7 @@ async def format_profile(ctx, p):
         (f'Chests ({pos} opened)', chests, False),
         ('Chests Until', special, True),
         ('Shop Offers (Days)', shop_offers, True),
-        (f'Previous Season Results ({s.number})', season, False),
+        (f'Previous Season Results ({s.number})' if s else None, season, False),
         ]
 
     for n, v, i in embed_fields:
