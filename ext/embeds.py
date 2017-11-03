@@ -40,9 +40,9 @@ async def format_profile(ctx, p):
             special += f'{e}+{until} '
 
 
-    shop_offers = f"{emoji(ctx, 'chestlegendary')}{p.shop_offers.legendary}" \
-                  f"{emoji(ctx, 'chestepic')}{p.shop_offers.epic} {emoji(ctx, 'arena11')}"\
-                  f"{p.shop_offers.arena}"
+    shop_offers = f"{emoji(ctx, 'chestlegendary')}+{p.shop_offers.legendary}" \
+                  f"{emoji(ctx, 'chestepic')}+{p.shop_offers.epic} {emoji(ctx, 'arena11')}"\
+                  f"+{p.shop_offers.arena}"
 
 
     embed_fields = [
@@ -52,10 +52,10 @@ async def format_profile(ctx, p):
         ('Clan Name', p.clan_name, True),
         ('Clan Tag', f'#{p.clan_tag}' if p.clan_tag else 'None', True),
         ('Clan Role', p.clan_role, True),
-        ('Deck', deck, True),
-        (f'Chests ({pos} opened)', chests, True),
+        ('Battle Deck', deck, True),
+        (f'Chests ({pos} opened)', chests, False),
         ('Chests Until', special, True),
-        ('Shop Offers (Days)', shop_offers, False),
+        ('Shop Offers (Days)', shop_offers, True),
         ]
 
     for n, v, i in embed_fields:
