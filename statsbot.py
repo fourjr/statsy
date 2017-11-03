@@ -136,7 +136,7 @@ class StatsBot(commands.AutoShardedBot):
         prefixes = [
             f'<@{self.user.id}> ', 
             f'<@!{self.user.id}> ',
-            cfg.get(id, '#')
+            cfg.get(id, '!')
             ]
 
         return prefixes
@@ -309,7 +309,7 @@ class StatsBot(commands.AutoShardedBot):
 
         if ctx.message.mentions:
             if ctx.prefix.strip() == ctx.message.mentions[0].mention:
-                prefix = '#'
+                prefix = '!'
 
         for cmd in sorted(self.commands, key=lambda x: x.cog_name):
             em.add_field(
