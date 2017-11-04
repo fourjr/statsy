@@ -52,10 +52,10 @@ class StatsBot(commands.AutoShardedBot):
     Custom Client for cr-statsbot - Made by verix#7220
     '''
     emoji_servers = [
-        315043391081676810, 
-        337918174475452426, 
-        337919522163916815, 
-        337975017469902848,
+        376364364636094465, 
+        376368487037140992, 
+        376364990023729152, 
+        376365022752014345,
         ]
 
     developers = [
