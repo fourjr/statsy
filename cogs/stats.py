@@ -93,7 +93,7 @@ class Stats:
 
     @commands.group(invoke_without_command=True, aliases=['season'])
     async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the clash royale profile of a player.'''
+        '''Gets the season results a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         await ctx.trigger_typing()
