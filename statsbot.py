@@ -302,7 +302,7 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.send(embed=em)
 
     @commands.command()
-    async def help(self, ctx):
+    async def help(self, ctx, command=None):
         """Shows the help message."""
         em = discord.Embed(color=embeds.random_color())
 
@@ -312,21 +312,31 @@ class StatsBot(commands.AutoShardedBot):
             if ctx.prefix.strip() == ctx.message.mentions[0].mention:
                 prefix = '!'
 
-        for cmd in sorted(self.commands, key=lambda x: x.cog_name):
-            if cmd.hidden:
-                continue
-            em.add_field(
-                        name=f'{prefix+cmd.signature}', 
-                        value=cmd.short_doc, 
-                        inline=False
-                        )
+        if not command:
+            for cmd in sorted(self.commands, key=lambda x: x.cog_name):
+                if cmd.hidden:
+                    continue
+                em.add_field(
+                            name=f'{prefix+cmd.signature}', 
+                            value=cmd.short_doc, 
+                            inline=False
+                            )
 
-        em.title = '`Stats - Help`'
-        em.description = 'Here is a list of commands you can use with this bot. ' \
-                         'Join the [support server here](https://discord.gg/maZqxnm) ' \
-                         'if you are having any issues.'
+            em.title = '`Stats - Help`'
+            em.description = 'Here is a list of commands you can use with this bot. ' \
+                             'Join the [support server here](https://discord.gg/maZqxnm) ' \
+                             'if you are having any issues.'
 
-        em.set_thumbnail(url=self.user.avatar_url)
+            em.set_thumbnail(url=self.user.avatar_url)
+            em.set_footer(text="Do `{prefix}help command` for more info on a specific command.")
+
+        else:
+            command_found = discord.utils.get(self.commands, name=command)
+            if not command_found:
+                return await ctx.send("That's not a command.")
+            params = list(command_found.params).remove("self")
+            params = params.remove("ctx")
+            em.title = f"``Usage: {prefix}{command_found.name} {' '.join(params)}"
 
         await ctx.send(embed=em)
 
