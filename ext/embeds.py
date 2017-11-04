@@ -4,7 +4,7 @@ import json
 import random
 
 def emoji(ctx, name):
-    name = name.replace('.','').lower().replace(' ','').replace('_','')
+    name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
     if name == 'chestmagic':
         name = 'chestmagical'
     e = discord.utils.get(ctx.bot.cremojis, name=name)
