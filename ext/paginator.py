@@ -66,7 +66,7 @@ class PaginatorSession:
         page = self.pages[index]
 
         if self.page_num_enabled:
-            fmt = f'Page {index+1}/{len(self.pages)} | {self.footer_text}'
+            fmt = f'Page {index+1}/{len(self.pages)} · {self.footer_text}'
             page.set_footer(text=fmt)
 
         if self.running:
