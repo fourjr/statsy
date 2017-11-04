@@ -91,7 +91,7 @@ class Stats:
                 em = await embeds.format_profile(ctx, profile)
                 await ctx.send(embed=em)
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, aliases=['season'])
     async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the clash royale profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -111,7 +111,7 @@ class Stats:
                     )
                 await session.run()
             else:
-                await ctx.send(f"{profile.name} doesn't have any season results.")
+                await ctx.send(f"**{profile.name}**a doesn't have any season results.")
 
 
     @commands.group(invoke_without_command=True)
