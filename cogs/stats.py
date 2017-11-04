@@ -244,7 +244,7 @@ class Stats:
         )
 
         em = discord.Embed(color=embeds.random_color())
-        em.set_author(name=profile, icon_url=profile.clan_badge_url)
+        em.set_author(name=profile, icon_url=p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png')
         em.set_image(url='attachment://deck.png')
 
 
