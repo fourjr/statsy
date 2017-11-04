@@ -7,7 +7,6 @@ from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-from concurrent.futures import ThreadPoolExecutor
 import io
 import string
 
@@ -47,12 +46,6 @@ class Stats:
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
-
-        ##########################
-        # Image Processing Below #
-        ##########################
-
-        self.threadex = ThreadPoolExecutor(max_workers=2)
 
 
     async def get_clan_from_profile(self, ctx, tag, message):
@@ -245,7 +238,7 @@ class Stats:
         author = profile.name
 
         deck_image = await self.bot.loop.run_in_executor(
-            self.threadex,
+            None,
             self.get_deck_image,
             profile, author
         )
@@ -317,8 +310,9 @@ class Stats:
         d = ImageDraw.Draw(txt)
         d_name = ImageDraw.Draw(txt_name)
 
-        line1 = f'{profile.current_trophies} trophies'
-        line2 = profile.arena.name
+        line1 = profile.arena.name
+        line2 = f'{profile.current_trophies} Trophies'
+        
         # card_text = '\n'.join([line0, line1])
 
         deck_author_name = deck_author
