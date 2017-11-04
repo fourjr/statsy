@@ -92,6 +92,29 @@ class Stats:
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
+    async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets the clash royale profile of a player.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        await ctx.trigger_typing()
+        try:
+            profile = await self.cr.get_profile(tag)
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
+            ems = await embeds.format_seasons(ctx, profile)
+            if len(ems) > 0:
+                session = PaginatorSession(
+                    ctx=ctx, 
+                    pages=ems, 
+                    footer_text=f'{len(ems)} seasons'
+                    )
+                await session.run()
+            else:
+                await ctx.send(embed=discord.Embed(title="{profile.name}'s Season Results", color=embeds.random_color(), description="{profile.name} doesn't have any season results."))
+
+
+    @commands.group(invoke_without_command=True)
     async def deck(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the current deck of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -154,6 +177,7 @@ class Stats:
                 await session.run()
             else:
                 await ctx.send(embed=ems[0])
+
             
     @commands.command()
     async def save(self, ctx, *, tag):
