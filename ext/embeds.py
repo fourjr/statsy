@@ -76,7 +76,7 @@ async def format_members(ctx, c):
 async def format_seasons(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     embeds = []
-    for season in list(reversed(p.seasons)):
+    for season in p.seasons:
         em = discord.Embed(color=random_color(), description=f"#{p.tag}", title=f"Season Results")
         em.set_author(name=p.name, icon_url=av)
         em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
