@@ -73,12 +73,12 @@ async def format_members(ctx, c):
     embeds = []
     counter = 0
     for member in c.members:
-        if counter % 10 == 0 and counter != 0:
+        if counter % 6 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description = c.description, color=random_color())
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge_url)
-        em.add_field(name=member.name, value=f"#{member.tag}\n{member.trophies} {emoji(ctx, 'trophy')}\n{member.crowns} {emoji(ctx, 'crownblue')}")
+        em.add_field(name=member.name, value=f"#{member.tag}\n{member.trophies} {emoji(ctx, 'trophy')}\n{member.crowns} {emoji(ctx, 'crownblue')}\n{member.donations} {emoji(ctx, 'cards')}")
         counter += 1
     embeds.append(em)
     return embeds
@@ -95,9 +95,7 @@ async def format_profile(ctx, p):
 
     chests = get_chests(ctx, p)[0]
 
-
     cycle = p.chest_cycle
-
 
     pos = cycle.position
     special = ''
