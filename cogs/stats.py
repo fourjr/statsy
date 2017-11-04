@@ -111,7 +111,7 @@ class Stats:
                     )
                 await session.run()
             else:
-                await ctx.send(embed=discord.Embed(title="{profile.name}'s Season Results", color=embeds.random_color(), description="{profile.name} doesn't have any season results."))
+                await ctx.send(embed=discord.Embed(title=f"{profile.name}'s Season Results", color=embeds.random_color(), description=f"{profile.name} doesn't have any season results."))
 
 
     @commands.group(invoke_without_command=True)
