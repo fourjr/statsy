@@ -22,6 +22,40 @@ def get_deck(ctx, p):
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
     return deck
 
+async def format_least_valuable(ctx, clan):
+    for m in clan.members:
+        m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+
+    to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
+
+    em = discord.Embed(color=random_color(), description='Here are the least valuable members of the clan currently.')
+    em.set_author(name=clan)
+    em.set_thumbnail(url=clan.badge_url)
+    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
+
+    for m in to_kick:
+        em.add_field(name=m.name, value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+
+    return em
+
+async def format_most_valuable(ctx, clan):
+    for m in clan.members:
+        m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+
+    best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
+
+    em = discord.Embed(color=random_color(), description='Here are the most valuable members of the clan currently.')
+    em.set_author(name=clan)
+    em.set_thumbnail(url=clan.badge_url)
+    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
+
+    for m in best:
+        em.add_field(name=m.name, value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+
+    return em
+
+
+
 def get_chests(ctx, p):
     cycle = p.chest_cycle
     pos = cycle.position
@@ -43,7 +77,7 @@ async def format_deck(ctx, p):
     em.set_author(name=p, icon_url=av)
     em.title = 'Battle Deck'
     em.set_thumbnail(url=emoji(ctx, p.favourite_card).url)
-    em.set_footer(text='CR-Stats - Powered by cr-api.com')
+    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     return em
 
 async def format_chests(ctx, p):
@@ -53,7 +87,7 @@ async def format_chests(ctx, p):
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
     em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
-    em.set_footer(text='CR-Stats - Powered by cr-api.com')
+    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     return em
 
 async def format_members(ctx, c):
@@ -160,7 +194,7 @@ async def format_profile(ctx, p):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value='No Clan')
 
-    em.set_footer(text='CR-Stats - Powered by cr-api.com')
+    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     
     return em
 
@@ -193,7 +227,7 @@ async def format_clan(ctx, c):
     for f, v in embeddict.items():
         embed.add_field(name=f, value=v)
 
-    embed.set_footer(text='CR-Stats - Powered by cr-api.com')
+    embed.set_footer(text='StatsOverflow - Powered by cr-api.com')
     
     return embed
 

@@ -178,6 +178,38 @@ class Stats:
             else:
                 await ctx.send(embed=ems[0])
 
+    @members.command()
+    async def best(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Get the best members of a clan.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        async with ctx.typing():
+            try:
+                clan = await self.cr.get_clan(tag)
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                if len(clan.members) < 4:
+                    return await ctx.send('Clan must have more than 4 players for heuristics.')
+                else:
+                    em = await embeds.format_most_valuable(ctx, clan)
+                    await ctx.send(embed=em)
+
+    @members.command()
+    async def worst(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Get the best members of a clan.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        async with ctx.typing():
+            try:
+                clan = await self.cr.get_clan(tag)
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                if len(clan.members) < 4:
+                    return await ctx.send('Clan must have more than 4 players for heuristics.')
+                else:
+                    em = await embeds.format_least_valuable(ctx, clan)
+                    await ctx.send(embed=em)
+
             
     @commands.command()
     async def save(self, ctx, *, tag):
