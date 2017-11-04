@@ -50,7 +50,7 @@ async def format_most_valuable(ctx, clan):
     em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
     for m in reversed(best):
-        em.add_field(name=m.name, value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
 
     return em
 
@@ -96,13 +96,13 @@ async def format_members(ctx, c):
     em.set_thumbnail(url=c.badge_url)
     embeds = []
     counter = 0
-    for member in c.members:
+    for m in c.members:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description = c.description, color=random_color())
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge_url)
-        em.add_field(name=member.name, value=f"#{member.tag}\n{member.trophies} {emoji(ctx, 'trophy')}\n{member.crowns} {emoji(ctx, 'crownblue')}\n{member.donations} {emoji(ctx, 'cards')}")
+        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
         counter += 1
     embeds.append(em)
     return embeds
