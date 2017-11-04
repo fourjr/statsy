@@ -337,7 +337,7 @@ class StatsBot(commands.AutoShardedBot):
                          'if you are having any issues.'
 
         em.set_thumbnail(url=self.user.avatar_url)
-        em.set_footer(text="Do `{prefix}help command` for more info on a specific command.")
+        em.set_footer(text=f"Do `{prefix}help command` for more info on a specific command.")
 
         await ctx.send(embed=em)
 
