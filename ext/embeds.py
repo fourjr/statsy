@@ -14,17 +14,7 @@ def cdir(obj):
     return [x for x in dir(obj) if not x.startswith('_')]
 
 def random_color():
-    random_colors = [
-        'blue', 'blurple', 'dark_blue', 'dark_gold', 
-            'dark_green', 'dark_grey', 'dark_magenta', 
-            'dark_orange', 'dark_purple', 'dark_red', 
-            'dark_teal', 'darker_grey', 'default', 'gold', 
-            'green', 'greyple', 'light_grey', 'lighter_grey', 
-            'magenta', 'orange', 'purple', 'red', 'teal'
-            ] # (Good Colors)
-    c = random.choice(random_colors)
-
-    return getattr(discord.Color, c)()
+    return random.randint(0, 0xFFFFFF)
 
 def get_deck(ctx, p):
     deck = ''
