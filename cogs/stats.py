@@ -247,7 +247,7 @@ class Stats:
         deck_image = await self.bot.loop.run_in_executor(
             self.threadex,
             self.get_deck_image,
-            deck, author
+            profile, author
         )
 
         em = discord.Embed(color=embeds.random_color())
@@ -259,8 +259,11 @@ class Stats:
             file.seek(0)
             await ctx.send(file=discord.File(file, 'deck.png'), embed=em)
 
-    def get_deck_image(self, deck, deck_author=None):
+    def get_deck_image(self, profile, deck_author=None):
         """Construct the deck with Pillow and return image."""
+
+        deck = profile.deck 
+
         card_w = 302
         card_h = 363
         card_x = 30
@@ -314,8 +317,8 @@ class Stats:
         d = ImageDraw.Draw(txt)
         d_name = ImageDraw.Draw(txt_name)
 
-        line1 = ', '.join(card_names[:4])
-        line2 = ', '.join(card_names[4:])
+        line1 = f'{profile.trophies} trophies'
+        line2 = profile.arena.name
         # card_text = '\n'.join([line0, line1])
 
         deck_author_name = deck_author
