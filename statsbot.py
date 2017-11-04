@@ -328,15 +328,16 @@ class StatsBot(commands.AutoShardedBot):
                              'if you are having any issues.'
 
             em.set_thumbnail(url=self.user.avatar_url)
-            em.set_footer(text="Do `{prefix}help command` for more info on a specific command.")
+            em.set_footer(text=f"Do `{prefix}help command` for more info on a specific command.")
 
         else:
             command_found = discord.utils.get(self.commands, name=command)
             if not command_found:
                 return await ctx.send("That's not a command.")
-            params = list(command_found.params).remove("self")
-            params = params.remove("ctx")
-            em.title = f"``Usage: {prefix}{command_found.name} {' '.join(params)}"
+            params = list(command_found.params)
+            params.remove("self")
+            params.remove("ctx")
+            em.title = f"``Usage: {prefix}{command_found.name} {' '.join(params)}``"
 
         await ctx.send(embed=em)
 
