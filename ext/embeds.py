@@ -33,7 +33,7 @@ async def format_least_valuable(ctx, clan):
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
-    for m in to_kick:
+    for m in reveresed(to_kick):
         em.add_field(name=m.name, value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
 
     return em
