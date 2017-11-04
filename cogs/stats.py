@@ -317,7 +317,7 @@ class Stats:
         d = ImageDraw.Draw(txt)
         d_name = ImageDraw.Draw(txt_name)
 
-        line1 = f'{profile.trophies} trophies'
+        line1 = f'{profile.current_trophies} trophies'
         line2 = profile.arena.name
         # card_text = '\n'.join([line0, line1])
 
