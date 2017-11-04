@@ -88,7 +88,7 @@ async def format_profile(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     color = 0x00FFFF
     em = discord.Embed(color=random_color())
-    em.set_author(name=f"{p.name} (#{p.tag})", icon_url=av)
+    em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
     deck = get_deck(ctx, p)
