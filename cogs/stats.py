@@ -247,10 +247,10 @@ class Stats:
         em.set_author(name=profile, icon_url=profile.clan_badge_url)
         em.set_image(url='attachment://deck.png')
 
-        with io.BytesIO() as file:
-            deck_image.save(file, format='PNG')
-            file.seek(0)
-            await ctx.send(file=discord.File(file, 'deck.png'), embed=em)
+
+        await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)
+
+        deck_image.close()
 
     def get_deck_image(self, profile, deck_author=None):
         """Construct the deck with Pillow and return image."""
@@ -344,7 +344,13 @@ class Stats:
         scaled_size = tuple([x * scale for x in image.size])
         image.thumbnail(scaled_size)
 
-        return image
+        file = io.BytesIO()
+
+        image.save(file, format='PNG')
+
+        file.seek(0)
+
+        return file
 
 
 
