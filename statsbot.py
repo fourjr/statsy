@@ -274,7 +274,7 @@ class StatsBot(commands.AutoShardedBot):
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
         saved_tags = len(ctx.load_json())
         g_authors = 'verixx, fourjr, kwugfighter, FloatCobra, XAOS1502'
-        em.description = 'StatsBot by verixx, kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
+        em.description = 'StatsBot by kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
 
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
@@ -325,7 +325,9 @@ class StatsBot(commands.AutoShardedBot):
         em.description = 'Here is a list of commands you can use with this bot. ' \
                          'Join the [support server here](https://discord.gg/maZqxnm) ' \
                          'if you are having any issues.'
+
         em.set_thumbnail(url=self.user.avatar_url)
+
         await ctx.send(embed=em)
 
     @commands.command(pass_context=True, hidden=True, name='eval')
