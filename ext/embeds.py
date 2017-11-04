@@ -166,9 +166,9 @@ async def format_profile(ctx, p):
     embed_fields = [
         ('Trophies', trophies, True),
         ('Level', f"{p.level} ({'/'.join(str(x) for x in p.experience)}) {emoji(ctx, 'experience')}", True),
-        ('Clan Name', p.clan_name, True),
-        ('Clan Tag', f'#{p.clan_tag}' if p.clan_tag else None, True),
-        ('Clan Role', p.clan_role, True),
+        ('Clan Name', f"{p.clan_name} {emoji(ctx, 'clan')}" if p.clan_name else None, True),
+        ('Clan Tag', f"#{p.clan_tag} {emoji(ctx, 'clan')}" if p.clan_tag else None, True),
+        ('Clan Role', f"{p.clan_role} {emoji(ctx, 'clan')}" if p.clan_role else None, True),
         ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
@@ -183,7 +183,7 @@ async def format_profile(ctx, p):
         ('Battle Deck', deck, True),
         (f'Chests ({pos} opened)', chests, False),
         ('Chests Until', special, True),
-        ('Shop Offers (Days)', shop_offers, True),
+        ('Shop Offers (Days)', shop_offers, False),
         (f'Previous Season Results ({s.number})' if s else None, season, False),
         ]
 
