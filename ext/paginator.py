@@ -28,7 +28,8 @@ class PaginatorSession:
     close:
         Forcefully destroy a session
     '''
-    def __init__(self, ctx, timeout=60, *, pages=[], page_nums=True, help_color=0x00FFFF):
+    def __init__(self, ctx, timeout=60, *, pages=[], page_nums=True, help_color=0x00FFFF, footer_text=''):
+        self.footer_text = footer_text
         self.ctx = ctx
         self.timeout = timeout
         self.pages = pages
@@ -65,7 +66,7 @@ class PaginatorSession:
         page = self.pages[index]
 
         if self.page_num_enabled:
-            fmt = f'Page {index+1}/{len(self.pages)}'
+            fmt = f'Page {index+1}/{len(self.pages)} | {self.footer_text}'
             page.set_footer(text=fmt)
 
         if self.running:
