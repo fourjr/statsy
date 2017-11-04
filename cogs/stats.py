@@ -4,6 +4,12 @@ from ext import embeds
 import json
 from __main__ import InvalidTag
 from ext.paginator import PaginatorSession
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+from concurrent.futures import ThreadPoolExecutor
+import io
+import string
 
 
 class TagCheck(commands.MemberConverter):
@@ -41,6 +47,13 @@ class Stats:
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
+
+        ##########################
+        # Image Processing Below #
+        ##########################
+
+        self.threadex = ThreadPoolExecutor(max_workers=2)
+
 
     async def get_clan_from_profile(self, ctx, tag, message):
         profile = await self.cr.get_profile(tag)
@@ -114,19 +127,7 @@ class Stats:
                 await ctx.send(f"**{profile.name}**a doesn't have any season results.")
 
 
-    @commands.group(invoke_without_command=True)
-    async def deck(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the current deck of a player.'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
 
-        async with ctx.typing():
-            try:
-                profile = await self.cr.get_profile(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
-            else:
-                em = await embeds.format_deck(ctx, profile)
-                await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
     async def chests(self, ctx, *, tag_or_user: TagCheck=None):
@@ -225,6 +226,128 @@ class Stats:
         ctx.save_tag(tag)
 
         await ctx.send('Successfuly saved tag.')
+
+    @commands.group(invoke_without_command=True)
+    async def deck(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets the current deck of a player.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        async with ctx.typing():
+            try:
+                profile = await self.cr.get_profile(tag)
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                await self.format_deck_and_send(ctx, profile)
+
+    async def format_deck_and_send(self, ctx, profile):
+        deck = profile.deck
+        author = profile.name
+
+        deck_image = await self.bot.loop.run_in_executor(
+            self.threadex,
+            self.get_deck_image,
+            deck, author
+        )
+
+        em = discord.Embed(color=embeds.random_color())
+        em.set_author(name=profile, icon_url=profile.clan_badge_url)
+        em.set_image(url='attachment://deck.png')
+
+        with io.BytesIO() as file:
+            deck_image.save(file, format='PNG')
+            file.seek(0)
+            await ctx.send(file=discord.File(file, 'deck.png'), embed=em)
+
+    def get_deck_image(self, deck, deck_author=None):
+        """Construct the deck with Pillow and return image."""
+        card_w = 302
+        card_h = 363
+        card_x = 30
+        card_y = 30
+        font_size = 50
+        txt_y_line1 = 430
+        txt_y_line2 = 500
+        txt_x_name = 50
+        txt_x_cards = 503
+        txt_x_elixir = 1872
+
+        bg_image = Image.open("data/deck-bg.png")
+        size = bg_image.size
+
+        font_file_regular = "data/fonts/OpenSans-Regular.ttf"
+        font_file_bold = "data/fonts/OpenSans-Bold.ttf"
+
+        image = Image.new("RGBA", size)
+        image.paste(bg_image)
+
+        deck_name = 'Deck'
+        cards = [c.name.replace(' ', '-').replace('.', '').lower() for c in deck]
+
+        # cards
+        for i, card in enumerate(cards):
+            card_image_file = "data/cards/{}.png".format(card)
+            card_image = Image.open(card_image_file)
+            # size = (card_w, card_h)
+            # card_image.thumbnail(size)
+            box = (card_x + card_w * i,
+                   card_y,
+                   card_x + card_w * (i + 1),
+                   card_h + card_y)
+            image.paste(card_image, box, card_image)
+
+        # elixir
+        total_elixir = sum(c.elixir for c in deck)
+        card_count = 8
+
+        average_elixir = "{:.3f}".format(total_elixir / card_count)
+
+        # text
+        # Take out hyphnens and capitlize the name of each card
+        card_names = [string.capwords(c.replace('-', ' ')) for c in cards]
+
+        txt = Image.new("RGBA", size)
+        txt_name = Image.new("RGBA", (txt_x_cards - 30, size[1]))
+        font_regular = ImageFont.truetype(font_file_regular, size=font_size)
+        font_bold = ImageFont.truetype(font_file_bold, size=font_size)
+
+        d = ImageDraw.Draw(txt)
+        d_name = ImageDraw.Draw(txt_name)
+
+        line1 = ', '.join(card_names[:4])
+        line2 = ', '.join(card_names[4:])
+        # card_text = '\n'.join([line0, line1])
+
+        deck_author_name = deck_author
+
+        d_name.text(
+            (txt_x_name, txt_y_line1), deck_name, font=font_bold,
+            fill=(0xff, 0xff, 0xff, 255))
+        d_name.text(
+            (txt_x_name, txt_y_line2), deck_author_name, font=font_regular,
+            fill=(0xff, 0xff, 0xff, 255))
+        d.text(
+            (txt_x_cards, txt_y_line1), line1, font=font_regular,
+            fill=(0xff, 0xff, 0xff, 255))
+        d.text(
+            (txt_x_cards, txt_y_line2), line2, font=font_regular,
+            fill=(0xff, 0xff, 0xff, 255))
+        d.text(
+            (txt_x_elixir, txt_y_line1), "Avg elixir", font=font_bold,
+            fill=(0xff, 0xff, 0xff, 200))
+        d.text(
+            (txt_x_elixir, txt_y_line2), average_elixir, font=font_bold,
+            fill=(0xff, 0xff, 0xff, 255))
+
+        image.paste(txt, (0, 0), txt)
+        image.paste(txt_name, (0, 0), txt_name)
+
+        # scale down and return
+        scale = 0.5
+        scaled_size = tuple([x * scale for x in image.size])
+        image.thumbnail(scaled_size)
+
+        return image
 
 
 
