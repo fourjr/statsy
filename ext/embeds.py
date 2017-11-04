@@ -77,8 +77,8 @@ async def format_seasons(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     embeds = []
     for season in p.seasons:
-        em = discord.Embed(color=random_color(), description=f"#{p.tag}", title=f"Season Results")
-        em.set_author(name=p.name, icon_url=av)
+        em = discord.Embed(color=random_color(), description='Season Results')
+        em.set_author(name=str(p), icon_url=av)
         em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
         em.add_field(name="Season", value=f"{season.number}")
         em.add_field(name="Season Highest", value=f"{season.highest} {emoji(ctx, 'trophy')}")
