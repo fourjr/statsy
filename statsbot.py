@@ -302,7 +302,7 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.send(embed=em)
 
     @commands.command()
-    async def help(self, ctx, command=None):
+    async def help(self, ctx):
         """Shows the help message."""
         em = discord.Embed(color=embeds.random_color())
 
@@ -312,31 +312,32 @@ class StatsBot(commands.AutoShardedBot):
             if ctx.prefix.strip() == ctx.message.mentions[0].mention:
                 prefix = '!'
 
-        if not command:
-            for cmd in sorted(self.commands, key=lambda x: x.cog_name):
-                if cmd.hidden:
-                    continue
-                em.add_field(
-                            name=f'{prefix+cmd.signature}', 
-                            value=cmd.short_doc, 
-                            inline=False
-                            )
+        for cmd in sorted(self.commands, key=lambda x: x.cog_name):
+            if cmd.hidden:
+                continue
 
-            em.title = '`Stats - Help`'
-            em.description = 'Here is a list of commands you can use with this bot. ' \
-                             'Join the [support server here](https://discord.gg/maZqxnm) ' \
-                             'if you are having any issues.'
+            
+            em.add_field(
+                        name=f'{prefix+cmd.signature}', 
+                        value=cmd.short_doc, 
+                        inline=False
+                        )
 
-            em.set_thumbnail(url=self.user.avatar_url)
-            em.set_footer(text="Do `{prefix}help command` for more info on a specific command.")
+            if hasattr(cmd, 'all_commands'):
+                for c in cmd.all_commands.values():
+                    em.add_field(
+                        name=f'{prefix+c.signature}', 
+                        value=c.short_doc, 
+                        inline=False
+                        )
 
-        else:
-            command_found = discord.utils.get(self.commands, name=command)
-            if not command_found:
-                return await ctx.send("That's not a command.")
-            params = list(command_found.params).remove("self")
-            params = params.remove("ctx")
-            em.title = f"``Usage: {prefix}{command_found.name} {' '.join(params)}"
+        em.title = '`Stats - Help`'
+        em.description = 'Here is a list of commands you can use with this bot. ' \
+                         'Join the [support server here](https://discord.gg/maZqxnm) ' \
+                         'if you are having any issues.'
+
+        em.set_thumbnail(url=self.user.avatar_url)
+        em.set_footer(text="Do `{prefix}help command` for more info on a specific command.")
 
         await ctx.send(embed=em)
 
