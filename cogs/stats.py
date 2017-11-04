@@ -180,7 +180,7 @@ class Stats:
 
     @members.command()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the best members of a clan.'''
+        '''Finds the most valuable members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
@@ -196,7 +196,7 @@ class Stats:
 
     @members.command()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Get the best members of a clan.'''
+        '''Finds the least valuable members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
