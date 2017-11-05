@@ -126,13 +126,26 @@ async def format_seasons(ctx, p):
     return embeds
 
 async def format_card(ctx, c):
+    arenas = {
+        0: 'Training Camp',
+        1: 'Goblin Stadium',
+        2: 'Bone Pit',
+        3: 'Barbarian Bowl',
+        4: "P.E.K.K.A's Playhouse",
+        5: 'Spell Valley',
+        6: "Builder's Workshop",
+        7: 'Royal Arena',
+        8: 'Frozen Peak',
+        9: 'Jungle Arena',
+        10: 'Hog Mountain'
+        }
     em = discord.Embed(description=c.description, color=random_color())
     em.set_thumbnail(url='attachment://ingame.png')
     em.set_author(name=f"{c.name} Info", icon_url='attachment://card.png')
     em.add_field(name='Rarity', value=c.rarity)
     em.add_field(name='Elixir Cost', value=str(c.elixir))
     em.add_field(name='Type', value=c.type)
-    em.add_field(name='Arena Found', value=str(c.arena))
+    em.add_field(name='Arena Found', value=arenas[c.arena])
     em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     return em
 
