@@ -198,6 +198,7 @@ class StatsBot(commands.AutoShardedBot):
         if isinstance(error, InvalidTag):
             await ctx.send(error_message)
         else:
+            await self.get_channel(376622292106608640).send(f"```\n{error}\n```")
             raise error
 
     async def on_message(self, message):
@@ -443,6 +444,8 @@ class StatsBot(commands.AutoShardedBot):
         if e.text is None:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
+
+
 
 if __name__ == '__main__':
     StatsBot.init()
