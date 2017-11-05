@@ -198,7 +198,7 @@ class StatsBot(commands.AutoShardedBot):
         if isinstance(error, InvalidTag):
             await ctx.send(error_message)
         else:
-            await self.get_channel(376622292106608640).send(f"```\n{error}\n```")
+            await self.get_channel(376622292106608640).send(embed=discord.Embed(color=0xd60000, description=f"```\n{error}\n```", title=ctx.invoked_with))
             raise error
 
     async def on_message(self, message):
