@@ -117,7 +117,7 @@ class Stats:
                     )
                 await session.run()
             else:
-                await ctx.send(f"**{profile.name}**a doesn't have any season results.")
+                await ctx.send(f"**{profile.name}** doesn't have any season results.")
 
 
 
