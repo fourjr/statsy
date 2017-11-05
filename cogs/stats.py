@@ -210,7 +210,7 @@ class Stats:
 
             
     @commands.command()
-    async def save(self, ctx, *, tag):
+    async def crsave(self, ctx, *, tag):
         '''Saves a Clash Royale tag to your discord profile.
 
         Ability to save multiple tags coming soon.
