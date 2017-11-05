@@ -232,21 +232,23 @@ async def format_clan(ctx, c):
     embed2.description = 'Top Players/Donators/Contributors for this clan.'
 
     pushers = []
-    for i in range(3):
-        pushers.append(f"**{c.members[i].name}**\n{c.members[i].trophies} {emoji(ctx, 'trophy')}\n#{c.members[i].tag}")
+    if len(clan.members) >= 3:
+        for i in range(3):
+            pushers.append(f"**{c.members[i].name}**\n{c.members[i].trophies} {emoji(ctx, 'trophy')}\n#{c.members[i].tag}")
 
     contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
     _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
 
     donators = []
 
-    for i in range(3):
-        donators.append(f"**{_donators[i].name}**\n{_donators[i].crowns} {emoji(ctx, 'cards')}\n#{_donators[i].tag}")
+    if len(clan.members) >= 3:
+        for i in range(3):
+            donators.append(f"**{_donators[i].name}**\n{_donators[i].crowns} {emoji(ctx, 'cards')}\n#{_donators[i].tag}")
 
     ccc = []
-
-    for i in range(3):
-        ccc.append(f"**{contributors[i].name}**\n{contributors[i].crowns} {emoji(ctx, 'crownred')}\n#{contributors[i].tag}")
+    if len(clan.members) >= 3:
+        for i in range(3):
+            ccc.append(f"**{contributors[i].name}**\n{contributors[i].crowns} {emoji(ctx, 'crownred')}\n#{contributors[i].tag}")
 
     em_dict_1 = OrderedDict({
         'Type': c.type_name + ' 📩',
@@ -271,8 +273,8 @@ async def format_clan(ctx, c):
 
 
     for f, v in em_dict_2:
-
-        embed2.add_field(name=f, value=v)
+        if v:
+            embed2.add_field(name=f, value=v)
 
     
     
