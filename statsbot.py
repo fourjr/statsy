@@ -302,11 +302,12 @@ class StatsBot(commands.AutoShardedBot):
 
         await ctx.send(embed=em)
 
-    @commands.commands(hidden=True)
+    @commands.command(hidden=True)
     async def update(self, ctx):
         '''Update the bot.'''
         if ctx.author.id not in self.developers:
             return
+
         with open('data/config.json') as f:
             password = json.load(f).get('password')
 
