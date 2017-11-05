@@ -77,15 +77,19 @@ async def format_profile(ctx, p):
     em.set_thumbnail(url=p['league']['iconUrls']['medium'])
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
+    try:
+        clan = p['clan']
+    except KeyError:
+        clan = None
 
 
     embed_fields = [
         ('Trophies', trophies, True),
         ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
-        ('TH Level', f"{p['townHallLevel']}", True)
-        # ('Clan Name', f"{p.clan_name} {emoji(ctx, 'clan')}" if p.clan_name else None, True),
-        # ('Clan Tag', f"#{p.clan_tag} {emoji(ctx, 'clan')}" if p.clan_tag else None, True),
-        # ('Clan Role', f"{p.clan_role} {emoji(ctx, 'clan')}" if p.clan_role else None, True),
+        ('TH Level', f"{p['townHallLevel']}", True),
+        ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('Clan Role', f"{p['role']} {emoji(ctx, 'clan')}" if clan else None, True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
