@@ -230,6 +230,7 @@ class StatsBot(commands.AutoShardedBot):
         perms.embed_links = True
         perms.attach_files = True
         perms.add_reactions = True
+        perms.manage_messages = True
         await ctx.send(f'**Invite link:** \n<{discord.utils.oauth_url(self.user.id, perms)}>')
 
     @commands.command()
