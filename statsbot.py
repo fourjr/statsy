@@ -200,7 +200,7 @@ class StatsBot(commands.AutoShardedBot):
         else:
             await self.get_channel(376622292106608640).send(embed=discord.Embed(color=discord.Color.orange(), description=f"```\n{type(error).__name__}: {error}\n```", title=ctx.invoked_with))
             if isinstance(error, commands.MissingRequiredArgument):
-                await ctx.send(embed=discord.Embed(color=embeds.random_color(), title='``Usage: {ctx.command.signature}``'))
+                await ctx.send(embed=discord.Embed(color=embeds.random_color(), title=f'``Usage: {ctx.command.signature}``'))
             raise error
 
     async def on_message(self, message):
