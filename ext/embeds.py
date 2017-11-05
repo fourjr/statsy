@@ -133,6 +133,7 @@ async def format_card(ctx, c):
     em.add_field(name='Elixir Cost', value=str(c.elixir))
     em.add_field(name='Type', value=c.type)
     em.add_field(name='Arena Found', value=str(c.arena))
+    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     return em
 
 async def format_profile(ctx, p):
