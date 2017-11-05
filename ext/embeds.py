@@ -125,6 +125,16 @@ async def format_seasons(ctx, p):
 
     return embeds
 
+async def format_card(ctx, c):
+    em = discord.Embed(description=c.description, color=random_color())
+    em.set_thumbnail(url='attachment://ingame.png')
+    em.set_author(name=f"{c.name} Info", icon_url='attachment://card.png')
+    em.add_field(name='Rarity', value=c.rarity)
+    em.add_field(name='Elixir Cost', value=str(c.elixir))
+    em.add_field(name='Type', value=c.type)
+    em.add_field(name='Arena Found', value=str(c.arena))
+    return em
+
 async def format_profile(ctx, p):
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'

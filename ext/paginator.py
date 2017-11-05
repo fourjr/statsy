@@ -75,8 +75,6 @@ class PaginatorSession:
             self.running = True
             self.base = await self.ctx.send(embed=page)
             for reaction in self.reaction_map.keys():
-                if len(self.pages) == 2 and reaction in '⏮⏭':
-                    continue
                 await self.base.add_reaction(reaction)
 
     def react_check(self, reaction, user):
