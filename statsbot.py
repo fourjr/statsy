@@ -219,7 +219,6 @@ class StatsBot(commands.AutoShardedBot):
         except discord.Forbidden:
             await ctx.send(em.title + em.description)
 
-
     @commands.command()
     async def invite(self, ctx):
         """Returns the invite url for the bot."""
@@ -302,6 +301,19 @@ class StatsBot(commands.AutoShardedBot):
         em.set_footer(text=f'Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
+
+    @commands.commands(hidden=True)
+    async def update(self, ctx):
+        '''Update the bot.'''
+        if ctx.author.id not in self.developers:
+            return
+        with open('data/config.json') as f:
+            password = json.load(f).get('password')
+
+        await ctx.send('`Updating self and restarting...`')
+
+        command = 'sh ../stats.sh'
+        p = os.system('echo %s|sudo -S %s' % (password, command))
 
     @commands.command()
     async def help(self, ctx):
