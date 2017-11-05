@@ -239,18 +239,22 @@ class Stats:
 
     @commands.command()
     async def card(self, ctx, *, card):
-        aliases = {"log": "the log", "pump": 'elixir collector', 'skarmy': 'skeleton army'}
+        aliases = {
+            "log": "the log", 
+            "pump": 'elixir collector', 
+            'skarmy': 'skeleton army'
+            }
         card = card.lower()
         if card in aliases:
             card = aliases[card]
-        constants = await self.cr.get_constants()
+        constants = self.bot.constants
         try:
             found_card = constants.cards[card]
         except KeyError:
             return await ctx.send("That's not a card!")
         em = await embeds.format_card(ctx, found_card)
-        with open(f"data/cards/{card.replace(' ', '-')}.png", 'rb') as c:
-            with open(f"data/cards_ingame/{card.replace(' ', '-')}.png", 'rb') as i:
+        with open(f"data/cards/{card.replace(' ', '-').replace('.','')}.png", 'rb') as c:
+            with open(f"data/cards_ingame/{card.replace(' ', '-').replace('.','')}.png", 'rb') as i:
                 await ctx.send(embed=em, files=[discord.File(c, 'card.png'), discord.File(i, 'ingame.png')])
 
     async def format_deck_and_send(self, ctx, profile):
