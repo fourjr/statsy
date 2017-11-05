@@ -145,7 +145,7 @@ async def format_card(ctx, c):
     em.add_field(name='Rarity', value=f"{c.rarity} {emoji(ctx, 'cards')}")
     em.add_field(name='Elixir Cost', value=f"{c.elixir} {emoji(ctx, 'elixirdrop')}")
     em.add_field(name='Type', value=f"{c.type} {emoji(ctx, 'challengedraft')}")
-    em.add_field(name='Arena Found', value=f"{arenas[c.arena]} {emoji(ctx, 'arena'+c.arena)}")
+    em.add_field(name='Arena Found', value=f"{arenas[c.arena]} {emoji(ctx, 'arena'+str(c.arena))}")
     em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     return em
 
