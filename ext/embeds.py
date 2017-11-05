@@ -92,6 +92,9 @@ async def format_chests(ctx, p):
     return em
 
 async def format_members(ctx, c):
+    em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
+    em.set_author(name=f"{c.name} (#{c.tag})")
+    em.set_thumbnail(url=c.badge_url)
     embeds = []
     counter = 0
     for m in c.members:
