@@ -297,6 +297,7 @@ class StatsBot(commands.AutoShardedBot):
         perms.embed_links = True
         perms.attach_files = True
         perms.add_reactions = True
+        perms.manage_messages = True
         em.add_field(name='Invite', value=f'[Click Here]({discord.utils.oauth_url(self.user.id, perms)})')
         em.set_footer(text=f'Bot ID: {self.user.id}')
 
@@ -323,6 +324,10 @@ class StatsBot(commands.AutoShardedBot):
 
         prefix = ctx.prefix
 
+        fmt = ''
+
+        sigs = []
+
         if ctx.message.mentions:
             if ctx.prefix.strip() == ctx.message.mentions[0].mention:
                 prefix = '!'
@@ -331,28 +336,27 @@ class StatsBot(commands.AutoShardedBot):
             if cmd.hidden:
                 continue
 
-            
-            em.add_field(
-                        name=f'{prefix+cmd.signature}', 
-                        value=cmd.short_doc, 
-                        inline=False
-                        )
+            sigs.append(len(cmd.qualified_name))
 
             if hasattr(cmd, 'all_commands'):
                 for c in cmd.all_commands.values():
-                    em.add_field(
-                        name=f'{prefix+c.signature}', 
-                        value=c.short_doc, 
-                        inline=False
-                        )
+                    sigs.append(len('\u200b  └─ ' + c.name)+1)
 
-        em.title = '`Stats - Help`'
-        em.description = 'Here is a list of commands you can use with this bot. ' \
-                         'Join the [support server here](https://discord.gg/maZqxnm) ' \
-                         'if you are having any issues.'
+        maxlen = max(sigs)
 
-        em.set_thumbnail(url=self.user.avatar_url)
-        em.set_footer(text=f"Do `{prefix}help command` for more info on a specific command.")
+        for cmd in sorted(self.commands, key=lambda x: x.cog_name):
+            if cmd.hidden:
+                continue
+
+            fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
+
+            if hasattr(cmd, 'all_commands'):
+                for c in cmd.all_commands.values():
+                    branch = '\u200b  └─ ' + c.name
+                    fmt += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
+
+        em.add_field(name='Command Help', value=fmt)
+        em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
         await ctx.send(embed=em)
 

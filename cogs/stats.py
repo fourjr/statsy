@@ -178,7 +178,7 @@ class Stats:
 
     @members.command()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Finds the most valuable members of the clan currently.'''
+        '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
@@ -194,7 +194,7 @@ class Stats:
 
     @members.command()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Finds the least valuable members of the clan currently.'''
+        '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
@@ -239,6 +239,7 @@ class Stats:
 
     @commands.command()
     async def card(self, ctx, *, card):
+        '''Get information about a Clash Royale card.'''
         aliases = {
             "log": "the log", 
             "pump": 'elixir collector', 
