@@ -327,6 +327,8 @@ class StatsBot(commands.AutoShardedBot):
 
         fmt = ''
 
+        fmt2 = ''
+
         sigs = []
 
         if ctx.message.mentions:
@@ -345,18 +347,30 @@ class StatsBot(commands.AutoShardedBot):
 
         maxlen = max(sigs)
 
+
         for cmd in sorted(self.commands, key=lambda x: x.cog_name):
             if cmd.hidden:
                 continue
 
-            fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
+            if cmd.cog_name == 'StatsBot':
+                fmt2 += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
 
-            if hasattr(cmd, 'all_commands'):
-                for c in cmd.all_commands.values():
-                    branch = '\u200b  └─ ' + c.name
-                    fmt += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
+                if hasattr(cmd, 'all_commands'):
+                    for c in cmd.all_commands.values():
+                        branch = '\u200b  └─ ' + c.name
+                        fmt2 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
+            else:
+                fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
 
-        em.add_field(name='Command Help', value=fmt)
+                if hasattr(cmd, 'all_commands'):
+                    for c in cmd.all_commands.values():
+                        branch = '\u200b  └─ ' + c.name
+                        fmt += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
+
+
+        em.set_author(name='Stats - Command Help', icon_url=self.user.avatar_url)
+        em.add_field(name='Clash Royale', value=fmt)
+        em.add_field(name='Bot Related', value=fmt2)
         em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
         await ctx.send(embed=em)
