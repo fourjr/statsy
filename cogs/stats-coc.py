@@ -1,4 +1,4 @@
-import discord
+import discord, aiohttp
 from discord.ext import commands
 from ext import embeds_coc
 import json
@@ -30,7 +30,7 @@ class COC_Stats:
     def __init__(self, bot):
         self.bot = bot
         with open('data/config.json') as config:
-            self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {config['coc-token']}"})
+            self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {json.load(config)['coc-token']}"})
         self.conv = TagCheck()
 
 
@@ -72,7 +72,7 @@ class COC_Stats:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
-    async def profile(self, ctx, *, tag_or_user: TagCheck=None):
+    async def cocprofile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the clash royale profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -80,6 +80,7 @@ class COC_Stats:
             try:
                 async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
                     profile = await p.json()
+                    print(profile)
             except Exception as e:
                 return await ctx.send(f'`{e}`')
             else:
@@ -161,7 +162,7 @@ class COC_Stats:
 
             
     @commands.command()
-    async def save(self, ctx, *, tag):
+    async def cocsave(self, ctx, *, tag):
         '''Saves a Clash Royale tag to your discord profile.
 
         Ability to save multiple tags coming soon.

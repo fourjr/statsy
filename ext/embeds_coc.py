@@ -74,7 +74,7 @@ async def format_profile(ctx, p):
         av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     em.set_author(name=p['name'], icon_url=av)
-    em.set_thumbnail(url=p['league']['medium'])
+    em.set_thumbnail(url=p['league']['iconUrls']['medium'])
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
 
