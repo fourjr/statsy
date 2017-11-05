@@ -142,10 +142,10 @@ async def format_card(ctx, c):
     em = discord.Embed(description=c.description, color=random_color())
     em.set_thumbnail(url='attachment://ingame.png')
     em.set_author(name=f"{c.name} Info", icon_url='attachment://card.png')
-    em.add_field(name='Rarity', value=c.rarity)
-    em.add_field(name='Elixir Cost', value=str(c.elixir))
-    em.add_field(name='Type', value=c.type)
-    em.add_field(name='Arena Found', value=arenas[c.arena])
+    em.add_field(name='Rarity', value=f"{c.rarity} {emoji(ctx, 'cards')}")
+    em.add_field(name='Elixir Cost', value=f"{c.elixir} {emoji(ctx, 'elixirdrop')}")
+    em.add_field(name='Type', value=f"{c.type} {emoji(ctx, 'challengedraft')}")
+    em.add_field(name='Arena Found', value=f"{arenas[c.arena]} {emoji(ctx, 'arena'+c.arena)}")
     em.set_footer(text='StatsOverflow - Powered by cr-api.com')
     return em
 
