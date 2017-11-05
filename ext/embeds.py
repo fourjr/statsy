@@ -232,7 +232,7 @@ async def format_clan(ctx, c):
     embed2.description = 'Top Players/Donators/Contributors for this clan.'
 
     pushers = []
-    if len(clan.members) >= 3:
+    if len(c.members) >= 3:
         for i in range(3):
             pushers.append(f"**{c.members[i].name}**\n{c.members[i].trophies} {emoji(ctx, 'trophy')}\n#{c.members[i].tag}")
 
@@ -241,12 +241,12 @@ async def format_clan(ctx, c):
 
     donators = []
 
-    if len(clan.members) >= 3:
+    if len(c.members) >= 3:
         for i in range(3):
             donators.append(f"**{_donators[i].name}**\n{_donators[i].crowns} {emoji(ctx, 'cards')}\n#{_donators[i].tag}")
 
     ccc = []
-    if len(clan.members) >= 3:
+    if len(c.members) >= 3:
         for i in range(3):
             ccc.append(f"**{contributors[i].name}**\n{contributors[i].crowns} {emoji(ctx, 'crownred')}\n#{contributors[i].tag}")
 
