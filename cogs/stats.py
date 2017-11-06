@@ -61,7 +61,7 @@ class Stats:
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag()
+                tag = ctx.get_tag('clashroyale')
             except Exception as e:
                 print(e)
                 await ctx.send('You don\'t have a saved tag.')
@@ -72,7 +72,7 @@ class Stats:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag(tag_or_user.id)
+                tag = ctx.get_tag('clashroyale', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise e
