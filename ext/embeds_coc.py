@@ -8,7 +8,7 @@ def emoji(ctx, name):
     name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
     if name == 'chestmagic':
         name = 'chestmagical'
-    e = discord.utils.get(ctx.bot.cremojis, name=name)
+    e = discord.utils.get(ctx.bot.game_emojis, name=name)
     return e
 
 def cdir(obj):
@@ -76,7 +76,10 @@ async def format_profile(ctx, p):
         av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     em.set_author(name=p['name'], icon_url=av)
-    em.set_thumbnail(url=p['league']['iconUrls']['medium'])
+    try:
+        em.set_thumbnail(url=p['league']['iconUrls']['medium'])
+    except KeyError:
+        em.set_thumbnail(url="https://i.imgur.com/JsVQPza.png")
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
     try:
@@ -89,9 +92,11 @@ async def format_profile(ctx, p):
         ('Trophies', trophies, True),
         ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
         ('TH Level', f"{p['townHallLevel']}", True),
+        ('BH Level', f"{p['builderHallLevel']}", True),
         ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
-        ('Clan Role', f"{p['role']} {emoji(ctx, 'clan')}" if clan else None, True)
+        ('Clan Role', f"{p['role']} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('War Stars', f"{p['warStars']}", True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
