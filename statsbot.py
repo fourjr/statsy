@@ -397,8 +397,8 @@ class StatsBot(commands.AutoShardedBot):
         '''
         pass
 
-    @save.command(aliases=['cr'])
-    async def clashroyale(self, ctx, *, tag):
+    @save.command()
+    async def cr(self, ctx, *, tag):
         '''Clash Royale'''
         tag = tag.strip('#').upper().replace('O','0')
 
@@ -412,12 +412,9 @@ class StatsBot(commands.AutoShardedBot):
 
         await ctx.send('Successfuly saved tag.')
 
-    @save.command(aliases=['coc'])
-    async def clashofclans(self, ctx, *, tag):
-        '''Saves a Clash of Clans tag to your discord.
-
-        Ability to save multiple tags coming soon.
-        '''
+    @save.command()
+    async def coc(self, ctx, *, tag):
+        '''Clash of Clans'''
         ctx.save_tag(tag.replace("#", ""), 'clashofclans')
         await ctx.send('Successfuly saved tag.')
 
