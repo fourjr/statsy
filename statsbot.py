@@ -403,8 +403,8 @@ class StatsBot(commands.AutoShardedBot):
         ctx.save_tag(tag.replace("#", ""), 'clashofclans')
         await ctx.send('Successfuly saved tag.')
 
-    @save.command()
-    async def cr(self, ctx, *, tag):
+    @save.command(name='cr')
+    async def _cr(self, ctx, *, tag):
         '''Clash Royale'''
         tag = tag.strip('#').upper().replace('O','0')
 
