@@ -220,7 +220,7 @@ class Stats:
         if not tag:
             raise InvalidTag('Invalid tag') 
 
-        ctx.save_tag(tag)
+        ctx.save_tag(tag, 'clashroyale')
 
         await ctx.send('Successfuly saved tag.')
 
