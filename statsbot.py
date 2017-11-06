@@ -389,6 +389,35 @@ class StatsBot(commands.AutoShardedBot):
 
         await ctx.send(embed=em)
 
+    @commands.group(invoke_without_command=False)
+    async def save(self, ctx):
+        '''Saves a gamertag to your discord profile.
+
+        Ability to save multiple tags coming soon.
+        '''
+        pass
+
+    @save.command()
+    async def cr(self, ctx, *, tag):
+        '''Clash Royale'''
+        tag = tag.strip('#').upper().replace('O','0')
+
+        if any(i not in 'PYLQGRJCUV0289' for i in tag):
+            tag = False
+
+        if not tag:
+            raise InvalidTag('Invalid tag') 
+
+        ctx.save_tag(tag, 'clashroyale')
+
+        await ctx.send('Successfuly saved tag.')
+
+    @save.command()
+    async def coc(self, ctx, *, tag):
+        '''Clash of Clans'''
+        ctx.save_tag(tag.replace("#", ""), 'clashofclans')
+        await ctx.send('Successfuly saved tag.')
+
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""

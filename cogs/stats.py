@@ -61,7 +61,7 @@ class Stats:
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag()
+                tag = ctx.get_tag('clashroyale')
             except Exception as e:
                 print(e)
                 await ctx.send('You don\'t have a saved tag.')
@@ -72,7 +72,7 @@ class Stats:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag(tag_or_user.id)
+                tag = ctx.get_tag('clashroyale', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise e
@@ -84,7 +84,7 @@ class Stats:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
-    async def profile(self, ctx, *, tag_or_user: TagCheck=None):
+    async def crprofile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the clash royale profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -98,7 +98,7 @@ class Stats:
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, aliases=['season'])
-    async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
+    async def crseasons(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the season results a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -123,7 +123,7 @@ class Stats:
 
 
     @commands.group(invoke_without_command=True)
-    async def chests(self, ctx, *, tag_or_user: TagCheck=None):
+    async def crchests(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the next chests of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -137,7 +137,7 @@ class Stats:
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
-    async def clan(self, ctx, *, tag_or_user: TagCheck=None):
+    async def crclan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
@@ -155,7 +155,7 @@ class Stats:
             await session.run()
 
     @commands.group(invoke_without_command=True)
-    async def members(self, ctx, *, tag_or_user: TagCheck=None):
+    async def crmembers(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
@@ -176,7 +176,7 @@ class Stats:
             else:
                 await ctx.send(embed=ems[0])
 
-    @members.command()
+    @crmembers.command()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -192,7 +192,7 @@ class Stats:
                     em = await embeds.format_most_valuable(ctx, clan)
                     await ctx.send(embed=em)
 
-    @members.command()
+    @crmembers.command()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -208,24 +208,8 @@ class Stats:
                     em = await embeds.format_least_valuable(ctx, clan)
                     await ctx.send(embed=em)
 
-            
-    @commands.command()
-    async def save(self, ctx, *, tag):
-        '''Saves a Clash Royale tag to your discord profile.
-
-        Ability to save multiple tags coming soon.
-        '''
-        tag = self.conv.resolve_tag(tag)
-
-        if not tag:
-            raise InvalidTag('Invalid tag') 
-
-        ctx.save_tag(tag)
-
-        await ctx.send('Successfuly saved tag.')
-
     @commands.group(invoke_without_command=True)
-    async def deck(self, ctx, *, tag_or_user: TagCheck=None):
+    async def crdeck(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the current deck of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -238,7 +222,7 @@ class Stats:
                 await self.format_deck_and_send(ctx, profile)
 
     @commands.command()
-    async def card(self, ctx, *, card):
+    async def crcard(self, ctx, *, card):
         '''Get information about a Clash Royale card.'''
         aliases = {
             "log": "the log", 
