@@ -75,7 +75,7 @@ class StatsBot(commands.AutoShardedBot):
         self.messages_sent = 0
         self.load_extensions()
 
-    def get_game_emojis(self):
+    def get_cremojis(self):
         emojis = []
         for id in self.emoji_servers:
             g = self.get_guild(id)
@@ -169,7 +169,7 @@ class StatsBot(commands.AutoShardedBot):
         print(f'Guilds: {len(self.guilds)}')
         print(f'Users: {len(self.users)}')
         print('----------------------------')
-        self.game_emojis = self.get_game_emojis()
+        self.cremojis = self.get_cremojis()
 
     async def on_shard_ready(self, shard_id):
         '''
@@ -388,35 +388,6 @@ class StatsBot(commands.AutoShardedBot):
         em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
         await ctx.send(embed=em)
-
-    @commands.group(invoke_without_command=True)
-    async def save(self, ctx):
-        '''Saves a gamertag to your discord profile.
-
-        Ability to save multiple tags coming soon.
-        '''
-        await ctx.send(embed=discord.Embed(title=f'``Usage: {ctx.prefix}save <game> <tag>``', description="Saves a gamertag to your discord profile.\n\nAbility to save multiple tags coming soon.", color=embeds.random_color()))
-
-    @save.command()
-    async def coc(self, ctx, *, tag):
-        '''Clash of Clans'''
-        ctx.save_tag(tag.replace("#", ""), 'clashofclans')
-        await ctx.send('Successfuly saved tag.')
-
-    @save.command()
-    async def cr(self, ctx, *, tag):
-        '''Clash Royale'''
-        tag = tag.strip('#').upper().replace('O','0')
-
-        if any(i not in 'PYLQGRJCUV0289' for i in tag):
-            tag = False
-
-        if not tag:
-            raise InvalidTag('Invalid tag') 
-
-        ctx.save_tag(tag, 'clashroyale')
-
-        await ctx.send('Successfuly saved tag.')
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
