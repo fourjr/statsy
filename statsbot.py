@@ -332,6 +332,8 @@ class StatsBot(commands.AutoShardedBot):
 
         fmt2 = ''
 
+        fmt3 = ''
+
         sigs = []
 
         if ctx.message.mentions:
@@ -362,18 +364,26 @@ class StatsBot(commands.AutoShardedBot):
                     for c in cmd.all_commands.values():
                         branch = '\u200b  └─ ' + c.name
                         fmt2 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
-            else:
+            elif cmd.cog_name == 'Stats':
                 fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
 
                 if hasattr(cmd, 'all_commands'):
                     for c in cmd.all_commands.values():
                         branch = '\u200b  └─ ' + c.name
                         fmt += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
+            else:
+                fmt3 += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
+
+                if hasattr(cmd, 'all_commands'):
+                    for c in cmd.all_commands.values():
+                        branch = '\u200b  └─ ' + c.name
+                        fmt3 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
 
 
         em.set_author(name='Stats - Command Help', icon_url=self.user.avatar_url)
         em.add_field(name='Clash Royale', value=fmt)
         em.add_field(name='Bot Related', value=fmt2)
+        em.add_field(name='Clash of Clans', value=fmt3)
         em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
         await ctx.send(embed=em)
