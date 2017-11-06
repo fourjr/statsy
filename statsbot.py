@@ -414,7 +414,7 @@ class StatsBot(commands.AutoShardedBot):
 
     @save.command(aliases=['coc'])
     async def clashofclans(self, ctx, *, tag):
-        '''Saves a Clas of Clans tag to your discord.
+        '''Saves a Clash of Clans tag to your discord.
 
         Ability to save multiple tags coming soon.
         '''
