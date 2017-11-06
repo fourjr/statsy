@@ -398,6 +398,12 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.send(embed=discord.Embed(title=f'``Usage: {ctx.prefix}save <game> <tag>``', description="Saves a gamertag to your discord profile.\n\nAbility to save multiple tags coming soon.", color=embeds.random_color()))
 
     @save.command()
+    async def coc(self, ctx, *, tag):
+        '''Clash of Clans'''
+        ctx.save_tag(tag.replace("#", ""), 'clashofclans')
+        await ctx.send('Successfuly saved tag.')
+
+    @save.command()
     async def cr(self, ctx, *, tag):
         '''Clash Royale'''
         tag = tag.strip('#').upper().replace('O','0')
@@ -410,12 +416,6 @@ class StatsBot(commands.AutoShardedBot):
 
         ctx.save_tag(tag, 'clashroyale')
 
-        await ctx.send('Successfuly saved tag.')
-
-    @save.command()
-    async def coc(self, ctx, *, tag):
-        '''Clash of Clans'''
-        ctx.save_tag(tag.replace("#", ""), 'clashofclans')
         await ctx.send('Successfuly saved tag.')
 
     @commands.command(pass_context=True, hidden=True, name='eval')
