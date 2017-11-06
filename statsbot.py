@@ -154,7 +154,7 @@ class StatsBot(commands.AutoShardedBot):
         # had to put this here due to an issue with the 
         # latencies property
         self.constants = await self.cr.get_constants()
-        await self.change_presence(game=discord.Game(name='!help'))
+        # await self.change_presence(game=discord.Game(name='!help'))
 
     async def on_ready(self):
         '''
