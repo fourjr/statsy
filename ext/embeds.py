@@ -8,7 +8,7 @@ def emoji(ctx, name):
     name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
     if name == 'chestmagic':
         name = 'chestmagical'
-    e = discord.utils.get(ctx.bot.game_emojis, name=name)
+    e = discord.utils.get(ctx.bot.cremojis, name=name)
     return e
 
 def cdir(obj):
