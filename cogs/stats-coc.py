@@ -167,7 +167,7 @@ class COC_Stats:
 
         Ability to save multiple tags coming soon.
         '''
-        ctx.save_tag_coc(tag)
+        ctx.save_tag_coc(tag.replace("#", ""))
         await ctx.send('Successfuly saved tag.')
 
 

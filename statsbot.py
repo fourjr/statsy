@@ -304,7 +304,7 @@ class StatsBot(commands.AutoShardedBot):
         perms.add_reactions = True
         perms.manage_messages = True
         em.add_field(name='Invite', value=f'[Click Here]({discord.utils.oauth_url(self.user.id, perms)})')
-        em.set_footer(text=f'Bot ID: {self.user.id}')
+        em.set_footer(text=f'Statsy | Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
 
@@ -332,6 +332,8 @@ class StatsBot(commands.AutoShardedBot):
         fmt = ''
 
         fmt2 = ''
+
+        fmt3 = ''
 
         sigs = []
 
@@ -363,18 +365,26 @@ class StatsBot(commands.AutoShardedBot):
                     for c in cmd.all_commands.values():
                         branch = '\u200b  └─ ' + c.name
                         fmt2 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
-            else:
+            elif cmd.cog_name == 'Stats':
                 fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
 
                 if hasattr(cmd, 'all_commands'):
                     for c in cmd.all_commands.values():
                         branch = '\u200b  └─ ' + c.name
                         fmt += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
+            else:
+                fmt3 += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
+
+                if hasattr(cmd, 'all_commands'):
+                    for c in cmd.all_commands.values():
+                        branch = '\u200b  └─ ' + c.name
+                        fmt3 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
 
 
         em.set_author(name='Stats - Command Help', icon_url=self.user.avatar_url)
         em.add_field(name='Clash Royale', value=fmt)
         em.add_field(name='Bot Related', value=fmt2)
+        em.add_field(name='Clash of Clans', value=fmt3)
         em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
         await ctx.send(embed=em)

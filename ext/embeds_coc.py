@@ -26,7 +26,7 @@ async def format_least_valuable(ctx, clan):
     em = discord.Embed(color=random_color(), description='Here are the least valuable members of the clan currently.')
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
-    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by the COC API')
 
     for m in reversed(to_kick):
         em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
@@ -42,7 +42,7 @@ async def format_most_valuable(ctx, clan):
     em = discord.Embed(color=random_color(), description='Here are the most valuable members of the clan currently.')
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
-    em.set_footer(text='StatsOverflow - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by the COC API')
 
     for m in reversed(best):
         em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
@@ -79,15 +79,19 @@ async def format_profile(ctx, p):
     em.set_thumbnail(url=p['league']['iconUrls']['medium'])
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
+    try:
+        clan = p['clan']
+    except KeyError:
+        clan = None
 
 
     embed_fields = [
         ('Trophies', trophies, True),
         ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
-        ('TH Level', f"{p['townHallLevel']}", True)
-        # ('Clan Name', f"{p.clan_name} {emoji(ctx, 'clan')}" if p.clan_name else None, True),
-        # ('Clan Tag', f"#{p.clan_tag} {emoji(ctx, 'clan')}" if p.clan_tag else None, True),
-        # ('Clan Role', f"{p.clan_role} {emoji(ctx, 'clan')}" if p.clan_role else None, True),
+        ('TH Level', f"{p['townHallLevel']}", True),
+        ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('Clan Role', f"{p['role']} {emoji(ctx, 'clan')}" if clan else None, True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
@@ -102,14 +106,14 @@ async def format_profile(ctx, p):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value='No Clan')
 
-    em.set_footer(text='Statsy')
+    em.set_footer(text='Statsy - Powered by the COC API')
     
     return em
 
 async def format_clan(ctx, c):
     embed = discord.Embed(description = c.description, color=random_color())
     embed.set_author(name=f"{c.name} (#{c.tag})")
-    embed.set_footer(text='StatsOverflow - Powered by cr-api.com')
+    embed.set_footer(text='Statsy - Powered by the COC API')
     embed2 = copy.deepcopy(embed)
     embed.set_thumbnail(url=c.badge_url)
     embed2.description = 'Top Players/Donators/Contributors for this clan.'

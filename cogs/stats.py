@@ -117,7 +117,7 @@ class Stats:
                     )
                 await session.run()
             else:
-                await ctx.send(f"**{profile.name}**a doesn't have any season results.")
+                await ctx.send(f"**{profile.name}** doesn't have any season results.")
 
 
 
@@ -245,7 +245,8 @@ class Stats:
             "pump": 'elixir collector', 
             'skarmy': 'skeleton army',
             'pekka': 'p.e.k.k.a',
-            'mini pekka': 'mini p.e.k.k.a'
+            'mini pekka': 'mini p.e.k.k.a',
+            'xbow': 'x-bow'
             }
         card = card.lower()
         if card in aliases:
