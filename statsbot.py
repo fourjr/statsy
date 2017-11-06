@@ -303,7 +303,7 @@ class StatsBot(commands.AutoShardedBot):
         perms.add_reactions = True
         perms.manage_messages = True
         em.add_field(name='Invite', value=f'[Click Here]({discord.utils.oauth_url(self.user.id, perms)})')
-        em.set_footer(text=f'Bot ID: {self.user.id}')
+        em.set_footer(text=f'Statsy | Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
 
