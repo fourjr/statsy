@@ -30,7 +30,10 @@ class COC_Stats:
     def __init__(self, bot):
         self.bot = bot
         with open('data/config.json') as config:
-            self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {json.load(config)['coc-token']}"})
+            self.session = aiohttp.ClientSession(
+                headers={
+                'Authorization': f"Bearer {json.load(config)['coc-token']}"
+                })
         self.conv = TagCheck()
 
 
@@ -73,7 +76,7 @@ class COC_Stats:
 
     @commands.group(invoke_without_command=True)
     async def cocprofile(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the clash royale profile of a player.'''
+        '''Gets the Clash of Clans profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -163,7 +166,7 @@ class COC_Stats:
             
     @commands.command()
     async def cocsave(self, ctx, *, tag):
-        '''Saves a Clash Royale tag to your discord profile.
+        '''Saves a Clas of Clans tag to your discord.
 
         Ability to save multiple tags coming soon.
         '''

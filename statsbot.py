@@ -384,7 +384,7 @@ class StatsBot(commands.AutoShardedBot):
         em.set_author(name='Stats - Command Help', icon_url=self.user.avatar_url)
         em.add_field(name='Clash Royale', value=fmt)
         em.add_field(name='Bot Related', value=fmt2)
-        em.add_field(name='Clash of Clans', value=fmt3)
+        em.add_field(name='Clash of Clans (In Development.)', value=fmt3)
         em.set_footer(text='StatsOverflow - Powered by cr-api.com')
 
         await ctx.send(embed=em)
