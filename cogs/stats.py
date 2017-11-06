@@ -61,7 +61,7 @@ class Stats:
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag()
+                tag = ctx.get_tag('clashroyale')
             except Exception as e:
                 print(e)
                 await ctx.send('You don\'t have a saved tag.')
@@ -72,7 +72,7 @@ class Stats:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag(tag_or_user.id)
+                tag = ctx.get_tag('clashroyale', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise e
@@ -207,22 +207,6 @@ class Stats:
                 else:
                     em = await embeds.format_least_valuable(ctx, clan)
                     await ctx.send(embed=em)
-
-            
-    @commands.command()
-    async def save(self, ctx, *, tag):
-        '''Saves a Clash Royale tag to your discord profile.
-
-        Ability to save multiple tags coming soon.
-        '''
-        tag = self.conv.resolve_tag(tag)
-
-        if not tag:
-            raise InvalidTag('Invalid tag') 
-
-        ctx.save_tag(tag)
-
-        await ctx.send('Successfuly saved tag.')
 
     @commands.group(invoke_without_command=True)
     async def deck(self, ctx, *, tag_or_user: TagCheck=None):
