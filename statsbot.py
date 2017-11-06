@@ -389,7 +389,7 @@ class StatsBot(commands.AutoShardedBot):
 
         await ctx.send(embed=em)
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=False)
     async def save(self, ctx):
         '''Saves a gamertag to your discord profile.
 
