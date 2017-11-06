@@ -176,7 +176,7 @@ class Stats:
             else:
                 await ctx.send(embed=ems[0])
 
-    @crmembers.command()
+    @members.command()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -192,7 +192,7 @@ class Stats:
                     em = await embeds.format_most_valuable(ctx, clan)
                     await ctx.send(embed=em)
 
-    @crmembers.command()
+    @members.command()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
