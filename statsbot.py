@@ -402,7 +402,7 @@ class StatsBot(commands.AutoShardedBot):
         '''Clash Royale'''
         tag = tag.strip('#').upper().replace('O','0')
 
-        if any(i not in self.check for i in tag):
+        if any(i not in 'PYLQGRJCUV0289' for i in tag):
             tag = False
 
         if not tag:
@@ -412,7 +412,7 @@ class StatsBot(commands.AutoShardedBot):
 
         await ctx.send('Successfuly saved tag.')
 
-    @commands.command(aliases=['coc'])
+    @save.command(aliases=['coc'])
     async def clashofclans(self, ctx, *, tag):
         '''Saves a Clas of Clans tag to your discord.
 
