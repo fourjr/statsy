@@ -277,7 +277,8 @@ class StatsBot(commands.AutoShardedBot):
         if days:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-        saved_tags = len(ctx.load_json())
+        data = ctx.load_json()
+        saved_tags = len(data['clashroyale'])+len(data['clashofclans'])
         g_authors = 'verixx, fourjr, kwugfighter, FloatCobra, XAOS1502'
         em.description = 'StatsBot by kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
 

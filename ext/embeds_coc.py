@@ -68,6 +68,8 @@ async def format_members(ctx, c):
 
 async def format_profile(ctx, p):
 
+    print(p)
+
     try:
         av = p['clan']['badgeUrls']['small']
     except KeyError:
