@@ -390,7 +390,7 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=False)
-    async def save(self, ctx, type, *, tag):
+    async def save(self, ctx):
         '''Saves a gamertag to your discord profile.
 
         Ability to save multiple tags coming soon.
@@ -418,7 +418,7 @@ class StatsBot(commands.AutoShardedBot):
 
         Ability to save multiple tags coming soon.
         '''
-        ctx.save_tag_coc(tag.replace("#", ""), 'clashofclans')
+        ctx.save_tag(tag.replace("#", ""), 'clashofclans')
         await ctx.send('Successfuly saved tag.')
 
     @commands.command(pass_context=True, hidden=True, name='eval')
