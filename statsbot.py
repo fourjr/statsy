@@ -389,13 +389,13 @@ class StatsBot(commands.AutoShardedBot):
 
         await ctx.send(embed=em)
 
-    @commands.group(invoke_without_command=False)
+    @commands.group(invoke_without_command=True)
     async def save(self, ctx):
         '''Saves a gamertag to your discord profile.
 
         Ability to save multiple tags coming soon.
         '''
-        pass
+        await ctx.send(embed=discord.Embed(title=f'``Usage: {ctx.prefix}save <game> <tag>``', description="Saves a gamertag to your discord profile.\n\nAbility to save multiple tags coming soon.", color=embeds.random_color()))
 
     @save.command()
     async def cr(self, ctx, *, tag):
