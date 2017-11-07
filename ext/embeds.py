@@ -252,7 +252,7 @@ async def format_clan(ctx, c):
         'Type': c.type_name + ' 📩',
         'Score': str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy')),
         'Donations/Week': str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards')),
-        'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'crownblue')),
+        'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'chestclan')),
         'Location': c.region + ' 🌎',
         'Members': str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}",
         'Required Trophies': f"{c.required_trophies} {emoji(ctx, 'trophy')}",
