@@ -236,7 +236,9 @@ class StatsBot(commands.AutoShardedBot):
                 data = f.read()
 
             async with self.session.post(url=url, data=data) as resp:
-                key = (await resp.json())['key']
+                k = await resp.json()
+
+            key = k['key']
 
             em.description = f'http://hastebin.com/{key}.json'
             await channel.send(embed=em)
