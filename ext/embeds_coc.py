@@ -106,6 +106,17 @@ async def format_profile(ctx, p):
         ("Donations", f"{p['donations']}/{p['donationsReceived']} Received {emoji(ctx, 'troops')}", True)
         ]
 
+    try:
+        embed_fields.append(('Current Season', f"{p['legendStatistics']['currentSeason']} {emoji(ctx, 'trophy')}", True))
+        embed_fields.append(('Best Season', f"{p['legendStatistics']['bestSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['bestSeason']['rank']} {emoji(ctx, 'rank')}", True))
+    except KeyError:
+        pass
+    try:
+        embed_fields.append(('Last BH Season', f"{p['legendStatistics']['previousVersusSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['previousVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
+        embed_fields.append(('Best BH Season', f"{p['legendStatistics']['bestVersusSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['bestVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
+    except:
+        pass
+
     for n, v, i in embed_fields:
         if v:
             em.add_field(name=n, value=v, inline=i)
