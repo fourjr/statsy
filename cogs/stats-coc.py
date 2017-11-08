@@ -83,7 +83,6 @@ class COC_Stats:
             try:
                 async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
                     profile = await p.json()
-                    print(profile)
             except Exception as e:
                 return await ctx.send(f'`{e}`')
             else:
