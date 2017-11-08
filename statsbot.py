@@ -73,8 +73,10 @@ class StatsBot(commands.AutoShardedBot):
         self.process = psutil.Process()
         self.remove_command('help')
         self.messages_sent = 0
-        self.load_extensions()
         self.maintenance_mode = False
+        self.loop.create_task(self.backup_task())
+        self.load_extensions()
+        
 
     def get_cremojis(self):
         emojis = []
@@ -215,6 +217,31 @@ class StatsBot(commands.AutoShardedBot):
         if message.author.bot:
             return 
         await self.process_commands(message)
+
+    async def backup_task(self):
+        '''Backup tags.'''
+        await self.wait_until_ready()
+        channel = self.get_channel(373646610560712704)
+        url = 'http://hastebin.com/documents'
+
+        em = discord.Embed(color=0x00FFFF)
+        em.set_author(
+            name='Hourly Tag Backup',
+            icon_url=self.user.avatar_url
+            )
+
+        while not self.is_closed():
+            with open('data/stats.json') as f:
+                data = f.read()
+
+            async with self.session.post(url=url, data=data) as resp:
+                key = (await resp.json())['key']
+
+            em.description = f'http://hastebin.com/{key}.json'
+            await channel.send(embed=em)
+
+            await asyncio.sleep(3600)
+
 
     @commands.command()
     async def ping(self, ctx):
