@@ -97,7 +97,7 @@ async def format_profile(ctx, p):
         ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Role', f"{p['role']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('War Stars', f"{p['warStars']}", True),
-        ('Succesful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}')
+        ('Succesful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
