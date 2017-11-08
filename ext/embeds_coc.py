@@ -147,6 +147,7 @@ async def format_profile(ctx, p):
         em.add_field(name="Spells", value='\n'.join(spells))
     except:
         em.add_field(name="Spells", value='None')
+    embeds.append(em)
     return embeds
 
 async def format_clan(ctx, c):

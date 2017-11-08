@@ -89,7 +89,8 @@ class COC_Stats:
             ems = await embeds_coc.format_profile(ctx, profile)
             session = PaginatorSession(
                 ctx=ctx,
-                pages=ems
+                pages=ems,
+                footer_text='Statsy | Powered by the COC API'
                 )
             await session.run()
 
