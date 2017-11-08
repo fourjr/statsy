@@ -94,8 +94,8 @@ async def format_profile(ctx, p):
     embed_fields = [
         ('Trophies', trophies, True),
         ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
-        ('TH Level', f"{p['townHallLevel']} {emoji(ctx, 'townhall')}", True),
-        ('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall')}", True),
+        ('TH Level', f"{p['townHallLevel']} {emoji(ctx, 'townhall'+str(p['townHallLevel']))}", True),
+        ('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall'+str(p['builderHallLevel']))}", True),
         ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Role', f"{p['role'].title()} {emoji(ctx, 'clan')}" if clan else None, True),
