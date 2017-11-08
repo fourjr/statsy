@@ -28,14 +28,22 @@ async def format_least_valuable(ctx, clan):
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
 
-    em = discord.Embed(color=random_color(), description='Here are the least valuable members of the clan currently.')
+    em = discord.Embed(
+        color=random_color(), 
+        description='Here are the least valuable members of the clan currently.'
+        )
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
 
     for m in reversed(to_kick):
-        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
-
+        em.add_field(
+            name=f'{m.name} ({m.role_name})', 
+            value=f"#{m.tag}\n{m.trophies} "
+                  f"{emoji(ctx, 'trophy')}\n{m.crowns} "
+                  f"{emoji(ctx, 'crownblue')}\n{m.donations} "
+                  f"{emoji(ctx, 'cards')}"
+                  )
     return em
 
 async def format_most_valuable(ctx, clan):
@@ -43,13 +51,22 @@ async def format_most_valuable(ctx, clan):
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
-    em = discord.Embed(color=random_color(), description='Here are the most valuable members of the clan currently.')
+    em = discord.Embed(
+        color=random_color(), 
+        description='Here are the most valuable members of the clan currently.'
+        )
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
 
     for m in reversed(best):
-        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+        em.add_field(
+            name=f'{m.name} ({m.role_name})', 
+            value=f"#{m.tag}\n{m.trophies} "
+            f"{emoji(ctx, 'trophy')}\n{m.crowns} "
+            f"{emoji(ctx, 'crownblue')}\n{m.donations} "
+            f"{emoji(ctx, 'cards')}"
+            )
 
     return em
 
@@ -101,7 +118,13 @@ async def format_members(ctx, c):
             em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge_url)
-        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+        em.add_field(
+            name=f'{m.name} ({m.role_name})', 
+            value=f"#{m.tag}\n{m.trophies} "
+                  f"{emoji(ctx, 'trophy')}\n{m.crowns} "
+                  f"{emoji(ctx, 'crownblue')}\n{m.donations} "
+                  f"{emoji(ctx, 'cards')}"
+                  )
         counter += 1
     embeds.append(em)
     return embeds
@@ -222,59 +245,71 @@ async def format_profile(ctx, p):
     return em
 
 async def format_clan(ctx, c):
-    embed = discord.Embed(description = c.description, color=random_color())
-    embed.set_author(name=f"{c.name} (#{c.tag})")
+    page1 = discord.Embed(description = c.description, color=random_color())
+    page1.set_author(name=f"{c.name} (#{c.tag})")
     embed.set_footer(text='Statsy - Powered by cr-api.com')
-    embed2 = copy.deepcopy(embed)
-    embed.set_thumbnail(url=c.badge_url)
-    embed2.description = 'Top Players/Donators/Contributors for this clan.'
-
-    pushers = []
-    if len(c.members) >= 3:
-        for i in range(3):
-            pushers.append(f"**{c.members[i].name}**\n{c.members[i].trophies} {emoji(ctx, 'trophy')}\n#{c.members[i].tag}")
-
+    page2 = copy.deepcopy(page1)
+    page2.description = 'Top Players/Donators/Contributors for this clan.'
+    page1.set_thumbnail(url=c.badge_url)
+    
     contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
     _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
 
+    pushers = []
     donators = []
-
-    if len(c.members) >= 3:
-        for i in range(3):
-            donators.append(f"**{_donators[i].name}**\n{_donators[i].donations} {emoji(ctx, 'cards')}\n#{_donators[i].tag}")
-
     ccc = []
+
     if len(c.members) >= 3:
         for i in range(3):
-            ccc.append(f"**{contributors[i].name}**\n{contributors[i].crowns} {emoji(ctx, 'crownred')}\n#{contributors[i].tag}")
+            pushers.append(
+                f"**{c.members[i].name}**" 
+                f"\n{c.members[i].trophies} " 
+                f"{emoji(ctx, 'trophy')}\n" 
+                f"#{c.members[i].tag}"
+                )
 
-    em_dict_1 = OrderedDict({
-        'Type': c.type_name + ' 📩',
-        'Score': str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy')),
-        'Donations/Week': str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards')),
-        'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'chestclan')),
-        'Location': c.region + ' 🌎',
-        'Members': str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}",
-        'Required Trophies': f"{c.required_trophies} {emoji(ctx, 'trophy')}",
-        'Global Rank': f"{'Unranked' if c.rank == 0 else c.rank} {emoji(ctx, 'rank')}"
-        })
+    if len(c.members) >= 3:
+        for i in range(3):
+            donators.append(
+                f"**{_donators[i].name}**"
+                f"\n{_donators[i].donations} "
+                f"{emoji(ctx, 'cards')}\n" 
+                f"#{_donators[i].tag}"
+                )
+    
+    if len(c.members) >= 3:
+        for i in range(3):
+            ccc.append(
+                f"**{contributors[i].name}**" 
+                f"\n{contributors[i].crowns} " 
+                f"{emoji(ctx, 'crownred')}\n" 
+                f"#{contributors[i].tag}"
+                )
 
-    for f, v in em_dict_1.items():
-        embed.add_field(name=f, value=v)
+    fields1 = [
+        ('Type', c.type_name + ' 📩'),
+        ('Score', str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy'))),
+        ('Donations/Week', str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards'))),
+        ('Clan Chest', str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'chestclan'))),
+        ('Location', c.region + ' 🌎'),
+        ('Members', str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}"),
+        ('Required Trophies', f"{c.required_trophies} {emoji(ctx, 'trophy')}"),
+        ('Global Rank', f"{'Unranked' if c.rank == 0 else c.rank} {emoji(ctx, 'rank')}")
+    ]
 
-    em_dict_2 = [
+    fields2 = [
         ("Top Players", '\n\n'.join(pushers)),
         ("Top Donators", '\n\n'.join(donators)),
         ("Top Contributors", '\n\n'.join(ccc))
     ]
 
+    for f, v in fields1:
+        page1.add_field(name=f, value=v)
 
-
-    for f, v in em_dict_2:
+    for f, v in fields2:
         if v:
-            embed2.add_field(name=f, value=v)
+            page2.add_field(name=f, value=v)
 
     
-    
-    return [embed, embed2]
+    return [page1, page2]
 
