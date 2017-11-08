@@ -67,9 +67,19 @@ async def format_members(ctx, c):
     embeds.append(em)
     return embeds
 
-# async def format_achievements(ctx, a):
-#     em = discord.Embed(title="Achievements", description=a['info'], color=random_color())
-#     em.set_author(name=)
+async def format_achievements(ctx, p):
+    em = discord.Embed(description=f"All of {p['name']}'s achievements", color=random_color())
+    em.set_author(name=f"{p['name']} ({p['tag']})")
+    embeds = []
+    counter = 0
+    for achievement in p['achievements']:
+        if counter % 6 == 0 and counter != 0:
+            embeds.append(em)
+            em = discord.Embed(description=f"All of {p['name']}'s achievements", color=random_color())
+            em.set_author(name=f"{p['name']} ({p['tag']})")
+        em.add_field(name=f"{achievement['name']} ({achievement['stars']})", value=f"**Requirement:** {achievement['info']}\n**Status:** {achievement['completionInfo']}")
+    embeds.append(em)
+    return embeds
 
 async def format_profile(ctx, p):
     embeds = []

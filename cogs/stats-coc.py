@@ -94,6 +94,26 @@ class COC_Stats:
                 )
             await session.run()
 
+    @commands.group(invoke_without_command=True)
+    async def cocachievements(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets the Clash of Clans achievements of a player.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        await ctx.trigger_typing()
+        try:
+            async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
+                profile = await p.json()
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
+            ems = await embeds_coc.format_achievements(ctx, profile)
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems,
+                footer_text='Statsy | Powered by the COC API'
+                )
+            await session.run()
+
 
     # @commands.group(invoke_without_command=True)
     # async def clan(self, ctx, *, tag_or_user: TagCheck=None):
