@@ -107,7 +107,7 @@ async def format_profile(ctx, p):
         ]
 
     try:
-        embed_fields.append(('Current Season', f"{p['legendStatistics']['currentSeason']} {emoji(ctx, 'trophy')}", True))
+        embed_fields.append(('Current Season', f"{p['legendStatistics']['currentSeason']['trophies']} {emoji(ctx, 'trophy')}", True))
         embed_fields.append(('Best Season', f"{p['legendStatistics']['bestSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['bestSeason']['rank']} {emoji(ctx, 'rank')}", True))
     except KeyError:
         pass
