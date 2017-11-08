@@ -74,6 +74,7 @@ class StatsBot(commands.AutoShardedBot):
         self.remove_command('help')
         self.messages_sent = 0
         self.load_extensions()
+        self.maintenance_mode = False
 
     def get_cremojis(self):
         emojis = []
@@ -222,6 +223,32 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send(embed=em)
         except discord.Forbidden:
             await ctx.send(em.title + em.description)
+
+    @commands.command(hidden=True)
+    async def maintenance(self, ctx):
+        if ctx.author.id not in self.developers:
+            return
+
+        if self.maintenance_mode is True:
+            await self.change_presence(
+                status=discord.Status.online,
+                game=None
+                )
+
+            self.maintenance_mode = False
+
+            await ctx.send('`Maintenance mode turned on.`')
+
+        else:
+            await self.change_presence(
+                status=discord.Status.dnd,
+                game=discord.Game(name='Under maintenance!')
+                )
+
+            self.maintenance_mode = True
+
+            await ctx.send('`Maintenance mode turned on.`')
+
 
     @commands.command()
     async def invite(self, ctx):
