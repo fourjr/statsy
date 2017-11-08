@@ -85,26 +85,34 @@ async def format_profile(ctx, p):
         em.set_thumbnail(url="https://i.imgur.com/JsVQPza.png")
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
-    builder_trophies = f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'trophy')}"
     try:
         clan = p['clan']
     except KeyError:
         clan = None
+    try:
+        war_stars = p['warStars']
+    except KeyError:
+        war_stars = None
+
 
     embed_fields = [
         ('Trophies', trophies, True),
         ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
         ('TH Level', f"{p['townHallLevel']} {emoji(ctx, 'townhall'+str(p['townHallLevel']))}", True),
-        ('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall'+str(p['builderHallLevel']))}", True),
         ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Role', f"{p['role'].title()} {emoji(ctx, 'clan')}" if clan else None, True),
-        ('War Stars', f"{p['warStars']}", True),
+        ('War Stars', f"{war_stars} {emoji(ctx, 'cocstar')}", True),
         ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
         ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
-        ("Builder Trophies", builder_trophies, True),
         ("Donations", f"{p['donations']}/{p['donationsReceived']} Received {emoji(ctx, 'troops')}", True)
         ]
+
+    try:
+        embed_fields.append(('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall'+str(p['builderHallLevel']))}", True))
+        embed_fields.append(("Builder Trophies", f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'trophy')}", True))
+    except KeyError:
+        pass
 
     try:
         embed_fields.append(('Current Season', f"{p['legendStatistics']['currentSeason']['trophies']} {emoji(ctx, 'trophy')}", True))
@@ -114,7 +122,7 @@ async def format_profile(ctx, p):
     try:
         embed_fields.append(('Last BH Season', f"{p['legendStatistics']['previousVersusSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['previousVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
         embed_fields.append(('Best BH Season', f"{p['legendStatistics']['bestVersusSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['bestVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
-    except:
+    except KeyError:
         pass
 
     for n, v, i in embed_fields:
