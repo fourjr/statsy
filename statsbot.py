@@ -222,6 +222,7 @@ class StatsBot(commands.AutoShardedBot):
         '''Backup tags.'''
         await self.wait_until_ready()
         channel = self.get_channel(373646610560712704)
+        await channel.send('Bot Ready!')
         url = 'http://hastebin.com/documents'
 
         em = discord.Embed(color=0x00FFFF)
