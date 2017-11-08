@@ -77,7 +77,11 @@ async def format_achievements(ctx, p):
             embeds.append(em)
             em = discord.Embed(description=f"All of {p['name']}'s achievements", color=random_color())
             em.set_author(name=f"{p['name']} ({p['tag']})")
-        em.add_field(name=f"{achievement['name']} ({achievement['stars']})", value=f"**Requirement:** {achievement['info']}\n**Status:** {achievement['completionInfo']}")
+        try:
+            status = achievement['completionInfo']
+        except KeyError:
+            status = "N/A"
+        em.add_field(name=f"{achievement['name']} ({achievement['stars']})", value=f"**Requirement:** {achievement['info']}\n**Status:** {status}")
     embeds.append(em)
     return embeds
 
