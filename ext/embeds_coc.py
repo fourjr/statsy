@@ -78,7 +78,6 @@ async def format_profile(ctx, p):
     except KeyError:
         av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
-    print(p)
     em.set_author(name=f"{p['name']} ({p['tag']})", icon_url=av)
     try:
         em.set_thumbnail(url=p['league']['iconUrls']['medium'])
