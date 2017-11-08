@@ -271,7 +271,7 @@ class StatsBot(commands.AutoShardedBot):
                 game=None
                 )
             async with ctx.session.get("https://cdn.discordapp.com/attachments/376908250752352266/377862393490964510/stats.png") as resp:
-                image = resp.read()
+                image = await resp.read()
             await self.user.edit(avatar=image)
 
             self.maintenance_mode = False
@@ -284,7 +284,7 @@ class StatsBot(commands.AutoShardedBot):
                 game=discord.Game(name='maintenance!')
                 )
             async with ctx.session.get("https://cdn.discordapp.com/attachments/376908250752352266/377862378684940288/stats-dnd.png") as resp:
-                image = resp.read()
+                image = await resp.read()
             await self.user.edit(avatar=image)
 
             self.maintenance_mode = True
