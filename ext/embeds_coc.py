@@ -122,14 +122,16 @@ async def format_profile(ctx, p):
         av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     em.set_author(name=f"{p['name']}'s Troops and Heroes ({p['tag']})", icon_url=av)
-    troops = builders = heroes = []
+    troops = []
+    builders = []
+    heroes = []
     for troop in p['troops']:
         if troop['village'] == "home":
-            troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
+            troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
         else:
-            builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
+            builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
     for hero in p['heroes']:
-        heroes.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
+        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))} {troop["level"]}')
     em.add_field(name="Home Troops", value='\n'.join(troops))
     try:
         em.add_field(name="Builder Troops", value='\n'.join(builders))
