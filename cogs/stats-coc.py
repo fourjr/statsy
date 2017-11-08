@@ -63,7 +63,7 @@ class COC_Stats:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag_coc('clashofclans', tag_or_user.id)
+                tag = ctx.get_tag('clashofclans', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise e
