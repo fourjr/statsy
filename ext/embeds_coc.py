@@ -68,8 +68,6 @@ async def format_members(ctx, c):
 
 async def format_profile(ctx, p):
 
-    print(p)
-
     try:
         av = p['clan']['badgeUrls']['small']
     except KeyError:
@@ -160,7 +158,6 @@ async def format_clan(ctx, c):
         ("Top Donators", '\n\n'.join(donators)),
         ("Top Contributors", '\n\n'.join(ccc))
     ]
-
 
 
     for f, v in em_dict_2:
