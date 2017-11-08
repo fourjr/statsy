@@ -130,8 +130,14 @@ async def format_profile(ctx, p):
     for hero in p['heroes']:
         heroes.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
     em.add_field(name="Home Troops", value='\n'.join(troops))
-    em.add_field(name="Builder Troops", value='\n'.join(builders))
-    em.add_field(name="Heroes", value='\n'.join(heroes))
+    try:
+        em.add_field(name="Builder Troops", value='\n'.join(builders))
+    except:
+        em.add_field(name="Builder Troops", value='None')
+    try:
+        em.add_field(name="Heroes", value='\n'.join(heroes))
+    except:
+        em.add_field(name="Heroes", value='None')
     embeds.append(em)
     return embeds
 
