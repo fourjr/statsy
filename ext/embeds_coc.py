@@ -73,7 +73,7 @@ async def format_profile(ctx, p):
     except KeyError:
         av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
-    em.set_author(name=p['name'], icon_url=av)
+    em.set_author(name=f"{p['name']} ({p['tag']})", icon_url=av)
     try:
         em.set_thumbnail(url=p['league']['iconUrls']['medium'])
     except KeyError:
@@ -99,7 +99,7 @@ async def format_profile(ctx, p):
         ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
         ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
         ("Builder Trophies", builder_trophies, True),
-        ("Donations", f"{p['donations']} Sent/{p['donationsReceived']} Recieved {emoji(ctx, 'troops')}", True)
+        ("Donations", f"{p['donations']}/{p['donationsReceived']} Recieved {emoji(ctx, 'troops')}", True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
