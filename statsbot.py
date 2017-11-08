@@ -79,7 +79,7 @@ class StatsBot(commands.AutoShardedBot):
         self.load_extensions()
         
 
-    def get_cremojis(self):
+    def get_game_emojis(self):
         emojis = []
         for id in self.emoji_servers:
             g = self.get_guild(id)
@@ -173,7 +173,7 @@ class StatsBot(commands.AutoShardedBot):
         print(f'Guilds: {len(self.guilds)}')
         print(f'Users: {len(self.users)}')
         print('----------------------------')
-        self.cremojis = self.get_cremojis()
+        self.game_emojis = self.get_game_emojis()
 
     async def on_shard_ready(self, shard_id):
         '''

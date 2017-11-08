@@ -8,7 +8,7 @@ def emoji(ctx, name):
     name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
     if name == 'chestmagic':
         name = 'chestmagical'
-    e = discord.utils.get(ctx.bot.cremojis, name=name)
+    e = discord.utils.get(ctx.bot.game_emojis, name=name)
     return e
 
 def cdir(obj):
@@ -116,32 +116,37 @@ async def format_profile(ctx, p):
 
     em.set_footer(text='Statsy - Powered by the COC API')
     embeds.append(em)
-    try:
-        av = p['clan']['badgeUrls']['small']
-    except KeyError:
-        av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
-    em.set_author(name=f"{p['name']}'s Troops and Heroes ({p['tag']})", icon_url=av)
+    em.set_author(name=f"{p['name']}'s Troops ({p['tag']})", icon_url=av)
     troops = []
     builders = []
     heroes = []
+    spells = []
     for troop in p['troops']:
         if troop['village'] == "home":
             troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
         else:
             builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
-    for hero in p['heroes']:
-        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))} {troop["level"]}')
-    em.add_field(name="Home Troops", value='\n'.join(troops))
+    em.add_field(name="Home Troops", value=' | '.join(troops))
     try:
-        em.add_field(name="Builder Troops", value='\n'.join(builders))
+        em.add_field(name="Builder Troops", value=' | '.join(builders))
     except:
         em.add_field(name="Builder Troops", value='None')
+    embeds.append(em)
+    em = discord.Embed(color=random_color())
+    em.set_author(name=f"{p['name']}'s Spells and Heroes({p['tag']})", icon_url=av)
+    for spell in p['spells']:
+        spells.append(f'{emoji(ctx, "coc"+spell["name"].lower().replace(" ", ""))} {spell["level"]}')
+    for hero in p['heroes']:
+        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))} {hero["level"]}')
     try:
         em.add_field(name="Heroes", value='\n'.join(heroes))
     except:
         em.add_field(name="Heroes", value='None')
-    embeds.append(em)
+    try:
+        em.add_field(name="Spells", value='\n'.join(spells))
+    except:
+        em.add_field(name="Spells", value='None')
     return embeds
 
 async def format_clan(ctx, c):
