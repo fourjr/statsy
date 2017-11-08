@@ -190,7 +190,11 @@ class StatsBot(commands.AutoShardedBot):
         ctx = await self.get_context(message, cls=CustomContext)
         if ctx.command is None:
             return
-        await self.invoke(ctx)
+        else:
+            if self.maintenance_mode is True:
+                if message.author.id not in self.developers:
+                    return await ctx.send('The bot is under maintenance at the moment!')
+            await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
         error_message = 'Player tags should only contain these characters:\n' \
