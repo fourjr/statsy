@@ -104,7 +104,7 @@ async def format_profile(ctx, p):
         ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
         ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
         ("Builder Trophies", builder_trophies, True),
-        ("Donations", f"{p['donations']}/{p['donationsReceived']} Recieved {emoji(ctx, 'troops')}", True)
+        ("Donations", f"{p['donations']}/{p['donationsReceived']} Received {emoji(ctx, 'troops')}", True)
         ]
 
     for n, v, i in embed_fields:
@@ -117,7 +117,7 @@ async def format_profile(ctx, p):
     em.set_footer(text='Statsy - Powered by the COC API')
     embeds.append(em)
     em = discord.Embed(color=random_color())
-    em.set_author(name=f"{p['name']}'s Troops ({p['tag']})", icon_url=av)
+    em.set_author(name=f"{p['name']}'s Collection ({p['tag']})", icon_url=av)
     troops = []
     builders = []
     heroes = []
@@ -127,18 +127,15 @@ async def format_profile(ctx, p):
             troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
         else:
             builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
+    for spell in p['spells']:
+        spells.append(f'{emoji(ctx, "coc"+spell["name"].lower().replace(" ", ""))} {spell["level"]}')
+    for hero in p['heroes']:
+        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))} {hero["level"]}')
     em.add_field(name="Home Troops", value=' | '.join(troops), inline=False)
     try:
         em.add_field(name="Builder Troops", value=' | '.join(builders), inline=False)
     except:
         em.add_field(name="Builder Troops", value='None')
-    embeds.append(em)
-    em = discord.Embed(color=random_color())
-    em.set_author(name=f"{p['name']}'s Spells and Heroes ({p['tag']})", icon_url=av)
-    for spell in p['spells']:
-        spells.append(f'{emoji(ctx, "coc"+spell["name"].lower().replace(" ", ""))} {spell["level"]}')
-    for hero in p['heroes']:
-        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))} {hero["level"]}')
     try:
         em.add_field(name="Spells", value=' | '.join(spells), inline=False)
     except:
