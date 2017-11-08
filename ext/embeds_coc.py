@@ -49,6 +49,7 @@ async def format_most_valuable(ctx, clan):
 
     return em
 
+
 async def format_members(ctx, c):
     em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
     em.set_author(name=f"{c.name} (#{c.tag})")
@@ -66,8 +67,12 @@ async def format_members(ctx, c):
     embeds.append(em)
     return embeds
 
-async def format_profile(ctx, p):
+async def format_achievements(ctx, a):
+    em = discord.Embed(title="Achievements", description=a['info'], color=random_color())
+    em.set_author(name=)
 
+async def format_profile(ctx, p):
+    embeds = []
     try:
         av = p['clan']['badgeUrls']['small']
     except KeyError:
@@ -86,7 +91,6 @@ async def format_profile(ctx, p):
     except KeyError:
         clan = None
 
-
     embed_fields = [
         ('Trophies', trophies, True),
         ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
@@ -100,11 +104,6 @@ async def format_profile(ctx, p):
         ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
         ("Builder Trophies", builder_trophies, True),
         ("Donations", f"{p['donations']}/{p['donationsReceived']} Recieved {emoji(ctx, 'troops')}", True)
-        # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
-        # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
-        # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
-        # ('Total Donations', f"{p.total_donations} {emoji(ctx, 'cards')}", True),
-        # ('Global Rank', f"{p.global_rank} {emoji(ctx, 'crownred')}", True)
         ]
 
     for n, v, i in embed_fields:
@@ -115,8 +114,26 @@ async def format_profile(ctx, p):
                 em.add_field(name='Clan', value='No Clan')
 
     em.set_footer(text='Statsy - Powered by the COC API')
-    
-    return em
+    embeds.append(em)
+    try:
+        av = p['clan']['badgeUrls']['small']
+    except KeyError:
+        av = 'https://i.imgur.com/Y3uXsgj.png'
+    em = discord.Embed(color=random_color())
+    em.set_author(name=f"{p['name']}'s Troops and Heroes ({p['tag']})", icon_url=av)
+    troops = builders = heroes = []
+    for troop in p['troops']:
+        if troop['village'] == "home":
+            troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
+        else:
+            builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
+    for hero in p['heroes']:
+        heroes.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", "_"))} {troop["level"]}')
+    em.add_field(name="Home Troops", value='\n'.join(troops))
+    em.add_field(name="Builder Troops", value='\n'.join(builders))
+    em.add_field(name="Heroes", value='\n'.join(heroes))
+    embeds.append(em)
+    return embeds
 
 async def format_clan(ctx, c):
     embed = discord.Embed(description = c.description, color=random_color())

@@ -61,7 +61,8 @@ class StatsBot(commands.AutoShardedBot):
     developers = [
         273381165229146112,
         319395783847837696,
-        180314310298304512
+        180314310298304512,
+        377742732501843968
     ]
 
     def __init__(self):

@@ -79,15 +79,19 @@ class COC_Stats:
         '''Gets the Clash of Clans profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
-        async with ctx.typing():
-            try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
-                    profile = await p.json()
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
-            else:
-                em = await embeds_coc.format_profile(ctx, profile)
-                await ctx.send(embed=em)
+        await ctx.trigger_typing()
+        try:
+            async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
+                profile = await p.json()
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
+            ems = await embeds_coc.format_profile(ctx, profile)
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems
+                )
+            await session.run()
 
 
     # @commands.group(invoke_without_command=True)
