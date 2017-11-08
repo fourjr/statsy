@@ -80,6 +80,7 @@ async def format_profile(ctx, p):
         em.set_thumbnail(url="https://i.imgur.com/JsVQPza.png")
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
+    builder_trophies = f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'trophy')}"
     try:
         clan = p['clan']
     except KeyError:
@@ -96,7 +97,9 @@ async def format_profile(ctx, p):
         ('Clan Role', f"{p['role'].title()} {emoji(ctx, 'clan')}" if clan else None, True),
         ('War Stars', f"{p['warStars']}", True),
         ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
-        ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True)
+        ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
+        ("Builder Trophies", builder_trophies, True),
+        ("Donations", f"{p['donations']} Sent/{p['donationsRecieved']} Recieved {emoji(ctx, 'troops')}", True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
