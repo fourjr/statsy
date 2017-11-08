@@ -73,7 +73,7 @@ async def format_achievements(ctx, p):
     embeds = []
     counter = 0
     for achievement in p['achievements']:
-        if counter % 6 == 0 and counter != 0:
+        if counter % 4 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description=f"All of {p['name']}'s achievements", color=random_color())
             em.set_author(name=f"{p['name']} ({p['tag']})")
