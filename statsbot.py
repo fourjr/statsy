@@ -237,7 +237,7 @@ class StatsBot(commands.AutoShardedBot):
 
             self.maintenance_mode = False
 
-            await ctx.send('`Maintenance mode turned on.`')
+            await ctx.send('`Maintenance mode turned off.`')
 
         else:
             await self.change_presence(
