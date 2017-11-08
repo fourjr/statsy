@@ -247,7 +247,7 @@ async def format_profile(ctx, p):
 async def format_clan(ctx, c):
     page1 = discord.Embed(description = c.description, color=random_color())
     page1.set_author(name=f"{c.name} (#{c.tag})")
-    embed.set_footer(text='Statsy - Powered by cr-api.com')
+    page1.set_footer(text='Statsy - Powered by cr-api.com')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
     page1.set_thumbnail(url=c.badge_url)

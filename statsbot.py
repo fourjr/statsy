@@ -242,7 +242,7 @@ class StatsBot(commands.AutoShardedBot):
         else:
             await self.change_presence(
                 status=discord.Status.dnd,
-                game=discord.Game(name='Under maintenance!')
+                game=discord.Game(name='maintenance!')
                 )
 
             self.maintenance_mode = True
