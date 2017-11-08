@@ -82,6 +82,7 @@ async def format_achievements(ctx, p):
         except KeyError:
             status = "N/A"
         em.add_field(name=f"{achievement['name']} ({achievement['stars']})", value=f"**Requirement:** {achievement['info']}\n**Status:** {status}")
+        counter += 1
     embeds.append(em)
     return embeds
 
