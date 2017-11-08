@@ -93,9 +93,10 @@ async def format_profile(ctx, p):
         ('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall')}", True),
         ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
-        ('Clan Role', f"{p['role']} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('Clan Role', f"{p['role'].title()} {emoji(ctx, 'clan')}" if clan else None, True),
         ('War Stars', f"{p['warStars']}", True),
-        ('Succesful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True)
+        ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
+        ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True)
         # ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
         # ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
         # ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
