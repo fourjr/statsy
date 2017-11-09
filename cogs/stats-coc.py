@@ -136,7 +136,7 @@ class COC_Stats:
             await session.run()
 
     @commands.group(invoke_without_command=True)
-    async def members(self, ctx, *, tag_or_user: TagCheck=None):
+    async def cocmembers(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
