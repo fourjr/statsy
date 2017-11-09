@@ -66,7 +66,7 @@ async def format_members(ctx, c):
             versus_trophies = m['versusTrophies']
         except:
             versus_trophies = None
-        em.add_field(name=f'{m["name"]} ({m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{verus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
+        em.add_field(name=f'{m["name"]} ({m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
         counter += 1
     embeds.append(em)
     return embeds
