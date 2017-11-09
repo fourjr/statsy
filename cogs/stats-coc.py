@@ -41,7 +41,7 @@ class COC_Stats:
         async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
             profile = await p.json()
         try:
-            clan_tag = profile['clan']
+            clan_tag = profile['clan']['tag']
         except KeyError:
             await ctx.send(message)
             raise ValueError(message)
