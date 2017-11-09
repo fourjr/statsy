@@ -199,11 +199,11 @@ async def format_clan(ctx, c):
         donators.append(f"**{_donators[i]['name']}**\n{_donators[i]['donations']} {emoji(ctx, 'troops')}\n{_donators[i]['tag']}")
 
     em_1 = [
-        ('Type', "Invite Only" if c['type'] == 'inviteOnly' else c['type'].title() + ' 📩'),
         ('Score Home/Builder', str(c['clanPoints']) + f'/{c["clanVersusPoints"]} ' + str(emoji(ctx, 'trophy'))),
+        ('Required Trophies', f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
+        ('Type', "Invite Only" if c['type'] == 'inviteOnly' else c['type'].title() + ' 📩'),
         ('Location', c['location']['name'] + ' 🌎'),
         ('Members', str(c['members']) + f"/50 {emoji(ctx, 'clan')}"),
-        ('Required Trophies', f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
         ('War Activity', c['warFrequency'].title())
         ]
 
