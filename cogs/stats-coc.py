@@ -95,7 +95,7 @@ class COC_Stats:
             await session.run()
 
     @commands.group(invoke_without_command=True)
-    async def cocachievements(self, ctx, *, tag_or_user: TagCheck=None):
+    async def cocachieve(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans achievements of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
