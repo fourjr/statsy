@@ -46,7 +46,7 @@ class COC_Stats:
             await ctx.send(message)
             raise ValueError(message)
         else:
-            return clan_tag
+            return clan_tag.replace("#", "")
 
 
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
@@ -124,7 +124,6 @@ class COC_Stats:
         try:
             async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
                 clan = await c.json()
-                print(clan)
         except Exception as e:
             return await ctx.send(f'`{e}`')
         else:
