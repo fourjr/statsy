@@ -396,7 +396,7 @@ class StatsBot(commands.AutoShardedBot):
         """Shows the help message."""
         em = discord.Embed(color=embeds.random_color())
 
-        prefix = ctx.prefix
+        prefix = (await self.get_prefix(ctx.message))[2]
 
         fmt = ''
 
@@ -414,7 +414,7 @@ class StatsBot(commands.AutoShardedBot):
             if cmd.hidden:
                 continue
 
-            sigs.append(len(cmd.qualified_name))
+            sigs.append(len(cmd.qualified_name)+len(prefix))
 
             if hasattr(cmd, 'all_commands'):
                 for c in cmd.all_commands.values():
