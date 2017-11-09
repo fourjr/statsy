@@ -116,7 +116,7 @@ class COC_Stats:
 
 
     @commands.group(invoke_without_command=True)
-    async def clan(self, ctx, *, tag_or_user: TagCheck=None):
+    async def cocclan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
