@@ -205,7 +205,7 @@ async def format_clan(ctx, c):
         donators.append(f"**{_donators[i]['name']}**\n{_donators[i]['donations']} {emoji(ctx, 'troops')}\n{_donators[i]['tag']}")
 
     for i in range(3):
-        donators.append(f"**{_builders[i]['name']}**\n{_builders[i]['versusTrophies']} {emoji(ctx, 'axes')}\n{_donators[i]['tag']}")
+        builders.append(f"**{_builders[i]['name']}**\n{_builders[i]['versusTrophies']} {emoji(ctx, 'axes')}\n{_donators[i]['tag']}")
 
     em_1 = [
         ('Score Home/Builder', f'{c["clanPoints"]}/{c["clanVersusPoints"]} {emoji(ctx, "trophy")}'),
