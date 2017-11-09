@@ -201,11 +201,9 @@ async def format_clan(ctx, c):
     em_1 = [
         ('Type', "Invite Only" if c['type'] == 'inviteOnly' else c['type'].title() + ' 📩'),
         ('Score Home/Builder', str(c['clanPoints']) + f'/{c["clanVersusPoints"]} Trophies ' + str(emoji(ctx, 'trophy'))),
-        ('Donations', str(c.donations) + ' Troops ' + str(emoji(ctx, 'troops'))),
         ('Location', c['location']['name'] + ' 🌎'),
         ('Members', str(c['members']) + f"/50 {emoji(ctx, 'clan')}"),
         ('Required Trophies', f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
-        ('War Log', "Shown" if c['isWarPublic'] else "Not Shown"),
         ('War Activity', c['warFrequency'].title())
         ]
 
