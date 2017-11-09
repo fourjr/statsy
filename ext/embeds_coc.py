@@ -120,7 +120,7 @@ async def format_profile(ctx, p):
         ('TH Level', f"{p['townHallLevel']} {emoji(ctx, 'townhall'+str(p['townHallLevel']))}", True),
         ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else None, True),
         ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else None, True),
-        ('Clan Role', f"{p['role'].title()} {emoji(ctx, 'clan')}" if clan else None, True),
+        ('Clan Role', f"{'Elder' if p['role'] == 'admin' else p['role'].title()} {emoji(ctx, 'clan')}" if clan else None, True),
         ('War Stars', f"{war_stars} {emoji(ctx, 'cocstar')}", True),
         ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
         ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
