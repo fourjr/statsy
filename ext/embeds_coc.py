@@ -183,9 +183,8 @@ async def format_profile(ctx, p):
 async def format_clan(ctx, c):
     embed = discord.Embed(description = c['description'], color=random_color())
     embed.set_author(name=f"{c['name']} ({c['tag']})")
-    embed.set_footer(text='Statsy - Powered by the COC API')
-    embed2 = copy.deepcopy(embed)
     embed.set_thumbnail(url=c['badge_url']['medium'])
+    embed2 = copy.deepcopy(embed)
     embed2.description = 'Top Players/Donators for this clan.'
 
     pushers = []
@@ -199,25 +198,27 @@ async def format_clan(ctx, c):
     for i in range(3):
         donators.append(f"**{_donators[i]['name']}**\n{_donators[i]['donations']} {emoji(ctx, 'troops')}\n{_donators[i]['tag']}")
 
+    em_1 = [
+        ('Type', "Invite Only" if c['type'] == 'inviteOnly' else c['type'].title() + ' 📩'),
+        ('Score Home/Builder', str(c['clanPoints']) + f'/{c["clanVersusPoints"]} Trophies ' + str(emoji(ctx, 'trophy'))),
+        ('Donations', str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards'))),
+        ('Location', c['location']['name'] + ' 🌎'),
+        ('Members', str(c['members']) + f"/50 {emoji(ctx, 'clan')}"),
+        ('Required Trophies', f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
+        ('War Log', "Shown" if c['isWarPublic'] else "Not Shown"),
+        ('War Activity', c['warFrequency'].title())
+        ]
 
-    em_dict_1 = OrderedDict({
-        'Type': c['type_name'] + ' 📩',
-        'Score': str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy')),
-        'Donations/Week': str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards')),
-        'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'crownblue')),
-        'Location': c.region + ' 🌎',
-        'Members': str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}",
-        'Required Trophies': f"{c.required_trophies} {emoji(ctx, 'trophy')}",
-        'Global Rank': f"{'Unranked' if c.rank == 0 else c.rank} {emoji(ctx, 'rank')}"
-        })
+    if c['isWarPublic']:
+        em_1.append(('War Win/Loss/Draw', f"{c['warWins']}/{c['warLosses']}/{c['warTies']}"))
+        em_1.append(('War Win Streak', str(c['warWinStreak'])))
 
-    for f, v in em_dict_1.items():
+    for f, v in em_1:
         embed.add_field(name=f, value=v)
 
     em_dict_2 = [
         ("Top Players", '\n\n'.join(pushers)),
-        ("Top Donators", '\n\n'.join(donators)),
-        ("Top Contributors", '\n\n'.join(ccc))
+        ("Top Donators", '\n\n'.join(donators))
     ]
 
 

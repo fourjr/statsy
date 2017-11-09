@@ -115,23 +115,25 @@ class COC_Stats:
             await session.run()
 
 
-    # @commands.group(invoke_without_command=True)
-    # async def clan(self, ctx, *, tag_or_user: TagCheck=None):
-    #     '''Gets a clan by tag or by profile. (tagging the user)'''
-    #     tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+    @commands.group(invoke_without_command=True)
+    async def clan(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets a clan by tag or by profile. (tagging the user)'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
-    #     await ctx.trigger_typing()
-    #     try:
-    #         clan = await self.cr.get_clan(tag)
-    #     except Exception as e:
-    #         return await ctx.send(f'`{e}`')
-    #     else:
-    #         ems = await embeds.format_clan(ctx, clan)
-    #         session = PaginatorSession(
-    #             ctx=ctx,
-    #             pages=ems
-    #             )
-    #         await session.run()
+        await ctx.trigger_typing()
+        try:
+            async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+                clan = await c.json()
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
+            ems = await embeds.format_clan(ctx, clan)
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems,
+                footer_text='Statsy | Powered by the COC API'
+                )
+            await session.run()
 
     # @commands.group(invoke_without_command=True)
     # async def members(self, ctx, *, tag_or_user: TagCheck=None):
