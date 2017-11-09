@@ -181,32 +181,27 @@ async def format_profile(ctx, p):
     return embeds
 
 async def format_clan(ctx, c):
-    embed = discord.Embed(description = c.description, color=random_color())
-    embed.set_author(name=f"{c.name} (#{c.tag})")
+    embed = discord.Embed(description = c['description'], color=random_color())
+    embed.set_author(name=f"{c['name']} ({c['tag']})")
     embed.set_footer(text='Statsy - Powered by the COC API')
     embed2 = copy.deepcopy(embed)
-    embed.set_thumbnail(url=c.badge_url)
-    embed2.description = 'Top Players/Donators/Contributors for this clan.'
+    embed.set_thumbnail(url=c['badge_url']['medium'])
+    embed2.description = 'Top Players/Donators for this clan.'
 
     pushers = []
     for i in range(3):
-        pushers.append(f"**{c.members[i].name}**\n{c.members[i].trophies} {emoji(ctx, 'trophy')}\n#{c.members[i].tag}")
+        pushers.append(f"**{c['members'][i]['name']}**\n{c['members'][i]['trophies']} {emoji(ctx, 'trophy')}\n{c['members'][i]['tag']}")
 
-    contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
-    _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
+    _donators = list(reversed(sorted(c['members'], key=lambda m: m['donations'])))
 
     donators = []
 
     for i in range(3):
-        donators.append(f"**{_donators[i].name}**\n{_donators[i].crowns} {emoji(ctx, 'cards')}\n#{_donators[i].tag}")
+        donators.append(f"**{_donators[i]['name']}**\n{_donators[i]['donations']} {emoji(ctx, 'troops')}\n{_donators[i]['tag']}")
 
-    ccc = []
-
-    for i in range(3):
-        ccc.append(f"**{contributors[i].name}**\n{contributors[i].crowns} {emoji(ctx, 'crownred')}\n#{contributors[i].tag}")
 
     em_dict_1 = OrderedDict({
-        'Type': c.type_name + ' 📩',
+        'Type': c['type_name'] + ' 📩',
         'Score': str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy')),
         'Donations/Week': str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards')),
         'Clan Chest': str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'crownblue')),
