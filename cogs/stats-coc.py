@@ -135,27 +135,28 @@ class COC_Stats:
                 )
             await session.run()
 
-    # @commands.group(invoke_without_command=True)
-    # async def members(self, ctx, *, tag_or_user: TagCheck=None):
-    #     '''Gets all the members of a clan.'''
-    #     tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+    @commands.group(invoke_without_command=True)
+    async def members(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets all the members of a clan.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
-    #     await ctx.trigger_typing()
-    #     try:
-    #         clan = await self.cr.get_clan(tag)
-    #     except Exception as e:
-    #         return await ctx.send(f'`{e}`')
-    #     else:
-    #         ems = await embeds.format_members(ctx, clan)
-    #         if len(ems) > 1:
-    #             session = PaginatorSession(
-    #                 ctx=ctx, 
-    #                 pages=ems, 
-    #                 footer_text=f'{len(clan.members)}/50 members'
-    #                 )
-    #             await session.run()
-    #         else:
-    #             await ctx.send(embed=ems[0])
+        await ctx.trigger_typing()
+        try:
+            async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+                clan = await c.json()
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
+            ems = await embeds.format_members(ctx, clan)
+            if len(ems) > 1:
+                session = PaginatorSession(
+                    ctx=ctx, 
+                    pages=ems, 
+                    footer_text=f'{clan.members}/50 members'
+                    )
+                await session.run()
+            else:
+                await ctx.send(embed=ems[0])
 
     # @members.command()
     # async def best(self, ctx, *, tag_or_user: TagCheck=None):

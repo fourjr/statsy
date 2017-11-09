@@ -52,17 +52,21 @@ async def format_most_valuable(ctx, clan):
 
 async def format_members(ctx, c):
     em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
-    em.set_author(name=f"{c.name} (#{c.tag})")
-    em.set_thumbnail(url=c.badge_url)
+    em.set_author(name=f"{c['name']} ({c['tag']})")
+    em.set_thumbnail(url=c['badgeUrls']['medium'])
     embeds = []
     counter = 0
-    for m in c.members:
+    for m in c['memberList']:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
-            em.set_author(name=f"{c.name} (#{c.tag})")
-            em.set_thumbnail(url=c.badge_url)
-        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+            em.set_author(name=f"{c['name']} ({c['tag']})")
+            em.set_thumbnail(url=c['badgeUrls']['medium'])
+        try:
+            versus_trophies = m['versusTrophies']
+        except:
+            versus_trophies = None
+        em.add_field(name=f'{m["name"]} ({m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{verus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
         counter += 1
     embeds.append(em)
     return embeds
@@ -125,7 +129,7 @@ async def format_profile(ctx, p):
 
     try:
         embed_fields.append(('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall'+str(p['builderHallLevel']))}", True))
-        embed_fields.append(("Builder Trophies", f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'trophy')}", True))
+        embed_fields.append(("Builder Trophies", f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'axes')}", True))
     except KeyError:
         pass
 
@@ -135,8 +139,8 @@ async def format_profile(ctx, p):
     except KeyError:
         pass
     try:
-        embed_fields.append(('Last BH Season', f"{p['legendStatistics']['previousVersusSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['previousVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
-        embed_fields.append(('Best BH Season', f"{p['legendStatistics']['bestVersusSeason']['trophies']} {emoji(ctx, 'trophy')}\n{p['legendStatistics']['bestVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
+        embed_fields.append(('Last BH Season', f"{p['legendStatistics']['previousVersusSeason']['trophies']} {emoji(ctx, 'axes')}\n{p['legendStatistics']['previousVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
+        embed_fields.append(('Best BH Season', f"{p['legendStatistics']['bestVersusSeason']['trophies']} {emoji(ctx, 'axes')}\n{p['legendStatistics']['bestVersusSeason']['rank']} {emoji(ctx, 'rank')}", True))
     except KeyError:
         pass
 
