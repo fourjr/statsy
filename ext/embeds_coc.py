@@ -157,24 +157,24 @@ async def format_profile(ctx, p):
     spells = []
     for troop in p['troops']:
         if troop['village'] == "home":
-            troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
+            troops.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))}{troop["level"]}')
         else:
-            builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))} {troop["level"]}')
+            builders.append(f'{emoji(ctx, "coc"+troop["name"].lower().replace(" ", ""))}{troop["level"]}')
     for spell in p['spells']:
-        spells.append(f'{emoji(ctx, "coc"+spell["name"].lower().replace(" ", ""))} {spell["level"]}')
+        spells.append(f'{emoji(ctx, "coc"+spell["name"].lower().replace(" ", ""))}{spell["level"]}')
     for hero in p['heroes']:
-        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))} {hero["level"]}')
-    em.add_field(name="Home Troops", value=' | '.join(troops), inline=False)
+        heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))}{hero["level"]}')
+    em.add_field(name="Home Troops", value='  '.join(troops), inline=False)
     try:
-        em.add_field(name="Builder Troops", value=' | '.join(builders), inline=False)
+        em.add_field(name="Builder Troops", value='  '.join(builders), inline=False)
     except:
         em.add_field(name="Builder Troops", value='None')
     try:
-        em.add_field(name="Spells", value=' | '.join(spells), inline=False)
+        em.add_field(name="Spells", value='  '.join(spells), inline=False)
     except:
         em.add_field(name="Spells", value='None')
     try:
-        em.add_field(name="Heroes", value=' | '.join(heroes), inline=False)
+        em.add_field(name="Heroes", value='  '.join(heroes), inline=False)
     except:
         em.add_field(name="Heroes", value='None')
     embeds.append(em)
@@ -207,7 +207,7 @@ async def format_clan(ctx, c):
         ('War Activity', c['warFrequency'].title())
         ]
 
-    if c['isWarPublic']:
+    if c['isWarLogPublic']:
         em_1.append(('War Win/Loss/Draw', f"{c['warWins']}/{c['warLosses']}/{c['warTies']}"))
         em_1.append(('War Win Streak', str(c['warWinStreak'])))
 
