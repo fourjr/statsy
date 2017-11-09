@@ -183,7 +183,7 @@ async def format_profile(ctx, p):
 async def format_clan(ctx, c):
     embed = discord.Embed(description = c['description'], color=random_color())
     embed.set_author(name=f"{c['name']} ({c['tag']})")
-    embed.set_thumbnail(url=c['badge_url']['medium'])
+    embed.set_thumbnail(url=c['badgeUrl']['medium'])
     embed2 = copy.deepcopy(embed)
     embed2.description = 'Top Players/Donators for this clan.'
 
@@ -201,7 +201,7 @@ async def format_clan(ctx, c):
     em_1 = [
         ('Type', "Invite Only" if c['type'] == 'inviteOnly' else c['type'].title() + ' 📩'),
         ('Score Home/Builder', str(c['clanPoints']) + f'/{c["clanVersusPoints"]} Trophies ' + str(emoji(ctx, 'trophy'))),
-        ('Donations', str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards'))),
+        ('Donations', str(c.donations) + ' Troops ' + str(emoji(ctx, 'troops'))),
         ('Location', c['location']['name'] + ' 🌎'),
         ('Members', str(c['members']) + f"/50 {emoji(ctx, 'clan')}"),
         ('Required Trophies', f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
