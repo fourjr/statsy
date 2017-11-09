@@ -127,7 +127,7 @@ class COC_Stats:
         except Exception as e:
             return await ctx.send(f'`{e}`')
         else:
-            ems = await embeds.format_clan(ctx, clan)
+            ems = await embeds_coc.format_clan(ctx, clan)
             session = PaginatorSession(
                 ctx=ctx,
                 pages=ems,
