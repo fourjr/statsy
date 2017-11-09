@@ -1,4 +1,4 @@
-# cr-statsbot
+# Statsy
 
 Open-source clash royale discord bot. Powered by https://cr-api.com/
 
