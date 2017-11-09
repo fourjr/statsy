@@ -66,7 +66,7 @@ async def format_members(ctx, c):
             versus_trophies = m['versusTrophies']
         except:
             versus_trophies = None
-        em.add_field(name=f'{m["name"]} ({m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
+        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
         counter += 1
     embeds.append(em)
     return embeds
@@ -187,8 +187,8 @@ async def format_profile(ctx, p):
 async def format_clan(ctx, c):
     embed = discord.Embed(description = c['description'], color=random_color())
     embed.set_author(name=f"{c['name']} ({c['tag']})")
-    embed.set_thumbnail(url=c['badgeUrls']['medium'])
     embed2 = copy.deepcopy(embed)
+    embed.set_thumbnail(url=c['badgeUrls']['medium'])
     embed2.description = 'Top Players/Donators for this clan.'
 
     pushers = []
@@ -196,11 +196,16 @@ async def format_clan(ctx, c):
         pushers.append(f"**{c['memberList'][i]['name']}**\n{c['memberList'][i]['trophies']} {emoji(ctx, 'trophy')}\n{c['memberList'][i]['tag']}")
 
     _donators = list(reversed(sorted(c['memberList'], key=lambda m: m['donations'])))
+    _builders = list(reversed(sorted(c['memberList'], key=lambda m: m['versusTrophies'])))
 
     donators = []
+    builders = []
 
     for i in range(3):
         donators.append(f"**{_donators[i]['name']}**\n{_donators[i]['donations']} {emoji(ctx, 'troops')}\n{_donators[i]['tag']}")
+
+    for i in range(3):
+        donators.append(f"**{_builders[i]['name']}**\n{_builders[i]['versusTrophies']} {emoji(ctx, 'axes')}\n{_donators[i]['tag']}")
 
     em_1 = [
         ('Score Home/Builder', f'{c["clanPoints"]}/{c["clanVersusPoints"]} {emoji(ctx, "trophy")}'),
@@ -219,8 +224,9 @@ async def format_clan(ctx, c):
         embed.add_field(name=f, value=v)
 
     em_dict_2 = [
-        ("Top Players", '\n\n'.join(pushers)),
-        ("Top Donators", '\n\n'.join(donators))
+        ("Top Home Players", '\n\n'.join(pushers)),
+        ("Top Donators", '\n\n'.join(donators)),
+        ("Top Builder Players", '\n\n'.join(builders))
     ]
 
 
