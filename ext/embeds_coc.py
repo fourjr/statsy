@@ -183,7 +183,7 @@ async def format_profile(ctx, p):
 async def format_clan(ctx, c):
     embed = discord.Embed(description = c['description'], color=random_color())
     embed.set_author(name=f"{c['name']} ({c['tag']})")
-    embed.set_thumbnail(url=c['badgeUrl']['medium'])
+    embed.set_thumbnail(url=c['badgeUrls']['medium'])
     embed2 = copy.deepcopy(embed)
     embed2.description = 'Top Players/Donators for this clan.'
 
