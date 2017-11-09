@@ -152,7 +152,7 @@ class COC_Stats:
                 session = PaginatorSession(
                     ctx=ctx, 
                     pages=ems, 
-                    footer_text=f'{clan.members}/50 members'
+                    footer_text=f'{clan["members"]}/50 members'
                     )
                 await session.run()
             else:
