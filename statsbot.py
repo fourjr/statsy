@@ -223,7 +223,7 @@ class StatsBot(commands.AutoShardedBot):
     async def backup_task(self):
         '''Backup tags.'''
         await self.wait_until_ready()
-        channel = self.get_channel(373646610560712704)
+        channel = self.get_channel(378546850376056832)
         await channel.send('Bot Ready!')
         url = 'https://hastebin.com/documents'
 
