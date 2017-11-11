@@ -7,8 +7,10 @@ from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+from urllib.request import urlretrieve
 import io
 import string
+import os
 
 
 class TagCheck(commands.MemberConverter):
@@ -205,12 +207,21 @@ class COC_Stats:
     @commands.command()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
         '''WIP Check your current war status.'''
-        image = await self.bot.loop.run_in_executor(None, self.war_image, 'https://api-assets.clashofclans.com/badges/512/REuMPl3FAw5LBpuSc3q9yLnULe45VaUgmoxYbolK_EY.png', 'https://api-assets.clashofclans.com/badges/512/Zwr2pvJSYsWYvRKh6Eoew-JEdXOy7uehMXp70fM6BPk.png')
-        em = discord.Embed()
-        em.set_image('attachment://war.png')
-        await ctx.send(file=discord.File(image, 'war.png'), embed=em)
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        async with ctx.typing():
+            try:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}/currentWar") as c:
+                    war = await c.json()
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                if war['state'] == 'notInWar':
+                    return await ctx.send("This clan isn't in a war right now!")
+                image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, 'https://api-assets.clashofclans.com/badges/512/REuMPl3FAw5LBpuSc3q9yLnULe45VaUgmoxYbolK_EY.png', 'https://api-assets.clashofclans.com/badges/512/Zwr2pvJSYsWYvRKh6Eoew-JEdXOy7uehMXp70fM6BPk.png')
+                em = await embeds_coc.format_war(war)
+                await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
-    def war_image(self, clan_url, opponent_url):
+    def war_image(self, ctx, clan_url, opponent_url):
 
         bg_image = Image.open("data/war-bg.png")
         size = bg_image.size
@@ -218,14 +229,29 @@ class COC_Stats:
         image = Image.new("RGBA", size)
         image.paste(bg_image)
 
+<<<<<<< HEAD
+        urlretrieve(clan_url, f"data/{ctx.author.id}.png")
+        clan_img = Image.open(f"data/{ctx.author.id}.png")
+        os.remove(f"data/{ctx.author.id}.png")
+
+        urlretrieve(opponent_url, f"data/{ctx.author.id}.png")
+        opp_img = Image.open(f"data/{ctx.author.id}.png")
+        os.remove(f"data/{ctx.author.id}.png")
+=======
         c = io.BytesIO(clan_url)
         clan_img = Image.open(c)
+>>>>>>> b4c8e0c6b32473f23a7891306985ac54cc34db0c
 
+<<<<<<< HEAD
+        c_box = (60, 55, 572, 567)
+        image.paste(clan_img, c_box, clan_img)
+=======
         o = io.BytesIO(opponent_url)
         opp_img = Image.open(o)
+>>>>>>> 4eff5da3a2fcf8f8556731b58df013a4e35dd8bd
 
-        c_box = (50, 55.5, 562, 567.5)
-        image.paste(clan_img, box, clan_img)
+        o_box = (928, 55, 1440, 567)
+        image.paste(opp_img, o_box, opp_img)
 
         file = io.BytesIO()
         image.save(file, format="PNG")

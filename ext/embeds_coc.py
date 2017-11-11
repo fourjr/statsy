@@ -104,6 +104,11 @@ async def format_achievements(ctx, p):
     embeds.append(em)
     return embeds
 
+async def format_war(ctx, w):
+    em = discord.Embed(description=f"Up against **{w['opponent']['name']} ({w['opponent']['tag']})**!")
+    em.set_author(name=f"{w['clan']['name']} ({w['clan']['tag']})")
+    em.set_image(url="attachment://war.png")
+
 async def format_profile(ctx, p):
     embeds = []
     try:
