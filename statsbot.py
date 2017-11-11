@@ -170,11 +170,11 @@ class StatsBot(commands.AutoShardedBot):
               '----------------------------\n' \
               f'Logged in as: {self.user}\n' \
               f'Client ID: {self.user.id}\n' \
-              '----------------------------' \
+              '----------------------------\n' \
               f'Guilds: {len(self.guilds)}\n' \
               f'Users: {len(self.users)}\n' \
               '----------------------------' 
-        print(fmt)
+        print(f'```{fmt}```')
         channel = self.get_channel(373646610560712704)
         self.game_emojis = self.get_game_emojis()
         await channel.send(fmt)
@@ -227,7 +227,6 @@ class StatsBot(commands.AutoShardedBot):
         '''Backup tags.'''
         await self.wait_until_ready()
         channel = self.get_channel(378546850376056832)
-        await self.get_channel(373646610560712704).send('Bot Ready!')
         url = 'https://hastebin.com/documents'
 
         em = discord.Embed(color=0x00FFFF)
