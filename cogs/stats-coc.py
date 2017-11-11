@@ -219,24 +219,21 @@ class COC_Stats:
                     return await ctx.send("This clan's war logs aren't public.")
                 if war['state'] == 'notInWar':
                     return await ctx.send("This clan isn't in a war right now!")
-                image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, war['clan']['badgeUrls']['large'], war['opponent']['badgeUrls']['large'])
+                async with ctx.session.get(war['clan']['badgeUrls']['large']) as resp:
+                    clan_img = Image.open(io.BytesIO(await resp.read()))
+                async with ctx.session.get(war['opponent']['badgeUrls']['large']) as resp:
+                    opp_img = Image.open(io.BytesIO(await resp.read()))
+                image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, clan_img, opp_img)
                 em = await embeds_coc.format_war(ctx, war)
                 await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
-    async def war_image(self, ctx, clan_url, opponent_url):
+    def war_image(self, ctx, clan_img, opp_img):
 
         bg_image = Image.open("data/war-bg.png")
         size = bg_image.size
 
         image = Image.new("RGBA", size)
         image.paste(bg_image)
-
-        async with ctx.session.get(clan_url) as resp:
-            clan_img = Image.open(io.BytesIO(await resp.read()))
-
-        async with ctx.session.get(opponent_url) as resp:
-            opp_img = Image.open(io.BytesIO(await resp.read()))
-
 
         c_box = (60, 55, 572, 567)
         image.paste(clan_img, c_box, clan_img)
