@@ -229,7 +229,6 @@ class COC_Stats:
         image = Image.new("RGBA", size)
         image.paste(bg_image)
 
-<<<<<<< HEAD
         urlretrieve(clan_url, f"data/{ctx.author.id}.png")
         clan_img = Image.open(f"data/{ctx.author.id}.png")
         os.remove(f"data/{ctx.author.id}.png")
@@ -237,18 +236,9 @@ class COC_Stats:
         urlretrieve(opponent_url, f"data/{ctx.author.id}.png")
         opp_img = Image.open(f"data/{ctx.author.id}.png")
         os.remove(f"data/{ctx.author.id}.png")
-=======
-        c = io.BytesIO(clan_url)
-        clan_img = Image.open(c)
->>>>>>> b4c8e0c6b32473f23a7891306985ac54cc34db0c
 
-<<<<<<< HEAD
         c_box = (60, 55, 572, 567)
         image.paste(clan_img, c_box, clan_img)
-=======
-        o = io.BytesIO(opponent_url)
-        opp_img = Image.open(o)
->>>>>>> 4eff5da3a2fcf8f8556731b58df013a4e35dd8bd
 
         o_box = (928, 55, 1440, 567)
         image.paste(opp_img, o_box, opp_img)
