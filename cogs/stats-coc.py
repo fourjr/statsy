@@ -215,10 +215,12 @@ class COC_Stats:
             except Exception as e:
                 return await ctx.send(f'`{e}`')
             else:
+                if "reason" in war:
+                    return await ctx.send("This clan's war logs aren't public.")
                 if war['state'] == 'notInWar':
                     return await ctx.send("This clan isn't in a war right now!")
                 image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, 'https://api-assets.clashofclans.com/badges/512/REuMPl3FAw5LBpuSc3q9yLnULe45VaUgmoxYbolK_EY.png', 'https://api-assets.clashofclans.com/badges/512/Zwr2pvJSYsWYvRKh6Eoew-JEdXOy7uehMXp70fM6BPk.png')
-                em = await embeds_coc.format_war(war)
+                em = await embeds_coc.format_war(ctx, war)
                 await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
     def war_image(self, ctx, clan_url, opponent_url):
