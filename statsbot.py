@@ -174,10 +174,10 @@ class StatsBot(commands.AutoShardedBot):
               f'Guilds: {len(self.guilds)}\n' \
               f'Users: {len(self.users)}\n' \
               '----------------------------' 
-        print(f'```{fmt}```')
+        print(fmt)
         channel = self.get_channel(373646610560712704)
         self.game_emojis = self.get_game_emojis()
-        await channel.send(fmt)
+        await channel.send(f'```{fmt}```')
 
     async def on_shard_ready(self, shard_id):
         '''
@@ -231,7 +231,7 @@ class StatsBot(commands.AutoShardedBot):
 
         em = discord.Embed(color=0x00FFFF)
         em.set_author(
-            name='Hourly Tag Backup',
+            name='Tag Backup',
             icon_url=self.user.avatar_url
             )
 
@@ -247,7 +247,7 @@ class StatsBot(commands.AutoShardedBot):
             em.description = f'http://hastebin.com/{key}.json'
             await channel.send(embed=em)
 
-            await asyncio.sleep(3600)
+            await asyncio.sleep(36000)
 
 
     @commands.command()
