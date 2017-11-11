@@ -158,37 +158,39 @@ class COC_Stats:
             else:
                 await ctx.send(embed=ems[0])
 
-    # @members.command()
-    # async def best(self, ctx, *, tag_or_user: TagCheck=None):
-    #     '''Finds the best members of the clan currently.'''
-    #     tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
-    #     async with ctx.typing():
-    #         try:
-    #             clan = await self.cr.get_clan(tag)
-    #         except Exception as e:
-    #             return await ctx.send(f'`{e}`')
-    #         else:
-    #             if len(clan.members) < 4:
-    #                 return await ctx.send('Clan must have more than 4 players for heuristics.')
-    #             else:
-    #                 em = await embeds.format_most_valuable(ctx, clan)
-    #                 await ctx.send(embed=em)
+    @members.command()
+    async def best(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Finds the best members of the clan currently.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        async with ctx.typing():
+            try:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+                    clan = await c.json()
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                if clan['members'] < 4:
+                    return await ctx.send('Clan must have more than 4 players for heuristics.')
+                else:
+                    em = await embeds_coc.format_most_valuable(ctx, clan)
+                    await ctx.send(embed=em)
 
-    # @members.command()
-    # async def worst(self, ctx, *, tag_or_user: TagCheck=None):
-    #     '''Finds the worst members of the clan currently.'''
-    #     tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
-    #     async with ctx.typing():
-    #         try:
-    #             clan = await self.cr.get_clan(tag)
-    #         except Exception as e:
-    #             return await ctx.send(f'`{e}`')
-    #         else:
-    #             if len(clan.members) < 4:
-    #                 return await ctx.send('Clan must have more than 4 players for heuristics.')
-    #             else:
-    #                 em = await embeds.format_least_valuable(ctx, clan)
-    #                 await ctx.send(embed=em)
+    @members.command()
+    async def worst(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Finds the worst members of the clan currently.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        async with ctx.typing():
+            try:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+                    clan = await c.json()
+            except Exception as e:
+                return await ctx.send(f'`{e}`')
+            else:
+                if clan['members'] < 4:
+                    return await ctx.send('Clan must have more than 4 players for heuristics.')
+                else:
+                    em = await embeds_coc.format_least_valuable(ctx, clan)
+                    await ctx.send(embed=em)
 
             
     @commands.command()

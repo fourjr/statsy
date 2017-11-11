@@ -17,35 +17,49 @@ def cdir(obj):
 def random_color():
     return random.randint(0, 0xFFFFFF)
 
-async def format_least_valuable(ctx, clan):
-    for m in clan.members:
-        m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+async def format_least_valuable(ctx, c):
+    for m in c['memberList']:
+        try:
+            m['score'] = ((m['donations']/5) + (m['versusTrophies']/7) + (m['trophies']/7)) / 3
+        except KeyError:
+            m['score'] = ((m['donations']/5) + 0 + (m['trophies']/7)) / 3
 
-    to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
+    to_kick = sorted(clan.members, key=lambda m: m['score'])[:4]
 
     em = discord.Embed(color=random_color(), description='Here are the least valuable members of the clan currently.')
-    em.set_author(name=clan)
-    em.set_thumbnail(url=clan.badge_url)
+    em.set_author(name=f"{c['name']} ({c['tag']})")
+    em.set_thumbnail(url=c['badgeUrls']['medium'])
     em.set_footer(text='Statsy - Powered by the COC API')
 
     for m in reversed(to_kick):
-        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+        try:
+            versus_trophies = m['versusTrophies']
+        except KeyError:
+            versus_trophies = None
+        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"#{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
 
     return em
 
-async def format_most_valuable(ctx, clan):
-    for m in clan.members:
-        m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+async def format_most_valuable(ctx, c):
+    for m in c['memberList']:
+        try:
+            m['score'] = ((m['donations']/5) + (m['versusTrophies']/7) + (m['trophies']/7)) / 3
+        except KeyError:
+            m['score'] = ((m['donations']/5) + 0 + (m['trophies']/7)) / 3
 
-    best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
+    best = sorted(clan.members, key=lambda m: m['score'], reverse=True)[:4]
 
     em = discord.Embed(color=random_color(), description='Here are the most valuable members of the clan currently.')
-    em.set_author(name=clan)
-    em.set_thumbnail(url=clan.badge_url)
+    em.set_author(name=f"{c['name']} ({c['tag']})")
+    em.set_thumbnail(url=c['badgeUrls']['medium'])
     em.set_footer(text='Statsy - Powered by the COC API')
 
     for m in reversed(best):
-        em.add_field(name=f'{m.name} ({m.role_name})', value=f"#{m.tag}\n{m.trophies} {emoji(ctx, 'trophy')}\n{m.crowns} {emoji(ctx, 'crownblue')}\n{m.donations} {emoji(ctx, 'cards')}")
+        try:
+            versus_trophies = m['versusTrophies']
+        except KeyError:
+            versus_trophies = None
+        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"#{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
 
     return em
 
