@@ -210,7 +210,7 @@ class COC_Stats:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}/currentWar") as c:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}/currentwar") as c:
                     war = await c.json()
             except Exception as e:
                 return await ctx.send(f'`{e}`')
