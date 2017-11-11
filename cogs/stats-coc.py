@@ -219,7 +219,7 @@ class COC_Stats:
                     return await ctx.send("This clan's war logs aren't public.")
                 if war['state'] == 'notInWar':
                     return await ctx.send("This clan isn't in a war right now!")
-                image = await self.loop.run_in_executor(None, self.war_image, ctx, war['clan']['badgeUrls']['large'], war['opponent']['badgeUrls']['large'])
+                image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, war['clan']['badgeUrls']['large'], war['opponent']['badgeUrls']['large'])
                 em = await embeds_coc.format_war(ctx, war)
                 await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
