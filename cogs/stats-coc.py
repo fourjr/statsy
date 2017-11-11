@@ -221,7 +221,7 @@ class COC_Stats:
         c = io.BytesIO(clan_url)
         clan_img = Image.open(c)
 
-        o = io.BytesIO(opponent_url):
+        o = io.BytesIO(opponent_url)
         opp_img = Image.open(o)
 
         c_box = (50, 55.5, 562, 567.5)
