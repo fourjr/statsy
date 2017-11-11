@@ -218,7 +218,7 @@ class COC_Stats:
         image = Image.new("RGBA", size)
         image.paste(bg_image)
 
-        c = io.BytesIO(clan_url):
+        c = io.BytesIO(clan_url)
         clan_img = Image.open(c)
 
         o = io.BytesIO(opponent_url):
