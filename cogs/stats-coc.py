@@ -237,6 +237,7 @@ class COC_Stats:
         opp_img = Image.open(f"data/{ctx.author.id}.png")
         os.remove(f"data/{ctx.author.id}.png")
 
+
         c_box = (60, 55, 572, 567)
         image.paste(clan_img, c_box, clan_img)
 
