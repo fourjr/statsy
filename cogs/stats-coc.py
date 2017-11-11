@@ -158,7 +158,7 @@ class COC_Stats:
             else:
                 await ctx.send(embed=ems[0])
 
-    @members.command()
+    @cocmembers.command()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -175,7 +175,7 @@ class COC_Stats:
                     em = await embeds_coc.format_most_valuable(ctx, clan)
                     await ctx.send(embed=em)
 
-    @members.command()
+    @cocmembers.command()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
