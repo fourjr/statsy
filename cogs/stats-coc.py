@@ -219,7 +219,7 @@ class COC_Stats:
                     return await ctx.send("This clan's war logs aren't public.")
                 if war['state'] == 'notInWar':
                     return await ctx.send("This clan isn't in a war right now!")
-                image = await self.war_image(ctx, 'https://api-assets.clashofclans.com/badges/512/REuMPl3FAw5LBpuSc3q9yLnULe45VaUgmoxYbolK_EY.png', 'https://api-assets.clashofclans.com/badges/512/Zwr2pvJSYsWYvRKh6Eoew-JEdXOy7uehMXp70fM6BPk.png')
+                image = await self.loop.run_in_executor(None, self.war_image, ctx, war['clan']['badgeUrls']['large'], war['opponent']['badgeUrls']['large'])
                 em = await embeds_coc.format_war(ctx, war)
                 await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
