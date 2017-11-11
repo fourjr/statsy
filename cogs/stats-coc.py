@@ -202,6 +202,36 @@ class COC_Stats:
         ctx.save_tag(tag.replace("#", ""), 'clashofclans')
         await ctx.send('Successfuly saved tag.')
 
+    @commands.command()
+    async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
+        '''WIP Check your current war status.'''
+        image = await self.bot.loop.run_in_executor(None, self.war_image, 'https://api-assets.clashofclans.com/badges/512/REuMPl3FAw5LBpuSc3q9yLnULe45VaUgmoxYbolK_EY.png', 'https://api-assets.clashofclans.com/badges/512/Zwr2pvJSYsWYvRKh6Eoew-JEdXOy7uehMXp70fM6BPk.png')
+        em = discord.Embed()
+        em.set_image('attachment://war.png')
+        await ctx.send(file=discord.File(image, 'war.png'), embed=em)
+
+    def war_image(self, clan_url, opponent_url):
+
+        bg_image = Image.open("data/war-bg.png")
+        size = bg_image.size
+
+        image = Image.new("RGBA", size)
+        image.paste(bg_image)
+
+        c = io.BytesIO(clan_url):
+        clan_img = Image.open(c)
+
+        o = io.BytesIO(opponent_url):
+        opp_img = Image.open(o)
+
+        c_box = (50, 55.5, 562, 567.5)
+        image.paste(clan_img, box, clan_img)
+
+        file = io.BytesIO()
+        image.save(file, format="PNG")
+        file.seek(0)
+        return file
+
 
 def setup(bot):
     cog = COC_Stats(bot)
