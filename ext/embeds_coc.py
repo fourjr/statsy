@@ -36,7 +36,7 @@ async def format_least_valuable(ctx, c):
             versus_trophies = m['versusTrophies']
         except KeyError:
             versus_trophies = None
-        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"#{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
+        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
 
     return em
 
@@ -59,7 +59,7 @@ async def format_most_valuable(ctx, c):
             versus_trophies = m['versusTrophies']
         except KeyError:
             versus_trophies = None
-        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"#{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
+        em.add_field(name=f'{m["name"]} ({"Elder" if m["role"] == "admin" else m["role"].title()})', value=f"{m['tag']}\n{m['trophies']} {emoji(ctx, 'trophy')}\n{versus_trophies} {emoji(ctx, 'axes')}\n{m['donations']} {emoji(ctx, 'troops')}")
 
     return em
 
