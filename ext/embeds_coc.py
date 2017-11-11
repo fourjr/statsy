@@ -24,7 +24,7 @@ async def format_least_valuable(ctx, c):
         except KeyError:
             m['score'] = ((m['donations']/5) + 0 + (m['trophies']/7)) / 3
 
-    to_kick = sorted(clan.members, key=lambda m: m['score'])[:4]
+    to_kick = sorted(c['memberList'], key=lambda m: m['score'])[:4]
 
     em = discord.Embed(color=random_color(), description='Here are the least valuable members of the clan currently.')
     em.set_author(name=f"{c['name']} ({c['tag']})")
@@ -47,7 +47,7 @@ async def format_most_valuable(ctx, c):
         except KeyError:
             m['score'] = ((m['donations']/5) + 0 + (m['trophies']/7)) / 3
 
-    best = sorted(clan.members, key=lambda m: m['score'], reverse=True)[:4]
+    best = sorted(c['memberList'], key=lambda m: m['score'], reverse=True)[:4]
 
     em = discord.Embed(color=random_color(), description='Here are the most valuable members of the clan currently.')
     em.set_author(name=f"{c['name']} ({c['tag']})")
