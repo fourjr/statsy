@@ -166,15 +166,18 @@ class StatsBot(commands.AutoShardedBot):
         Called when guild streaming is complete 
         and the client's internal cache is ready.
         '''
-        print('StatsBot is ready!')
-        print('----------------------------')
-        print(f'Logged in as: {self.user}')
-        print(f'Client ID: {self.user.id}')
-        print('----------------------------')
-        print(f'Guilds: {len(self.guilds)}')
-        print(f'Users: {len(self.users)}')
-        print('----------------------------')
+        fmt = 'StatsBot is ready!\n' \
+              '----------------------------\n' \
+              f'Logged in as: {self.user}\n' \
+              f'Client ID: {self.user.id}\n' \
+              '----------------------------' \
+              f'Guilds: {len(self.guilds)}\n' \
+              f'Users: {len(self.users)}\n' \
+              '----------------------------' 
+        print(fmt)
+        channel = self.get_channel(373646610560712704)
         self.game_emojis = self.get_game_emojis()
+        await channel.send(fmt)
 
     async def on_shard_ready(self, shard_id):
         '''
