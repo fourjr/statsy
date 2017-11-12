@@ -554,10 +554,8 @@ class StatsBot(commands.AutoShardedBot):
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
     async def on_guild_join(self, guild):
-        await discord.utils.get(discord.utils.get(self.bot.guilds, id=345787308282478592).channels, id=373646610560712704).send('Token:1 ' + self.botlist)
-        async with ctx.session.post(f'https://discordbots.org/api/bots/{str(guild.me.id)}/stats', json={"server_count": len(self.bot.guilds)}, headers={'Authorization': self.botlist}):
+        async with self.session.post(f'https://discordbots.org/api/bots/{str(guild.me.id)}/stats', data={"server_count": len(self.guilds)}, headers={'Authorization': self.botlist}):
             pass
-        await discord.utils.get(discord.utils.get(self.bot.guilds, id=345787308282478592).channels, id=373646610560712704).send('Token: ' + self.botlist)
 
 if __name__ == '__main__':
     StatsBot.init()
