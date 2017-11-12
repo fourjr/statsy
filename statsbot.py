@@ -114,6 +114,15 @@ class StatsBot(commands.AutoShardedBot):
         except FileNotFoundError:
             return None
 
+    @property
+    def botlist(self):
+        '''Returns your token wherever it is'''
+        try:
+            with open('data/config.json') as f:
+                return json.load(f)['botlist'].strip('"')
+        except FileNotFoundError:
+            return None
+
     @classmethod
     def init(bot, token=None):
         '''Starts the actual bot'''
@@ -544,6 +553,9 @@ class StatsBot(commands.AutoShardedBot):
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
+    async def on_guild_join(self, guild):
+        async with ctx.session.post(f'https://discordbots.org/api/bots/{str(guild.me.id)}/stats', json={"server_count": len(self.bot.guilds)}, headers={'Authorization': self.botlist}):
+            pass
 
 
 if __name__ == '__main__':
