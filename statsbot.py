@@ -116,7 +116,7 @@ class StatsBot(commands.AutoShardedBot):
 
     @property
     def botlist(self):
-        '''Returns your token wherever it is'''
+        '''Returns your botlist token wherever it is'''
         try:
             with open('data/config.json') as f:
                 return json.load(f)['botlist'].strip('"')
@@ -219,10 +219,11 @@ class StatsBot(commands.AutoShardedBot):
         if isinstance(error, InvalidTag):
             await ctx.send(error_message)
         else:
-            await self.get_channel(376622292106608640).send(embed=discord.Embed(color=discord.Color.orange(), description=f"```\n{type(error).__name__}: {error}\n```", title=ctx.invoked_with))
             if isinstance(error, commands.MissingRequiredArgument):
                 prefix = (await self.get_prefix(ctx.message))[2]
                 await ctx.send(embed=discord.Embed(color=embeds.random_color(), title=f'``Usage: {prefix}{ctx.command.signature}``', description=ctx.command.help))
+            else:
+                await self.get_channel(376622292106608640).send(embed=discord.Embed(color=discord.Color.orange(), description=f"```\n{type(error).__name__}: {error}\n```", title=ctx.invoked_with))
             raise error
 
     async def on_message(self, message):
@@ -255,7 +256,7 @@ class StatsBot(commands.AutoShardedBot):
 
             em.description = f'http://hastebin.com/{key}.json'
             await channel.send(embed=em)
-
+            await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json={"server_count": len(self.guilds)}, headers={'Authorization': self.botlist})
             await asyncio.sleep(36000)
 
 
@@ -552,10 +553,6 @@ class StatsBot(commands.AutoShardedBot):
         if e.text is None:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
-
-    async def on_guild_join(self, guild):
-        async with self.session.post(f'https://discordbots.org/api/bots/{str(guild.me.id)}/stats', data={"server_count": len(self.guilds)}, headers={'Authorization': self.botlist}):
-            pass
 
 if __name__ == '__main__':
     StatsBot.init()
