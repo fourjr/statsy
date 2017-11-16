@@ -466,17 +466,30 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.send(embed=em)
 
     @commands.command()
-    async def source(self, ctx, *, command):
-        '''See the source code for any command.'''
-        source = str(inspect.getsource(self.get_command(command).callback))
-        fmt = '​`​`​`py\n' + source.replace('​`', '\u200b​`') + '\n​`​`​`'
-        if len(fmt) > 2000:
-            async with ctx.session.post("https://hastebin.com/documents", data=source) as resp:
-                data = await resp.json()
-            key = data['key']
-            return await ctx.send(f'Command source: <https://hastebin.com/{key}.py>')
+    async def source(self, ctx, *, command: str = None):
+        """Displays full source code or for a specific command.
+        To display the source code of a subcommand you can separate it by
+        periods, e.g. tag.create for the create subcommand of the tag command
+        or by spaces.
+        """
+        source_url = 'https://github.com/cgrok/statsy'
+        if command is None:
+            return await ctx.send(source_url)
+
+        obj = self.get_command(command.replace('.', ' '))
+        if obj is None:
+            return await ctx.send('Could not find command.')
+
+        src = obj.callback.__code__
+        lines, firstlineno = inspect.getsourcelines(src)
+        if not obj.callback.__module__.startswith('discord'):
+            location = os.path.relpath(src.co_filename).replace('\\', '/')
         else:
-            return await ctx.send(fmt)
+            location = obj.callback.__module__.replace('.', '/') + '.py'
+            source_url = 'https://github.com/Rapptz/discord.py'
+
+        final_url = f'<{source_url}/blob/master/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
+        await ctx.send(final_url)
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
