@@ -406,6 +406,9 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command()
     async def help(self, ctx, *, command=None):
         """Shows the help message."""
+
+        prefix = (await self.get_prefix(ctx.message))[2]
+
         if command is not None:
             command = self.get_command(command)
             return await ctx.send(
@@ -416,8 +419,6 @@ class StatsBot(commands.AutoShardedBot):
                     )
                 )
         em = discord.Embed(color=embeds.random_color())
-
-        prefix = (await self.get_prefix(ctx.message))[2]
 
         fmt = ''
 
