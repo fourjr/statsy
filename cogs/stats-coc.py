@@ -27,7 +27,7 @@ class TagCheck(commands.MemberConverter):
         # Not a user so its a tag.
         return argument.strip('#').upper()
 
-class COC_Stats:
+class Clash_of_Clans:
 
     def __init__(self, bot):
         self.bot = bot
@@ -248,5 +248,5 @@ class COC_Stats:
 
 
 def setup(bot):
-    cog = COC_Stats(bot)
+    cog = Clash_of_Clans(bot)
     bot.add_cog(cog)

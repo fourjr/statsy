@@ -418,65 +418,54 @@ class StatsBot(commands.AutoShardedBot):
                     description=command.help
                     )
                 )
-        em = discord.Embed(color=embeds.random_color())
-
-        fmt = ''
-
-        fmt2 = ''
-
-        fmt3 = ''
 
         sigs = []
 
-        if ctx.message.mentions:
-            if ctx.prefix.strip() == ctx.message.mentions[0].mention:
-                prefix = '!'
-
-        for cmd in sorted(self.commands, key=lambda x: x.cog_name):
+        for cmd in self.commands:
             if cmd.hidden:
                 continue
-
             sigs.append(len(cmd.qualified_name)+len(prefix))
-
             if hasattr(cmd, 'all_commands'):
                 for c in cmd.all_commands.values():
                     sigs.append(len('\u200b  └─ ' + c.name)+1)
 
         maxlen = max(sigs)
 
-
-        for cmd in sorted(self.commands, key=lambda x: x.cog_name):
-            if cmd.hidden:
-                continue
-
-            if cmd.cog_name == 'StatsBot':
-                fmt2 += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
-
-                if hasattr(cmd, 'all_commands'):
-                    for c in cmd.all_commands.values():
-                        branch = '\u200b  └─ ' + c.name
-                        fmt2 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
-            elif cmd.cog_name == 'Stats':
-                fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
-
-                if hasattr(cmd, 'all_commands'):
-                    for c in cmd.all_commands.values():
-                        branch = '\u200b  └─ ' + c.name
-                        fmt += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
-            else:
-                fmt3 += f'`{prefix+cmd.qualified_name:<{maxlen}} {cmd.short_doc:<{maxlen}}`\n'
-
-                if hasattr(cmd, 'all_commands'):
-                    for c in cmd.all_commands.values():
-                        branch = '\u200b  └─ ' + c.name
-                        fmt3 += f"`{branch:<{maxlen+1}} {c.short_doc:<{maxlen}}`\n"
-
-
-        em.set_author(name='Stats - Command Help', icon_url=self.user.avatar_url)
-        em.add_field(name='Clash Royale', value=fmt)
-        em.add_field(name='Clash of Clans (In Development.)', value=fmt3)
-        em.add_field(name='Bot Related', value=fmt2)
+        em = discord.Embed(color=embeds.random_color())
         em.set_footer(text='Statsy - Powered by cr-api.com')
+
+        for cog in self.cogs.values():
+            fmt = ''
+            for cmd in self.commands:
+                if cmd.instance is cog:
+                    if cmd.hidden:
+                        continue
+                    fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} '
+                    fmt += f'{cmd.short_doc:<{maxlen}}`\n'
+                    if hasattr(cmd, 'commands'):
+                        for c in cmd.commands:
+                            branch = '\u200b  └─ ' + c.name
+                            fmt += f"`{branch:<{maxlen+1}} " 
+                            fmt += f"{c.short_doc:<{maxlen}}`\n"
+
+            cog_name = type(cog).__name__.replace('_', ' ')
+            em.add_field(name=cog_name, value=fmt)
+
+        fmt = ''
+
+        for cmd in self.commands:
+            if cmd.instance is self:
+                if cmd.hidden:
+                    continue
+                fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} '
+                fmt += f'{cmd.short_doc:<{maxlen}}`\n'
+                if hasattr(cmd, 'commands'):
+                    for c in cmd.commands:
+                        branch = '\u200b  └─ ' + c.name
+                        fmt += f"`{branch:<{maxlen+1}} " 
+                        fmt += f"{c.short_doc:<{maxlen}}`\n"
+
+        em.add_field(name='Bot Related', value=fmt)
 
         await ctx.send(embed=em)
 

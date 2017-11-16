@@ -40,7 +40,7 @@ class TagCheck(commands.MemberConverter):
         else:
             return tag
 
-class Stats:
+class Clash_Royale:
 
     def __init__(self, bot):
         self.bot = bot
@@ -384,5 +384,5 @@ class Stats:
 
 
 def setup(bot):
-    cog = Stats(bot)
+    cog = Clash_Royale(bot)
     bot.add_cog(cog)
