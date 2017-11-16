@@ -47,8 +47,10 @@ async def format_least_valuable(ctx, clan):
     return em
 
 async def format_most_valuable(ctx, clan):
+    
     for m in clan.members:
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
     em = discord.Embed(

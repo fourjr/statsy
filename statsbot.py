@@ -404,8 +404,17 @@ class StatsBot(commands.AutoShardedBot):
         p = os.system('echo %s|sudo -S %s' % (password, command))
 
     @commands.command()
-    async def help(self, ctx):
+    async def help(self, ctx, *, command=None):
         """Shows the help message."""
+        if command is not None:
+            command = self.get_command(command)
+            return await ctx.send(
+                embed=discord.Embed(
+                    color=embeds.random_color(), 
+                    title=f'``Usage: {prefix}{command.signature}``', 
+                    description=command.help
+                    )
+                )
         em = discord.Embed(color=embeds.random_color())
 
         prefix = (await self.get_prefix(ctx.message))[2]
