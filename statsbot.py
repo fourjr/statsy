@@ -259,7 +259,6 @@ class StatsBot(commands.AutoShardedBot):
             await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json={"server_count": len(self.guilds)}, headers={'Authorization': self.botlist})
             await asyncio.sleep(36000)
 
-
     @commands.command()
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
@@ -394,12 +393,9 @@ class StatsBot(commands.AutoShardedBot):
         '''Update the bot.'''
         if ctx.author.id not in self.developers:
             return
-
         with open('data/config.json') as f:
             password = json.load(f).get('password')
-
         await ctx.send('`Updating self and restarting...`')
-
         command = 'sh ../stats.sh'
         p = os.system('echo %s|sudo -S %s' % (password, command))
 
@@ -468,6 +464,19 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='Bot Related', value=fmt)
 
         await ctx.send(embed=em)
+
+    @commands.command()
+    async def source(self, ctx, *, command):
+        '''See the source code for any command.'''
+        source = str(inspect.getsource(self.get_command(command).callback))
+        fmt = '​`​`​`py\n' + source.replace('​`', '\u200b​`') + '\n​`​`​`'
+        if len(fmt) > 2000:
+            async with ctx.session.post("https://hastebin.com/documents", data=source) as resp:
+                data = await resp.json()
+            key = data['key']
+            return await ctx.send(f'Command source: <https://hastebin.com/{key}.py>')
+        else:
+            return await ctx.send(fmt)
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
@@ -552,6 +561,8 @@ class StatsBot(commands.AutoShardedBot):
         if e.text is None:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
+
+
 
 if __name__ == '__main__':
     StatsBot.init()
