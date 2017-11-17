@@ -264,10 +264,9 @@ class StatsBot(commands.AutoShardedBot):
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
         em = discord.Embed()
-        em.set_footer(text='Statsy')
         em.title ='Pong! Websocket Latency: '
         em.description = f'{self.latency * 1000:.4f} ms'
-        em.color = await ctx.get_dominant_color(self.user.avatar_url)
+        em.color = 0xf9c93d
         try:
             await ctx.send(embed=em)
         except discord.Forbidden:
@@ -278,12 +277,18 @@ class StatsBot(commands.AutoShardedBot):
         if ctx.author.id not in self.developers:
             return
 
+        em = discord.Embed(color=0xf9c93d)
+        em.title = 'Created Announcement'
+        em.description = message
+
         if message.lower() in 'clearnone':
+            em.title = 'Cleared PSA Message'
+            em.description = '✅'
             self.psa_message = None
         else:
             self.psa_message = message
 
-        await ctx.send(f'Created announcement: `{message}`')
+        await ctx.send(embed=em)
 
 
     @commands.command(hidden=True)
@@ -414,7 +419,11 @@ class StatsBot(commands.AutoShardedBot):
             return
         with open('data/config.json') as f:
             password = json.load(f).get('password')
-        await ctx.send('`Updating self and restarting...`')
+
+        em = discord.Embed(color=0xf9c93d)
+        em.title = 'Updating Bot'
+        em.description = 'Pulling from repository and restarting `stats.service`.'
+        await ctx.send(embed=em)
         command = 'sh ../stats.sh'
         p = os.system('echo %s|sudo -S %s' % (password, command))
 
