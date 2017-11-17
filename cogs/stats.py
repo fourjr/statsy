@@ -118,10 +118,7 @@ class Clash_Royale:
                 await session.run()
             else:
                 await ctx.send(f"**{profile.name}** doesn't have any season results.")
-
-
-
-
+                
     @commands.group(invoke_without_command=True)
     async def chests(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the next chests of a player.'''

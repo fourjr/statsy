@@ -417,6 +417,19 @@ class StatsBot(commands.AutoShardedBot):
         command = 'sh ../stats.sh'
         p = os.system('echo %s|sudo -S %s' % (password, command))
 
+    @commands.command(hidden=True)
+    async def tokenupdate(self, ctx, _token):
+        '''Update the bot's botlist token'''
+        if ctx.author.id not in self.developers:
+            return
+        with open('data/config.json') as f:
+            config = json.load(f)
+        config['botlist'] = _token
+        with open('data/config.json', 'w') as f:
+            json.dump(config, f, indent=4)
+        await ctx.send('Updated bot list token, restarting bot.')
+        await ctx.invoke(StatsBot.update)
+
     @commands.command()
     async def help(self, ctx, *, command=None):
         """Shows the help message."""
