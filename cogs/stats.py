@@ -9,7 +9,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import io
 import string
-
+from crasync import errors
 
 class TagCheck(commands.MemberConverter):
 
@@ -91,8 +91,10 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            except errors.ServerError:
+                await ctx.send('API failed to respond, please patient!')
+            except errors.NotFoundError:
+                await ctx.send('The tag cannot be found!')
             else:
                 em = await embeds.format_profile(ctx, profile)
                 await ctx.send(embed=em)
@@ -105,8 +107,10 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             profile = await self.cr.get_profile(tag)
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
+        except errors.ServerError:
+            await ctx.send('API failed to respond, please patient!')
+        except errors.NotFoundError:
+            await ctx.send('Thae tag cannot be found!')
         else:
             ems = await embeds.format_seasons(ctx, profile)
             if len(ems) > 0:
@@ -127,8 +131,10 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            except errors.ServerError:
+                await ctx.send('API failed to respond, please patient!')
+            except errors.NotFoundError:
+                await ctx.send('Thae tag cannot be found!')
             else:
                 em = await embeds.format_chests(ctx, profile)
                 await ctx.send(embed=em)
@@ -141,8 +147,10 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clan = await self.cr.get_clan(tag)
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
+        except errors.ServerError:
+            await ctx.send('API failed to respond, please patient!')
+        except errors.NotFoundError:
+            await ctx.send('Thae tag cannot be found!')
         else:
             ems = await embeds.format_clan(ctx, clan)
             session = PaginatorSession(
@@ -159,8 +167,10 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clan = await self.cr.get_clan(tag)
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
+        except errors.ServerError:
+            await ctx.send('API failed to respond, please patient!')
+        except errors.NotFoundError:
+            await ctx.send('Thae tag cannot be found!')
         else:
             ems = await embeds.format_members(ctx, clan)
             if len(ems) > 1:
@@ -180,8 +190,10 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            except errors.ServerError:
+                await ctx.send('API failed to respond, please patient!')
+            except errors.NotFoundError:
+                await ctx.send('The tag cannot be found!')
             else:
                 if len(clan.members) < 4:
                     return await ctx.send('Clan must have more than 4 players for heuristics.')
@@ -196,8 +208,10 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            except errors.ServerError:
+                await ctx.send('API failed to respond, please patient!')
+            except errors.NotFoundError:
+                await ctx.send('The tag cannot be found!')
             else:
                 if len(clan.members) < 4:
                     return await ctx.send('Clan must have more than 4 players for heuristics.')
@@ -229,8 +243,10 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            except errors.ServerError:
+                await ctx.send('API failed to respond, please patient!')
+            except errors.NotFoundError:
+                await ctx.send('The tag cannot be found!')
             else:
                 await self.format_deck_and_send(ctx, profile)
 
