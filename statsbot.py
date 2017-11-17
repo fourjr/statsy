@@ -357,7 +357,7 @@ class StatsBot(commands.AutoShardedBot):
 
         revision = os.popen(cmd).read().strip()
         em = discord.Embed()
-        em.add_field(name='Latest Changes', value=revision)
+        em.add_field(name='Latest Changes', value=revision, inline=False)
         em.timestamp = datetime.datetime.utcnow()
         status = str(ctx.guild.me.status)
         if status == 'online':
@@ -408,6 +408,7 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
         em.add_field(name='Discord', value=f'[Click Here](https://discord.gg/pmQSbAd)')
+        em.add_field(name='Upvote This Bot!', value='[Click Here](https://discordbots.org/bot/347006499677143041)')
         em.set_footer(text=f'Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
