@@ -92,7 +92,12 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except errors.ServerError:
-                await ctx.send('API failed to respond, please patient!')
+                er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
@@ -108,7 +113,12 @@ class Clash_Royale:
         try:
             profile = await self.cr.get_profile(tag)
         except errors.ServerError:
-            await ctx.send('API failed to respond, please patient!')
+            er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('Thae tag cannot be found!')
         else:
@@ -132,7 +142,12 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except errors.ServerError:
-                await ctx.send('API failed to respond, please patient!')
+                er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('Thae tag cannot be found!')
             else:
@@ -148,7 +163,12 @@ class Clash_Royale:
         try:
             clan = await self.cr.get_clan(tag)
         except errors.ServerError:
-            await ctx.send('API failed to respond, please patient!')
+            er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('Thae tag cannot be found!')
         else:
@@ -168,7 +188,12 @@ class Clash_Royale:
         try:
             clan = await self.cr.get_clan(tag)
         except errors.ServerError:
-            await ctx.send('API failed to respond, please patient!')
+            er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('Thae tag cannot be found!')
         else:
@@ -191,7 +216,12 @@ class Clash_Royale:
             try:
                 clan = await self.cr.get_clan(tag)
             except errors.ServerError:
-                await ctx.send('API failed to respond, please patient!')
+                er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
@@ -209,7 +239,12 @@ class Clash_Royale:
             try:
                 clan = await self.cr.get_clan(tag)
             except errors.ServerError:
-                await ctx.send('API failed to respond, please patient!')
+                er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
@@ -244,7 +279,12 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except errors.ServerError:
-                await ctx.send('API failed to respond, please patient!')
+                er = discord.Embed(
+                    title='Error 503',
+                    color=discord.Color.red()
+                    description='Service Unavailable, please be patient!'
+                    )
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
