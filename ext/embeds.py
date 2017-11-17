@@ -32,6 +32,8 @@ async def format_least_valuable(ctx, clan):
         color=random_color(), 
         description='Here are the least valuable members of the clan currently.'
         )
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -57,6 +59,8 @@ async def format_most_valuable(ctx, clan):
         color=random_color(), 
         description='Here are the most valuable members of the clan currently.'
         )
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -102,6 +106,8 @@ async def format_chests(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     em.set_author(name=p, icon_url=av)
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
     em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
@@ -110,6 +116,8 @@ async def format_chests(ctx, p):
 
 async def format_members(ctx, c):
     em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f"{c.name} (#{c.tag})")
     em.set_thumbnail(url=c.badge_url)
     embeds = []
@@ -138,6 +146,8 @@ async def format_seasons(ctx, p):
     if p.seasons:
         for season in p.seasons:
             em = discord.Embed(color=random_color())
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
             em.set_author(name=str(p), icon_url=av)
             em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
             em.add_field(name="Season", value=f"{season.number}")
@@ -176,6 +186,8 @@ async def format_profile(ctx, p):
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
