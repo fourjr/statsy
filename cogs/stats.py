@@ -97,7 +97,7 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description='API is under stress, please be patient!'
                     )
-                await ctx.send(embed=em)
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
@@ -118,7 +118,7 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description='API is under stress, please be patient!'
                 )
-            await ctx.send(embed=em)
+            await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('Thae tag cannot be found!')
         else:
@@ -147,7 +147,7 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description='API is under stress, please be patient!'
                     )
-                await ctx.send(embed=em)
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('Thae tag cannot be found!')
             else:
@@ -168,7 +168,7 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description='API is under stress, please be patient!'
                     )
-            await ctx.send(embed=em)
+            await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('Thae tag cannot be found!')
         else:
@@ -221,7 +221,7 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description='API is under stress, please be patient!'
                     )
-                await ctx.send(embed=em)
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
@@ -244,7 +244,7 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description='API is under stress, please be patient!'
                     )
-                await ctx.send(embed=em)
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
@@ -284,7 +284,7 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description='API is under stress, please be patient!'
                     )
-                await ctx.send(embed=em)
+                await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
