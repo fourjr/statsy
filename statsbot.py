@@ -451,7 +451,7 @@ class StatsBot(commands.AutoShardedBot):
             return await ctx.send(
                 embed=discord.Embed(
                     color=embeds.random_color(), 
-                    title=f'``Usage: {prefix}{command.signature}``', 
+                    title=f'`{prefix}{command.signature}`', 
                     description=command.help
                     )
                 )
