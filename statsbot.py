@@ -401,15 +401,7 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='Commands Run', value=sum(self.commands_used.values()))
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
-        perms = discord.Permissions.none()
-        perms.read_messages = True
-        perms.external_emojis = True
-        perms.send_messages = True
-        perms.embed_links = True
-        perms.attach_files = True
-        perms.add_reactions = True
-        perms.manage_messages = True
-        em.add_field(name='Invite', value=f'[Click Here]({discord.utils.oauth_url(self.user.id, perms)})')
+        em.add_field(name='Discord', value=f'[Click Here](https://discord.gg/pmQSbAd)')
         em.set_footer(text=f'Statsy | Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
