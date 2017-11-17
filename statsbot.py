@@ -76,6 +76,7 @@ class StatsBot(commands.AutoShardedBot):
         self.remove_command('help')
         self.messages_sent = 0
         self.maintenance_mode = False
+        self.psa_message = None
         self.loop.create_task(self.backup_task())
         self.load_extensions()
         
@@ -272,6 +273,19 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send(em.title + em.description)
 
     @commands.command(hidden=True)
+    async def psa(self, ctx, *, message):
+        if ctx.author.id not in self.developers:
+            return
+
+        if message.lower() in 'clearnone':
+            self.psa_message = None
+        else:
+            self.psa_message = message
+
+        await ctx.send(f'Created announcement: `{message}`')
+
+
+    @commands.command(hidden=True)
     async def maintenance(self, ctx):
         if ctx.author.id not in self.developers:
             return
@@ -360,7 +374,11 @@ class StatsBot(commands.AutoShardedBot):
         data = ctx.load_json()
         saved_tags = len(data['clashroyale'])+len(data['clashofclans'])
         g_authors = 'verixx, fourjr, kwugfighter, FloatCobra, XAOS1502'
-        em.description = 'StatsBot by kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
+
+        if self.psa_message:
+            em.description = f'*{self.psa_message}*'
+        else:
+            em.description = 'StatsBot by kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
 
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
@@ -428,6 +446,8 @@ class StatsBot(commands.AutoShardedBot):
         maxlen = max(sigs)
 
         em = discord.Embed(color=embeds.random_color())
+        if self.psa_message:
+            em.description = f'*{self.psa_message}*'
         em.set_footer(text='Statsy - Powered by cr-api.com')
 
         for cog in self.cogs.values():
