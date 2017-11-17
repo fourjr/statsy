@@ -252,7 +252,7 @@ async def format_profile(ctx, p):
             em.add_field(name=n, value=v, inline=i)
         else:
             if n == 'Clan Name':
-                em.add_field(name='Clan', value='No Clan')
+                em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
     em.set_footer(text='Statsy - Powered by cr-api.com')
     
