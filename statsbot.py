@@ -386,7 +386,7 @@ class StatsBot(commands.AutoShardedBot):
         if self.psa_message:
             em.description = f'*{self.psa_message}*'
         else:
-            em.description = 'StatsBot by kwugfighter and fourjr. Join the support server [here](https://discord.gg/maZqxnm).'
+            em.description = 'Statsy is a realtime game stats bot made by verixx, kwugfighter and fourjr.'
 
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
