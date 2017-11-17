@@ -343,7 +343,15 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command(name='bot',aliases=['about', 'info'])
     async def _bot(self, ctx):
         '''Shows information and stats about the bot.'''
+        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/cgrok/statsy/commit/%H) %s (%cr)"'
+        if os.name == 'posix':
+            cmd = cmd.format(r'\`%h\`')
+        else:
+            cmd = cmd.format(r'`%h`')
+
+        revision = os.popen(cmd).read().strip()
         em = discord.Embed()
+        em.add_field(name='Latest Changes', value=revision)
         em.timestamp = datetime.datetime.utcnow()
         status = str(ctx.guild.me.status)
         if status == 'online':
