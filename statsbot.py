@@ -264,6 +264,7 @@ class StatsBot(commands.AutoShardedBot):
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
         em = discord.Embed()
+        em.set_footer(text='Statsy')
         em.title ='Pong! Websocket Latency: '
         em.description = f'{self.latency * 1000:.4f} ms'
         em.color = await ctx.get_dominant_color(self.user.avatar_url)
@@ -402,7 +403,7 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
         em.add_field(name='Discord', value=f'[Click Here](https://discord.gg/pmQSbAd)')
-        em.set_footer(text=f'Statsy | Bot ID: {self.user.id}')
+        em.set_footer(text=f'Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
 
