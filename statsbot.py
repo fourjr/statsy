@@ -346,7 +346,7 @@ class StatsBot(commands.AutoShardedBot):
         ctx.save_json(g_config, 'data/guild.json')
         await ctx.send(f'Changed the prefix to: `{prefix}`')
 
-    @commands.command(name='bot',aliases=['about', 'info'])
+    @commands.command(name='bot',aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
         '''Shows information and stats about the bot.'''
         cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/cgrok/statsy/commit/%H) %s (%cr)"'
