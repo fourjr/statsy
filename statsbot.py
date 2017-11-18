@@ -426,7 +426,7 @@ class StatsBot(commands.AutoShardedBot):
         em.description = 'Pulling from repository and restarting `stats.service`.'
         await ctx.send(embed=em)
         command = 'sh ../stats.sh'
-        p = os.system('echo %s|sudo -S %s' % (password, command))
+        p = os.system(f'echo {password}|sudo -S {command}')
 
     @commands.command(hidden=True)
     async def tokenupdate(self, ctx, _token):
