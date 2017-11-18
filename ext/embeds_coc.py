@@ -110,6 +110,12 @@ async def format_war(ctx, w):
     em.set_image(url="attachment://war.png")
     em.add_field(name=w['clan']['name'], value='--------')
     em.add_field(name=w['opponent']['name'], value='--------')
+    em.add_field(name='Level', value="{w['clan']['clanLevel']} {emoji(ctx, 'experience')}")
+    em.add_field(name='Level', value="{w['opponent']['clanLevel']} {emoji(ctx, 'experience')}")
+    em.add_field(name='Attacks', value="{w['clan']['attacks']} {emoji(ctx, 'sword')}")
+    em.add_field(name='Attacks', value="{w['opponent']['attacks']} {emoji(ctx, 'sword')}")
+    em.add_field(name='Stars', value="{w['clan']['stars']} {emoji(ctx, 'cocstar')}")
+    em.add_field(name='Stars', value="{w['opponent']['stars']} {emoji(ctx, 'cocstar')}")
     return em
 
 async def format_profile(ctx, p):
