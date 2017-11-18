@@ -361,14 +361,14 @@ class StatsBot(commands.AutoShardedBot):
         em.timestamp = datetime.datetime.utcnow()
         status = str(ctx.guild.me.status)
         if status == 'online':
-            em.set_author(name="Stats", icon_url='https://i.imgur.com/wlh1Uwb.png')
+            em.set_author(name="Statsy", icon_url='https://i.imgur.com/wlh1Uwb.png')
             em.color = discord.Color.green()
         elif status == 'dnd':
             status = 'maintenance'
-            em.set_author(name="Stats", icon_url='https://i.imgur.com/lbMqojO.png')
+            em.set_author(name="Statsy", icon_url='https://i.imgur.com/lbMqojO.png')
             em.color = discord.Color.purple()
         else:
-            em.set_author(name="Stats", icon_url='https://i.imgur.com/dCLTaI3.png')
+            em.set_author(name="Statsy", icon_url='https://i.imgur.com/dCLTaI3.png')
             em.color = discord.Color.red()
 
         total_online = len({m.id for m in self.get_all_members() if m.status is not discord.Status.offline})
