@@ -108,14 +108,16 @@ async def format_war(ctx, w):
     em = discord.Embed(description='In War' if w['state'] == 'inWar' else w['state'].title(), color=random_color())
     em.set_author(name=f"{w['clan']['name']} ({w['clan']['tag']}) vs {w['opponent']['name']} ({w['opponent']['tag']})")
     em.set_image(url="attachment://war.png")
-    em.add_field(name=w['clan']['name'], value='--------')
-    em.add_field(name=w['opponent']['name'], value='--------')
+    em.add_field(name=w['clan']['name'], value='--------------')
+    em.add_field(name=w['opponent']['name'], value='--------------')
     em.add_field(name='Level', value=f"{w['clan']['clanLevel']} {emoji(ctx, 'experience')}")
     em.add_field(name='Level', value=f"{w['opponent']['clanLevel']} {emoji(ctx, 'experience')}")
     em.add_field(name='Attacks', value=f"{w['clan']['attacks']} {emoji(ctx, 'sword')}")
     em.add_field(name='Attacks', value=f"{w['opponent']['attacks']} {emoji(ctx, 'sword')}")
     em.add_field(name='Stars', value=f"{w['clan']['stars']} {emoji(ctx, 'cocstar')}")
     em.add_field(name='Stars', value=f"{w['opponent']['stars']} {emoji(ctx, 'cocstar')}")
+    em.add_field(name='Destruction', value=f"{w['clan']['destructionPercentage']}%")
+    em.add_field(name='Destruction', value=f"{w['opponent']['destructionPercentage']}%")
     return em
 
 async def format_profile(ctx, p):
