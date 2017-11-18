@@ -350,15 +350,14 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command(name='bot',aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
         '''Shows information and stats about the bot.'''
-        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/cgrok/statsy/commit/%H) %s (%cr)"'
-        if os.name == 'posix':
-            cmd = cmd.format(r'\`%h\`')
-        else:
-            cmd = cmd.format(r'`%h`')
-
-        revision = os.popen(cmd).read().strip()
+        async with ctx.session.get("https://api.github.com/repos/cgrok/statsy/commits") as resp:
+            data = await resp.json()
+        revision = []
+        for n, commit in enumerate(data):
+            if n < 3:
+                revision.append(f"(`{commit['sha'][:7]}`)[{commit['url']}] {commit['commit']['message']} ({commit['commit']['commiter']['date'].split('T')[0]} {commit['commit']['commiter']['date'].split('T')[1].replace('Z', '')}) - Made by `{commit['commit']['commiter']['name']}`")
         em = discord.Embed()
-        em.add_field(name='Latest Changes', value=revision, inline=False)
+        em.add_field(name='Latest Changes', value='\n'.join(revision), inline=False)
         em.timestamp = datetime.datetime.utcnow()
         status = str(ctx.guild.me.status)
         if status == 'online':
