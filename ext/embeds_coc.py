@@ -105,9 +105,11 @@ async def format_achievements(ctx, p):
     return embeds
 
 async def format_war(ctx, w):
-    em = discord.Embed(description=f"Up against **{w['opponent']['name']} ({w['opponent']['tag']})**!", color=random_color())
-    em.set_author(name=f"{w['clan']['name']} ({w['clan']['tag']})")
+    em = discord.Embed(description='In War' if w['state'] == 'inWar' else w['state'].title(), color=random_color())
+    em.set_author(name=f"{w['clan']['name']} ({w['clan']['tag']}) vs {w['opponent']['name']} ({w['opponent']['tag']})")
     em.set_image(url="attachment://war.png")
+    em.add_field(name=w['clan']['name'], value='--------')
+    em.add_field(name=w['opponent']['name'], value='--------')
     return em
 
 async def format_profile(ctx, p):
