@@ -412,7 +412,7 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
         em.add_field(name='Discord', value=f'[Click Here](https://discord.gg/pmQSbAd)')
-        em.add_field(name='Upvote This Bot!', value='https://discordbots.org/bot/347006499677143041')
+        em.add_field(name='Upvote This Bot!', value='https://discordbots.org/bot/statsy')
         em.set_footer(text=f'Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
