@@ -91,11 +91,11 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.ServerError:
+            except errors.ServerError as e:
                 er = discord.Embed(
                     title='Error 503',
                     color=discord.Color.red(),
-                    description='API is under stress, please be patient!'
+                    description=e.error
                     )
                 await ctx.send(embed=er)
             except errors.NotFoundError:
@@ -112,11 +112,11 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             profile = await self.cr.get_profile(tag)
-        except errors.ServerError:
+        except errors.ServerError as e:
             er = discord.Embed(
                 title='Error 503',
                 color=discord.Color.red(),
-                description='API is under stress, please be patient!'
+                description=e.error
                 )
             await ctx.send(embed=er)
         except errors.NotFoundError:
@@ -141,11 +141,11 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.ServerError:
+            except errors.ServerError as e:
                 er = discord.Embed(
                     title='Error 503',
                     color=discord.Color.red(),
-                    description='API is under stress, please be patient!'
+                    description=e.error
                     )
                 await ctx.send(embed=er)
             except errors.NotFoundError:
@@ -162,11 +162,11 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clan = await self.cr.get_clan(tag)
-        except errors.ServerError:
+        except errors.ServerError as e:
             er = discord.Embed(
                 title='Error 503',
                 color=discord.Color.red(),
-                description='API is under stress, please be patient!'
+                description=e.error
                     )
             await ctx.send(embed=er)
         except errors.NotFoundError:
@@ -187,11 +187,11 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clan = await self.cr.get_clan(tag)
-        except errors.ServerError:
+        except errors.ServerError as e:
             er = discord.Embed(
                 title='Error 503',
                 color=discord.Color.red(),
-                description='API is under stress, please be patient!'
+                description=e.error
                     )
             await ctx.send(embed=em)
         except errors.NotFoundError:
@@ -215,11 +215,11 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
-            except errors.ServerError:
+            except errors.ServerError as e:
                 er = discord.Embed(
                     title='Error 503',
                     color=discord.Color.red(),
-                    description='API is under stress, please be patient!'
+                    description=e.error
                     )
                 await ctx.send(embed=er)
             except errors.NotFoundError:
@@ -238,11 +238,11 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
-            except errors.ServerError:
+            except errors.ServerError as e:
                 er = discord.Embed(
                     title='Error 503',
                     color=discord.Color.red(),
-                    description='API is under stress, please be patient!'
+                    description=e.error
                     )
                 await ctx.send(embed=er)
             except errors.NotFoundError:
@@ -278,11 +278,11 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.ServerError:
+            except errors.ServerError as e:
                 er = discord.Embed(
                     title='Error 503',
                     color=discord.Color.red(),
-                    description='API is under stress, please be patient!'
+                    description=e.error
                     )
                 await ctx.send(embed=er)
             except errors.NotFoundError:
