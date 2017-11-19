@@ -365,14 +365,14 @@ class StatsBot(commands.AutoShardedBot):
         em.timestamp = datetime.datetime.utcnow()
         status = str(ctx.guild.me.status)
         if status == 'online':
-            em.set_author(name="Statsy", icon_url='https://i.imgur.com/wlh1Uwb.png')
+            em.set_author(name="Bot Information", icon_url='https://i.imgur.com/wlh1Uwb.png')
             em.color = discord.Color.green()
         elif status == 'dnd':
             status = 'maintenance'
-            em.set_author(name="Statsy", icon_url='https://i.imgur.com/lbMqojO.png')
+            em.set_author(name="Bot Information", icon_url='https://i.imgur.com/lbMqojO.png')
             em.color = discord.Color.purple()
         else:
-            em.set_author(name="Statsy", icon_url='https://i.imgur.com/dCLTaI3.png')
+            em.set_author(name="Bot Information", icon_url='https://i.imgur.com/dCLTaI3.png')
             em.color = discord.Color.red()
 
         total_online = len({m.id for m in self.get_all_members() if m.status is not discord.Status.offline})
@@ -412,8 +412,8 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
         em.add_field(name='Commands Run', value=sum(self.commands_used.values()))
         em.add_field(name='Saved Tags', value=saved_tags)
+        em.add_field(name='Library', value=f'discord.py {discord.__version__}')
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
-        em.add_field(name='Discord', value=f'[Click Here](https://discord.gg/pmQSbAd)')
         em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}')
         em.set_footer(text=f'Bot ID: {self.user.id}')
 
