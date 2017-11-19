@@ -143,12 +143,12 @@ class StatsBot(commands.AutoShardedBot):
     async def get_prefix(self, message):
         '''Returns the prefix.
 
-        Still need to do stuff with db to get server prefix.
+        need to switch to a db soon
         '''
         with open('data/guild.json') as f:
             cfg = json.load(f)
 
-        id = str(message.guild.id)
+        id = str(getattr(message.guild, 'id', None))
 
         prefixes = [
             f'<@{self.user.id}> ', 
@@ -352,7 +352,7 @@ class StatsBot(commands.AutoShardedBot):
     async def _bot(self, ctx):
         '''Shows information and stats about the bot.'''
         cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/cgrok/statsy/commit/%H) %s (%cr)"'
-        
+
         if os.name == 'posix':
             cmd = cmd.format(r'\`%h\`')
         else:
@@ -605,9 +605,11 @@ class StatsBot(commands.AutoShardedBot):
                         await ctx.send(f'```py\n{page}\n```')
 
         if out:
-            await out.add_reaction('\u2705') #tick
+            await ctx.message.add_reaction('\u2705') #tick
         if err:
-            await err.add_reaction('\u2049') #x
+            await ctx.message.add_reaction('\u2049') #x
+        else:
+            await ctx.message.add_reaction('\u2705')
 
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
