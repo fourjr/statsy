@@ -349,7 +349,7 @@ class Clash_Royale:
         txt_y_line1 = 430
         txt_y_line2 = 500
         txt_x_name = 50
-        txt_x_cards = 503
+        txt_x_cards = 700
         txt_x_elixir = 1872
 
         bg_image = Image.open("data/deck-bg.png")
