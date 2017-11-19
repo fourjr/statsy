@@ -398,6 +398,8 @@ class StatsBot(commands.AutoShardedBot):
         else:
             em.description = 'Statsy is a realtime game stats bot made by Kyber, Kwugfighter and 4JR.'
 
+        cbot = '<:certifiedbot:308880575379275776>'
+
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
         em.add_field(name='Latency', value=f'{self.latency*1000:.2f} ms')
@@ -412,7 +414,7 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
         em.add_field(name='Discord', value=f'[Click Here](https://discord.gg/pmQSbAd)')
-        em.add_field(name='Upvote This Bot!', value='https://discordbots.org/bot/statsy')
+        em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}')
         em.set_footer(text=f'Bot ID: {self.user.id}')
 
         await ctx.send(embed=em)
