@@ -356,7 +356,11 @@ class StatsBot(commands.AutoShardedBot):
         revision = []
         for n, commit in enumerate(data):
             if n < 3:
+<<<<<<< HEAD
                 revision.append(f"[`{commit['sha'][:7]}`]({commit['html_url']}) {commit['commit']['message']} - `{commit['commit']['committer']['name']}` ({commit['commit']['committer']['date'].split('T')[0]} {commit['commit']['committer']['date'].split('T')[1].replace('Z', '')})")
+=======
+                revision.append(f"[`{commit['sha'][:7]}`]({commit['url']}) {commit['commit']['message']} - Made by `{commit['commit']['committer']['name']}` ({commit['commit']['committer']['date'].split('T')[0]} {commit['commit']['committer']['date'].split('T')[1].replace('Z', '')})")
+>>>>>>> parent of 652abc4... this should look better
         em = discord.Embed()
         em.add_field(name='Latest Changes', value='\n'.join(revision), inline=False)
         em.timestamp = datetime.datetime.utcnow()
