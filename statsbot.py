@@ -396,7 +396,7 @@ class StatsBot(commands.AutoShardedBot):
         if self.psa_message:
             em.description = f'*{self.psa_message}*'
         else:
-            em.description = 'Statsy is a realtime game stats bot made by Kyber, Kwugfighter and 4JR.'
+            em.description = 'Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR.'
 
         cbot = '<:certifiedbot:308880575379275776>'
 
@@ -412,7 +412,7 @@ class StatsBot(commands.AutoShardedBot):
         em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
         em.add_field(name='Commands Run', value=sum(self.commands_used.values()))
         em.add_field(name='Saved Tags', value=saved_tags)
-        em.add_field(name='Library', value=f'discord.py {discord.__version__}')
+        em.add_field(name='Library', value='discord.py')
         em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
         em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}')
         em.set_footer(text=f'Bot ID: {self.user.id}')
