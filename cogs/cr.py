@@ -93,7 +93,7 @@ class Clash_Royale:
                 profile = await self.cr.get_profile(tag)
             except errors.ServerError as e:
                 er = discord.Embed(
-                    title='Error 503',
+                    title=f'Error {e.code}',
                     color=discord.Color.red(),
                     description=e.error
                     )
@@ -114,7 +114,7 @@ class Clash_Royale:
             profile = await self.cr.get_profile(tag)
         except errors.ServerError as e:
             er = discord.Embed(
-                title='Error 503',
+                title=f'Error {e.code}',
                 color=discord.Color.red(),
                 description=e.error
                 )
@@ -143,7 +143,7 @@ class Clash_Royale:
                 profile = await self.cr.get_profile(tag)
             except errors.ServerError as e:
                 er = discord.Embed(
-                    title='Error 503',
+                    title=f'Error {e.code}',
                     color=discord.Color.red(),
                     description=e.error
                     )
@@ -164,7 +164,7 @@ class Clash_Royale:
             clan = await self.cr.get_clan(tag)
         except errors.ServerError as e:
             er = discord.Embed(
-                title='Error 503',
+                title=f'Error {e.code}',
                 color=discord.Color.red(),
                 description=e.error
                     )
@@ -189,7 +189,7 @@ class Clash_Royale:
             clan = await self.cr.get_clan(tag)
         except errors.ServerError as e:
             er = discord.Embed(
-                title='Error 503',
+                title=f'Error {e.code}',
                 color=discord.Color.red(),
                 description=e.error
                     )
@@ -217,7 +217,7 @@ class Clash_Royale:
                 clan = await self.cr.get_clan(tag)
             except errors.ServerError as e:
                 er = discord.Embed(
-                    title='Error 503',
+                    title=f'Error {e.code}',
                     color=discord.Color.red(),
                     description=e.error
                     )
@@ -240,7 +240,7 @@ class Clash_Royale:
                 clan = await self.cr.get_clan(tag)
             except errors.ServerError as e:
                 er = discord.Embed(
-                    title='Error 503',
+                    title=f'Error {e.code}',
                     color=discord.Color.red(),
                     description=e.error
                     )
@@ -280,7 +280,7 @@ class Clash_Royale:
                 profile = await self.cr.get_profile(tag)
             except errors.ServerError as e:
                 er = discord.Embed(
-                    title='Error 503',
+                    title=f'Error {e.code}',
                     color=discord.Color.red(),
                     description=e.error
                     )
