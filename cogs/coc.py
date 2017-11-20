@@ -206,7 +206,7 @@ class Clash_of_Clans:
 
     @commands.command()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
-        '''WIP Check your current war status.'''
+        '''Check your current war status.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
