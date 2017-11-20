@@ -1,6 +1,6 @@
 # Statsy
 
-<a href="https://discordbots.org/bot/347006499677143041">
+<a href="https://discordbots.org/bot/statsy">
   <img src="https://discordbots.org/api/widget/347006499677143041.png" alt="Discord Bots" />
 </a>
 
