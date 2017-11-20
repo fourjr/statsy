@@ -57,7 +57,7 @@ class Overwatch:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
-    async def cocprofile(self, ctx, region, *, tag_or_user: TagCheck=None):
+    async def ovprofile(self, ctx, region, *, tag_or_user: TagCheck=None):
         '''Gets the Overwatch profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
         tag = tag.replace('#', '-')
