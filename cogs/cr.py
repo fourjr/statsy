@@ -182,6 +182,30 @@ class Clash_Royale:
             await session.run()
 
     @commands.group(invoke_without_command=True)
+    async def topclans(self, ctx):
+        '''Returns the global top 50 clans.'''
+
+        await ctx.trigger_typing()
+        try:
+            clans = await self.cr.get_top_clans()
+        except errors.ServerError as e:
+            er = discord.Embed(
+                title=f'Error {e.code}',
+                color=discord.Color.red(),
+                description=e.error
+                    )
+            await ctx.send(embed=er)
+        except errors.NotFoundError:
+            await ctx.send('Thae tag cannot be found!')
+        else:
+            ems = await embeds.format_top_clans(ctx, clans)
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems
+                )
+            await session.run()
+
+    @commands.group(invoke_without_command=True)
     async def members(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)

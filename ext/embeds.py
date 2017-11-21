@@ -126,6 +126,8 @@ async def format_members(ctx, c):
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge_url)
         em.add_field(
@@ -138,6 +140,33 @@ async def format_members(ctx, c):
         counter += 1
     embeds.append(em)
     return embeds
+
+async def format_top_clans(ctx, clans):
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    else:
+        em.description = 'Top 50 global clans right now.'
+    em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
+    embeds = []
+    counter = 0
+    for c in clans:
+        if counter % 6 == 0 and counter != 0:
+            embeds.append(em)
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
+            else:
+                em.description = 'Top 50 global clans right now.'
+            em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
+        em.add_field(
+            name=c
+            value=f"{c.trophies} "
+                  f"{emoji(ctx, 'trophy')}\n{m.rank} "
+                  f"{emoji(ctx, 'rank')}\n{m.member_count}/50 "
+                  f"{emoji(ctx, 'clan')}"
+                  )
+    return embeds
+
 
 async def format_seasons(ctx, p):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
