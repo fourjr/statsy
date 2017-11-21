@@ -28,6 +28,7 @@ class TagCheck(commands.MemberConverter):
         return argument.strip('#').upper()
 
 class Overwatch:
+    '''Commands relating to the Overwatch game.'''
 
     def __init__(self, bot):
         self.bot = bot

@@ -50,7 +50,7 @@ class InvalidTag(commands.BadArgument):
 
 class StatsBot(commands.AutoShardedBot):
     '''
-    Custom Client for cr-statsbot - Made by verix#7220
+    Custom client for statsy made by Kyber
     '''
     emoji_servers = [
         376364364636094465, 
@@ -469,12 +469,22 @@ class StatsBot(commands.AutoShardedBot):
         """Shows the help message."""
         prefix = (await self.get_prefix(ctx.message))[2]
 
+        if command is not None:
+            command = self.get_command(command)
+            return await ctx.send(
+                embed=discord.Embed(
+                    color=embeds.random_color(), 
+                    title=f'`{prefix}{command.signature}`', 
+                    description=command.help
+                    )
+                )
+
         pages = []
 
         for name, cog in self.cogs.items():
             maxlen = self.get_maxlen(cog, prefix)
-            em = discord.Embed(title=name.replace('_',''))
-            em.description = inspect.getdoc(cog)
+            em = discord.Embed(title=name.replace('_',' '))
+            em.description = self.psa_message or inspect.getdoc(cog)
             em.color = embeds.random_color()
             fmt = ''
             for cmd in self.commands:

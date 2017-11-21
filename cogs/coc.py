@@ -29,6 +29,8 @@ class TagCheck(commands.MemberConverter):
 
 class Clash_of_Clans:
 
+    '''Commands relating to the Clash of Clans game made by supercell.'''
+
     def __init__(self, bot):
         self.bot = bot
         with open('data/config.json') as config:

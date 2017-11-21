@@ -42,6 +42,8 @@ class TagCheck(commands.MemberConverter):
 
 class Clash_Royale:
 
+    '''Commands relating to the Clash Royale game made by supercell.'''
+
     def __init__(self, bot):
         self.bot = bot
         self.cr = bot.cr
