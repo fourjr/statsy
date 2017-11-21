@@ -481,7 +481,7 @@ class StatsBot(commands.AutoShardedBot):
         em.color = embeds.random_color()
         em.description = '*'+(self.psa_message or inspect.getdoc(cog))+'*'
         em.add_field(name='Commands', value=fmt)
-        em.set_footer(text=f'Do {prefix}help command for more info on a command.')
+        em.set_footer(text=f'Type {prefix}help command for more info on a command.')
 
         return em
 
