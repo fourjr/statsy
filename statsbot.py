@@ -505,7 +505,7 @@ class StatsBot(commands.AutoShardedBot):
         prefix = (await self.get_prefix(ctx.message))[2]
 
         if command:
-            em = self.format_command_help(command, prefix):
+            em = self.format_command_help(command, prefix)
             if em:
                 return await ctx.send(embed=em)
             else:
