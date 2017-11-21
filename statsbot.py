@@ -485,28 +485,31 @@ class StatsBot(commands.AutoShardedBot):
 
         return em
 
+    def format_command_help(self, command, prefix):
+        '''Formats command help.'''
+        name = command.replace(' ', '_')
+        cog = self.cogs.get(name)
+        if cog is not None:
+            return self.format_cog_help(name, cog, prefix)
+        cmd = self.get_command(command)
+        if cmd is not None:
+            return discord.Embed(
+                    color=embeds.random_color(),
+                    title=f'`{prefix}{cmd.signature}`', 
+                    description=cmd.help
+                    )
+                
     @commands.command()
     async def help(self, ctx, *, command=None):
         """Shows the help message."""
         prefix = (await self.get_prefix(ctx.message))[2]
 
         if command:
-            name = command.replace(' ', '_')
-            cog = self.cogs.get(name)
-            if cog is not None:
-                return await ctx.send(
-                    embed=self.format_cog_help(name, cog, prefix)
-                    ) 
-            cmd = self.get_command(command)
-            if cmd is not None:
-                return await ctx.send(
-                    embed=discord.Embed(
-                        color=embeds.random_color(),
-                        title=f'`{prefix}{cmd.signature}`', 
-                        description=cmd.help
-                        )
-                    )
-            return await ctx.send('Could not find a cog or command by that name.')
+            em = self.format_command_help(command, prefix):
+            if em:
+                return await ctx.send(embed=em)
+            else:
+                return await ctx.send('Could not find a cog or command by that name.')
 
         pages = []
 
