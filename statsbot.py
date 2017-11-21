@@ -75,7 +75,7 @@ class StatsBot(commands.AutoShardedBot):
         self.cr = crasync.Client(self.session)
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
-        self.process = psutil.Process()
+        self.process = psutil.Process(os.getpid())
         self.remove_command('help')
         self.messages_sent = 0
         self.maintenance_mode = False
