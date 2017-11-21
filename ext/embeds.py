@@ -161,8 +161,8 @@ async def format_top_clans(ctx, clans):
         em.add_field(
             name=c,
             value=f"{c.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.rank} "
-                  f"{emoji(ctx, 'rank')}\n{m.member_count}/50 "
+                  f"{emoji(ctx, 'trophy')}\n{c.rank} "
+                  f"{emoji(ctx, 'rank')}\n{c.member_count}/50 "
                   f"{emoji(ctx, 'clan')}"
                   )
     return embeds
