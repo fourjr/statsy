@@ -75,7 +75,7 @@ class Overwatch:
                     em.set_author(name=tag.split('-')[0], icon_url=profile[region]['overall_stats']['avatar'])
                 except:
                     em.set_author(name=tag.split('-')[0])
-                await ctx.send(em)
+                await ctx.send(embed=em)
 
             
     @commands.command()
