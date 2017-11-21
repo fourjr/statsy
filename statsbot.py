@@ -449,8 +449,8 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.invoke(StatsBot.update)
 
 
-    def get_maxlen(self, cog, prefix):
-        '''Gets the max length of a command.'''
+    def format_cog_help(self, name, cog, prefix):
+        '''Formats the text for a cog help'''
         sigs = []
 
         for cmd in self.commands:
@@ -462,11 +462,8 @@ class StatsBot(commands.AutoShardedBot):
                     for c in cmd.all_commands.values():
                         sigs.append(len('\u200b  └─ ' + c.name)+1)
 
-        return max(sigs)
+        maxlen = max(sigs)
 
-    def format_cog_help(self, name, cog, prefix):
-        '''Formats the text for a cog help'''
-        maxlen = self.get_maxlen(cog, prefix)
         fmt = ''
         for cmd in self.commands:
             if cmd.instance is cog:
@@ -484,6 +481,7 @@ class StatsBot(commands.AutoShardedBot):
         em.color = embeds.random_color()
         em.description = '*'+(self.psa_message or inspect.getdoc(cog))+'*'
         em.add_field(name='Commands', value=fmt)
+        em.set_footer(text=f'Do {prefix}help command for more info on a command.')
 
         return em
 
@@ -517,7 +515,7 @@ class StatsBot(commands.AutoShardedBot):
             pages.append(em)
 
         p_session = PaginatorSession(ctx, 
-            footer_text=f'Do {prefix}command for more info on a command.',
+            footer_text=f'Do {prefix}help command for more info on a command.',
             pages=pages
             )
 
