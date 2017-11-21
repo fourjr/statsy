@@ -84,7 +84,7 @@ class Overwatch:
 
         Ability to save multiple tags coming soon.
         '''
-        ctx.save_tag(tag.replace("#", ""), 'overwatch')
+        ctx.save_tag(tag.replace("#", "-"), 'overwatch')
         await ctx.send('Successfuly saved tag.')
 
 
