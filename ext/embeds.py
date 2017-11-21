@@ -148,6 +148,7 @@ async def format_top_clans(ctx, clans):
     else:
         em.description = 'Top 50 global clans right now.'
     em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
+    em.set_thumbnail(url=clans[0].badge_url)
     embeds = []
     counter = 0
     for c in clans:
@@ -159,6 +160,7 @@ async def format_top_clans(ctx, clans):
             else:
                 em.description = 'Top 50 global clans right now.'
             em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
+            em.set_thumbnail(url=clans[0].badge_url)
         em.add_field(
             name=c,
             value=f"{c.trophies} "
