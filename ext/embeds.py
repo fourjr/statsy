@@ -166,6 +166,8 @@ async def format_top_clans(ctx, clans):
                   f"{emoji(ctx, 'rank')}\n{c.member_count}/50 "
                   f"{emoji(ctx, 'clan')}"
                   )
+        counter += 1
+    embeds.append(em)
     return embeds
 
 
