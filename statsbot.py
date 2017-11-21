@@ -26,6 +26,7 @@ import discord
 import crasync
 from discord.ext import commands
 from ext.context import CustomContext
+from ext.paginator import PaginatorSession
 from ext import embeds
 from collections import defaultdict
 from contextlib import redirect_stdout
@@ -81,7 +82,7 @@ class StatsBot(commands.AutoShardedBot):
         self.psa_message = None
         self.loop.create_task(self.backup_task())
         self.load_extensions()
-        
+        self.cogs['Bot_Related'] = self
 
     def get_game_emojis(self):
         emojis = []
@@ -447,40 +448,34 @@ class StatsBot(commands.AutoShardedBot):
         await ctx.send('Updated bot list token, restarting bot.')
         await ctx.invoke(StatsBot.update)
 
-    @commands.command()
-    async def help(self, ctx, *, command=None):
-        """Shows the help message."""
 
-        prefix = (await self.get_prefix(ctx.message))[2]
-
-        if command is not None:
-            command = self.get_command(command)
-            return await ctx.send(
-                embed=discord.Embed(
-                    color=embeds.random_color(), 
-                    title=f'`{prefix}{command.signature}`', 
-                    description=command.help
-                    )
-                )
-
+    def get_maxlen(self, cog, prefix):
+        '''Gets the max length of a command.'''
         sigs = []
 
         for cmd in self.commands:
             if cmd.hidden:
                 continue
-            sigs.append(len(cmd.qualified_name)+len(prefix))
-            if hasattr(cmd, 'all_commands'):
-                for c in cmd.all_commands.values():
-                    sigs.append(len('\u200b  └─ ' + c.name)+1)
+            if cmd.instance is cog:
+                sigs.append(len(cmd.qualified_name)+len(prefix))
+                if hasattr(cmd, 'all_commands'):
+                    for c in cmd.all_commands.values():
+                        sigs.append(len('\u200b  └─ ' + c.name)+1)
 
-        maxlen = max(sigs)
+        return max(sigs)
 
-        em = discord.Embed(color=embeds.random_color())
-        if self.psa_message:
-            em.description = f'*{self.psa_message}*'
-        em.set_footer(text='Statsy - Powered by cr-api.com')
+    @commands.command()
+    async def help(self, ctx, *, command=None):
+        """Shows the help message."""
+        prefix = (await self.get_prefix(ctx.message))[2]
 
-        for cog in self.cogs.values():
+        embeds = []
+
+        for name, cog in self.cogs.items():
+            maxlen = self.get_maxlen(cog, prefix)
+            em = discord.Embed(title=name.replace('_',''))
+            em.description = inspect.getdoc(cog)
+            em.color = embeds.random_color()
             fmt = ''
             for cmd in self.commands:
                 if cmd.instance is cog:
@@ -494,26 +489,15 @@ class StatsBot(commands.AutoShardedBot):
                             fmt += f"`{branch:<{maxlen+1}} " 
                             fmt += f"{c.short_doc:<{maxlen}}`\n"
 
-            cog_name = type(cog).__name__.replace('_', ' ')
-            em.add_field(name=cog_name, value=fmt)
+            em.add_field(name='Commands', value=fmt)
 
-        fmt = ''
+        p_session = PaginatorSession(
+            ctx, 
+            footer_text=f'Do {prefix}command for more info on a command.',
+            pages=embeds
+            )
 
-        for cmd in self.commands:
-            if cmd.instance is self:
-                if cmd.hidden:
-                    continue
-                fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} '
-                fmt += f'{cmd.short_doc:<{maxlen}}`\n'
-                if hasattr(cmd, 'commands'):
-                    for c in cmd.commands:
-                        branch = '\u200b  └─ ' + c.name
-                        fmt += f"`{branch:<{maxlen+1}} " 
-                        fmt += f"{c.short_doc:<{maxlen}}`\n"
-
-        em.add_field(name='Bot Related', value=fmt)
-
-        await ctx.send(embed=em)
+        await p_session.run()
 
     @commands.command()
     async def source(self, ctx, *, command: str = None):
