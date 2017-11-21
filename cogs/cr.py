@@ -195,8 +195,6 @@ class Clash_Royale:
                 description=e.error
                     )
             await ctx.send(embed=er)
-        except errors.NotFoundError:
-            await ctx.send('Thae tag cannot be found!')
         else:
             ems = await embeds.format_top_clans(ctx, clans)
             session = PaginatorSession(
