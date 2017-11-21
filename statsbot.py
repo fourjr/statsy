@@ -469,7 +469,7 @@ class StatsBot(commands.AutoShardedBot):
         """Shows the help message."""
         prefix = (await self.get_prefix(ctx.message))[2]
 
-        embeds = []
+        pages = []
 
         for name, cog in self.cogs.items():
             maxlen = self.get_maxlen(cog, prefix)
@@ -494,7 +494,7 @@ class StatsBot(commands.AutoShardedBot):
         p_session = PaginatorSession(
             ctx, 
             footer_text=f'Do {prefix}command for more info on a command.',
-            pages=embeds
+            pages=pages
             )
 
         await p_session.run()
