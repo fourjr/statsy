@@ -33,6 +33,7 @@ class Overwatch:
     def __init__(self, bot):
         self.bot = bot
         self.conv = TagCheck()
+        self.session = aiohttp.ClientSession(headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'})
 
     async def resolve_tag(self, ctx, tag_or_user):
         if not tag_or_user:
@@ -56,21 +57,36 @@ class Overwatch:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
-    async def ovprofile(self, ctx, region, *, tag_or_user: TagCheck=None):
+    async def ovprofile(self, ctx, region, playtype, *, tag_or_user: TagCheck=None):
         '''Gets the Overwatch profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
+        region = region.lower()
         tag = tag.replace('#', '-')
+        playtype = playtype.lower()
+        types = ['quickplay', 'competitive']
+        region_aliases = {
+            'korea': 'kr',
+            'america': 'us',
+            'europe': 'eu'
+            }
+        if region in region_aliases:
+            region = region_aliases[region]
+        regions = ['kr', 'us', 'eu']
+        if region not in regions:
+            return await ctx.send('Please enter a correct region!')
+        if playtype not in types:
+            return await ctx.send("The `playtype` has to be either `quickplay` or `competitive`!")
 
         async with ctx.typing():
             try:
-                async with ctx.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
+                async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
                     profile = await p.json()
             except Exception as e:
                 return await ctx.send(f'`{e}`')
             else:
-                em = await embeds_ov.format_profile(profile[region])
+                em = await embeds_ov.format_profile(ctx, profile[region], playtype)
                 try:
-                    em.set_author(name=tag.split('-')[0], icon_url=profile[region]['overall_stats']['avatar'])
+                    em.set_author(name=tag.split('-')[0], icon_url=profile[region]['stats'][playtype]['overall_stats']['avatar'])
                 except:
                     em.set_author(name=tag.split('-')[0])
                 await ctx.send(embed=em)

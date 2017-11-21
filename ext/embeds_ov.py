@@ -17,7 +17,7 @@ def cdir(obj):
 def random_color():
     return random.randint(0, 0xFFFFFF)
 
-async def format_profile(ctx, p):
+async def format_profile(ctx, p, ptype):
     em = discord.Embed(color=random_color())
     if not p:
         em.description = "There aren't any stats for this region!"
