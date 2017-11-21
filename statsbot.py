@@ -490,6 +490,7 @@ class StatsBot(commands.AutoShardedBot):
                             fmt += f"{c.short_doc:<{maxlen}}`\n"
 
             em.add_field(name='Commands', value=fmt)
+            pages.append(em)
 
         p_session = PaginatorSession(
             ctx, 
