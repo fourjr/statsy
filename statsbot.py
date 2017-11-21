@@ -481,7 +481,7 @@ class StatsBot(commands.AutoShardedBot):
 
         pages = []
 
-        for name, cog in self.cogs.items():
+        for name, cog in sorted(self.cogs.items()):
             maxlen = self.get_maxlen(cog, prefix)
             em = discord.Embed(title=name.replace('_',' '))
             em.description = self.psa_message or inspect.getdoc(cog)
