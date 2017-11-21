@@ -43,8 +43,6 @@ class Overwatch:
                 await ctx.send('You don\'t have a saved tag.')
                 raise e
             else:
-                if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
