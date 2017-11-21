@@ -518,7 +518,7 @@ class StatsBot(commands.AutoShardedBot):
             pages.append(em)
 
         p_session = PaginatorSession(ctx, 
-            footer_text=f'Do {prefix}help command for more info on a command.',
+            footer_text=f'Type {prefix}help command for more info on a command.',
             pages=pages
             )
 
