@@ -161,8 +161,8 @@ async def format_top_clans(ctx, clans):
             em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
         em.add_field(
             name=c.name,
-            value=f"{c.tag}\n{c.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{c.rank} "
+            value=f"#{c.tag}\n{c.trophies} "
+                  f"{emoji(ctx, 'trophy')}\nRank: {c.rank} "
                   f"{emoji(ctx, 'rank')}\n{c.member_count}/50 "
                   f"{emoji(ctx, 'clan')}"
                   )
