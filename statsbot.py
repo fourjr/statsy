@@ -464,46 +464,59 @@ class StatsBot(commands.AutoShardedBot):
 
         return max(sigs)
 
+    def format_cog_help(self, name, cog, prefix):
+        '''Formats the text for a cog help'''
+        maxlen = self.get_maxlen(cog, prefix)
+        fmt = ''
+        for cmd in self.commands:
+            if cmd.instance is cog:
+                if cmd.hidden:
+                    continue
+                fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} '
+                fmt += f'{cmd.short_doc:<{maxlen}}`\n'
+                if hasattr(cmd, 'commands'):
+                    for c in cmd.commands:
+                        branch = '\u200b  └─ ' + c.name
+                        fmt += f"`{branch:<{maxlen+1}} " 
+                        fmt += f"{c.short_doc:<{maxlen}}`\n"
+
+        em = discord.Embed(title=name.replace('_',' '))
+        em.color = embeds.random_color()
+        em.description = '*'+(self.psa_message or inspect.getdoc(cog))+'*'
+        em.add_field(name='Commands', value=fmt)
+
+        return em
+
     @commands.command()
     async def help(self, ctx, *, command=None):
         """Shows the help message."""
         prefix = (await self.get_prefix(ctx.message))[2]
 
-        if command is not None:
-            command = self.get_command(command)
-            return await ctx.send(
-                embed=discord.Embed(
-                    color=embeds.random_color(), 
-                    title=f'`{prefix}{command.signature}`', 
-                    description=command.help
+        if command:
+            name = command.replace(' ', '_')
+            cog = self.cogs.get(name)
+            if cog is not None:
+                return await ctx.send(
+                    embed=self.format_cog_help(name, cog, prefix)
+                    ) 
+            cmd = self.get_command(command)
+            if cmd is not None:
+                return await ctx.send(
+                    embed=discord.Embed(
+                        color=embeds.random_color(),
+                        title=f'`{prefix}{cmd.signature}`', 
+                        description=cmd.help
+                        )
                     )
-                )
+            return await ctx.send('Could not find a cog or command by that name.')
 
         pages = []
 
         for name, cog in sorted(self.cogs.items()):
-            maxlen = self.get_maxlen(cog, prefix)
-            em = discord.Embed(title=name.replace('_',' '))
-            em.description = '*'+(self.psa_message or inspect.getdoc(cog))+'*'
-            em.color = embeds.random_color()
-            fmt = ''
-            for cmd in self.commands:
-                if cmd.instance is cog:
-                    if cmd.hidden:
-                        continue
-                    fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} '
-                    fmt += f'{cmd.short_doc:<{maxlen}}`\n'
-                    if hasattr(cmd, 'commands'):
-                        for c in cmd.commands:
-                            branch = '\u200b  └─ ' + c.name
-                            fmt += f"`{branch:<{maxlen+1}} " 
-                            fmt += f"{c.short_doc:<{maxlen}}`\n"
-
-            em.add_field(name='Commands', value=fmt)
+            em = self.format_cog_help(name, cog, prefix)
             pages.append(em)
 
-        p_session = PaginatorSession(
-            ctx, 
+        p_session = PaginatorSession(ctx, 
             footer_text=f'Do {prefix}command for more info on a command.',
             pages=pages
             )
