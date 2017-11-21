@@ -153,6 +153,7 @@ async def format_top_clans(ctx, clans):
     for c in clans:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
+            em = discord.Embed(color=random_color())
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
