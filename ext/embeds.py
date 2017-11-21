@@ -146,19 +146,19 @@ async def format_top_clans(ctx, clans):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
-        em.description = 'Top 50 global clans right now.'
+        em.description = 'Top 200 global clans right now.'
     em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
     em.set_thumbnail(url=clans[0].badge_url)
     embeds = []
     counter = 0
     for c in clans:
-        if counter % 6 == 0 and counter != 0:
+        if counter % 12 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(color=random_color())
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
-                em.description = 'Top 50 global clans right now.'
+                em.description = 'Top 200 global clans right now.'
             em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
             em.set_thumbnail(url=clans[0].badge_url)
         em.add_field(
