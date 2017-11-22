@@ -17,16 +17,11 @@ class TagCheck(commands.MemberConverter):
 
     def resolve_tag(self, tag):
         tag = tag.strip('#').upper().replace('O','0')
-        if tag == 'SA1':
-            tag = '88PYQV'
-        elif tag == 'SA2':
-            tag = '29UQQ282'
-        elif tag == 'SA3':
-            tag = '28JU8P0Y'
-        elif tag == 'SA4':
-            tag = '8PUUGRYG'
-        elif tag == 'SA5':
-            tag = '8YUU2CQV'
+        shortcuts = {'SA1':'88PYQV', 'SA2':'29UQQ282', 'SA3':'28JU8P0Y', 'SA4':'8PUUGRYG', 'SA5':'8YUU2CQV'}
+        try:
+            tag = shortcuts[tag]
+        except KeyError:
+            pass
         if any(i not in self.check for i in tag):
             return False
         else:
