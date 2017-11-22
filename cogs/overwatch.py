@@ -57,13 +57,11 @@ class Overwatch:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
-    async def ovprofile(self, ctx, region, playtype, *, tag_or_user: TagCheck=None):
+    async def ovprofile(self, ctx, region, *, tag_or_user: TagCheck=None):
         '''Gets the Overwatch profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
         region = region.lower()
         tag = tag.replace('#', '-')
-        playtype = playtype.lower()
-        types = ['quickplay', 'competitive']
         region_aliases = {
             'korea': 'kr',
             'america': 'us',
@@ -74,22 +72,27 @@ class Overwatch:
         regions = ['kr', 'us', 'eu']
         if region not in regions:
             return await ctx.send('Please enter a correct region!')
-        if playtype not in types:
-            return await ctx.send("The `playtype` has to be either `quickplay` or `competitive`!")
 
-        async with ctx.typing():
+        await ctx.trigger_typing()
+
+        try:
+            async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
+                profile = await p.json()
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
             try:
-                async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
-                    profile = await p.json()
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+                ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile[region]['stats'])
+            except:
+                ems = [discord.Embed(color=embeds_ov.random_color(), description="There aren't any stats for this region!")]
+            if len(ems) > 1:
+                session = PaginatorSession(
+                    ctx=ctx, 
+                    pages=ems
+                    )
+                await session.run()
             else:
-                em = await embeds_ov.format_profile(ctx, profile[region], playtype)
-                try:
-                    em.set_author(name=tag.split('-')[0], icon_url=profile[region]['stats'][playtype]['overall_stats']['avatar'])
-                except:
-                    em.set_author(name=tag.split('-')[0])
-                await ctx.send(embed=em)
+                await ctx.send(embed=ems[0])
 
             
     @commands.command()
