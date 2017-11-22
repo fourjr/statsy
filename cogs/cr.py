@@ -11,13 +11,14 @@ import io
 import string
 from crasync import errors
 
+shortcuts = {'SA1':'88PYQV', 'SA2':'29UQQ282', 'SA3':'28JU8P0Y', 'SA4':'8PUUGRYG', 'SA5':'8YUU2CQV'}
+
 class TagCheck(commands.MemberConverter):
 
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
-        tag = tag.strip('#').upper().replace('O','0')
-        shortcuts = {'SA1':'88PYQV', 'SA2':'29UQQ282', 'SA3':'28JU8P0Y', 'SA4':'8PUUGRYG', 'SA5':'8YUU2CQV'}
+        tag = tag.strip('#').upper().replace('O','0') 
         try:
             tag = shortcuts[tag]
         except KeyError:
@@ -163,7 +164,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''       
-        if tag_or_user != '88PYQV' and tag_or_user != '29UQQ282' and tag_or_user != '28JU8P0Y' and tag_or_user != '8PUUGRYG' and tag_or_user != '8YUU2CQV':
+        if tag_or_user not in shortcuts.values():
             tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         else:
             tag = tag_or_user
