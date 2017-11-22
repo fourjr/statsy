@@ -233,7 +233,7 @@ class StatsBot(commands.AutoShardedBot):
                     )
             else:
                 error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
-                error_message += traceback.format_exception(type(error), error, error.__traceback__)
+                error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
                 log_channel = self.get_channel(376622292106608640)
                 em = discord.Embed(
                     color=discord.Color.orange(), 
