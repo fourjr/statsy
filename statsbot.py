@@ -353,7 +353,7 @@ class StatsBot(commands.AutoShardedBot):
         else:
             cmd = cmd.format(r'`%h`')
 
-        revision = os.popen(cmd).read().strip()
+        revision = '\n'.join(os.popen(cmd).read().strip().splitlines()[:3])
 
         em = discord.Embed()
         em.add_field(name='Latest Changes', value=revision, inline=False)
