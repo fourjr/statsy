@@ -17,7 +17,16 @@ class TagCheck(commands.MemberConverter):
 
     def resolve_tag(self, tag):
         tag = tag.strip('#').upper().replace('O','0')
-
+        if tag == 'SA1':
+            tag = '88PYQV'
+        elif tag == 'SA2':
+            tag = '29UQQ282'
+        elif tag == 'SA3':
+            tag = '28JU8P0Y'
+        elif tag == 'SA4':
+            tag = '8PUUGRYG'
+        elif tag == 'SA5':
+            tag = '8YUU2CQV'
         if any(i not in self.check for i in tag):
             return False
         else:
@@ -158,8 +167,11 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets a clan by tag or by profile. (tagging the user)'''
-        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        '''Gets a clan by tag or by profile. (tagging the user)'''       
+        if tag_or_user != '88PYQV' and tag_or_user != '29UQQ282' and tag_or_user != '28JU8P0Y' and tag_or_user != '8PUUGRYG' and tag_or_user != '8YUU2CQV':
+            tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        else:
+            tag = tag_or_user
 
         await ctx.trigger_typing()
         try:
