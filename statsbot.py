@@ -227,7 +227,7 @@ class StatsBot(commands.AutoShardedBot):
                 prefix = (await self.get_prefix(ctx.message))[2]
                 await ctx.send(embed=discord.Embed(color=embeds.random_color(), title=f'``Usage: {prefix}{ctx.command.signature}``', description=ctx.command.help))
             else:
-                await self.get_channel(376622292106608640).send(embed=discord.Embed(color=discord.Color.orange(), description=f"```\n{type(error).__name__}: {error}\n```", title=ctx.invoked_with))
+                await self.get_channel(376622292106608640).send(embed=discord.Embed(color=discord.Color.orange(), description=f"```\n{traceback.format_exception(error)}\n```", title=ctx.invoked_with))
             raise error
 
     async def on_message(self, message):
