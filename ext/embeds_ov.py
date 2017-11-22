@@ -17,17 +17,24 @@ def cdir(obj):
 def random_color():
     return random.randint(0, 0xFFFFFF)
 
-async def format_profile(ctx, p):
-    em = discord.Embed(color=random_color())
-    if not p:
-        em.description = "There aren't any stats for this region!"
-        return em
+async def format_profile(ctx, name, p):
+    embeds = []
+    em = discord.Embed(color=random_color(), title='Competitive')
+    try:
+        em.set_author(name=name, icon_url=p['competitive']['overall_stats']['avatar'])
+    except:
+        em.set_author(name=name)
 
-    embed_fields = []
+    embed_fields = [
+        ('Level', p['competitive']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
+        ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
+        ('Games Played', p['competitive']['overall_stats']['games'], True),
+        ('Win Rate', p['competitive']['overall_stats']['win-rate'], True)
+        ]
 
     for n, v, i in embed_fields:
         if v:
             em.add_field(name=n, value=v, inline=i)
 
-    em.set_footer(text='Statsy - Powered by the OWAPI')
-    return em
+    embeds.append(em)
+    return embeds

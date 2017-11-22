@@ -33,6 +33,7 @@ class Overwatch:
     def __init__(self, bot):
         self.bot = bot
         self.conv = TagCheck()
+        self.session = aiohttp.ClientSession(headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'})
 
     async def resolve_tag(self, ctx, tag_or_user):
         if not tag_or_user:
@@ -43,8 +44,6 @@ class Overwatch:
                 await ctx.send('You don\'t have a saved tag.')
                 raise e
             else:
-                if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
@@ -61,21 +60,39 @@ class Overwatch:
     async def ovprofile(self, ctx, region, *, tag_or_user: TagCheck=None):
         '''Gets the Overwatch profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
+        region = region.lower()
         tag = tag.replace('#', '-')
+        region_aliases = {
+            'korea': 'kr',
+            'america': 'us',
+            'europe': 'eu'
+            }
+        if region in region_aliases:
+            region = region_aliases[region]
+        regions = ['kr', 'us', 'eu']
+        if region not in regions:
+            return await ctx.send('Please enter a correct region!')
 
-        async with ctx.typing():
+        await ctx.trigger_typing()
+
+        try:
+            async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
+                profile = await p.json()
+        except Exception as e:
+            return await ctx.send(f'`{e}`')
+        else:
             try:
-                async with ctx.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
-                    profile = await p.json()
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+                ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile[region]['stats'])
+            except:
+                ems = [discord.Embed(color=embeds_ov.random_color(), description="There aren't any stats for this region!")]
+            if len(ems) > 1:
+                session = PaginatorSession(
+                    ctx=ctx, 
+                    pages=ems
+                    )
+                await session.run()
             else:
-                em = await embeds_ov.format_profile(profile[region])
-                try:
-                    em.set_author(name=tag.split('-')[0], icon_url=profile[region]['overall_stats']['avatar'])
-                except:
-                    em.set_author(name=tag.split('-')[0])
-                await ctx.send(em)
+                await ctx.send(embed=ems[0])
 
             
     @commands.command()
@@ -84,7 +101,7 @@ class Overwatch:
 
         Ability to save multiple tags coming soon.
         '''
-        ctx.save_tag(tag.replace("#", ""), 'overwatch')
+        ctx.save_tag(tag.replace("#", "-"), 'overwatch')
         await ctx.send('Successfuly saved tag.')
 
 
