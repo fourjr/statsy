@@ -238,7 +238,7 @@ class StatsBot(commands.AutoShardedBot):
                 em = discord.Embed(
                     color=discord.Color.orange(), 
                     description=f"```\n{error_message}\n```", 
-                    title=ctx.message)
+                    title=ctx.message.content)
                 await ctx.send(embed=em)
                 print(error_message, file=sys.stderr)
 
