@@ -19,10 +19,8 @@ class TagCheck(commands.MemberConverter):
 
     def resolve_tag(self, tag):
         tag = tag.strip('#').upper().replace('O','0') 
-        try:
+        if tag in shortcuts:
             tag = shortcuts[tag]
-        except KeyError:
-            pass
         if any(i not in self.check for i in tag):
             return False
         else:
