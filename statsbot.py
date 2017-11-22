@@ -225,10 +225,23 @@ class StatsBot(commands.AutoShardedBot):
         else:
             if isinstance(error, commands.MissingRequiredArgument):
                 prefix = (await self.get_prefix(ctx.message))[2]
-                await ctx.send(embed=discord.Embed(color=embeds.random_color(), title=f'``Usage: {prefix}{ctx.command.signature}``', description=ctx.command.help))
+                await ctx.send(
+                    embed=discord.Embed(
+                        color=embeds.random_color(), 
+                        title=f'``Usage: {prefix}{ctx.command.signature}``', 
+                        description=ctx.command.help)
+                    )
             else:
-                await self.get_channel(376622292106608640).send(embed=discord.Embed(color=discord.Color.orange(), description=f"```\n{traceback.format_exception(error)}\n```", title=ctx.invoked_with))
-            raise error
+                error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
+                error_message += traceback.format_exception(type(error), error, error.__traceback__)
+                log_channel = self.get_channel(376622292106608640)
+                em = discord.Embed(
+                    color=discord.Color.orange(), 
+                    description=f"```\n{error_message}\n```", 
+                    title=ctx.message)
+                await ctx.send(embed=discord.Embed())
+                print(error_message, file=sys.stderr)
+
 
     async def on_message(self, message):
         '''Called when a message is sent/recieved.'''
@@ -521,9 +534,8 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command()
     async def source(self, ctx, *, command: str = None):
         """Displays full source code or for a specific command.
-        To display the source code of a subcommand you can separate it by
-        periods, e.g. tag.create for the create subcommand of the tag command
-        or by spaces.
+        To display the source code of a subcommand you can separate it spaces. 
+        e.g. `!source members best`
         """
         source_url = 'https://github.com/cgrok/statsy'
         if command is None:
