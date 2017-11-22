@@ -83,7 +83,7 @@ class StatsBot(commands.AutoShardedBot):
         self.loop.create_task(self.backup_task())
         self._add_commands()
         self.load_extensions()
-        self.ping.instance = self.get_cog('Bot_Related')
+        # self.ping.instance = self.get_cog('Bot_Related')
 
     def get_game_emojis(self):
         emojis = []
