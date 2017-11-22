@@ -298,7 +298,7 @@ class Bot_Related:
         if ctx.author.id not in self.bot.developers: return
         
         env = {
-            'bot': self,
+            'bot': self.bot,
             'ctx': ctx,
             'channel': ctx.channel,
             'author': ctx.author,
