@@ -161,11 +161,8 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets a clan by tag or by profile. (tagging the user)'''       
-        if tag_or_user not in shortcuts.values():
-            tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
-        else:
-            tag = tag_or_user
+        '''Gets a clan by tag or by profile. (tagging the user)'''
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         await ctx.trigger_typing()
         try:
