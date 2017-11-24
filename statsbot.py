@@ -46,7 +46,10 @@ import textwrap
 
 class InvalidTag(commands.BadArgument):
     '''Raised when a tag is invalid.'''
-    pass
+
+    message = 'Player tags should only contain these characters:\n' \
+              '**Numbers:** 0, 2, 8, 9\n' \
+              '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
 
 class StatsBot(commands.AutoShardedBot):
     '''
@@ -59,7 +62,7 @@ class StatsBot(commands.AutoShardedBot):
         377742732501843968,
         376365022752014345
         ]
-
+       
     developers = [
         273381165229146112,
         319395783847837696,
@@ -83,7 +86,7 @@ class StatsBot(commands.AutoShardedBot):
         self.loop.create_task(self.backup_task())
         self._add_commands()
         self.load_extensions()
-        # self.ping.instance = self.get_cog('Bot_Related')
+        self.ping.instance = self.get_cog('Bot_Related')
 
     def get_game_emojis(self):
         emojis = []
@@ -219,11 +222,8 @@ class StatsBot(commands.AutoShardedBot):
             await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
-        error_message = 'Player tags should only contain these characters:\n' \
-                        '**Numbers:** 0, 2, 8, 9\n' \
-                        '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
         if isinstance(error, InvalidTag):
-            await ctx.send(error_message)
+            await ctx.send(error.message)
         elif isinstance(error, commands.MissingRequiredArgument):
             prefix = (await self.get_prefix(ctx.message))[2]
             await ctx.send(
