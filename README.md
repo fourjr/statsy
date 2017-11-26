@@ -1,7 +1,7 @@
 # Statsy
 
 <a href="https://discordbots.org/bot/statsy">
-  <img src="https://discordbots.org/api/widget/347006499677143041.png" alt="Discord Bots" />
+  <img src="https://discordbots.org/api/widget/status/347006499677143041.png?noavatar=true" alt="Discord Bots" />
 </a>
 
 Open-source clash royale discord bot. Powered by https://cr-api.com/
