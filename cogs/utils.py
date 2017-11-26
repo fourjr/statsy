@@ -391,7 +391,7 @@ Channel: {str(ctx.channel)} ({str(ctx.channel.id)})''')
                 await bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
                 await ctx.send('Suggestion submitted.')
 
-        await ctx.send('Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
+        await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
 
     @commands.command()
     async def bug(self, ctx, summary:str, *, details:str='-'):
@@ -408,7 +408,7 @@ Channel: {str(ctx.channel)} ({str(ctx.channel.id)})''')
                 await bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
                 await ctx.send('Suggestion submitted.')
 
-        await ctx.send('Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
+        await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
 
 def setup(bot):
     c = Bot_Related(bot)
