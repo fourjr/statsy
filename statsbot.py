@@ -222,7 +222,7 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
-            missing = ', '.join(str(p) for p in error.missing_perms)
+            missing = ', '.join(str(p) for p in error.missing)
             await ctx.send(f"I'm missing the following permissions: {missing}")
         if isinstance(error, InvalidTag):
             await ctx.send(error.message)
