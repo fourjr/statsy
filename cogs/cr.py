@@ -306,7 +306,7 @@ class Clash_Royale:
         await ctx.send('Successfully saved tag.')
 
     @commands.group(invoke_without_command=True)
-    @embeds.has_perms(False)
+    @embeds.has_perms(False, False)
     async def deck(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the current deck of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)

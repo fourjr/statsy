@@ -6,13 +6,17 @@ import copy
 from discord.ext import commands
 
 
-def has_perms(add_reactions=True):
+def has_perms(add_reactions=True, external_emojis=True):
     perms = {
         'send_messages': True,
         'embed_links': True
     }
+
     if add_reactions:
         perms['add_reactions'] = True
+    
+    if external_emojis:
+        perms['external_emojis'] = True
     return commands.bot_has_permissions(**perms)
 
 def emoji(ctx, name):
