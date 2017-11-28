@@ -197,7 +197,7 @@ class StatsBot(commands.AutoShardedBot):
         self.game_emojis = self.get_game_emojis()
         await channel.send(f'```{fmt}```')
 
-    async def on_shard_ready(self, shard_id):
+    async def on_shard_connect(self, shard_id):
         '''
         Called when a shard has successfuly 
         connected to the gateway.
@@ -222,6 +222,9 @@ class StatsBot(commands.AutoShardedBot):
             await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.BotMissingPermissions):
+            missing = ', '.join(str(p) for p in error.missing)
+            await ctx.send(f"I'm missing the following permissions: {missing}")
         if isinstance(error, InvalidTag):
             await ctx.send(error.message)
         elif isinstance(error, commands.MissingRequiredArgument):

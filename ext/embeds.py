@@ -3,6 +3,15 @@ from collections import OrderedDict
 import json
 import random
 import copy
+from discord.ext import commands
+
+
+def has_perms(add_reactions=True):
+    return commands.bot_has_permissions(
+        send_messages=True, 
+        embed_links=True, 
+        add_reactions=add_reactions
+        )
 
 def emoji(ctx, name):
     name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
