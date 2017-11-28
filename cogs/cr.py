@@ -89,6 +89,7 @@ class Clash_Royale:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
+    @embeds.has_perms(False)
     async def profile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the clash royale profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -110,6 +111,7 @@ class Clash_Royale:
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, aliases=['season'])
+    @embeds.has_perms()
     async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the season results a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -139,6 +141,7 @@ class Clash_Royale:
                 await ctx.send(f"**{profile.name}** doesn't have any season results.")
                 
     @commands.group(invoke_without_command=True)
+    @embeds.has_perms()
     async def chests(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the next chests of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -160,6 +163,7 @@ class Clash_Royale:
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
+    @embeds.has_perms()
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -185,6 +189,7 @@ class Clash_Royale:
             await session.run()
 
     @commands.group(invoke_without_command=True)
+    @embeds.has_perms()
     async def topclans(self, ctx):
         '''Returns the global top 50 clans.'''
 
@@ -207,6 +212,7 @@ class Clash_Royale:
             await session.run()
 
     @commands.group(invoke_without_command=True)
+    @embeds.has_perms()
     async def members(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -236,6 +242,7 @@ class Clash_Royale:
                 await ctx.send(embed=ems[0])
 
     @members.command()
+    @embeds.has_perms(False)
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -259,6 +266,7 @@ class Clash_Royale:
                     await ctx.send(embed=em)
 
     @members.command()
+    @embeds.has_perms(False)
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -298,6 +306,7 @@ class Clash_Royale:
         await ctx.send('Successfully saved tag.')
 
     @commands.group(invoke_without_command=True)
+    @embeds.has_perms(False)
     async def deck(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the current deck of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -318,6 +327,7 @@ class Clash_Royale:
                 await self.format_deck_and_send(ctx, profile)
 
     @commands.command()
+    @embeds.has_perms(False)
     async def card(self, ctx, *, card):
         '''Get information about a Clash Royale card.'''
         aliases = {

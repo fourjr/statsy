@@ -7,11 +7,13 @@ from discord.ext import commands
 
 
 def has_perms(add_reactions=True):
-    return commands.bot_has_permissions(
-        send_messages=True, 
-        embed_links=True, 
-        add_reactions=add_reactions
-        )
+    perms = {
+        'send_messages': True,
+        'embed_links': True
+    }
+    if add_reactions:
+        perms['add_reactions'] = True
+    return commands.bot_has_permissions(**perms)
 
 def emoji(ctx, name):
     name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
