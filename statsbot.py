@@ -86,6 +86,7 @@ class StatsBot(commands.AutoShardedBot):
         self.loop.create_task(self.backup_task())
         self._add_commands()
         self.load_extensions()
+        self.ping.instance = self.get_cog('Bot_Related')
 
     def get_game_emojis(self):
         emojis = []
@@ -221,9 +222,6 @@ class StatsBot(commands.AutoShardedBot):
             await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.BotMissingPermissions):
-            missing = ', '.join(str(p) for p in error.missing)
-            await ctx.send(f"I'm missing the following permissions: {missing}")
         if isinstance(error, InvalidTag):
             await ctx.send(error.message)
         elif isinstance(error, commands.MissingRequiredArgument):
