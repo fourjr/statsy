@@ -371,6 +371,45 @@ class Bot_Related:
         # remove `foo`
         return content.strip('` \n')
 
+    @property
+    def gitpw(self): 
+        with open('data/config.json') as f: 
+            return json.load(f)['gittoken']
+    
+    @commands.command()
+    async def suggest(self, ctx, summary:str, *, details:str='-'):
+        '''Suggest a game! Or a feature!'''
+        details += textwrap.dedent(f'''
+\n\n**User Information**
+User: {str(ctx.author)} ({str(ctx.author.id)}) 
+Guild: {str(ctx.guild)} ({str(ctx.guild.id)})
+Channel: {str(ctx.channel)} ({str(ctx.channel.id)})''')
+        async with self.bot.session.post('https://api.github.com/repos/cgrok/statsy/issues', json={"title": summary, "body": details, "labels":['suggestion', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+            if 300 > resp.status >= 200:
+                issueinfo = await resp.json()
+            else:
+                await bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
+                await ctx.send('Suggestion submitted.')
+
+        await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
+
+    @commands.command()
+    async def bug(self, ctx, summary:str, *, details:str='-'):
+        '''Report a bug!'''
+        details += textwrap.dedent(f'''
+\n\n**User Information**
+User: {str(ctx.author)} ({str(ctx.author.id)}) 
+Guild: {str(ctx.guild)} ({str(ctx.guild.id)})
+Channel: {str(ctx.channel)} ({str(ctx.channel.id)})''')
+        async with self.bot.session.post('https://api.github.com/repos/cgrok/statsy/issues', json={"title": summary, "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+            if 300 > resp.status >= 200:
+                issueinfo = await resp.json()
+            else:
+                await bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
+                await ctx.send('Suggestion submitted.')
+
+        await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
+
 def setup(bot):
     c = Bot_Related(bot)
     bot.add_cog(c)
