@@ -404,6 +404,36 @@ class Bot_Related:
 
         await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
 
+    @commands.command(name='guilds')
+    async def _guilds(self, ctx):
+        if ctx.author.id not in self.bot.developers:
+            return
+        nano = 0
+        tiny = 0
+        small = 0
+        medium = 0
+        large = 0
+        massive = 0
+        for guild in self.bot.guilds:
+            if len(guild.members) < 10:
+                nano += 1
+            elif len(guild.members) < 100:
+                tiny += 1
+            elif len(guild.members) < 500:
+                small += 1
+            elif len(guild.members) < 1000:
+                medium += 1
+            elif len(guild.members) < 5000:
+                large += 1
+            else: massive += 1
+        await ctx.send(textwrap.dedent(f'''```css
+Nano Servers    [ <10  ]:  {nano}
+Tiny Servers    [ 10+  ]:  {tiny}
+Small Servers   [ 100+ ]:  {small}
+Medium Servers  [ 500+ ]:  {medium}
+Large Servers   [ 1000+]:  {large}
+Massive Servers [ 5000+]:  {massive}```'''))
+
 def setup(bot):
     c = Bot_Related(bot)
     bot.add_cog(c)

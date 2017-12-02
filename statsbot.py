@@ -289,6 +289,5 @@ class StatsBot(commands.AutoShardedBot):
         except discord.Forbidden:
             await ctx.send(em.title + em.description)
 
-
 if __name__ == '__main__':
     StatsBot.init()
