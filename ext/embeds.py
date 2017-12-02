@@ -305,6 +305,39 @@ async def format_profile(ctx, p):
     
     return em
 
+async def format_stats(ctx, p):
+
+    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    em.set_author(name=str(p), icon_url=av)
+    em.set_thumbnail(url=p.arena.image_url)
+    
+    trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
+    deck = get_deck(ctx, p)
+
+    embed_fields = [
+        ('Trophies', trophies, True),
+        ('Level', f"{p.level} ({'/'.join(str(x) for x in p.experience)}) {emoji(ctx, 'experience')}", True),
+        ('Clan Name', f"{p.clan_name} {emoji(ctx, 'clan')}" if p.clan_name else None, True),
+        ('Clan Tag', f"#{p.clan_tag} {emoji(ctx, 'clan')}" if p.clan_tag else None, True),
+        ('Clan Role', f"{p.clan_role} {emoji(ctx, 'clan')}" if p.clan_role else None, True),
+        ('Favourite Card', f"{p.favourite_card.replace('_',' ')} {emoji(ctx, p.favourite_card)}", True),
+        ('Battle Deck', deck, True)
+        ]
+
+    for n, v, i in embed_fields:
+        if v:
+            em.add_field(name=n, value=v, inline=i)
+        else:
+            if n == 'Clan Name':
+                em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
+
+    em.set_footer(text='Statsy - Powered by cr-api.com')
+    
+    return em
+
 async def format_clan(ctx, c):
     page1 = discord.Embed(description = c.description, color=random_color())
     page1.set_author(name=f"{c.name} (#{c.tag})")

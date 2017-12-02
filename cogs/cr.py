@@ -110,6 +110,28 @@ class Clash_Royale:
                 em = await embeds.format_profile(ctx, profile)
                 await ctx.send(embed=em)
 
+    @commands.group(invoke_without_command=True, alises=['statistics'])
+    @embeds.has_perms(False)
+    async def stats(self, ctx, *, tag_or_user: TagCheck=None):
+        '''Gets the clash royale profile of a player.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        async with ctx.typing():
+            try:
+                profile = await self.cr.get_profile(tag)
+            except errors.ServerError as e:
+                er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+                    )
+                await ctx.send(embed=er)
+            except errors.NotFoundError:
+                await ctx.send('The tag cannot be found!')
+            else:
+                em = await embeds.format_stats(ctx, profile)
+                await ctx.send(embed=em)
+
     @commands.group(invoke_without_command=True, aliases=['season'])
     @embeds.has_perms()
     async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
