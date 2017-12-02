@@ -129,6 +129,21 @@ async def format_chests(ctx, p):
     em.set_footer(text='Statsy - Powered by cr-api.com')
     return em
 
+async def format_offers(ctx, p):
+    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    em.set_author(name=str(p), icon_url=av)
+    em.set_thumbnail(url=p.arena.image_url)
+    if p.shop_offers.legendary:
+        em.add_field(name=f"Legendary {emoji(ctx, 'chestlegendary')}", value=f'{p.shop_offers.legendary} Days')
+    if p.shop_offers.epic:
+        em.add_field(name=f"Epic {emoji(ctx, 'chestepic')}", value=f'{p.shop_offers.epic} Days')
+    if p.shop_offers.legendary:
+        em.add_field(name=f"Arena Offer {emoji(ctx, 'arena11')}", value=f'{p.shop_offers.arena} Days')
+    return em
+
 async def format_members(ctx, c):
     em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
     if ctx.bot.psa_message:
@@ -313,7 +328,7 @@ async def format_stats(ctx, p):
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
-    
+
     trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
 

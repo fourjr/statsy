@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from ext import embeds
 import json
-from __main__ import InvalidTag
+from statsbot import InvalidTag
 from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
@@ -149,7 +149,7 @@ class Clash_Royale:
                 )
             await ctx.send(embed=er)
         except errors.NotFoundError:
-            await ctx.send('Thae tag cannot be found!')
+            await ctx.send('That tag cannot be found!')
         else:
             ems = await embeds.format_seasons(ctx, profile)
             if len(ems) > 0:
@@ -179,10 +179,29 @@ class Clash_Royale:
                     )
                 await ctx.send(embed=er)
             except errors.NotFoundError:
-                await ctx.send('Thae tag cannot be found!')
+                await ctx.send('That tag cannot be found!')
             else:
                 em = await embeds.format_chests(ctx, profile)
                 await ctx.send(embed=em)
+
+    @commands.group(invoke_without_command=True)
+    @embeds.has_perms(False)
+    async def offers(self, ctx, *, tag_or_user:TagCheck=None):
+        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        await ctx.trigger_typing()
+        try:
+            profile = await self.cr.get_profile(tag)
+        except errors.ServerError as e:
+            er = discord.Embed(
+                title=f'Error {e.code}',
+                color=discord.Color.red(),
+                description=e.error
+                    )
+            await ctx.send(embed=er)
+        except errors.NotFoundError:
+            await ctx.send('That tag cannot be found!')
+        em = await embeds.format_offers(ctx, profile)
+        await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
@@ -201,7 +220,7 @@ class Clash_Royale:
                     )
             await ctx.send(embed=er)
         except errors.NotFoundError:
-            await ctx.send('Thae tag cannot be found!')
+            await ctx.send('That tag cannot be found!')
         else:
             ems = await embeds.format_clan(ctx, clan)
             session = PaginatorSession(
@@ -250,7 +269,7 @@ class Clash_Royale:
                     )
             await ctx.send(embed=em)
         except errors.NotFoundError:
-            await ctx.send('Thae tag cannot be found!')
+            await ctx.send('That tag cannot be found!')
         else:
             ems = await embeds.format_members(ctx, clan)
             if len(ems) > 1:
@@ -494,9 +513,6 @@ class Clash_Royale:
         file.seek(0)
 
         return file
-
-
-
 
 def setup(bot):
     cog = Clash_Royale(bot)
