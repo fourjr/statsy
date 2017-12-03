@@ -187,7 +187,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False)
     async def offers(self, ctx, *, tag_or_user:TagCheck=None):
-        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        tag = await self.resolve_tag(ctx, tag_or_user)
         await ctx.trigger_typing()
         try:
             profile = await self.cr.get_profile(tag)
