@@ -376,18 +376,12 @@ async def format_clan(ctx, c):
                 f"{emoji(ctx, 'trophy')}\n" 
                 f"#{c.members[i].tag}"
                 )
-
-    if len(c.members) >= 3:
-        for i in range(3):
             donators.append(
                 f"**{_donators[i].name}**"
                 f"\n{_donators[i].donations} "
                 f"{emoji(ctx, 'cards')}\n" 
                 f"#{_donators[i].tag}"
                 )
-    
-    if len(c.members) >= 3:
-        for i in range(3):
             ccc.append(
                 f"**{contributors[i].name}**" 
                 f"\n{contributors[i].crowns} " 
