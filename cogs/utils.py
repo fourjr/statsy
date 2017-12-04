@@ -156,7 +156,7 @@ class Bot_Related:
         em.add_field(name='Commands Run', value=sum(self.bot.commands_used.values()))
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Library', value='discord.py')
-        em.add_field(name='Github', value='[Click Here](https://github.com/grokkers/cr-statsbot)')
+        em.add_field(name='Discord', value='[Click Here](https://discord.gg/nBd7cp6)')
         em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}')
         em.set_footer(text=f'Bot ID: {self.bot.user.id}')
 
