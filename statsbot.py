@@ -222,6 +222,7 @@ class StatsBot(commands.AutoShardedBot):
             await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
+        error = getattr(error, 'original', error)
         if isinstance(error, InvalidTag):
             await ctx.send(error.message)
         elif isinstance(error, commands.BotMissingPermissions):
