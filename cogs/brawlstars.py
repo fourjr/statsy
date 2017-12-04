@@ -112,6 +112,7 @@ class Brawl_Stars:
 
 
     @commands.command()
+    @embeds.has_perms(False)
     async def bsprofile(self, ctx, tag_or_user:TagCheck=None):
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
@@ -130,6 +131,7 @@ class Brawl_Stars:
             await ctx.send(embed=em)
 
     @commands.command()
+    @embeds.has_perms()
     async def bsband(self, ctx, tag_or_user:TagCheck=None):
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
