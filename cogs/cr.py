@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from ext import embeds
 import json
-from statsbot import InvalidTag
+from __main__ import InvalidTag
 from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw

@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from bs4 import BeautifulSoup
-from statsbot import InvalidTag
+from __main__ import InvalidTag
 from ext import embeds_bs
 from ext.paginator import PaginatorSession
 
