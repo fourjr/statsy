@@ -222,10 +222,10 @@ class StatsBot(commands.AutoShardedBot):
             await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(error)
         if isinstance(error, InvalidTag):
             await ctx.send(error.message)
+        elif isinstance(error, commands.BotMissingPermissions):
+            await ctx.send(error)
         elif isinstance(error, commands.MissingRequiredArgument):
             prefix = (await self.get_prefix(ctx.message))[2]
             await ctx.send(
