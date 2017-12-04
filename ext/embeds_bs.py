@@ -70,7 +70,7 @@ async def format_profile(ctx, soup, tag):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{name} #{tag}')
+    em.set_author(name=f'{name} (#{tag})')
     em.set_thumbnail(url=pic)
 
     embed_fields = [
