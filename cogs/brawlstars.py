@@ -113,6 +113,7 @@ class BrawlStars:
 
     @commands.command()
     async def bsprofile(self, ctx, tag_or_user:TagCheck=None):
+        '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
             url = self.url + 'players/' + tag
@@ -129,7 +130,8 @@ class BrawlStars:
             await ctx.send(embed=em)
 
     @commands.command()
-    async def bsband(self, ctx, tag_or_user:TagCheck=None): 
+    async def bsband(self, ctx, tag_or_user:TagCheck=None):
+        '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
             url = self.url + 'bands/' + tag
