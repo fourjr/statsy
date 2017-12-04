@@ -89,6 +89,10 @@ class CustomContext(commands.Context):
     def get_tag(self, game, id=None, *, index=0):
         id = id or self.author.id
         data = self.load_json()
+        if game not in data:
+            data[game] = {}
+            self.save_json(data, 'data/stats.json')
+            return self.get_tag(game, id)
         tags = data[game][str(id)]
         return tags[index]
 
