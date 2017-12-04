@@ -33,7 +33,7 @@ class TagCheck(commands.MemberConverter):
         else:
             return tag
         
-class BrawlStars:
+class Brawl_Stars:
 
     '''Commands relating to the Brawl Stars game made by supercell.'''
 
