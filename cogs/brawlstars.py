@@ -152,5 +152,5 @@ class Brawl_Stars:
         await session.run()
 
 def setup(bot):
-    cog = BrawlStars(bot)
+    cog = Brawl_Stars(bot)
     bot.add_cog(cog)
