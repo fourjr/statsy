@@ -3,6 +3,7 @@ from discord.ext import commands
 from bs4 import BeautifulSoup
 from __main__ import InvalidTag
 from ext import embeds_bs
+from ext import embeds
 from ext.paginator import PaginatorSession
 
 class TagCheck(commands.MemberConverter):
