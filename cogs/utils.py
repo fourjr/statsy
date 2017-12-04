@@ -94,7 +94,7 @@ class Bot_Related:
     @commands.command(name='bot',aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
         '''Shows information and stats about the bot.'''
-        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/cgrok/statsy/commit/%H) %s (%cr)"'
+        cmd = r'git show -s HEAD~3..HEAD --format="[{}](http://statsy.ml) %s (%cr)"'
 
         if os.name == 'posix':
             cmd = cmd.format(r'\`%h\`')
@@ -133,8 +133,7 @@ class Bot_Related:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
         data = ctx.load_json()
-        saved_tags = len(data['clashroyale'])+len(data['clashofclans'])
-        g_authors = 'verixx, fourjr, kwugfighter, FloatCobra, XAOS1502'
+        saved_tags = len(data['clashroyale'])+len(data['clashofclans']) + len(data['overwatch']) + len(data['brawlstars'])
 
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
@@ -157,7 +156,8 @@ class Bot_Related:
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Library', value='discord.py')
         em.add_field(name='Discord', value='[Click Here](https://discord.gg/nBd7cp6)')
-        em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}')
+        em.add_field(name='Follow us on Twitter!', value='https://twitter.com/StatsyBot', inline=False)
+        em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
         em.set_footer(text=f'Bot ID: {self.bot.user.id}')
 
         await ctx.send(embed=em)
@@ -266,31 +266,6 @@ class Bot_Related:
 
         await p_session.run()
 
-    @commands.command()
-    async def source(self, ctx, *, command: str = None):
-        """Displays full source code or for a specific command.
-        To display the source code of a subcommand you can separate it spaces. 
-        e.g. `!source members best`
-        """
-        source_url = 'https://github.com/cgrok/statsy'
-        if command is None:
-            return await ctx.send(source_url)
-
-        obj = self.bot.get_command(command.replace('.', ' '))
-        if obj is None:
-            return await ctx.send('Could not find command.')
-
-        src = obj.callback.__code__
-        lines, firstlineno = inspect.getsourcelines(src)
-        if not obj.callback.__module__.startswith('discord'):
-            location = os.path.relpath(src.co_filename).replace('\\', '/')
-        else:
-            location = obj.callback.__module__.replace('.', '/') + '.py'
-            source_url = 'https://github.com/Rapptz/discord.py'
-
-        final_url = f'<{source_url}/blob/master/{location}#L{firstlineno}-L{firstlineno + len(lines) - 1}>'
-        await ctx.send(final_url)
-
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
@@ -382,7 +357,7 @@ class Bot_Related:
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
-        async with self.bot.session.post('https://api.github.com/repos/cgrok/statsy/issues', json={"title": summary, "body": details, "labels":['suggestion', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": summary, "body": details, "labels":['suggestion', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
@@ -395,7 +370,7 @@ class Bot_Related:
     async def bug(self, ctx, summary:str, *, details:str=''):
         '''Report a bug!'''
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
-        async with self.bot.session.post('https://api.github.com/repos/cgrok/statsy/issues', json={"title": summary, "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": summary, "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
@@ -404,7 +379,7 @@ class Bot_Related:
 
         await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
 
-    @commands.command(name='guilds')
+    @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
         if ctx.author.id not in self.bot.developers:
             return
