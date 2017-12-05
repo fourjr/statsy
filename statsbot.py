@@ -76,7 +76,7 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crasync.Client(self.session, timeout=5)
+        self.cr = crasync.Client(self.session, timeout=4)
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
