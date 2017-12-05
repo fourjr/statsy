@@ -155,6 +155,7 @@ class Brawl_Stars:
     @commands.command()
     @embeds.has_perms()
     async def bsevents(self, ctx):
+        '''Shows the upcoming events!'''
         async with ctx.channel.typing():
             async with ctx.session.get(self.url + 'events/', headers=self.headers) as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')

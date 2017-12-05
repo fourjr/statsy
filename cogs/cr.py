@@ -466,6 +466,7 @@ class Clash_Royale:
     @commands.command(aliases=['tourneys'])
     @embeds.has_perms(False)
     async def tournaments(self, ctx):
+        '''Show a list of open tournaments that you can join!'''
         headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
         async with ctx.session.get(self.url + 'tournaments', headers=headers) as resp:
             soup = BeautifulSoup(await resp.text(), 'html.parser')
