@@ -1,6 +1,7 @@
 import discord
 import random
 import copy
+import io
 from statsbot import InvalidTag
 from bs4 import BeautifulSoup
 
