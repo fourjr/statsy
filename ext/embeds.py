@@ -661,6 +661,6 @@ async def format_tournaments(ctx, soup):
 
         em.add_field(name=f'{name}', value=f'Time left: {time}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n{tag}')
         i+=1
-        if i > 4: break
+        if i > 10: break
     
     return em
