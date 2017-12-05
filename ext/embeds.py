@@ -636,3 +636,32 @@ async def format_clan(ctx, c):
     
     return [page1, page2]
 
+async def format_tournaments(ctx, soup):
+    em = discord.Embed(title='Open Tournaments', color=random_color())
+    if ctx.bot.psa_message:
+        em.description = ctx.bot.psa_message
+    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_thumbnail(url='https://i.imgur.com/bwql3WU.png')
+    tourneys = soup.find('div', attrs={'class':'challenges__table'}) \
+                .find_all('div', attrs={'class':'challenges__rowContainer'})
+    i = 0
+    for tournament in tourneys:
+        if tournament is None: continue
+        members = tournament.find_all('div', attrs={'class':'challenges__row'})[2].getText().strip()
+        if members.split('/')[0] == members.split('/')[1]: continue
+        tag = tournament.find_all('div', attrs={'class':'challenges__row'})[0].getText().strip()
+        name = tournament.find_all('div', attrs={'class':'challenges__row'})[1].getText().strip()
+        time = tournament.find_all('div', attrs={'class':'challenges__row'})[3] \
+                .find('div', attrs={'class':'challenges__timeFull'}).getText().strip()
+        gold = tournament.find_all('div', attrs={'class':'challenges__row'})[4] \
+                .find('div', attrs={'class':'challenges__metric challenges__goldMetric'}).getText().strip()
+        cards = tournament.find_all('div', attrs={'class':'challenges__row'})[4] \
+                .find('div', attrs={'class':'challenges__metric'}).getText().strip()
+        
+        if i == 0: inline = False
+        else: inline = True
+        em.add_field(name=f'{name} ({tag})', value=f'Time left: {time}\n{members} {emoji(ctx, "clan")}\n {gold} {emoji(ctx, "gold")}\n {cards} {emoji(ctx, "cards")}', inline=inline)
+        i+=1
+        if i > 4: break
+    
+    return em
