@@ -190,7 +190,7 @@ class StatsBot(commands.AutoShardedBot):
               f'Users: {len(self.users)}\n' \
               '----------------------------' 
         print(fmt)
-        channel = self.get_channel(373646610560712704)
+        channel = self.get_channel(376622292106608640)
         self.game_emojis = self.get_game_emojis()
         await channel.send(f'```{fmt}```')
 
