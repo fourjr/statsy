@@ -638,7 +638,7 @@ async def format_clan(ctx, c):
 
 async def format_tournaments(ctx, soup):
     em = discord.Embed(color=random_color())
-    em.set_author(name='Open Tournaments', value='https://i.imgur.com/bwql3WU.png')
+    em.set_author(name='Open Tournaments', icon_url='https://i.imgur.com/bwql3WU.png')
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
     else:
