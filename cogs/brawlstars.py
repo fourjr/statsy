@@ -3,6 +3,7 @@ from discord.ext import commands
 from bs4 import BeautifulSoup
 from __main__ import InvalidTag
 from ext import embeds_bs
+from ext import embeds
 from ext.paginator import PaginatorSession
 
 shortucts = {'juice':'2PP00', 'pulp':'PY9JLV'}
@@ -116,6 +117,7 @@ class Brawl_Stars:
 
 
     @commands.command()
+    @embeds.has_perms(False)
     async def bsprofile(self, ctx, tag_or_user:TagCheck=None):
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
@@ -134,6 +136,7 @@ class Brawl_Stars:
             await ctx.send(file=em[0], embed=em[1])
 
     @commands.command()
+    @embeds.has_perms()
     async def bsband(self, ctx, tag_or_user:TagCheck=None):
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
