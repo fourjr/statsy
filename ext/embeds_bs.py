@@ -48,7 +48,7 @@ async def format_profile(ctx, soup, tag):
         .find('img')['src']
     
     async with ctx.session.get(pic) as resp:
-        with open('data/image.png', 'wb') as f:
+        with open('.data/image.png', 'wb') as f:
             f.write(await resp.read())
 
     pic = discord.File('data/image.png', filename='image.png')
