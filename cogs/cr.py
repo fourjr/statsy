@@ -59,7 +59,7 @@ class Clash_Royale:
     async def get_clan_from_profile(self, ctx, tag, message):
         try:
             profile = await self.cr.get_profile(tag)
-        except errors.NotResponding as e:
+        except (errors.NotResponding, errors.ServerError) as e:
             er = discord.Embed(
                 title=f'Error {e.code}',
                 color=discord.Color.red(),
@@ -109,7 +109,7 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.NotResponding as e:
+            except (errors.NotResponding, errors.ServerError) as e:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -131,7 +131,7 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.NotResponding as e:
+            except (errors.NotResponding, errors.ServerError) as e:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -153,7 +153,7 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             profile = await self.cr.get_profile(tag)
-        except errors.NotResponding as e:
+        except (errors.NotResponding, errors.ServerError) as e:
             er = discord.Embed(
                 title=f'Error {e.code}',
                 color=discord.Color.red(),
@@ -183,7 +183,7 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.NotResponding as e:
+            except (errors.NotResponding, errors.ServerError) as e:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -204,7 +204,7 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             profile = await self.cr.get_profile(tag)
-        except errors.NotResponding as e:
+        except (errors.NotResponding, errors.ServerError) as e:
             er = discord.Embed(
                 title=f'Error {e.code}',
                 color=discord.Color.red(),
@@ -258,7 +258,7 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clan = await self.cr.get_clan(tag)
-        except errors.NotResponding as e:
+        except (errors.NotResponding, errors.ServerError) as e:
             er = discord.Embed(
                 title=f'Error {e.code}',
                 color=discord.Color.red(),
@@ -283,7 +283,7 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clans = await self.cr.get_top_clans()
-        except errors.NotResponding as e:
+        except (errors.NotResponding, errors.ServerError) as e:
             er = discord.Embed(
                 title=f'Error {e.code}',
                 color=discord.Color.red(),
@@ -307,7 +307,7 @@ class Clash_Royale:
         await ctx.trigger_typing()
         try:
             clan = await self.cr.get_clan(tag)
-        except errors.NotResponding as e:
+        except (errors.NotResponding, errors.ServerError) as e:
             er = discord.Embed(
                 title=f'Error {e.code}',
                 color=discord.Color.red(),
@@ -336,7 +336,7 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
-            except errors.NotResponding as e:
+            except (errors.NotResponding, errors.ServerError) as e:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -360,7 +360,7 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
-            except errors.NotResponding as e:
+            except (errors.NotResponding, errors.ServerError) as e:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -401,7 +401,7 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_profile(tag)
-            except errors.NotResponding as e:
+            except (errors.NotResponding, errors.ServerError) as e:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
