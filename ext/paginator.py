@@ -46,7 +46,7 @@ class PaginatorSession:
         self.help_color = help_color
         self.page_num_enabled = page_nums
         self.file = file
-        if file:
+        if isinstance(self.file, discord.File):
             self.pages = self.pages[:-1]
 
     def add_page(self, embed):
@@ -76,7 +76,10 @@ class PaginatorSession:
             await self.base.edit(embed=page)
         else:
             self.running = True
-            self.base = await self.ctx.send(file=self.file, embed=page)
+            if isinstance(self.file, discord.File):
+                self.base = await self.ctx.send(file=self.file, embed=page)
+            else:
+                self.base = await self.ctx.send(embed=page)
             for reaction in self.reaction_map.keys():
                 if len(self.pages) == 2 and reaction in '⏮⏭':
                     continue
