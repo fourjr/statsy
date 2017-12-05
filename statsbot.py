@@ -243,6 +243,7 @@ class StatsBot(commands.AutoShardedBot):
                 color=discord.Color.orange(), 
                 description=f"```\n{error_message}\n```", 
                 title=ctx.message.content)
+            em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id}')
             await log_channel.send(embed=em)
             print(error_message, file=sys.stderr)
 
