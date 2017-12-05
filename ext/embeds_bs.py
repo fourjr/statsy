@@ -49,10 +49,9 @@ async def format_profile(ctx, soup, tag):
         .find('img')['src']
     
     async with ctx.session.get(pic) as resp:
-        with open('data/pic.png', 'wb') as f:
-            f = io.BytesIO(await resp.read())
+        fp = io.BytesIO(await resp.read())
 
-    pic = discord.File('data/pic.png', filename='pic.png')
+    pic = discord.File(fp, filename='pic.png')
 
     trophies = profile.find('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'}).getText().strip('Trophies')
     pb = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})[1].getText().strip('Highest trophies')
