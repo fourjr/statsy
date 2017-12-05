@@ -67,7 +67,12 @@ class Clash_Royale:
                 )
             await ctx.send(embed=er)
         else:
-            return clan_tag
+            clan_tag = profile.clan_tag
+            if clan_tag is None:
+                await ctx.send(message)
+                raise ValueError(message)
+            else:
+                return clan_tag
 
 
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
