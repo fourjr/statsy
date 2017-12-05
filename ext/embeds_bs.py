@@ -1,8 +1,12 @@
 import discord
 import random
 import copy
+import json
 import io
+import datetime
+import math
 from statsbot import InvalidTag
+from time import time
 from bs4 import BeautifulSoup
 
 def random_color():
@@ -192,3 +196,61 @@ async def format_band(ctx, soup, tag):
             page2.add_field(name=f, value=v)
 
     return [page1, page2, badge]
+
+async def format_events(ctx, soup):
+    em1 = discord.Embed(title='Ongoing events!', color=random_color())
+    if ctx.bot.psa_message:
+        em1.description = ctx.bot.psa_message
+    em2 = copy.deepcopy(em1)
+    em2.title = 'Upcoming events!'
+    events = soup.find('main') \
+                .find('section', attrs={'class':'ui-card pt-4'}) \
+                .find('div', attrs={'class':'container'}) \
+                .find_all('div', attrs={'class':'row'})
+    
+    ongoing = json.loads(events[0].get('data-events'))['now']
+    upcoming = json.loads(events[0].get('data-events'))['later']
+
+    i = 0
+    for event in ongoing:
+        date = (datetime.datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.datetime.now()
+        seconds = math.floor(date.total_seconds())
+        minutes = max(math.floor(seconds/60), 0)
+        seconds -= minutes*60
+        hours = max(math.floor(minutes/60), 0)
+        minutes -= hours*60
+        timeleft = ''
+        if hours > 0: timeleft += f'{hours}h'
+        if minutes > 0: timeleft += f' {minutes}m'
+        if seconds > 0: timeleft += f' {seconds}s'
+
+        name = event['mode']['name']
+        _map = event['location']
+        first = event['coins']['first_win']
+        freecoins = event['coins']['free']
+        maxcoins = event['coins']['max']
+        em1.add_field(name=name, value=f'**{_map}**\nTime Left: {timeleft}\nFirst game: {first}\nFree coins: {freecoins}\nMax Coins: {maxcoins}')
+
+    for event in upcoming:
+        date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.now()
+        seconds = math.floor(date.total_seconds())
+        minutes = max(math.floor(seconds/60), 0)
+        seconds -= minutes*60
+        hours = max(math.floor(minutes/60), 0)
+        minutes -= hours*60
+        days = max(math.floor(hours/60), 0)
+        hours -= days*60
+        timeleft = ''
+        if days > 0: timeleft += f'{days}d'
+        if hours > 0: timeleft += f' {hours}h'
+        if minutes > 0: timeleft += f' {minutes}m'
+        if seconds > 0: timeleft += f' {seconds}s'
+
+        name = event['mode']['name']
+        _map = event['location']
+        first = event['coins']['first_win']
+        freecoins = event['coins']['free']
+        maxcoins = event['coins']['max']
+        em2.add_field(name=name, value=f'**{_map}**\nTime to go: {timeleft}\nFirst game: {first}\nFree coins: {freecoins}\nMax Coins: {maxcoins}')
+
+    return [em1, em2]
