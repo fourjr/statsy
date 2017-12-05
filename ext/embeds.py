@@ -637,9 +637,12 @@ async def format_clan(ctx, c):
     return [page1, page2]
 
 async def format_tournaments(ctx, soup):
-    em = discord.Embed(title='Open Tournaments', color=random_color())
+    em = discord.Embed(color=random_color())
+    em.set_author(name='Open Tournaments', value='https://i.imgur.com/bwql3WU.png')
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
+    else:
+        em.description = 'A list of open tournaments you can join right now!'
     em.set_footer(text='Statsy - Powered by cr-api.com')
     tourneys = soup.find('div', attrs={'class':'challenges__table'}) \
                 .find_all('div', attrs={'class':'challenges__rowContainer'})
@@ -661,6 +664,6 @@ async def format_tournaments(ctx, soup):
 
         em.add_field(name=f'{name}', value=f'Time left: {time}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n{tag}')
         i+=1
-        if i > 10: break
+        if i > 11: break
     
     return em
