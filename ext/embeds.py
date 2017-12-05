@@ -272,104 +272,96 @@ async def format_battles(ctx, soup):
             .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
             ['href'].strip('/profile/')
 
-    battles = profile.find('div', attrs={'class':'replay profile__replays'}) \
-            .find_all('div', attrs={'class':'replay__container'})
-
-    em = discord.Embed(description='A list of battles this player went through.', color=random_color())
+    crapi = 'http://cr-api.com/profile/'
+    em = discord.Embed(description='A list of battles played recently', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
     em.set_footer(text='Statsy - Powered by cr-api.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
-    for battle in battles:
-        right = []
-        left = []
-        _type = battle['data-type'].title()
-        score = battle.find('div', attrs={'class':'replay__header'}) \
-                .find('div', attrs={'class':'replay__record'}).getText().strip()
-        sc = score.split('-')
-        if int(sc[0]) > int(sc[1]):
-            winner = 'crownblue'
-        elif int(sc[1]) > int(sc[0]):
-            winner = 'crownred'
-        else:
-            winner = 'crowngray'
-        match = battle.find('div', attrs={'class':'replay__match'})
-        left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
-                .find('div', attrs={'class':'replay__playerName'}) \
-                .find('div', attrs={'class':'replay__userInfo'}) \
-                .find('div', attrs={'class':'replay__userName'}))
-        left.append(left[0].getText().strip())
-        try:
-            left.append(left[0].find('a', attrs={'class':'ui__link'}) \
-                ['href'].replace('/profile/', ''))
-        except KeyError:
-            continue
-
-        right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
-                .find('div', attrs={'class':'replay__playerName'}) \
-                .find('div', attrs={'class':'replay__userInfo'}) \
-                .find('div', attrs={'class':'replay__userName'}))
-        right.append(right[0].getText().strip())
-        try:
-            right.append(right[0].find('a', attrs={'class':'ui__link'}) \
-                ['href'].replace('/profile/', ''))
-        except KeyError:
-            continue
-        else:
-            if right[2] is not None: right[2] += ')'
-
-        if '3' in score:
-            if winner == 'crownblue':
-                left[1] = f'{emoji(ctx, "3crown")} {left[1]}'
-            elif winner == 'crownred':
-                right[2] += f' {emoji(ctx, "red3crown")}'
-            else:
-                left[1] = f'{emoji(ctx, "3crown")} {left[1]}'
-                right[2] += f' {emoji(ctx, "red3crown")}'
-
-        if _type == '2V2':
-            _type = '2v2'
-
-            try:
-                left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
-                .find('div', attrs={'class':'replay__playerName'}) \
-                .find('div', attrs={'class':'replay__userInfo'}) \
-                .find_all('div', attrs={'class':'replay__userName'})[1])
-                left.append(left[3].getText().strip())
-                left.append(left[3].find('a', attrs={'class':'ui__link'}) \
-                    ['href'].replace('/profile/', ''))
-            except KeyError:
-                continue
-            try:
-                right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
-                        .find('div', attrs={'class':'replay__playerName'}) \
-                        .find('div', attrs={'class':'replay__userInfo'}) \
-                        .find_all('div', attrs={'class':'replay__userName'})[1])
-                right.append(right[3].getText().strip())
-                right.append(right[3].find('a', attrs={'class':'ui__link'}) \
-                    ['href'].replace('/profile/', ''))
-            except KeyError:
-                continue
-            else:
-                if right[5] is not None: right[5] += ')'
-
-            if '3' in score:
-                if winner == 'crownblue':
-                    left[4] = f'{emoji(ctx, "3crown")} {left[1]}'
-                elif winner == 'crownred':
-                    right[5] += f' {emoji(ctx, "red3crown")}'
+    try:
+        battles = profile.find('div', attrs={'class':'replay profile__replays'}) \
+                .find_all('div', attrs={'class':'replay__container'})
+        for battle in battles:
+            right = []
+            left = []
+            _type = battle['data-type'].title()
+            score = battle.find('div', attrs={'class':'replay__header'}) \
+                    .find('div', attrs={'class':'replay__record'}).getText().strip()
+            sc = score.split('-')
+            if int(sc[0]) > int(sc[1]):
+                if int(sc[0]) == 3:
+                    winner = 'blue3crown'
                 else:
-                    left[4] = f'{emoji(ctx, "3crown")} {left[1]}'
-                    right[5] += f' {emoji(ctx, "red3crown")}'
+                    winner = 'crownblue'
+            elif int(sc[1]) > int(sc[0]):
+                if int(sc[1]) == 3:
+                    winner = 'red3crown'
+                else:
+                    winner = 'crownred'
+            else:
+                if int(sc[0]) == 3:
+                    winner = 'gray3crown'
+                winner = 'crowngray'
+            match = battle.find('div', attrs={'class':'replay__match'})
+            left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
+                    .find('div', attrs={'class':'replay__playerName'}) \
+                    .find('div', attrs={'class':'replay__userInfo'}) \
+                    .find('div', attrs={'class':'replay__userName'}))
+            left.append(left[0].getText().strip())
+            try:
+                left.append(left[0].find('a', attrs={'class':'ui__link'}) \
+                    ['href'].replace('/profile/', ''))
+            except KeyError:
+                continue
 
-            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'{left[1]} (#{left[2]}) {emoji(ctx, "battle")} {right[1]} (#{right[2]} \n{left[4]} (#{left[5]}) {emoji(ctx, "battle")} {right[4]} (#{right[5]}', inline=False)
-        else:
-            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'{left[1]} (#{left[2]}) {emoji(ctx, "battle")} {right[1]} (#{right[2]}', inline=False)
-        i += 1
-        if i > 5: break
+            right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
+                    .find('div', attrs={'class':'replay__playerName'}) \
+                    .find('div', attrs={'class':'replay__userInfo'}) \
+                    .find('div', attrs={'class':'replay__userName'}))
+            right.append(right[0].getText().strip())
+            try:
+                right.append(right[0].find('a', attrs={'class':'ui__link'}) \
+                    ['href'].replace('/profile/', ''))
+            except KeyError:
+                continue
+            else:
+                if right[2] is not None: right[2] += ')'
 
+            if _type == '2V2':
+                _type = '2v2'
+
+                try:
+                    left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
+                    .find('div', attrs={'class':'replay__playerName'}) \
+                    .find('div', attrs={'class':'replay__userInfo'}) \
+                    .find_all('div', attrs={'class':'replay__userName'})[1])
+                    left.append(left[3].getText().strip())
+                    left.append(left[3].find('a', attrs={'class':'ui__link'}) \
+                        ['href'].replace('/profile/', ''))
+                except KeyError:
+                    continue
+                try:
+                    right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
+                            .find('div', attrs={'class':'replay__playerName'}) \
+                            .find('div', attrs={'class':'replay__userInfo'}) \
+                            .find_all('div', attrs={'class':'replay__userName'})[1])
+                    right.append(right[3].getText().strip())
+                    right.append(right[3].find('a', attrs={'class':'ui__link'}) \
+                        ['href'].replace('/profile/', ''))
+                except KeyError:
+                    continue
+                else:
+                    if right[5] is not None: right[5] += ')'
+
+                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[1]}]({crapi}{left[2]}) {emoji(ctx, "battle")} [{right[1]}]({crapi}{right[2]} \n[{left[4]}]({crapi}{left[5]}) {emoji(ctx, "battle")} [{right[4]}]({crapi}{right[5]}**', inline=False)
+            else:
+                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[1]}]({crapi}{left[2]}) {emoji(ctx, "battle")} [{right[1]}]({crapi}{right[2]}**', inline=False)
+            i += 1
+            if i > 5: break
+    except AttributeError:
+        em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
     return em
 
 async def format_members(ctx, c):
