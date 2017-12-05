@@ -31,8 +31,8 @@ async def format_profile(ctx, name, p):
         ('Level', p['competitive']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
         ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
         ('Games Played', p['competitive']['overall_stats']['games'], True),
-        ('Win Rate', p['competitive']['overall_stats']['win_rate'], True)
-
+        ('Win Rate', p['competitive']['overall_stats']['win_rate'], True),
+        ("Tier", p["competitive"]["overwall_stats"]["tier"].title(), True)
         ]
 
     for n, v, i in embed_fields:

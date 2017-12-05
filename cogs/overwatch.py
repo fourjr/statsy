@@ -25,7 +25,7 @@ class TagCheck(commands.MemberConverter):
             return user
 
         # Not a user so its a tag.
-        return argument.strip('#').upper()
+        return argument.replace("#", "-")
 
 class Overwatch:
     '''Commands relating to the Overwatch game.'''
@@ -63,7 +63,7 @@ class Overwatch:
         region = region.lower()
         tag = tag.replace('#', '-')
         region_aliases = {
-            'korea': 'kr',
+            'asia': 'kr',
             'america': 'us',
             'europe': 'eu'
             }
