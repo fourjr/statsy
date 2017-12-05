@@ -5,11 +5,15 @@ from __main__ import InvalidTag
 from ext import embeds_bs
 from ext.paginator import PaginatorSession
 
+shortucts = {'juice':'2PP00', 'pulp':'PY9JLV'}
+
 class TagCheck(commands.MemberConverter):
     
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
+        if tag in shortucts:
+            tag = shortucts[tag]
         tag = tag.strip('#').upper().replace('O','0')
         if any(i not in self.check for i in tag):
             return False
@@ -127,7 +131,7 @@ class Brawl_Stars:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             em = await embeds_bs.format_profile(ctx, soup, tag)
-            await ctx.send(embed=em)
+            await ctx.send(file=em[0], embed=em[1])
 
     @commands.command()
     async def bsband(self, ctx, tag_or_user:TagCheck=None):
@@ -147,7 +151,8 @@ class Brawl_Stars:
             ems = await embeds_bs.format_band(ctx, soup, tag)
         session = PaginatorSession(
             ctx=ctx,
-            pages=ems
+            pages=ems,
+            file = ems[2]
             )
         await session.run()
 

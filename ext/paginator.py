@@ -28,7 +28,7 @@ class PaginatorSession:
     close:
         Forcefully destroy a session
     '''
-    def __init__(self, ctx, timeout=60, *, pages=[], page_nums=True, help_color=0x00FFFF, footer_text=''):
+    def __init__(self, ctx, timeout=60, *, pages=[], page_nums=True, help_color=0x00FFFF, footer_text='', file=False):
         self.footer_text = footer_text
         self.ctx = ctx
         self.timeout = timeout
@@ -45,6 +45,9 @@ class PaginatorSession:
             })
         self.help_color = help_color
         self.page_num_enabled = page_nums
+        self.file = file
+        if file:
+            self.pages = self.pages[:-1]
 
     def add_page(self, embed):
         if isinstance(embed, discord.Embed):
@@ -73,7 +76,7 @@ class PaginatorSession:
             await self.base.edit(embed=page)
         else:
             self.running = True
-            self.base = await self.ctx.send(embed=page)
+            self.base = await self.ctx.send(file=self.file, embed=page)
             for reaction in self.reaction_map.keys():
                 if len(self.pages) == 2 and reaction in '⏮⏭':
                     continue
