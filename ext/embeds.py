@@ -5,7 +5,6 @@ import random
 import copy
 from discord.ext import commands
 
-
 def has_perms(add_reactions=True, external_emojis=True):
     perms = {
         'send_messages': True,
@@ -142,6 +141,235 @@ async def format_offers(ctx, p):
         em.add_field(name=f"Epic {emoji(ctx, 'chestepic')}", value=f'{p.shop_offers.epic} Days')
     if p.shop_offers.legendary:
         em.add_field(name=f"Arena Offer {emoji(ctx, 'arena11')}", value=f'{p.shop_offers.arena} Days')
+    return em
+
+async def format_cards(ctx, soup):
+    constants = ctx.bot.constants
+    profile = soup.find('div', attrs={'class':'layout__page'}) \
+            .find('div', attrs={'class':'layout__content layout__container'}) \
+            .find('div', attrs={'class':'profile ui__card'})
+
+    name = profile.find('div', attrs={'class':'profileHeader profile__header'}) \
+            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}).getText().strip() \
+            \
+            .strip(profile.find('div', attrs={'class':'profileHeader profile__header'}) \
+            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}) \
+            .find('span', attrs={'class':'profileHeader__userLevel'}).getText().strip())
+
+    tag = profile.find('div', attrs={'class':'profileTabs profile__tabs'}) \
+            .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
+            ['href'].strip('/profile/')
+
+    rarity = {
+        'Common': 1,
+        'Rare': 2,
+        'Epic': 3,
+        'Legendary': 4
+    }
+    found_cards = profile.find('div', attrs={'class':'cards__group'}) \
+                .find('div', attrs={'class':'profileCards__cards'}) \
+                .find_all('div')
+
+    notfound_cards = profile.find_all('div', attrs={'class':'cards__group'})[1] \
+                    .find('div', attrs={'class':'profileCards__cards'}) \
+                    .find_all('div')
+
+    def get_rarity(card):
+        try:
+            return constants.cards[card.find('a')['href'].lower().replace('/card/', '').replace('+', ' ').replace('.', '').replace('-', '')].rarity
+        except TypeError:
+            return 10495
+
+    def get_rarity_s(card):
+        for a in constants.cards:
+            if constants.cards[a].raw_data['key'].replace('-', '') == card:
+                return constants.cards[a].rarity
+        return 10495
+
+    def key(x):
+        val = get_rarity(x)
+        if val == 10495: return val
+        else: return rarity[val]
+
+    found_cards = sorted(found_cards, key=key)
+    notfound_cards = sorted(notfound_cards, key=key)
+
+    fmt = ''
+    found_cards_pages = []
+    oldcard = ''
+    for card in found_cards:
+        if card is None: continue
+        try:
+            txt = card.find('div', attrs={'class':'ui__tooltip ui__tooltipTop ui__tooltipMiddle cards__tooltip'}) \
+            .getText().strip()
+        except:
+            continue
+
+        if get_rarity(oldcard) != get_rarity(card):
+            try:
+                found_cards_pages.append((fmt, get_rarity_s(fmt.split(':')[1])))
+            except IndexError:
+                found_cards_pages.append((fmt, fmt.split(':')[0]))
+            fmt = str(emoji(ctx, txt))
+        else:
+            fmt += str(emoji(ctx, txt))
+            if len(fmt) > 1024:
+                fmt = fmt.replace(str(emoji(ctx, txt)), '')
+                try:
+                    found_cards_pages.append((fmt, get_rarity_s(fmt.split(':')[1])))
+                except IndexError:
+                    found_cards_pages.append((fmt, fmt.split(':')[0]))
+                fmt = str(emoji(ctx, txt))
+        oldcard = card
+    try:
+        found_cards_pages.append((fmt, get_rarity_s(fmt.split(':')[1])))
+    except IndexError:
+        found_cards_pages.append((fmt, fmt.split(':')[0]))
+
+    fmt = ''
+    notfound_cards_pages = []
+    for card in notfound_cards:
+        if card is None: continue
+        try:
+            txt = card.find('div', attrs={'class':'ui__tooltip ui__tooltipTop ui__tooltipMiddle cards__tooltip'}) \
+            .getText().strip()
+        except:
+            continue
+        fmt += str(emoji(ctx, txt))
+        if len(fmt) > 1024:
+            fmt = fmt.replace(str(emoji(ctx, txt)), '')
+            found_cards_pages.append(fmt)
+            fmt = str(emoji(ctx, txt))
+    notfound_cards_pages.append(fmt)
+
+    em = discord.Embed(description='A list of cards this player has.', color=random_color())
+    em.set_author(name=f"{name} (#{tag})")
+    em.set_footer(text='Statsy - Powered by cr-api.com')
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    for i, r in found_cards_pages:
+        if i:
+            em.add_field(name=f'Found Cards ({r})', value=i, inline=False)
+    for item in notfound_cards_pages:
+        if item:
+            em.add_field(name='Missing Cards', value=item, inline=False)
+    return em
+
+async def format_battles(ctx, soup):
+    constants = ctx.bot.constants
+    profile = soup.find('div', attrs={'class':'layout__page'}) \
+            .find('div', attrs={'class':'layout__content layout__container'}) \
+            .find('div', attrs={'class':'profile ui__card'})
+
+    name = profile.find('div', attrs={'class':'profileHeader profile__header'}) \
+            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}).getText().strip() \
+            \
+            .strip(profile.find('div', attrs={'class':'profileHeader profile__header'}) \
+            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}) \
+            .find('span', attrs={'class':'profileHeader__userLevel'}).getText().strip())
+
+    tag = profile.find('div', attrs={'class':'profileTabs profile__tabs'}) \
+            .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
+            ['href'].strip('/profile/')
+
+    battles = profile.find('div', attrs={'class':'replay profile__replays'}) \
+            .find_all('div', attrs={'class':'replay__container'})
+
+    em = discord.Embed(description='A list of battles this player went through.', color=random_color())
+    em.set_author(name=f"{name} (#{tag})")
+    em.set_footer(text='Statsy - Powered by cr-api.com')
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+
+    i = 0
+    for battle in battles:
+        right = []
+        left = []
+        _type = battle['data-type'].title()
+        score = battle.find('div', attrs={'class':'replay__header'}) \
+                .find('div', attrs={'class':'replay__record'}).getText().strip()
+        sc = score.split('-')
+        if int(sc[0]) > int(sc[1]):
+            winner = 'crownblue'
+        elif int(sc[1]) > int(sc[0]):
+            winner = 'crownred'
+        else:
+            winner = 'crowngray'
+        match = battle.find('div', attrs={'class':'replay__match'})
+        left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
+                .find('div', attrs={'class':'replay__playerName'}) \
+                .find('div', attrs={'class':'replay__userInfo'}) \
+                .find('div', attrs={'class':'replay__userName'}))
+        left.append(left[0].getText().strip())
+        try:
+            left.append(left[0].find('a', attrs={'class':'ui__link'}) \
+                ['href'].replace('/profile/', ''))
+        except KeyError:
+            continue
+
+        right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
+                .find('div', attrs={'class':'replay__playerName'}) \
+                .find('div', attrs={'class':'replay__userInfo'}) \
+                .find('div', attrs={'class':'replay__userName'}))
+        right.append(right[0].getText().strip())
+        try:
+            right.append(right[0].find('a', attrs={'class':'ui__link'}) \
+                ['href'].replace('/profile/', ''))
+        except KeyError:
+            continue
+        else:
+            if right[2] is not None: right[2] += ')'
+
+        if '3' in score:
+            if winner == 'crownblue':
+                left[1] = f'{emoji(ctx, "3crown")} {left[1]}'
+            elif winner == 'crownred':
+                right[2] += f' {emoji(ctx, "red3crown")}'
+            else:
+                left[1] = f'{emoji(ctx, "3crown")} {left[1]}'
+                right[2] += f' {emoji(ctx, "red3crown")}'
+
+        if _type == '2V2':
+            _type = '2v2'
+
+            try:
+                left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
+                .find('div', attrs={'class':'replay__playerName'}) \
+                .find('div', attrs={'class':'replay__userInfo'}) \
+                .find_all('div', attrs={'class':'replay__userName'})[1])
+                left.append(left[3].getText().strip())
+                left.append(left[3].find('a', attrs={'class':'ui__link'}) \
+                    ['href'].replace('/profile/', ''))
+            except KeyError:
+                continue
+            try:
+                right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
+                        .find('div', attrs={'class':'replay__playerName'}) \
+                        .find('div', attrs={'class':'replay__userInfo'}) \
+                        .find_all('div', attrs={'class':'replay__userName'})[1])
+                right.append(right[3].getText().strip())
+                right.append(right[3].find('a', attrs={'class':'ui__link'}) \
+                    ['href'].replace('/profile/', ''))
+            except KeyError:
+                continue
+            else:
+                if right[5] is not None: right[5] += ')'
+
+            if '3' in score:
+                if winner == 'crownblue':
+                    left[4] = f'{emoji(ctx, "3crown")} {left[1]}'
+                elif winner == 'crownred':
+                    right[5] += f' {emoji(ctx, "red3crown")}'
+                else:
+                    left[4] = f'{emoji(ctx, "3crown")} {left[1]}'
+                    right[5] += f' {emoji(ctx, "red3crown")}'
+
+            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'{left[1]} (#{left[2]}) {emoji(ctx, "battle")} {right[1]} (#{right[2]} \n{left[4]} (#{left[5]}) {emoji(ctx, "battle")} {right[4]} (#{right[5]}', inline=False)
+        else:
+            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'{left[1]} (#{left[2]}) {emoji(ctx, "battle")} {right[1]} (#{right[2]}', inline=False)
+        i += 1
+        if i > 5: break
+
     return em
 
 async def format_members(ctx, c):

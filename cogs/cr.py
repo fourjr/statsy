@@ -10,6 +10,8 @@ from PIL import ImageFont
 import io
 import string
 from crasync import errors
+from bs4 import BeautifulSoup
+import asyncio
 
 shortcuts = {'SA1':'88PYQV', 'SA2':'29UQQ282', 'SA3':'28JU8P0Y', 'SA4':'8PUUGRYG', 'SA5':'8YUU2CQV'}
 
@@ -51,14 +53,19 @@ class Clash_Royale:
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
+        self.url = 'https://statsroyale.com/'
 
 
     async def get_clan_from_profile(self, ctx, tag, message):
-        profile = await self.cr.get_profile(tag)
-        clan_tag = profile.clan_tag
-        if clan_tag is None:
-            await ctx.send(message)
-            raise ValueError(message)
+        try:
+            profile = await self.cr.get_profile(tag)
+        except errors.ServerError as e:
+            er = discord.Embed(
+                title=f'Error {e.code}',
+                color=discord.Color.red(),
+                description=e.error
+                )
+            await ctx.send(embed=er)
         else:
             return clan_tag
 
@@ -187,6 +194,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False)
     async def offers(self, ctx, *, tag_or_user:TagCheck=None):
+        '''Get the upcoming offers of a player'''
         tag = await self.resolve_tag(ctx, tag_or_user)
         await ctx.trigger_typing()
         try:
@@ -202,6 +210,39 @@ class Clash_Royale:
             await ctx.send('That tag cannot be found!')
         em = await embeds.format_offers(ctx, profile)
         await ctx.send(embed=em)
+
+    @commands.command()
+    @embeds.has_perms(False)
+    async def cards(self, ctx, *, tag_or_user:TagCheck=None):
+        '''Get a list of cards the user has and does not have'''
+        async with ctx.channel.typing():
+            tag = await self.resolve_tag(ctx, tag_or_user)
+            url = self.url + 'profile/' + tag
+            headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
+            await ctx.session.get(url + '/refresh', headers=headers)
+            async with ctx.session.get(url + '/cards', headers=headers) as resp:
+                soup = BeautifulSoup(await resp.text(), 'html.parser')
+            try:
+                em = await embeds.format_cards(ctx, soup)
+            except AttributeError:
+                await ctx.send('Please do the command again to get your latest results.')
+            else:
+                await ctx.send(embed=em)
+
+    @commands.group(invoke_without_command=True, aliases=['matches'])
+    @embeds.has_perms(False)
+    async def battles(self, ctx, tag_or_user:TagCheck=None):
+        '''Get the latest 5 battles by the player!'''
+        async with ctx.channel.typing():
+            tag = await self.resolve_tag(ctx, tag_or_user)
+            url = self.url + 'profile/' + tag
+            headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
+            await ctx.session.get(url + '/refresh', headers=headers)
+            async with ctx.session.get(url + '/battles', headers=headers) as resp:
+                soup = BeautifulSoup(await resp.text(), 'html.parser')
+            em = await embeds.format_battles(ctx, soup)
+            await ctx.send(embed=em)
+
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
