@@ -65,6 +65,8 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description=e.error
                 )
+            if ctx.bot.psa_message:
+                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
         else:
             clan_tag = profile.clan_tag
@@ -115,6 +117,8 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description=e.error
                     )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
@@ -137,6 +141,8 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description=e.error
                     )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
@@ -159,6 +165,8 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description=e.error
                 )
+            if ctx.bot.psa_message:
+                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
@@ -189,6 +197,8 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description=e.error
                     )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('That tag cannot be found!')
@@ -210,6 +220,8 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description=e.error
                     )
+            if ctx.bot.psa_message:
+                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
@@ -264,6 +276,8 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description=e.error
                     )
+            if ctx.bot.psa_message:
+                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
@@ -289,6 +303,8 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description=e.error
                     )
+            if ctx.bot.psa_message:
+                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
         else:
             ems = await embeds.format_top_clans(ctx, clans)
@@ -313,6 +329,8 @@ class Clash_Royale:
                 color=discord.Color.red(),
                 description=e.error
                     )
+            if ctx.bot.psa_message:
+                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=em)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
@@ -342,6 +360,8 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description=e.error
                     )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
@@ -366,6 +386,8 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description=e.error
                     )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
@@ -407,6 +429,8 @@ class Clash_Royale:
                     color=discord.Color.red(),
                     description=e.error
                     )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
@@ -437,6 +461,17 @@ class Clash_Royale:
         with open(f"data/cards/{card.replace(' ', '-').replace('.','')}.png", 'rb') as c:
             with open(f"data/cards_ingame/{card.replace(' ', '-').replace('.','')}.png", 'rb') as i:
                 await ctx.send(embed=em, files=[discord.File(c, 'card.png'), discord.File(i, 'ingame.png')])
+
+
+    @commands.command(aliases=['tourneys'])
+    @embeds.has_perms(False)
+    async def tournaments(self, ctx):
+        '''Show a list of open tournaments that you can join!'''
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
+        async with ctx.session.get(self.url + 'tournaments', headers=headers) as resp:
+            soup = BeautifulSoup(await resp.text(), 'html.parser')
+        em = await embeds.format_tournaments(ctx, soup)
+        await ctx.send(embed=em)
 
     async def format_deck_and_send(self, ctx, profile):
         deck = profile.deck

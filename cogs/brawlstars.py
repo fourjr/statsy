@@ -1,4 +1,5 @@
 import discord
+import asyncio
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from __main__ import InvalidTag
@@ -46,16 +47,14 @@ class Brawl_Stars:
         self.bot = bot
         self.url = 'https://brawlstats.io/'
         self.conv = TagCheck()
+        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
 
     async def get_band_from_profile(self, ctx, tag, message):
         url = 'https://brawlstats.io/' + 'players/' + tag
-        headers = {
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
-            'x-requested-with': 'XMLHttpRequest'
-        }
-        await ctx.session.get(url + '/update', headers=headers)
-        del headers['x-requested-with']
-        async with ctx.session.get(url, headers=headers) as resp:
+        self.headers['x-requested-with'] = 'XMLHttpRequest'
+        await ctx.session.get(url + '/update', headers=self.headers)
+        del self.headers['x-requested-with']
+        async with ctx.session.get(url, headers=self.headers) as resp:
             soup = BeautifulSoup(await resp.text(), 'html.parser')
         try:
             band_tag = soup.find('main') \
@@ -123,13 +122,10 @@ class Brawl_Stars:
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
             url = self.url + 'players/' + tag
-            headers = {
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
-                'x-requested-with': 'XMLHttpRequest'
-            }
-            await ctx.session.get(url + '/update', headers=headers)
-            del headers['x-requested-with']
-            async with ctx.session.get(url, headers=headers) as resp:
+            self.headers['x-requested-with'] = 'XMLHttpRequest'
+            await ctx.session.get(url + '/update', headers=self.headers)
+            del self.headers['x-requested-with']
+            async with ctx.session.get(url, headers=self.headers) as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             em = await embeds_bs.format_profile(ctx, soup, tag)
@@ -142,13 +138,10 @@ class Brawl_Stars:
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
             url = self.url + 'bands/' + tag
-            headers = {
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
-                'x-requested-with': 'XMLHttpRequest'
-            }
-            await ctx.session.get(url + '/refresh', headers=headers)
-            del headers['x-requested-with']
-            async with ctx.session.get(url, headers=headers) as resp:
+            self.headers['x-requested-with'] = 'XMLHttpRequest'
+            await ctx.session.get(url + '/refresh', headers=self.headers)
+            del self.headers['x-requested-with']
+            async with ctx.session.get(url, headers=self.headers) as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             ems = await embeds_bs.format_band(ctx, soup, tag)
@@ -158,6 +151,22 @@ class Brawl_Stars:
             file = ems[2]
             )
         await session.run()
+
+    @commands.command()
+    @embeds.has_perms()
+    async def bsevents(self, ctx):
+        '''Shows the upcoming events!'''
+        async with ctx.channel.typing():
+            async with ctx.session.get(self.url + 'events/', headers=self.headers) as resp:
+                soup = BeautifulSoup(await resp.text(), 'html.parser')
+            ems = await embeds_bs.format_events(ctx, soup)
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems
+            )
+        await session.run()
+
 
 def setup(bot):
     cog = Brawl_Stars(bot)
