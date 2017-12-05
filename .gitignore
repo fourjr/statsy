@@ -104,3 +104,4 @@ data/.DS_Store
 data/config.json.sample
 test.js
 patches.py
+data/pic.png
