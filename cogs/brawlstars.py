@@ -6,15 +6,15 @@ from ext import embeds_bs
 from ext import embeds
 from ext.paginator import PaginatorSession
 
-shortucts = {'juice':'2PP00', 'pulp':'PY9JLV'}
+shortcuts = {'juice':'2PP00', 'pulp':'PY9JLV'}
 
 class TagCheck(commands.MemberConverter):
     
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
-        if tag in shortucts:
-            tag = shortucts[tag]
+        if tag in shortcuts:
+            tag = shortcuts[tag]
         tag = tag.strip('#').upper().replace('O','0')
         if any(i not in self.check for i in tag):
             return False
