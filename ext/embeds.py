@@ -657,9 +657,9 @@ async def format_tournaments(ctx, soup):
         cards = tournament.find_all('div', attrs={'class':'challenges__row'})[4] \
                 .find('div', attrs={'class':'challenges__metric'}).getText().strip()
         
-        if i == 0: inline = False
-        else: inline = True
-        em.add_field(name=f'{name}', value=f'Time left: {time}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n{tag}', inline=inline)
+
+
+        em.add_field(name=f'{name}', value=f'Time left: {time}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n{tag}')
         i+=1
         if i > 4: break
     
