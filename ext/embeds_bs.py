@@ -48,10 +48,10 @@ async def format_profile(ctx, soup, tag):
         .find('img')['src']
     
     async with ctx.session.get(pic) as resp:
-        with open('../cr-statsbot/data/image.png', 'wb') as f:
+        with open('data/pic.png', 'wb') as f:
             f.write(await resp.read())
 
-    pic = discord.File('data/image.png', filename='image.png')
+    pic = discord.File('data/pic.png', filename='pic.png')
 
     trophies = profile.find('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'}).getText().strip('Trophies')
     pb = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})[1].getText().strip('Highest trophies')
@@ -77,7 +77,7 @@ async def format_profile(ctx, soup, tag):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{name} (#{tag})')
-    em.set_thumbnail(url='attachment://image.png')
+    em.set_thumbnail(url='attachment://pic.png')
 
     embed_fields = [
         ('Trophies', f'{trophies}/{pb} PB {emoji(ctx, "icon_trophy")}', True),
@@ -115,10 +115,10 @@ async def format_band(ctx, soup, tag):
             .find('img', attrs={'class':'band-badge'})['src']
 
     async with ctx.session.get(badge) as resp:
-        with open('data/image.png', 'wb') as f:
+        with open('data/pic.png', 'wb') as f:
             f.write(await resp.read())
 
-    badge = discord.File('data/image.png', filename='image.png')
+    badge = discord.File('data/pic.png', filename='pic.png')
 
     score = band.find('div', attrs={'class':'row'}) \
             .find('div', attrs={'class':'col-6'}) \
@@ -171,7 +171,7 @@ async def format_band(ctx, soup, tag):
     page1.set_author(name=f"{name} (#{tag})")
     if ctx.bot.psa_message:
         page1.description = ctx.bot.psa_message
-    page1.set_thumbnail(url='attachment://image.png')
+    page1.set_thumbnail(url='attachment://pic.png')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Experienced Players for this clan.'
 
