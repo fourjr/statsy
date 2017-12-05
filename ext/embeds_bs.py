@@ -49,7 +49,7 @@ async def format_profile(ctx, soup, tag):
     
     async with ctx.session.get(pic) as resp:
         with open('data/pic.png', 'wb') as f:
-            f.write(await resp.read())
+            f = io.BytesIO(await resp.read())
 
     pic = discord.File('data/pic.png', filename='pic.png')
 
@@ -116,7 +116,7 @@ async def format_band(ctx, soup, tag):
 
     async with ctx.session.get(badge) as resp:
         with open('data/pic.png', 'wb') as f:
-            f.write(await resp.read())
+            f = io.BytesIO(await resp.read())
 
     badge = discord.File('data/pic.png', filename='pic.png')
 
