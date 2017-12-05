@@ -116,10 +116,9 @@ async def format_band(ctx, soup, tag):
             .find('img', attrs={'class':'band-badge'})['src']
 
     async with ctx.session.get(badge) as resp:
-        with open('data/pic.png', 'wb') as f:
             f = io.BytesIO(await resp.read())
 
-    badge = discord.File('data/pic.png', filename='pic.png')
+    badge = discord.File(f, filename='pic.png')
 
     score = band.find('div', attrs={'class':'row'}) \
             .find('div', attrs={'class':'col-6'}) \
