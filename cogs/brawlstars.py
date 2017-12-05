@@ -153,6 +153,7 @@ class Brawl_Stars:
         await session.run()
 
     @commands.command()
+    @embeds.has_perms()
     async def bsevents(self, ctx):
         async with ctx.channel.typing():
             async with ctx.session.get(self.url + 'events/', headers=self.headers) as resp:
