@@ -5,7 +5,7 @@ import json
 import io
 import datetime
 import math
-from statsbot import InvalidTag
+from __main__ import InvalidTag
 from time import time
 from bs4 import BeautifulSoup
 
