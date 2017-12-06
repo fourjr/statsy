@@ -219,7 +219,8 @@ class StatsBot(commands.AutoShardedBot):
                     return await ctx.send('The bot is under maintenance at the moment!')
             if ctx.command.instance is cog:
                 await ctx.send('Brawl Stars commands are temporarily disabled. Please be patient!')
-            await self.invoke(ctx)
+            else:
+                await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
         error = getattr(error, 'original', error)
