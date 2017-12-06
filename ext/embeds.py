@@ -3,6 +3,9 @@ from collections import OrderedDict
 import json
 import random
 import copy
+import datetime
+import math
+import time
 from discord.ext import commands
 
 
@@ -637,34 +640,43 @@ async def format_clan(ctx, c):
     
     return [page1, page2]
 
-async def format_tournaments(ctx, soup):
+async def format_tournaments(ctx, json):
+    rewards = {
+        50: (175, 25, 10),
+        100: (700, 100, 20),
+        200: (400, 57, 40),
+        1000: (2000, 285, 200)
+    }
     em = discord.Embed(color=random_color())
-    em.set_author(name='Open Tournaments', icon_url='https://i.imgur.com/bwql3WU.png')
+    em.set_author(name='Open Tournaments')
+    em.set_thumbnail(url='https://i.imgur.com/bwql3WU.png')
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
     else:
         em.description = 'A list of open tournaments you can join right now!'
-    em.set_footer(text='Statsy - Powered by cr-api.com')
-    tourneys = soup.find('div', attrs={'class':'challenges__table'}) \
-                .find_all('div', attrs={'class':'challenges__rowContainer'})
+    em.set_footer(text='Statsy - Powered by statsroyale.com')
+    tourneys = sorted(json['tournaments'], key=lambda x: int(x['maxPlayers']))
     i = 0
     for tournament in tourneys:
-        if tournament is None: continue
-        members = tournament.find_all('div', attrs={'class':'challenges__row'})[2].getText().strip()
-        if members.split('/')[0] == members.split('/')[1]: continue
-        tag = tournament.find_all('div', attrs={'class':'challenges__row'})[0].getText().strip()
-        name = tournament.find_all('div', attrs={'class':'challenges__row'})[1].getText().strip()
-        time = tournament.find_all('div', attrs={'class':'challenges__row'})[3] \
-                .find('div', attrs={'class':'challenges__timeFull'}).getText().strip()
-        gold = tournament.find_all('div', attrs={'class':'challenges__row'})[4] \
-                .find('div', attrs={'class':'challenges__metric challenges__goldMetric'}).getText().strip()
-        cards = tournament.find_all('div', attrs={'class':'challenges__row'})[4] \
-                .find('div', attrs={'class':'challenges__metric'}).getText().strip()
-        
+        if tournament['full']: continue
+        members = '/'.join((str(tournament['totalPlayers']), str(tournament['maxPlayers'])))
+        tag = tournament['hashtag']
+        name = tournament['title']
+        timeleft = ''
+        date = (datetime.datetime.fromtimestamp(tournament['timeLeft'] + int(time.time()))) - datetime.datetime.now()
+        seconds = math.floor(date.total_seconds())
+        minutes = max(math.floor(seconds/60), 0)
+        seconds -= minutes*60
+        hours = max(math.floor(minutes/60), 0)
+        minutes -= hours*60
+        if hours > 0: timeleft += f'{hours}h'
+        if minutes > 0: timeleft += f' {minutes}m'
+        if seconds > 0: timeleft += f' {seconds}s'
+        gold = rewards[tournament['maxPlayers']][1]
+        cards = rewards[tournament['maxPlayers']][0]
 
-
-        em.add_field(name=f'{name}', value=f'Time left: {time}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n{tag}')
-        i+=1
+        em.add_field(name=f'{name}', value=f'Time left: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n#{tag}')
+        i += 1
         if i > 11: break
     
     return em
