@@ -45,16 +45,13 @@ class Brawl_Stars:
 
     def __init__(self, bot):
         self.bot = bot
-        self.url = 'https://brawlstats.io/'
+        self.url = 'https://bsproxy.herokuapp.com/'
         self.conv = TagCheck()
-        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
 
     async def get_band_from_profile(self, ctx, tag, message):
-        url = 'https://brawlstats.io/' + 'players/' + tag
-        self.headers['x-requested-with'] = 'XMLHttpRequest'
-        await ctx.session.get(url + '/refresh', headers=self.headers)
-        del self.headers['x-requested-with']
-        async with ctx.session.get(url, headers=self.headers) as resp:
+        url = 'https://bsproxy.herokuapp.com/' + 'players/' + tag
+
+        async with ctx.session.get(url) as resp:
             soup = BeautifulSoup(await resp.text(), 'html.parser')
         try:
             band_tag = soup.find('main') \
@@ -121,15 +118,12 @@ class Brawl_Stars:
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
-            url = self.url + 'players/' + tag
-            self.headers['x-requested-with'] = 'XMLHttpRequest'
-            await ctx.session.get(url + '/update', headers=self.headers)
-            del self.headers['x-requested-with']
-            async with ctx.session.get(url, headers=self.headers) as resp:
+            url = self.url + 'profile/' + tag + '?refresh=1'
+            async with ctx.session.get(url) as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             em = await embeds_bs.format_profile(ctx, soup, tag)
-            await ctx.send(file=em[0], embed=em[1])
+            await ctx.send(embed=em)
 
     @commands.command()
     @embeds.has_perms()
@@ -137,11 +131,8 @@ class Brawl_Stars:
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
-            url = self.url + 'bands/' + tag
-            self.headers['x-requested-with'] = 'XMLHttpRequest'
-            await ctx.session.get(url + '/refresh', headers=self.headers)
-            del self.headers['x-requested-with']
-            async with ctx.session.get(url, headers=self.headers) as resp:
+            url = self.url + 'bands/' + tag + '?refresh=1'
+            async with ctx.session.get(url) as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             ems = await embeds_bs.format_band(ctx, soup, tag)
@@ -157,7 +148,7 @@ class Brawl_Stars:
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''
         async with ctx.channel.typing():
-            async with ctx.session.get(self.url + 'events/', headers=self.headers) as resp:
+            async with ctx.session.get(self.url + 'events/') as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
             ems = await embeds_bs.format_events(ctx, soup)
 
