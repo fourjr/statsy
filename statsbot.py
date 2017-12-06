@@ -217,11 +217,11 @@ class StatsBot(commands.AutoShardedBot):
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')
-            if ctx.command.instance is cog:
-                if ctx.author.id in self.developers:
-                    await self.invoke(ctx)
-                else:
-                    await ctx.send('Brawl Stars commands are temporarily disabled. Please be patient!')
+            # if ctx.command.instance is cog:
+            #     if ctx.author.id in self.developers:
+            #         await self.invoke(ctx)
+            #     else:
+            #         await ctx.send('Brawl Stars commands are temporarily disabled. Please be patient!')
             else:
                 await self.invoke(ctx)
 
