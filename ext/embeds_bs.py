@@ -139,7 +139,7 @@ async def format_band(ctx, soup, tag):
             .find('tbody') \
             .find_all('tr')
   
-    _experiences = sorted(members, key=lambda x: int(x.find('td', attrs={'class':'experience'}) \
+    _experiences = sorted(members, key=lambda x: int(x.find('td', attrs={'class':'experience'}, reverse=True) \
                     .find('span', attrs={'class':'experience-star'}).getText()))
     experiences = []
     pushers = []
