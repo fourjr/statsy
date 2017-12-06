@@ -5,6 +5,20 @@ import random
 import copy
 from discord.ext import commands
 
+class Config:
+    def __init__(self, path):
+        self.path = path
+    
+    def __getitem__(self, key):
+        with open(self.path) as f:
+            return json.load(f)[key]
+
+    def __setitem__(self, key, val):
+        with open(self.path, 'w') as f:
+            self[key] = val
+            f.write(self)
+
+
 def has_perms(add_reactions=True, external_emojis=True):
     perms = {
         'send_messages': True,

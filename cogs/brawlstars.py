@@ -52,7 +52,7 @@ class Brawl_Stars:
     async def get_band_from_profile(self, ctx, tag, message):
         url = 'https://brawlstats.io/' + 'players/' + tag
         self.headers['x-requested-with'] = 'XMLHttpRequest'
-        await ctx.session.get(url + '/update', headers=self.headers)
+        await ctx.session.get(url + '/refresh', headers=self.headers)
         del self.headers['x-requested-with']
         async with ctx.session.get(url, headers=self.headers) as resp:
             soup = BeautifulSoup(await resp.text(), 'html.parser')
