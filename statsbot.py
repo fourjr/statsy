@@ -56,18 +56,19 @@ class StatsBot(commands.AutoShardedBot):
     Custom client for statsy made by Kyber
     '''
     emoji_servers = [
-        376364364636094465, 
-        376368487037140992, 
-        376364990023729152, 
+        376364364636094465,
+        376368487037140992,
+        376364990023729152,
         377742732501843968,
         376365022752014345,
         386872710225068042
         ]
-       
+
     developers = [
         325012556940836864,
         180314310298304512,
-        273381165229146112
+        273381165229146112,
+        168143064517443584
     ]
 
     def __init__(self):
@@ -153,7 +154,7 @@ class StatsBot(commands.AutoShardedBot):
         id = str(getattr(message.guild, 'id', None))
 
         prefixes = [
-            f'<@{self.user.id}> ', 
+            f'<@{self.user.id}> ',
             f'<@!{self.user.id}> ',
             cfg.get(id, '!')
             ]
@@ -162,7 +163,7 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_connect(self):
         '''
-        Called when the bot has established a 
+        Called when the bot has established a
         gateway connection with discord
         '''
         print('----------------------------')
@@ -170,7 +171,7 @@ class StatsBot(commands.AutoShardedBot):
         print('----------------------------')
 
         # self._add_commands()
-        # had to put this here due to an issue with the 
+        # had to put this here due to an issue with the
         # latencies property
         # Fixed now
         self.constants = await self.cr.get_constants()
@@ -178,7 +179,7 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_ready(self):
         '''
-        Called when guild streaming is complete 
+        Called when guild streaming is complete
         and the client's internal cache is ready.
         '''
         fmt = 'StatsBot is ready!\n' \
@@ -188,7 +189,7 @@ class StatsBot(commands.AutoShardedBot):
               '----------------------------\n' \
               f'Guilds: {len(self.guilds)}\n' \
               f'Users: {len(self.users)}\n' \
-              '----------------------------' 
+              '----------------------------'
         print(fmt)
         channel = self.get_channel(376622292106608640)
         self.game_emojis = self.get_game_emojis()
@@ -196,7 +197,7 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_shard_connect(self, shard_id):
         '''
-        Called when a shard has successfuly 
+        Called when a shard has successfuly
         connected to the gateway.
         '''
         print(f'Shard `{shard_id}` ready!')
@@ -235,8 +236,8 @@ class StatsBot(commands.AutoShardedBot):
             prefix = (await self.get_prefix(ctx.message))[2]
             await ctx.send(
                 embed=discord.Embed(
-                    color=embeds.random_color(), 
-                    title=f'``Usage: {prefix}{ctx.command.signature}``', 
+                    color=embeds.random_color(),
+                    title=f'``Usage: {prefix}{ctx.command.signature}``',
                     description=ctx.command.help)
                 )
         else:
@@ -244,8 +245,8 @@ class StatsBot(commands.AutoShardedBot):
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
             log_channel = self.get_channel(376622292106608640)
             em = discord.Embed(
-                color=discord.Color.orange(), 
-                description=f"```\n{error_message}\n```", 
+                color=discord.Color.orange(),
+                description=f"```\n{error_message}\n```",
                 title=ctx.message.content)
             em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id}')
             await log_channel.send(embed=em)
@@ -255,7 +256,7 @@ class StatsBot(commands.AutoShardedBot):
         '''Called when a message is sent/recieved.'''
         self.messages_sent += 1
         if message.author.bot:
-            return 
+            return
         await self.process_commands(message)
 
     async def backup_task(self):
