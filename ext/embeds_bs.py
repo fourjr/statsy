@@ -19,7 +19,7 @@ def emoji(ctx, name):
         return name
     return e
 
-url = 'https://brawlstats.io'
+url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master'
 
 async def format_profile(ctx, soup, tag):
     try:
@@ -51,7 +51,6 @@ async def format_profile(ctx, soup, tag):
         .find('div', attrs={'class':'player-info'}) \
         .find('div', {'class':'profile-avatar'}) \
         .find('img')['src']
-    
     # async with ctx.session.get(pic) as resp:
     #     fp = io.BytesIO(await resp.read())
 
