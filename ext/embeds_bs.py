@@ -172,8 +172,6 @@ async def format_band(ctx, soup, tag):
 
     page1 = discord.Embed(description=description, color=random_color())
     page1.set_author(name=f"{name} (#{tag})")
-    if ctx.bot.psa_message:
-        page1.description = ctx.bot.psa_message
     page1.set_thumbnail(url='attachment://pic.png')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Experienced Players for this clan.'
