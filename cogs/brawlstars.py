@@ -118,7 +118,7 @@ class Brawl_Stars:
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
-            url = self.url + 'profile/' + tag + '?refresh=1'
+            url = self.url + 'players/' + tag + '?refresh=1'
             async with ctx.session.get(url) as resp:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
