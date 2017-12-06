@@ -210,12 +210,15 @@ class StatsBot(commands.AutoShardedBot):
     async def process_commands(self, message):
         '''Utilises the CustomContext subclass of discord.Context'''
         ctx = await self.get_context(message, cls=CustomContext)
+        cog = self.get_cog('Brawl_Stars')
         if ctx.command is None:
             return
         else:
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')
+            if ctx.command.instance is cog:
+                await ctx.send('Brawl Stars commands are temporarily disabled. Please be patient!')
             await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
