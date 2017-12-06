@@ -123,7 +123,7 @@ class Brawl_Stars:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             em = await embeds_bs.format_profile(ctx, soup, tag)
-            await ctx.send(embed=em)
+            await ctx.send(embed=em[0], file=em[1])
 
     @commands.command()
     @embeds.has_perms()

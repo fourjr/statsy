@@ -51,10 +51,10 @@ async def format_profile(ctx, soup, tag):
         .find('div', attrs={'class':'player-info'}) \
         .find('div', {'class':'profile-avatar'}) \
         .find('img')['src']
-    # async with ctx.session.get(pic) as resp:
-    #     fp = io.BytesIO(await resp.read())
+    async with ctx.session.get(pic) as resp:
+        fp = io.BytesIO(await resp.read())
 
-    # pic = discord.File(fp, filename='pic.png')
+    pic = discord.File(fp, filename='pic.png')
 
     trophies = profile.find('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'}).getText().strip('Trophies')
     pb = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})[1].getText().strip('Highest trophies')
@@ -80,7 +80,7 @@ async def format_profile(ctx, soup, tag):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{name} (#{tag})')
-    # em.set_thumbnail(url='attachment://pic.png')
+    em.set_thumbnail(url='attachment://pic.png')
 
     embed_fields = [
         ('Trophies', f'{trophies}/{pb} PB {emoji(ctx, "icon_trophy")}', True),
@@ -96,7 +96,7 @@ async def format_profile(ctx, soup, tag):
         if v:
             em.add_field(name=n, value=v, inline=i)
 
-    return em
+    return [em, pic]
 
 async def format_band(ctx, soup, tag):
     try:
