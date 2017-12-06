@@ -3,7 +3,7 @@ from collections import OrderedDict
 import json
 import random
 import copy
-from discord.ext import commands)
+from discord.ext import commands
 
 
 def has_perms(add_reactions=True, external_emojis=True):
