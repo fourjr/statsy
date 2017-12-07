@@ -26,13 +26,14 @@ async def format_profile(ctx, name, p):
         em.set_author(name=name)
 
     em.set_thumbnail(url=p['competitive']['overall_stats']['rank_image'])
+    tier = p["competitive"]["overall_stats"]["tier"] or "none"
 
     embed_fields = [
         ('Level', p['competitive']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
         ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
         ('Games Played', p['competitive']['overall_stats']['games'], True),
-        ('Win Rate', p['competitive']['overall_stats']['win_rate'], True),
-        ("Tier", p["competitive"]["overall_stats"]["tier"].title(), True)
+        ('Win Rate', tier.title(), True),
+        ("Tier", .title(), True)
         ]
 
     for n, v, i in embed_fields:
