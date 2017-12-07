@@ -85,7 +85,6 @@ class Overwatch:
                 ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile[region]['stats'])
             except Exception as e:
                 await ctx.send(embed=discord.Embed(color=embeds_ov.random_color(), description="There aren't any stats for this region!"))
-                return raise e
             if len(ems) > 1:
                 session = PaginatorSession(
                     ctx=ctx, 
