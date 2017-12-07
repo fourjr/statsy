@@ -123,7 +123,7 @@ class Brawl_Stars:
                 soup = BeautifulSoup(await resp.text(), 'html.parser')
 
             em = await embeds_bs.format_profile(ctx, soup, tag)
-            await ctx.send(embed=em[0], file=em[1])
+            await ctx.send(embed=em)
 
     @commands.command()
     @embeds.has_perms()
@@ -138,8 +138,7 @@ class Brawl_Stars:
             ems = await embeds_bs.format_band(ctx, soup, tag)
         session = PaginatorSession(
             ctx=ctx,
-            pages=ems,
-            file = ems[2]
+            pages=ems
             )
         await session.run()
 
