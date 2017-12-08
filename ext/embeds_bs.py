@@ -16,8 +16,8 @@ def emoji(ctx, name):
     name = name.lower().replace('ricochet', 'rico').replace('el primo', 'primo').replace('jessie', 'jess').replace('dynamike', 'mike')
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     if e is None:
-        return name
-    return e.title()
+        return name.title()
+    return e
 
 url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master'
 
