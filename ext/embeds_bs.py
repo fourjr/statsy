@@ -17,7 +17,7 @@ def emoji(ctx, name):
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     if e is None:
         return name
-    return e
+    return e.title()
 
 url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master'
 
