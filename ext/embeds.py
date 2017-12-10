@@ -241,113 +241,67 @@ async def format_cards(ctx, p):
             em.add_field(name='Missing Cards', value=item, inline=False)
     return em
 
-async def format_battles(ctx, soup):
+async def format_battles(ctx, p):
     constants = ctx.bot.constants
-    profile = soup.find('div', attrs={'class':'layout__page'}) \
-            .find('div', attrs={'class':'layout__content layout__container'}) \
-            .find('div', attrs={'class':'profile ui__card'})
-
-    name = profile.find('div', attrs={'class':'profileHeader profile__header'}) \
-            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}).getText().strip() \
-            \
-            .strip(profile.find('div', attrs={'class':'profileHeader profile__header'}) \
-            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}) \
-            .find('span', attrs={'class':'profileHeader__userLevel'}).getText().strip())
-
-    tag = profile.find('div', attrs={'class':'profileTabs profile__tabs'}) \
-            .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
-            ['href'].strip('/profile/')
+    name = p['profile']['name']
+    tag = p['profile']['hashtag']
 
     crapi = 'http://cr-api.com/profile/'
     em = discord.Embed(description='A list of battles played recently', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
-    try:
-        battles = profile.find('div', attrs={'class':'replay profile__replays'}) \
-                .find_all('div', attrs={'class':'replay__container'})
-        for battle in battles:
-            right = []
-            left = []
-            _type = battle['data-type'].title()
-            score = battle.find('div', attrs={'class':'replay__header'}) \
-                    .find('div', attrs={'class':'replay__record'}).getText().strip()
-            sc = score.split('-')
-            if int(sc[0]) > int(sc[1]):
-                if int(sc[0]) == 3:
-                    winner = 'blue3crown'
-                else:
-                    winner = 'crownblue'
-            elif int(sc[1]) > int(sc[0]):
-                if int(sc[1]) == 3:
-                    winner = 'red3crown'
-                else:
-                    winner = 'crownred'
+    #try:
+    battles = p['matches']
+    for battle in battles:
+        right = []
+        left = []
+        _type = battle['type'].title()
+        score = '-'.join((str(battle['players'][0]['stars']), str(battle['players'][1]['stars'])))
+        # -1 = loss
+        # 1 = win
+        # 0 = draw
+        if battle['players'][0]['winner'] == 1: #win
+            if battle['players'][0]['stars'] == 3:
+                winner = 'blue3crown'
             else:
-                if int(sc[0]) == 3:
-                    winner = 'gray3crown'
-                winner = 'crowngray'
-            match = battle.find('div', attrs={'class':'replay__match'})
-            left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
-                    .find('div', attrs={'class':'replay__playerName'}) \
-                    .find('div', attrs={'class':'replay__userInfo'}) \
-                    .find('div', attrs={'class':'replay__userName'}))
-            left.append(left[0].getText().strip())
-            try:
-                left.append(left[0].find('a', attrs={'class':'ui__link'}) \
-                    ['href'].replace('/profile/', ''))
-            except KeyError:
-                continue
-
-            right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
-                    .find('div', attrs={'class':'replay__playerName'}) \
-                    .find('div', attrs={'class':'replay__userInfo'}) \
-                    .find('div', attrs={'class':'replay__userName'}))
-            right.append(right[0].getText().strip())
-            try:
-                right.append(right[0].find('a', attrs={'class':'ui__link'}) \
-                    ['href'].replace('/profile/', ''))
-            except KeyError:
-                continue
+                winner = 'crownblue'
+        elif battle['players'][0]['winner'] == 0: #draw
+            if battle['players'][0]['stars'] == 3:
+                winner = 'gray3crown'
+            winner = 'crowngray'
+        elif battle['players'][0]['winner'] == -1: #lose
+            if battle['players'][1]['stars'] == 3:
+                winner = 'red3crown'
             else:
-                if right[2] is not None: right[2] += ')'
+                winner = 'crownred'
 
-            if _type == '2V2':
-                _type = '2v2'
+        if _type == '2V2':
+            _type = '2v2'
+            left = [battle['players'][0]['name'], \
+                    battle['players'][0]['hashtag'], \
+                    battle['players'][2]['name'], \
+                    battle['players'][2]['hashtag']]
 
-                try:
-                    left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
-                    .find('div', attrs={'class':'replay__playerName'}) \
-                    .find('div', attrs={'class':'replay__userInfo'}) \
-                    .find_all('div', attrs={'class':'replay__userName'})[1])
-                    left.append(left[3].getText().strip())
-                    left.append(left[3].find('a', attrs={'class':'ui__link'}) \
-                        ['href'].replace('/profile/', ''))
-                except KeyError:
-                    continue
-                try:
-                    right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
-                            .find('div', attrs={'class':'replay__playerName'}) \
-                            .find('div', attrs={'class':'replay__userInfo'}) \
-                            .find_all('div', attrs={'class':'replay__userName'})[1])
-                    right.append(right[3].getText().strip())
-                    right.append(right[3].find('a', attrs={'class':'ui__link'}) \
-                        ['href'].replace('/profile/', ''))
-                except KeyError:
-                    continue
-                else:
-                    if right[5] is not None: right[5] += ')'
+            right = [battle['players'][1]['name'], \
+                    battle['players'][1]['hashtag'] + ')', \
+                    battle['players'][3]['name'], \
+                    battle['players'][3]['hashtag'] + ')']
+            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[0]}]({crapi}{left[1]}) {emoji(ctx, "battle")} [{right[0]}]({crapi}{right[1]} \n[{left[2]}]({crapi}{left[3]}) {emoji(ctx, "battle")} [{right[2]}]({crapi}{right[3]}**', inline=False)
+        else:
+            left = [battle['players'][0]['name'], \
+                    battle['players'][0]['hashtag']]
 
-                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[1]}]({crapi}{left[2]}) {emoji(ctx, "battle")} [{right[1]}]({crapi}{right[2]} \n[{left[4]}]({crapi}{left[5]}) {emoji(ctx, "battle")} [{right[4]}]({crapi}{right[5]}**', inline=False)
-            else:
-                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[1]}]({crapi}{left[2]}) {emoji(ctx, "battle")} [{right[1]}]({crapi}{right[2]}**', inline=False)
-            i += 1
-            if i > 5: break
-    except AttributeError:
-        em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
+            right = [battle['players'][1]['name'], \
+                    battle['players'][1]['hashtag'] + ')']
+            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[0]}]({crapi}{left[1]}) {emoji(ctx, "battle")} [{right[0]}]({crapi}{right[1]}**', inline=False)
+        i += 1
+        if i > 5: break
+    # except AttributeError:
+    #     em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
     return em
 
 async def format_members(ctx, c, cache=False):

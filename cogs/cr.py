@@ -294,9 +294,9 @@ class Clash_Royale:
             url = self.url + 'profile/' + tag
             headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
             await ctx.session.get(url + '/refresh', headers=headers)
-            async with ctx.session.get(url + '/battles', headers=headers) as resp:
-                soup = BeautifulSoup(await resp.text(), 'html.parser')
-            em = await embeds.format_battles(ctx, soup)
+            async with ctx.session.get(url + '?appjson=1', headers=headers) as resp:
+                p = await resp.json()
+            em = await embeds.format_battles(ctx, p)
             await ctx.send(embed=em)
 
 
