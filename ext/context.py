@@ -7,6 +7,8 @@ import io
 import os
 import time
 import json
+import crasync
+
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
