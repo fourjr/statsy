@@ -42,7 +42,7 @@ def get_deck(ctx, p):
     return deck
 
 def timestamp(datatime:int):
-    return str(int((datetime.datetime.utcfromtimestamp(datatime) - datetime.datetime.utcnow()).total_seconds()/3600))
+    return str(int((datetime.datetime.utcfromtimestamp(datatime) - datetime.datetime.utcnow()).total_seconds()/3600)) + 'h ago'
 
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
