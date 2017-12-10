@@ -54,7 +54,7 @@ async def format_least_valuable(ctx, clan, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
+            str(datetime.datetime.fromtimestamp(int(clan.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -84,7 +84,7 @@ async def format_most_valuable(ctx, clan, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
+            str(datetime.datetime.fromtimestamp(int(clan.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -377,7 +377,7 @@ async def format_members(ctx, c, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
+            str(datetime.datetime.fromtimestamp(int(c.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=f"{c.name} (#{c.tag})")
     em.set_thumbnail(url=c.badge_url)
     embeds = []
@@ -401,15 +401,12 @@ async def format_members(ctx, c, cache=False):
     embeds.append(em)
     return embeds
 
-async def format_top_clans(ctx, clans, cache=False):
+async def format_top_clans(ctx, clans):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = 'Top 200 global clans right now.'
-    if cache:
-        em.description = 'Cached data from ' + \
-            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
     embeds = []
     counter = 0
@@ -670,9 +667,6 @@ async def format_tournaments(ctx, json, cache=False):
     em.set_thumbnail(url='https://i.imgur.com/bwql3WU.png')
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
-    if cache:
-        em.description = 'Cached data from ' + \
-            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_footer(text='Statsy - Powered by statsroyale.com')
     tourneys = sorted(json['tournaments'], key=lambda x: int(x['maxPlayers']))
     i = 0
