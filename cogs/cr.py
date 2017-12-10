@@ -275,14 +275,15 @@ class Clash_Royale:
             url = self.url + 'profile/' + tag
             headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
             await ctx.session.get(url + '/refresh', headers=headers)
-            async with ctx.session.get(url + '/cards', headers=headers) as resp:
-                soup = BeautifulSoup(await resp.text(), 'html.parser')
-            try:
-                em = await embeds.format_cards(ctx, soup)
-            except AttributeError:
-                await ctx.send('Please do the command again to get your latest results.')
-            else:
-                await ctx.send(embed=em)
+            async with ctx.session.get(url + '?appjson=1', headers=headers) as resp:
+                p = await resp.json()
+            #try:
+            em = await embeds.format_cards(ctx, p)
+            await ctx.send(embed=em)
+            # except AttributeError:
+            #     await ctx.send('Please do the command again to get your latest results.')
+            # else:
+            #     await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, aliases=['matches'])
     @embeds.has_perms(False)
