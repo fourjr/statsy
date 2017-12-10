@@ -421,11 +421,11 @@ class Clash_Royale:
                     em = await embeds.format_most_valuable(ctx, clan, cache=True)
                     await ctx.send(embed=em)
                 else:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                    )
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                        )
                 if ctx.bot.psa_message:
                     er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
@@ -454,11 +454,11 @@ class Clash_Royale:
                     em = await embeds.format_least_valuable(ctx, clan, cache=True)
                     await ctx.send(embed=em)
                 else:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                    )
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                        )
                 if ctx.bot.psa_message:
                     er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                 await ctx.send(embed=er)
