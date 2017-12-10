@@ -41,6 +41,9 @@ def get_deck(ctx, p):
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
     return deck
 
+def timestamp(self, datatime:int):
+    return str(int((datetime.datetime.utcfromtimestamp(datatime) - datetime.datetime.utcnow()).minutes()/60))
+
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
@@ -54,7 +57,7 @@ async def format_least_valuable(ctx, clan, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(clan.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(clan.raw_data['updatedTime'])
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -84,7 +87,7 @@ async def format_most_valuable(ctx, clan, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(clan.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(clan.raw_data['updatedTime'])
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -125,7 +128,7 @@ async def format_chests(ctx, p, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(p.raw_data['updatedTime'])
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
     em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
@@ -139,7 +142,7 @@ async def format_offers(ctx, p, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(p.raw_data['updatedTime'])
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
     if p.shop_offers.legendary:
@@ -377,7 +380,7 @@ async def format_members(ctx, c, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(c.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(c.raw_data['updatedTime'])
     em.set_author(name=f"{c.name} (#{c.tag})")
     em.set_thumbnail(url=c.badge_url)
     embeds = []
@@ -442,7 +445,7 @@ async def format_seasons(ctx, p, cache=False):
                 em.description = f'*{ctx.bot.psa_message}*'
             if cache:
                 em.description = 'Cached data from ' + \
-                    str((datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+                    self.timestamp(p.raw_data['updatedTime'])
             em.set_author(name=str(p), icon_url=av)
             em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
             em.add_field(name="Season", value=f"{season.number}")
@@ -485,7 +488,7 @@ async def format_profile(ctx, p, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(p.raw_data['updatedTime'])
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
@@ -564,7 +567,7 @@ async def format_stats(ctx, p, cache=False):
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
-            str((datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])) - datetime.datetime.now()).hours) + 'h ago'
+            self.timestamp(p.raw_data['updatedTime'])
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
