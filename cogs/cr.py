@@ -9,6 +9,8 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import io
 import string
+import time
+import crasync
 from crasync import errors
 from bs4 import BeautifulSoup
 import asyncio
@@ -112,17 +114,24 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                    )
-                if ctx.bot.psa_message:
-                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                await ctx.send(embed=er)
+                cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                if cached_data:
+                    profile = cached_data
+                    em = await embeds.format_profile(ctx, profile, cache=True)
+                    await ctx.send(embed=em)
+                else:
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                        )
+                    if ctx.bot.psa_message:
+                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
+                ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
                 em = await embeds.format_profile(ctx, profile)
                 await ctx.send(embed=em)
 
@@ -136,17 +145,24 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                    )
-                if ctx.bot.psa_message:
-                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                await ctx.send(embed=er)
+                cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                if cached_data:
+                    profile = cached_data
+                    em = await embeds.format_stats(ctx, profile, cache=True)
+                    await ctx.send(embed=em)
+                else:
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                        )
+                    if ctx.bot.psa_message:
+                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
+                ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
                 em = await embeds.format_stats(ctx, profile)
                 await ctx.send(embed=em)
 
@@ -160,13 +176,19 @@ class Clash_Royale:
         try:
             profile = await self.cr.get_profile(tag)
         except (errors.NotResponding, errors.ServerError) as e:
-            er = discord.Embed(
-                title=f'Error {e.code}',
-                color=discord.Color.red(),
-                description=e.error
-                )
-            if ctx.bot.psa_message:
-                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+            cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+            if cached_data:
+                profile = cached_data
+                em = await embeds.format_seasons(ctx, profile, cache=True)
+                await ctx.send(embed=em)
+            else:
+                er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+                    )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
@@ -180,6 +202,7 @@ class Clash_Royale:
                     )
                 await session.run()
             else:
+                ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
                 await ctx.send(f"**{profile.name}** doesn't have any season results.")
                 
     @commands.group(invoke_without_command=True)
@@ -192,17 +215,24 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                    )
-                if ctx.bot.psa_message:
-                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                await ctx.send(embed=er)
+                cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                if cached_data:
+                    profile = cached_data
+                    em = await embeds.format_chests(ctx, profile, cache=True)
+                    await ctx.send(embed=em)
+                else:
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                        )
+                    if ctx.bot.psa_message:
+                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('That tag cannot be found!')
             else:
+                ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
                 em = await embeds.format_chests(ctx, profile)
                 await ctx.send(embed=em)
 
@@ -215,18 +245,26 @@ class Clash_Royale:
         try:
             profile = await self.cr.get_profile(tag)
         except (errors.NotResponding, errors.ServerError) as e:
-            er = discord.Embed(
-                title=f'Error {e.code}',
-                color=discord.Color.red(),
-                description=e.error
-                    )
-            if ctx.bot.psa_message:
-                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-            await ctx.send(embed=er)
+            cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+            if cached_data:
+                profile = cached_data
+                em = await embeds.format_offers(ctx, profile, cache=True)
+                await ctx.send(embed=em)
+            else:
+                er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+                        )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
-        em = await embeds.format_offers(ctx, profile)
-        await ctx.send(embed=em)
+        else:
+            ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
+            em = await embeds.format_offers(ctx, profile)
+            await ctx.send(embed=em)
 
     @commands.command()
     @embeds.has_perms(False)
@@ -271,17 +309,24 @@ class Clash_Royale:
         try:
             clan = await self.cr.get_clan(tag)
         except (errors.NotResponding, errors.ServerError) as e:
-            er = discord.Embed(
-                title=f'Error {e.code}',
-                color=discord.Color.red(),
-                description=e.error
-                    )
-            if ctx.bot.psa_message:
-                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-            await ctx.send(embed=er)
+            cached_data = ctx.cache('get', 'clashroyale/clans', tag)
+            if cached_data:
+                clan = cached_data
+                em = await embeds.format_clan(ctx, clan, cache=True)
+                await ctx.send(embed=em)
+            else:
+                er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+                        )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                await ctx.send(embed=er)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
         else:
+            ctx.cache('update', 'clashroyale/clans', clan.raw_data)
             ems = await embeds.format_clan(ctx, clan)
             session = PaginatorSession(
                 ctx=ctx,
@@ -324,17 +369,32 @@ class Clash_Royale:
         try:
             clan = await self.cr.get_clan(tag)
         except (errors.NotResponding, errors.ServerError) as e:
-            er = discord.Embed(
-                title=f'Error {e.code}',
-                color=discord.Color.red(),
-                description=e.error
-                    )
-            if ctx.bot.psa_message:
-                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-            await ctx.send(embed=em)
+            cached_data = ctx.cache('get', 'clashroyale/clans', tag)
+            if cached_data:
+                clan = cached_data
+                em = await embeds.format_members(ctx, clan, cache=True)
+                if len(ems) > 1:
+                    session = PaginatorSession(
+                        ctx=ctx, 
+                        pages=ems, 
+                        footer_text=f'{len(clan.members)}/50 members'
+                        )
+                    await session.run()
+                else:
+                    await ctx.send(embed=ems[0])
+            else:
+                er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+                        )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                await ctx.send(embed=em)
         except errors.NotFoundError:
             await ctx.send('That tag cannot be found!')
         else:
+            ctx.cache('update', 'clashroyale/clans', clan.raw_data)
             ems = await embeds.format_members(ctx, clan)
             if len(ems) > 1:
                 session = PaginatorSession(
@@ -355,6 +415,12 @@ class Clash_Royale:
             try:
                 clan = await self.cr.get_clan(tag)
             except (errors.NotResponding, errors.ServerError) as e:
+                cached_data = ctx.cache('get', 'clashroyale/clans', tag)
+                if cached_data:
+                    clan = cached_data
+                    em = await embeds.format_most_valuable(ctx, clan, cache=True)
+                    await ctx.send(embed=em)
+                else:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -366,6 +432,7 @@ class Clash_Royale:
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
+                ctx.cache('update', 'clashroyale/clans', clan.raw_data)
                 if len(clan.members) < 4:
                     return await ctx.send('Clan must have more than 4 players for heuristics.')
                 else:
@@ -381,6 +448,12 @@ class Clash_Royale:
             try:
                 clan = await self.cr.get_clan(tag)
             except (errors.NotResponding, errors.ServerError) as e:
+                cached_data = ctx.cache('get', 'clashroyale/clans', tag)
+                if cached_data:
+                    clan = cached_data
+                    em = await embeds.format_least_valuable(ctx, clan, cache=True)
+                    await ctx.send(embed=em)
+                else:
                 er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
@@ -392,6 +465,7 @@ class Clash_Royale:
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
+                ctx.cache('update', 'clashroyale/clans', clan.raw_data)
                 if len(clan.members) < 4:
                     return await ctx.send('Clan must have more than 4 players for heuristics.')
                 else:
@@ -424,17 +498,23 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_profile(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                    )
-                if ctx.bot.psa_message:
-                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                await ctx.send(embed=er)
+                cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                if cached_data:
+                    profile = cached_data
+                    await self.format_deck_and_send(ctx, profile)
+                else:
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                        )
+                    if ctx.bot.psa_message:
+                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:
+                ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
                 await self.format_deck_and_send(ctx, profile)
 
     @commands.command()

@@ -5,6 +5,7 @@ from colorthief import ColorThief
 from urllib.parse import urlparse
 import io
 import os
+import time
 import json
 
 class CustomContext(commands.Context):
@@ -109,3 +110,16 @@ class CustomContext(commands.Context):
         if appd_index != len(text)-1:
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
+
+    def cache(self, mode, _type, obj):
+        _type = f'backup/{_type}/'
+        if mode == 'update':
+            obj['updatedTime'] = time.time()
+            with open(_type + obj['tag'] + '.json', "w+") as f:
+                f.write(json.dumps(obj, indent=4))
+        elif mode == 'get':
+            try:
+                with open(_type + obj + '.json') as f:
+                    return crasync.models.Profile(self.cr, json.load(f))
+            except (FileNotFoundError, json.decoder.JSONDecodeError):
+                return False

@@ -41,7 +41,7 @@ def get_deck(ctx, p):
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
     return deck
 
-async def format_least_valuable(ctx, clan):
+async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
@@ -52,6 +52,9 @@ async def format_least_valuable(ctx, clan):
         )
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -66,7 +69,7 @@ async def format_least_valuable(ctx, clan):
                   )
     return em
 
-async def format_most_valuable(ctx, clan):
+async def format_most_valuable(ctx, clan, cache=False):
     
     for m in clan.members:
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
@@ -79,6 +82,9 @@ async def format_most_valuable(ctx, clan):
         )
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
     em.set_footer(text='Statsy - Powered by cr-api.com')
@@ -111,32 +117,29 @@ def get_chests(ctx, p):
                 special += f'{e}+{until} '
     return (chests, special)
 
-async def format_deck(ctx, p):
-    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
-    em = discord.Embed(color=random_color(), description=get_deck(ctx, p))
-    em.set_author(name=p, icon_url=av)
-    em.title = 'Battle Deck'
-    em.set_thumbnail(url=emoji(ctx, p.favourite_card).url)
-    em.set_footer(text='Statsy - Powered by cr-api.com')
-    return em
-
-async def format_chests(ctx, p):
+async def format_chests(ctx, p, cache=False):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     em.set_author(name=p, icon_url=av)
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
     em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
     em.set_footer(text='Statsy - Powered by cr-api.com')
     return em
 
-async def format_offers(ctx, p):
+async def format_offers(ctx, p, cache=False):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
     if p.shop_offers.legendary:
@@ -368,10 +371,13 @@ async def format_battles(ctx, soup):
         em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
     return em
 
-async def format_members(ctx, c):
+async def format_members(ctx, c, cache=False):
     em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=f"{c.name} (#{c.tag})")
     em.set_thumbnail(url=c.badge_url)
     embeds = []
@@ -395,12 +401,15 @@ async def format_members(ctx, c):
     embeds.append(em)
     return embeds
 
-async def format_top_clans(ctx, clans):
+async def format_top_clans(ctx, clans, cache=False):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = 'Top 200 global clans right now.'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
     embeds = []
     counter = 0
@@ -425,7 +434,7 @@ async def format_top_clans(ctx, clans):
     return embeds
 
 
-async def format_seasons(ctx, p):
+async def format_seasons(ctx, p, cache=False):
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     embeds = []
 
@@ -434,6 +443,9 @@ async def format_seasons(ctx, p):
             em = discord.Embed(color=random_color())
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
+            if cache:
+                em.description = 'Cached data from ' + \
+                    str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
             em.set_author(name=str(p), icon_url=av)
             em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
             em.add_field(name="Season", value=f"{season.number}")
@@ -468,12 +480,15 @@ async def format_card(ctx, c):
     em.set_footer(text='Statsy - Powered by cr-api.com')
     return em
 
-async def format_profile(ctx, p):
+async def format_profile(ctx, p, cache=False):
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
@@ -544,12 +559,15 @@ async def format_profile(ctx, p):
     
     return em
 
-async def format_stats(ctx, p):
+async def format_stats(ctx, p, cache=False):
 
     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_author(name=str(p), icon_url=av)
     em.set_thumbnail(url=p.arena.image_url)
 
@@ -577,7 +595,7 @@ async def format_stats(ctx, p):
     
     return em
 
-async def format_clan(ctx, c):
+async def format_clan(ctx, c, cache=False):
     page1 = discord.Embed(description = c.description, color=random_color())
     page1.set_author(name=f"{c.name} (#{c.tag})")
     page1.set_footer(text='Statsy - Powered by cr-api.com')
@@ -640,20 +658,21 @@ async def format_clan(ctx, c):
     
     return [page1, page2]
 
-async def format_tournaments(ctx, json):
+async def format_tournaments(ctx, json, cache=False):
     rewards = {
         50: (175, 25, 10),
         100: (700, 100, 20),
         200: (400, 57, 40),
         1000: (2000, 285, 200)
     }
-    em = discord.Embed(color=random_color())
+    em = discord.Embed(description='A list of open tournaments you can join right now!', color=random_color())
     em.set_author(name='Open Tournaments')
     em.set_thumbnail(url='https://i.imgur.com/bwql3WU.png')
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
-    else:
-        em.description = 'A list of open tournaments you can join right now!'
+    if cache:
+        em.description = 'Cached data from ' + \
+            str(datetime.datetime.fromtimestamp(int(p.raw_data['updatedTime'])).strftime('%d/%m %H %M'))
     em.set_footer(text='Statsy - Powered by statsroyale.com')
     tourneys = sorted(json['tournaments'], key=lambda x: int(x['maxPlayers']))
     i = 0

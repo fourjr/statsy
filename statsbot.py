@@ -249,8 +249,8 @@ class StatsBot(commands.AutoShardedBot):
                 description=f"```\n{error_message}\n```",
                 title=ctx.message.content)
             em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id}')
-            await log_channel.send(embed=em)
             print(error_message, file=sys.stderr)
+            await log_channel.send(embed=em)
 
     async def on_message(self, message):
         '''Called when a message is sent/recieved.'''
