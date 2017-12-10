@@ -41,8 +41,8 @@ def get_deck(ctx, p):
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
     return deck
 
-def timestamp(self, datatime:int):
-    return str(int((datetime.datetime.utcfromtimestamp(datatime) - datetime.datetime.utcnow()).minutes()/60))
+def timestamp(datatime:int):
+    return str(int((datetime.datetime.utcfromtimestamp(datatime) - datetime.datetime.utcnow()).total_seconds()/3600))
 
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
