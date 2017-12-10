@@ -230,7 +230,7 @@ async def format_cards(ctx, p):
 
     em = discord.Embed(description='A list of cards this player has.', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     for i, r in found_cards_pages:
