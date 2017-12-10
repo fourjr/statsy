@@ -8,10 +8,6 @@ import os
 import time
 import json
 import crasync
-<<<<<<< HEAD
-=======
-
->>>>>>> 74fb583508bea230f95505083a236bfca7eb662f
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
