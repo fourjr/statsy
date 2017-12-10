@@ -254,54 +254,54 @@ async def format_battles(ctx, p):
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
-    #try:
-    battles = p['matches']
-    for battle in battles:
-        right = []
-        left = []
-        _type = battle['type'].title()
-        score = '-'.join((str(battle['players'][0]['stars']), str(battle['players'][1]['stars'])))
-        # -1 = loss
-        # 1 = win
-        # 0 = draw
-        if battle['players'][0]['winner'] == 1: #win
-            if battle['players'][0]['stars'] == 3:
-                winner = 'blue3crown'
+    try:
+        battles = p['matches']
+        for battle in battles:
+            right = []
+            left = []
+            _type = battle['type'].title()
+            score = '-'.join((str(battle['players'][0]['stars']), str(battle['players'][1]['stars'])))
+            # -1 = loss
+            # 1 = win
+            # 0 = draw
+            if battle['players'][0]['winner'] == 1: #win
+                if battle['players'][0]['stars'] == 3:
+                    winner = 'blue3crown'
+                else:
+                    winner = 'crownblue'
+            elif battle['players'][0]['winner'] == 0: #draw
+                if battle['players'][0]['stars'] == 3:
+                    winner = 'gray3crown'
+                winner = 'crowngray'
+            elif battle['players'][0]['winner'] == -1: #lose
+                if battle['players'][1]['stars'] == 3:
+                    winner = 'red3crown'
+                else:
+                    winner = 'crownred'
+
+            if _type == '2V2':
+                _type = '2v2'
+                left = [battle['players'][0]['name'], \
+                        battle['players'][0]['hashtag'], \
+                        battle['players'][2]['name'], \
+                        battle['players'][2]['hashtag']]
+
+                right = [battle['players'][1]['name'], \
+                        battle['players'][1]['hashtag'] + ')', \
+                        battle['players'][3]['name'], \
+                        battle['players'][3]['hashtag'] + ')']
+                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[0]}]({crapi}{left[1]}) {emoji(ctx, "battle")} [{right[0]}]({crapi}{right[1]} \n[{left[2]}]({crapi}{left[3]}) {emoji(ctx, "battle")} [{right[2]}]({crapi}{right[3]}**', inline=False)
             else:
-                winner = 'crownblue'
-        elif battle['players'][0]['winner'] == 0: #draw
-            if battle['players'][0]['stars'] == 3:
-                winner = 'gray3crown'
-            winner = 'crowngray'
-        elif battle['players'][0]['winner'] == -1: #lose
-            if battle['players'][1]['stars'] == 3:
-                winner = 'red3crown'
-            else:
-                winner = 'crownred'
+                left = [battle['players'][0]['name'], \
+                        battle['players'][0]['hashtag']]
 
-        if _type == '2V2':
-            _type = '2v2'
-            left = [battle['players'][0]['name'], \
-                    battle['players'][0]['hashtag'], \
-                    battle['players'][2]['name'], \
-                    battle['players'][2]['hashtag']]
-
-            right = [battle['players'][1]['name'], \
-                    battle['players'][1]['hashtag'] + ')', \
-                    battle['players'][3]['name'], \
-                    battle['players'][3]['hashtag'] + ')']
-            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[0]}]({crapi}{left[1]}) {emoji(ctx, "battle")} [{right[0]}]({crapi}{right[1]} \n[{left[2]}]({crapi}{left[3]}) {emoji(ctx, "battle")} [{right[2]}]({crapi}{right[3]}**', inline=False)
-        else:
-            left = [battle['players'][0]['name'], \
-                    battle['players'][0]['hashtag']]
-
-            right = [battle['players'][1]['name'], \
-                    battle['players'][1]['hashtag'] + ')']
-            em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[0]}]({crapi}{left[1]}) {emoji(ctx, "battle")} [{right[0]}]({crapi}{right[1]}**', inline=False)
-        i += 1
-        if i > 5: break
-    # except AttributeError:
-    #     em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
+                right = [battle['players'][1]['name'], \
+                        battle['players'][1]['hashtag'] + ')']
+                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[0]}]({crapi}{left[1]}) {emoji(ctx, "battle")} [{right[0]}]({crapi}{right[1]}**', inline=False)
+            i += 1
+            if i > 5: break
+    except AttributeError:
+        em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
     return em
 
 async def format_members(ctx, c, cache=False):
