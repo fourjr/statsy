@@ -10,3 +10,4 @@ Please dont host your own instance, instead invite the bot [with this link.](htt
 
 Join its development server here: https://discord.gg/maZqxnm
  
+ 
