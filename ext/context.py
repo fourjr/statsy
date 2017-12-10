@@ -122,6 +122,6 @@ class CustomContext(commands.Context):
         elif mode == 'get':
             try:
                 with open(_type + obj + '.json') as f:
-                    return crasync.models.Profile(self.cr, json.load(f))
+                    return crasync.models.Profile(self.bot.cr, json.load(f))
             except (FileNotFoundError, json.decoder.JSONDecodeError):
                 return False
