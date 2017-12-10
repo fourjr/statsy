@@ -44,6 +44,22 @@ import inspect
 import io
 import textwrap
 
+class crasyncClient(crasync.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.requests_made = [0, 0, 0]
+
+    async def request(self, url):
+        self.requests_made[2] += 1
+        try:
+            ret = await super().request(url)
+        except Exception as e:
+            self.requests_made[1] += 1
+            raise e
+        else:
+            self.requests_made[0] += 1
+            return ret
+
 class InvalidTag(commands.BadArgument):
     '''Raised when a tag is invalid.'''
 
@@ -75,7 +91,7 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crasync.Client(self.session, timeout=3)
+        self.cr = crasyncClient(self.session, timeout=3)
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
