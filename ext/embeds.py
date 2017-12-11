@@ -18,7 +18,7 @@ def has_perms(add_reactions=True, external_emojis=True):
 
     if add_reactions:
         perms['add_reactions'] = True
-    
+
     if external_emojis:
         perms['external_emojis'] = True
     return commands.bot_has_permissions(**perms)
@@ -40,7 +40,7 @@ def get_deck(ctx, p):
     deck = ''
     for card in p.deck:
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
-    return deck 
+    return deck
 
 def timestamp(datatime:int):
     return str(int((datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(datatime)).total_seconds()/60)) + ' minutes ago'
@@ -51,7 +51,7 @@ async def format_least_valuable(ctx, clan, cache=False):
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
 
     em = discord.Embed(
-        color=random_color(), 
+        color=random_color(),
         description='Here are the least valuable members of the clan currently.'
         )
     if ctx.bot.psa_message:
@@ -65,7 +65,7 @@ async def format_least_valuable(ctx, clan, cache=False):
 
     for m in reversed(to_kick):
         em.add_field(
-            name=f'{m.name} ({m.role_name})', 
+            name=f'{m.name} ({m.role_name})',
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'trophy')}\n{m.crowns} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -74,14 +74,14 @@ async def format_least_valuable(ctx, clan, cache=False):
     return em
 
 async def format_most_valuable(ctx, clan, cache=False):
-    
+
     for m in clan.members:
         m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
 
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
     em = discord.Embed(
-        color=random_color(), 
+        color=random_color(),
         description='Here are the most valuable members of the clan currently.'
         )
     if ctx.bot.psa_message:
@@ -95,7 +95,7 @@ async def format_most_valuable(ctx, clan, cache=False):
 
     for m in reversed(best):
         em.add_field(
-            name=f'{m.name} ({m.role_name})', 
+            name=f'{m.name} ({m.role_name})',
             value=f"#{m.tag}\n{m.trophies} "
             f"{emoji(ctx, 'trophy')}\n{m.crowns} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -177,7 +177,7 @@ async def format_cards(ctx, p):
             found_cards.append(constants.cards[constcard])
 
     found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity])
-    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity]) 
+    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity])
 
     def get_rarity(card):
         for a in constants.cards:
@@ -324,7 +324,7 @@ async def format_members(ctx, c, cache=False):
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge_url)
         em.add_field(
-            name=f'{m.name} ({m.role_name})', 
+            name=f'{m.name} ({m.role_name})',
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'trophy')}\n{m.crowns} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -438,7 +438,7 @@ async def format_profile(ctx, p, cache=False):
         global_r = s.end_global
         season = f"Highest: {s.highest} {emoji(ctx, 'crownblue')}  \n" \
                  f"Finish: {s.ending} {emoji(ctx, 'trophy')} \n" \
-                 f"Global Rank: {global_r} {emoji(ctx, 'rank')}" 
+                 f"Global Rank: {global_r} {emoji(ctx, 'rank')}"
     else:
         season = None
 
@@ -447,7 +447,7 @@ async def format_profile(ctx, p, cache=False):
 
     shop_offers = ''
     if p.shop_offers.legendary:
-        shop_offers += f"{emoji(ctx, 'chestlegendary')}+{p.shop_offers.legendary} " 
+        shop_offers += f"{emoji(ctx, 'chestlegendary')}+{p.shop_offers.legendary} "
     if p.shop_offers.epic:
         shop_offers += f"{emoji(ctx, 'chestepic')}+{p.shop_offers.epic} "
     if p.shop_offers.arena:
@@ -486,7 +486,7 @@ async def format_profile(ctx, p, cache=False):
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
     em.set_footer(text='Statsy - Powered by cr-api.com')
-    
+
     return em
 
 async def format_stats(ctx, p, cache=False):
@@ -522,17 +522,17 @@ async def format_stats(ctx, p, cache=False):
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
     em.set_footer(text='Statsy - Powered by cr-api.com')
-    
+
     return em
 
 async def format_clan(ctx, c, cache=False):
-    page1 = discord.Embed(description = c.description, color=random_color())
+    page1 = discord.Embed(description=c.description, color=random_color())
     page1.set_author(name=f"{c.name} (#{c.tag})")
     page1.set_footer(text='Statsy - Powered by cr-api.com')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
     page1.set_thumbnail(url=c.badge_url)
-    
+
     contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
     _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
 
@@ -543,21 +543,21 @@ async def format_clan(ctx, c, cache=False):
     if len(c.members) >= 3:
         for i in range(3):
             pushers.append(
-                f"**{c.members[i].name}**" 
-                f"\n{c.members[i].trophies} " 
-                f"{emoji(ctx, 'trophy')}\n" 
+                f"**{c.members[i].name}**"
+                f"\n{c.members[i].trophies} "
+                f"{emoji(ctx, 'trophy')}\n"
                 f"#{c.members[i].tag}"
                 )
             donators.append(
                 f"**{_donators[i].name}**"
                 f"\n{_donators[i].donations} "
-                f"{emoji(ctx, 'cards')}\n" 
+                f"{emoji(ctx, 'cards')}\n"
                 f"#{_donators[i].tag}"
                 )
             ccc.append(
-                f"**{contributors[i].name}**" 
-                f"\n{contributors[i].crowns} " 
-                f"{emoji(ctx, 'crownred')}\n" 
+                f"**{contributors[i].name}**"
+                f"\n{contributors[i].crowns} "
+                f"{emoji(ctx, 'crownred')}\n"
                 f"#{contributors[i].tag}"
                 )
 
@@ -585,7 +585,7 @@ async def format_clan(ctx, c, cache=False):
         if v:
             page2.add_field(name=f, value=v)
 
-    
+
     return [page1, page2]
 
 async def format_tournaments(ctx, json, cache=False):
