@@ -40,7 +40,7 @@ def get_deck(ctx, p):
     deck = ''
     for card in p.deck:
         deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
-    return deck
+    return deck 
 
 def timestamp(datatime:int):
     return str(int((datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(datatime)).total_seconds()/60)) + ' minutes ago'
