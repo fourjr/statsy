@@ -57,7 +57,7 @@ class Overwatch:
             return tag_or_user
 
     @commands.group(invoke_without_command=True)
-    async def ovprofile(self, ctx, *, tag_or_user: TagCheck=None):
+    async def owprofile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Overwatch profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
         region = region.lower()
@@ -94,7 +94,7 @@ class Overwatch:
 
             
     @commands.command()
-    async def ovsave(self, ctx, *, tag):
+    async def owsave(self, ctx, *, tag):
         '''Saves a Overwatch tag to your discord.
 
         Ability to save multiple tags coming soon.
