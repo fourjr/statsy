@@ -60,7 +60,6 @@ class Overwatch:
     async def owprofile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Overwatch profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
-        region = region.lower()
         tag = tag.replace('#', '-')
         ems = []
 

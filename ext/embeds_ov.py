@@ -34,7 +34,7 @@ async def format_profile(ctx, name, p):
             ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
             ('Games Played', p['competitive']['overall_stats']['games'], True),
             ('Win Rate', tier.title(), True),
-            ("Tier", .title(), True)
+            ("Tier", tier.title(), True)
             ]
 
         for n, v, i in embed_fields:
@@ -56,7 +56,7 @@ async def format_profile(ctx, name, p):
         ('Win-Loss-Draw', f"{p['quickplay']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
         ('Games Played', p['quickplay']['overall_stats']['games'], True),
         ('Win Rate', tier.title(), True),
-        ("Tier", .title(), True)
+        ("Tier", tier.title(), True)
         ]
 
     for n, v, i in embed_fields:
