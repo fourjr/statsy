@@ -19,7 +19,7 @@ def random_color():
 
 async def format_profile(ctx, name, p):
     embeds = []
-    if competitive:
+    if p["competitive"]:
         em = discord.Embed(color=random_color(), title='Competitive')
         try:
             em.set_author(name=name, icon_url=p['competitive']['overall_stats']['avatar'])
