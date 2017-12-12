@@ -19,19 +19,42 @@ def random_color():
 
 async def format_profile(ctx, name, p):
     embeds = []
-    em = discord.Embed(color=random_color(), title='Competitive')
+    if competitive:
+        em = discord.Embed(color=random_color(), title='Competitive')
+        try:
+            em.set_author(name=name, icon_url=p['competitive']['overall_stats']['avatar'])
+        except:
+            em.set_author(name=name)
+
+        em.set_thumbnail(url=p['competitive']['overall_stats']['rank_image'])
+        tier = p["competitive"]["overall_stats"]["tier"] or "none"
+
+        embed_fields = [
+            ('Level', p['competitive']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
+            ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
+            ('Games Played', p['competitive']['overall_stats']['games'], True),
+            ('Win Rate', tier.title(), True),
+            ("Tier", .title(), True)
+            ]
+
+        for n, v, i in embed_fields:
+            if v:
+                em.add_field(name=n, value=v, inline=i)
+
+        embeds.append(em)
+    em = discord.Embed(color=random_color(), title='Quickplay')
     try:
-        em.set_author(name=name, icon_url=p['competitive']['overall_stats']['avatar'])
+        em.set_author(name=name, icon_url=p['quickplay']['overall_stats']['avatar'])
     except:
         em.set_author(name=name)
 
-    em.set_thumbnail(url=p['competitive']['overall_stats']['rank_image'])
-    tier = p["competitive"]["overall_stats"]["tier"] or "none"
+    em.set_thumbnail(url=p['quickplay']['overall_stats']['rank_image'])
+    tier = p["quickplay"]["overall_stats"]["tier"] or "none"
 
     embed_fields = [
-        ('Level', p['competitive']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
-        ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
-        ('Games Played', p['competitive']['overall_stats']['games'], True),
+        ('Level', p['quickplay']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
+        ('Win-Loss-Draw', f"{p['quickplay']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
+        ('Games Played', p['quickplay']['overall_stats']['games'], True),
         ('Win Rate', tier.title(), True),
         ("Tier", .title(), True)
         ]
