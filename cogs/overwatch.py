@@ -71,15 +71,16 @@ class Overwatch:
         except Exception as e:
             return await ctx.send(f'`{e}`')
         else:
-            for region, r_name in {"kr": "Asia", "eu": "Europe", "us": "America"}.items():
+            try:
+                ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["kr"]['stats'])
+            except:
                 try:
-                    ems_temp = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile[region]['stats'])
-                except Exception as e:
-                    raise e
-                else:
-                    for _em in ems_temp:
-                        _em.title += f" - {r_name}"
-                    ems += ems_temp
+                    ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["eu"]['stats'])
+                except:
+                    try:
+                        ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["us"]['stats'])
+                    except:
+                        ems = []
             if len(ems) > 1:
                 session = PaginatorSession(
                     ctx=ctx, 
