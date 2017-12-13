@@ -9,6 +9,7 @@ import time
 import crasync
 from discord.ext import commands
 
+image = 'https://raw.githubusercontent.com/cr-api/cr-api-assets/master/'
 
 def has_perms(add_reactions=True, external_emojis=True):
     perms = {
@@ -36,10 +37,16 @@ def cdir(obj):
 def random_color():
     return random.randint(0, 0xFFFFFF)
 
+def get_card(ctx, decklink):
+    for c in ctx.bot.constants.cards:
+        if int(ctx.bot.constants.cards[c].deck_link) == decklink:
+            return ctx.bot.constants.cards[c].name
+
 def get_deck(ctx, p):
     deck = ''
-    for card in p.deck:
-        deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
+    for card in p['profile']['currentDeckCards']:
+        name = get_card(ctx, card['card'])
+        deck += str(emoji(ctx, name)) + str(card['level']) + ' '
     return deck
 
 def timestamp(datatime:int):
@@ -104,21 +111,20 @@ async def format_most_valuable(ctx, clan, cache=False):
 
     return em
 
-
+special_chests = ['Magic', 'Giant', 'Epic', 'Legendary', 'supermagical']
 
 def get_chests(ctx, p):
-    cycle = p.chest_cycle
-    pos = cycle.position
-    chests = '| '+str(emoji(ctx, 'chest' + p.get_chest(0).lower())) + ' | '
-    chests += ''.join([str(emoji(ctx, 'chest' + p.get_chest(x).lower())) for x in range(1,10)])
+    cycle = p['chests']
+
+    chests = '| '+ str(emoji(ctx, 'chest' + cycle['0'].lower())) + ' | '
+    chests += ''.join([str(emoji(ctx, 'chest' + cycle[str(x)].lower())) for x in range(8)])
     special = ''
-    for i, attr in enumerate(cdir(cycle)):
-        if attr != 'position':
-            e = emoji(ctx, 'chest'+attr.replace('_',''))
-            if getattr(cycle, attr):
-                c_pos = int(getattr(cycle, attr))
-                until = c_pos-pos
-                special += f'{e}+{until} '
+    for i in cycle:
+        if cycle[str(i)] == 'Super': cycle[str(i)] = 'supermagical'
+        e = emoji(ctx, 'chest'+cycle[str(i)].lower())
+        if cycle[str(i)] in special_chests:
+            until = i
+            special += f'{e}+{until} '
     return (chests, special)
 
 async def format_chests(ctx, p, cache=False):
@@ -315,7 +321,7 @@ async def format_members(ctx, c, cache=False):
     em.set_thumbnail(url=c.badge_url)
     embeds = []
     counter = 0
-    for m in c.members:
+    for m in c['members']:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description = 'A list of all members in this clan.', color=random_color())
@@ -411,71 +417,72 @@ async def format_card(ctx, c):
     return em
 
 async def format_profile(ctx, p, cache=False):
-
-    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    constants = ctx.bot.constants
+    av = image + 'badge/' + constants.badges[str(p['profile']['alliance']['badge'])] + '.png' \
+        or 'https://i.imgur.com/Y3uXsgj.png'
+    arena_image = image + 'arena/arena' + str(p['profile']['arena']) + '.png'
+    if p['profile']['arena'] > 11:
+        arena_image = image + 'arena/league' + str(p['profile']['arena'] - 11) + '.png'
+        if p['profile']['arena'] == 25:
+            arena_image = 'https://i.imgur.com/6285Wj6.png'
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_author(name=str(p), icon_url=av)
-    em.set_thumbnail(url=p.arena.image_url)
+    em.set_author(name=f"{p['profile']['name']} ({p['profile']['hashtag']})", icon_url=av)
+    em.set_thumbnail(url=arena_image)
 
     deck = get_deck(ctx, p)
 
     chests = get_chests(ctx, p)[0]
 
-    cycle = p.chest_cycle
-
-    pos = cycle.position
     special = ''
-    trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
+    trophies = f"{p['profile']['trophies']}/{p['profile']['maxscore']} PB {emoji(ctx, 'trophy')}"
 
     s = None
-    if p.seasons:
-        s = p.seasons[0]
-        global_r = s.end_global
-        season = f"Highest: {s.highest} {emoji(ctx, 'crownblue')}  \n" \
-                 f"Finish: {s.ending} {emoji(ctx, 'trophy')} \n" \
-                 f"Global Rank: {global_r} {emoji(ctx, 'rank')}"
+    if p['profile']['previousSeasonTrophies'] != 0:
+        s = p
+        season = f"Highest: {p['profile']['bestSeasonTrophies']} {emoji(ctx, 'crownblue')}  \n" \
+                 f"Finish: {p['profile']['previousSeasonTrophies']} {emoji(ctx, 'trophy')} \n" \
+                 f"Global Rank: {p['profile']['bestSeasonRank']} {emoji(ctx, 'rank')}"
     else:
         season = None
 
-
     special = get_chests(ctx, p)[1]
 
-    shop_offers = ''
-    if p.shop_offers.legendary:
-        shop_offers += f"{emoji(ctx, 'chestlegendary')}+{p.shop_offers.legendary} "
-    if p.shop_offers.epic:
-        shop_offers += f"{emoji(ctx, 'chestepic')}+{p.shop_offers.epic} "
-    if p.shop_offers.arena:
-        shop_offers += f"{emoji(ctx, 'arena11')}+{p.shop_offers.arena} "
+    # shop_offers = ''
+    # if p.shop_offers.legendary:
+    #     shop_offers += f"{emoji(ctx, 'chestlegendary')}+{p.shop_offers.legendary} "
+    # if p.shop_offers.epic:
+    #     shop_offers += f"{emoji(ctx, 'chestepic')}+{p.shop_offers.epic} "
+    # if p.shop_offers.arena:
+    #     shop_offers += f"{emoji(ctx, 'arena11')}+{p.shop_offers.arena} "
 
 
     embed_fields = [
         ('Trophies', trophies, True),
-        ('Level', f"{p.level} ({'/'.join(str(x) for x in p.experience)}) {emoji(ctx, 'experience')}", True),
-        ('Clan Name', f"{p.clan_name} {emoji(ctx, 'clan')}" if p.clan_name else None, True),
-        ('Clan Tag', f"#{p.clan_tag} {emoji(ctx, 'clan')}" if p.clan_tag else None, True),
-        ('Clan Role', f"{p.clan_role} {emoji(ctx, 'clan')}" if p.clan_role else None, True),
-        ('Games Played', f"{p.games_played} {emoji(ctx, 'battle')}", True),
-        ('Wins/Losses/Draws', f"{p.wins}/{p.losses}/{p.draws} {emoji(ctx, 'battle')}", True),
-        ('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
-        ('Three Crown Wins', f"{p.three_crown_wins} {emoji(ctx, '3crown')}", True),
-        ('Favourite Card', f"{p.favourite_card.replace('_',' ')} {emoji(ctx, p.favourite_card)}", True),
-        ('Legendary Trophies', f"{p.legend_trophies} {emoji(ctx, 'legendarytrophy')}", True),
-        ('Tournament Cards Won', f"{p.tournament_cards_won} {emoji(ctx, 'cards')}", True),
-        ('Challenge Cards Won', f"{p.challenge_cards_won} {emoji(ctx, 'cards')}", True),
-        ('Challenge Max Wins', f"{p.max_wins} {emoji(ctx, 'tournament')}", True),
-        ('Total Donations', f"{p.total_donations} {emoji(ctx, 'cards')}", True),
-        ('Global Rank', f"{p.global_rank} {emoji(ctx, 'crownred')}", True),
+        ('Level', f"{p['profile']['level']} {emoji(ctx, 'experience')}", True),
+        ('Clan Name', f"{p['profile']['alliance']['name']} {emoji(ctx, 'clan')}" if p['profile']['alliance']['hashtag'] else None, True),
+        ('Clan Tag', f"#{p['profile']['alliance']['hashtag']} {emoji(ctx, 'clan')}" if p['profile']['alliance']['hashtag'] else None, True),
+        ('Clan Role', f"{constants.clan.roles[p['profile']['alliance']['accessLevel']]} {emoji(ctx, 'clan')}" if p['profile']['alliance']['hashtag'] else None, True),
+        ('Games Played', f"{p['profile']['games']} {emoji(ctx, 'battle')}", True),
+        ('Wins/Losses/Draws', f"{p['profile']['wins']}/{p['profile']['losses']} {p['profile']['games']-p['profile']['wins']-p['profile']['losses']} {emoji(ctx, 'battle')}", True),
+        #('Win Streak', f"{p.win_streak} {emoji(ctx, 'battle')}", True),
+        ('Three Crown Wins', f"{p['profile']['threeCrownWins']} {emoji(ctx, '3crown')}", True),
+        ('Favourite Card', f"{get_card(ctx, p['profile']['favoriteCard'])} {emoji(ctx, get_card(ctx, p['profile']['favoriteCard']))}", True),
+        #('Legendary Trophies', f"{p.legend_trophies} {emoji(ctx, 'legendarytrophy')}", True),
+        ('Tournament Cards Won', f"{p['profile']['tournament']['cardsWon']} {emoji(ctx, 'cards')}", True),
+        ('Challenge Cards Won', f"{p['profile']['challenge']['cardsWon']} {emoji(ctx, 'cards')}", True),
+        ('Challenge Max Wins', f"{p['profile']['challenge']['maxWins']} {emoji(ctx, 'tournament')}", True),
+        ('Total Donations', f"{p['profile']['donations']} {emoji(ctx, 'cards')}", True),
+        #('Global Rank', f"{p.global_rank} {emoji(ctx, 'crownred')}", True),
         ('Battle Deck', deck, True),
-        (f'Chests ({pos} opened)', chests, False),
+        (f'Chests', chests, False),
         ('Chests Until', special, True),
-        ('Shop Offers (Days)', shop_offers, False),
-        (f'Previous Season Results ({s.number})' if s else None, season, False),
+        #('Shop Offers (Days)', shop_offers, False),
+        (f'Previous Season Results' if s else None, season, False),
         ]
 
     for n, v, i in embed_fields:
@@ -485,7 +492,7 @@ async def format_profile(ctx, p, cache=False):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
 
     return em
 
@@ -526,50 +533,52 @@ async def format_stats(ctx, p, cache=False):
     return em
 
 async def format_clan(ctx, c, cache=False):
-    page1 = discord.Embed(description=c.description, color=random_color())
-    page1.set_author(name=f"{c.name} (#{c.tag})")
-    page1.set_footer(text='Statsy - Powered by cr-api.com')
+    constants = ctx.bot.constants
+    c = c['alliance']
+    page1 = discord.Embed(description=c['description'], color=random_color())
+    page1.set_author(name=f"{c['header']['name']} (#{c['hashtag']})")
+    page1.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
-    page1.set_thumbnail(url=c.badge_url)
+    page1.set_thumbnail(url=image + 'badge/' + constants.badges[str(c['header']['badge'])] + '.png')
 
-    contributors = list(reversed(sorted(c.members, key=lambda x: x.crowns)))
-    _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
+    contributors = list(reversed(sorted(c['members'], key=lambda x: x['clanChestCrowns'])))
+    _donators = list(reversed(sorted(c['members'], key=lambda m: m['donations'])))
 
     pushers = []
     donators = []
     ccc = []
 
-    if len(c.members) >= 3:
+    if len(c['members']) >= 3:
         for i in range(3):
             pushers.append(
-                f"**{c.members[i].name}**"
-                f"\n{c.members[i].trophies} "
+                f"**{c['members'][i]['name']}**"
+                f"\n{c['members'][i]['score']} "
                 f"{emoji(ctx, 'trophy')}\n"
-                f"#{c.members[i].tag}"
+                f"#{c['members'][i]['hashtag']}"
                 )
             donators.append(
-                f"**{_donators[i].name}**"
-                f"\n{_donators[i].donations} "
+                f"**{_donators[i]['name']}**"
+                f"\n{_donators[i]['donations']} "
                 f"{emoji(ctx, 'cards')}\n"
-                f"#{_donators[i].tag}"
+                f"#{_donators[i]['hashtag']}"
                 )
             ccc.append(
-                f"**{contributors[i].name}**"
-                f"\n{contributors[i].crowns} "
+                f"**{contributors[i]['name']}**"
+                f"\n{contributors[i]['clanChestCrowns']} "
                 f"{emoji(ctx, 'crownred')}\n"
-                f"#{contributors[i].tag}"
+                f"#{contributors[i]['hashtag']}"
                 )
 
     fields1 = [
-        ('Type', c.type_name + ' 📩'),
-        ('Score', str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy'))),
-        ('Donations/Week', str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards'))),
-        ('Clan Chest', str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'chestclan'))),
-        ('Location', c.region + ' 🌎'),
-        ('Members', str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}"),
-        ('Required Trophies', f"{c.required_trophies} {emoji(ctx, 'trophy')}"),
-        ('Global Rank', f"{'Unranked' if c.rank == 0 else c.rank} {emoji(ctx, 'rank')}")
+        #('Type', c.type_name + ' 📩'),
+        ('Score', str(c['header']['score']) + ' Trophies ' + str(emoji(ctx, 'trophy'))),
+        ('Donations/Week', str(c['header']['donations']) + ' Cards ' + str(emoji(ctx, 'cards'))),
+        #('Clan Chest', str(c.clan_chest.crowns) + '/' + str(c.clan_chest.required) + ' '+str(emoji(ctx, 'chestclan'))),
+        ('Location', constants.country_codes[c['header']['region']].name + ' 🌎'),
+        ('Members', str(len(c['members'])) + f"/50 {emoji(ctx, 'clan')}"),
+        ('Required Trophies', f"{c['header']['requiredScore']} {emoji(ctx, 'trophy')}"),
+        #('Global Rank', f"{'Unranked' if c.rank == 0 else c.rank} {emoji(ctx, 'rank')}")
     ]
 
     fields2 = [
@@ -624,5 +633,5 @@ async def format_tournaments(ctx, json, cache=False):
         em.add_field(name=f'{name}', value=f'Time left: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n#{tag}')
         i += 1
         if i > 11: break
-    
+
     return em

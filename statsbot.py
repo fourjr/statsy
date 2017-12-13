@@ -191,7 +191,11 @@ class StatsBot(commands.AutoShardedBot):
         # had to put this here due to an issue with the
         # latencies property
         # Fixed now
-        self.constants = await self.cr.get_constants()
+        #self.constants = await self.cr.get_constants()
+        with open('backup/clashroyale/constants.json') as f:
+            self.constants = crasync.models.Constants(self.cr, json.load(f))
+        with open('backup/brawlstars/constants.json') as f:
+            self.bsconstants = json.load(f)
         # await self.change_presence(game=discord.Game(name='!help'))
 
     async def on_ready(self):
@@ -228,18 +232,12 @@ class StatsBot(commands.AutoShardedBot):
     async def process_commands(self, message):
         '''Utilises the CustomContext subclass of discord.Context'''
         ctx = await self.get_context(message, cls=CustomContext)
-        cog = self.get_cog('Brawl_Stars')
         if ctx.command is None:
             return
         else:
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')
-            # if ctx.command.instance is cog:
-            #     if ctx.author.id in self.developers:
-            #         await self.invoke(ctx)
-            #     else:
-            #         await ctx.send('Brawl Stars commands are temporarily disabled. Please be patient!')
             else:
                 await self.invoke(ctx)
 
