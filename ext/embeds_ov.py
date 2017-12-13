@@ -20,11 +20,11 @@ def random_color():
 async def format_profile(ctx, name, p):
     embeds = []
     if p["competitive"]:
-        em = discord.Embed(color=random_color(), title='Competitive')
+        em = discord.Embed(color=random_color())
         try:
-            em.set_author(name=name, icon_url=p['competitive']['overall_stats']['avatar'])
+            em.set_author(name=f"{name} - Competitive", icon_url=p['competitive']['overall_stats']['avatar'])
         except:
-            em.set_author(name=name)
+            em.set_author(name=f"{name} - Competitive")
 
         em.set_thumbnail(url=p['competitive']['overall_stats']['rank_image'])
         tier = p["competitive"]["overall_stats"]["tier"] or "none"
@@ -51,11 +51,11 @@ async def format_profile(ctx, name, p):
                 em.add_field(name=n, value=v, inline=i)
 
         embeds.append(em)
-    em = discord.Embed(color=random_color(), title='Quickplay')
+    em = discord.Embed(color=random_color(), title=)
     try:
-        em.set_author(name=name, icon_url=p['quickplay']['overall_stats']['avatar'])
+        em.set_author(name=f"{name} - Quickplay", icon_url=p['quickplay']['overall_stats']['avatar'])
     except:
-        em.set_author(name=name)
+        em.set_author(name=f"{name} - Quickplay")
 
     em.set_thumbnail(url=p['quickplay']['overall_stats']['rank_image'])
     tier = p["quickplay"]["overall_stats"]["tier"] or "none"
