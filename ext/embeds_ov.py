@@ -51,7 +51,7 @@ async def format_profile(ctx, name, p):
                 em.add_field(name=n, value=v, inline=i)
 
         embeds.append(em)
-    em = discord.Embed(color=random_color(), title=)
+    em = discord.Embed(color=random_color())
     try:
         em.set_author(name=f"{name} - Quickplay", icon_url=p['quickplay']['overall_stats']['avatar'])
     except:
