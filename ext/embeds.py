@@ -128,37 +128,38 @@ def get_chests(ctx, p):
     return (chests, special)
 
 async def format_chests(ctx, p, cache=False):
-    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    av = image + 'badge/' + ctx.bot.constants.badges[str(p['profile']['alliance']['badge'])] + '.png' \
+            or 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
-    em.set_author(name=p, icon_url=av)
+    em.set_author(name=f"{p['profile']['name']} (#{p['profile']['hashtag']})", icon_url=av)
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_thumbnail(url=emoji(ctx, 'chest' + p.get_chest(0).lower()).url)
-    em.add_field(name=f'Chests ({p.chest_cycle.position} opened)', value=get_chests(ctx, p)[0])
+    em.set_thumbnail(url=emoji(ctx, 'chest' + p['chests']['0'].lower()).url)
+    em.add_field(name=f'Chests', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     return em
 
-async def format_offers(ctx, p, cache=False):
-    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
-    em = discord.Embed(color=random_color())
-    if ctx.bot.psa_message:
-        em.description = f'*{ctx.bot.psa_message}*'
-    if cache:
-        em.description = 'Cached data from ' + \
-            timestamp(p.raw_data['updatedTime'])
-    em.set_author(name=str(p), icon_url=av)
-    em.set_thumbnail(url=p.arena.image_url)
-    if p.shop_offers.legendary:
-        em.add_field(name=f"Legendary {emoji(ctx, 'chestlegendary')}", value=f'{p.shop_offers.legendary} Days')
-    if p.shop_offers.epic:
-        em.add_field(name=f"Epic {emoji(ctx, 'chestepic')}", value=f'{p.shop_offers.epic} Days')
-    if p.shop_offers.legendary:
-        em.add_field(name=f"Arena Offer {emoji(ctx, 'arena11')}", value=f'{p.shop_offers.arena} Days')
-    return em
+# async def format_offers(ctx, p, cache=False):
+#     av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+#     em = discord.Embed(color=random_color())
+#     if ctx.bot.psa_message:
+#         em.description = f'*{ctx.bot.psa_message}*'
+#     if cache:
+#         em.description = 'Cached data from ' + \
+#             timestamp(p.raw_data['updatedTime'])
+#     em.set_author(name=str(p), icon_url=av)
+#     em.set_thumbnail(url=p.arena.image_url)
+#     if p.shop_offers.legendary:
+#         em.add_field(name=f"Legendary {emoji(ctx, 'chestlegendary')}", value=f'{p.shop_offers.legendary} Days')
+#     if p.shop_offers.epic:
+#         em.add_field(name=f"Epic {emoji(ctx, 'chestepic')}", value=f'{p.shop_offers.epic} Days')
+#     if p.shop_offers.legendary:
+#         em.add_field(name=f"Arena Offer {emoji(ctx, 'arena11')}", value=f'{p.shop_offers.arena} Days')
+#     return em
 
 async def format_cards(ctx, p):
     constants = ctx.bot.constants

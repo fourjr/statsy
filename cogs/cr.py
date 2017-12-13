@@ -114,7 +114,8 @@ class Clash_Royale:
 
         async with ctx.typing():
             try:
-                profile = await self.cr.get_profile(tag)
+                #profile = await self.cr.get_profile(tag)
+                raise errors.NotResponding()
             except (errors.NotResponding, errors.ServerError) as e:
                 try:
                     url = self.url + 'profile/' + tag
@@ -224,22 +225,33 @@ class Clash_Royale:
 
         async with ctx.typing():
             try:
-                profile = await self.cr.get_profile(tag)
+                #profile = await self.cr.get_profile(tag)
+                raise errors.NotResponding()
             except (errors.NotResponding, errors.ServerError) as e:
-                cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
-                if cached_data:
-                    profile = cached_data
-                    em = await embeds.format_chests(ctx, profile, cache=True)
-                    await ctx.send(embed=em)
+                try:
+                    url = self.url + 'profile/' + tag
+                    await ctx.session.get(url + '/refresh')
+                    async with ctx.session.get(url + '?appjson=1') as resp:
+                        profile = await resp.json()
+                except Exception as e:
+                    await ctx.send(e)
+                    cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                    if cached_data:
+                        profile = cached_data
+                        em = await embeds.format_chests(ctx, profile, cache=True)
+                        await ctx.send(embed=em)
+                    else:
+                        er = discord.Embed(
+                            title=f'Error {e.code}',
+                            color=discord.Color.red(),
+                            description=e.error
+                            )
+                        if ctx.bot.psa_message:
+                            er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                        await ctx.send(embed=er)
                 else:
-                    er = discord.Embed(
-                        title=f'Error {e.code}',
-                        color=discord.Color.red(),
-                        description=e.error
-                        )
-                    if ctx.bot.psa_message:
-                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                    await ctx.send(embed=er)
+                    em = await embeds.format_chests(ctx, profile)
+                    await ctx.send(embed=em) 
             except errors.NotFoundError:
                 await ctx.send('That tag cannot be found!')
             else:
@@ -247,35 +259,35 @@ class Clash_Royale:
                 em = await embeds.format_chests(ctx, profile)
                 await ctx.send(embed=em)
 
-    @commands.group(invoke_without_command=True)
-    @embeds.has_perms(False)
-    async def offers(self, ctx, *, tag_or_user:TagCheck=None):
-        '''Get the upcoming offers of a player'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
-        await ctx.trigger_typing()
-        try:
-            profile = await self.cr.get_profile(tag)
-        except (errors.NotResponding, errors.ServerError) as e:
-            cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
-            if cached_data:
-                profile = cached_data
-                em = await embeds.format_offers(ctx, profile, cache=True)
-                await ctx.send(embed=em)
-            else:
-                er = discord.Embed(
-                    title=f'Error {e.code}',
-                    color=discord.Color.red(),
-                    description=e.error
-                        )
-                if ctx.bot.psa_message:
-                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                await ctx.send(embed=er)
-        except errors.NotFoundError:
-            await ctx.send('That tag cannot be found!')
-        else:
-            ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
-            em = await embeds.format_offers(ctx, profile)
-            await ctx.send(embed=em)
+    # @commands.group(invoke_without_command=True)
+    # @embeds.has_perms(False)
+    # async def offers(self, ctx, *, tag_or_user:TagCheck=None):
+    #     '''Get the upcoming offers of a player'''
+    #     tag = await self.resolve_tag(ctx, tag_or_user)
+    #     await ctx.trigger_typing()
+    #     try:
+    #         profile = await self.cr.get_profile(tag)
+    #     except (errors.NotResponding, errors.ServerError) as e:
+    #         cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+    #         if cached_data:
+    #             profile = cached_data
+    #             em = await embeds.format_offers(ctx, profile, cache=True)
+    #             await ctx.send(embed=em)
+    #         else:
+    #             er = discord.Embed(
+    #                 title=f'Error {e.code}',
+    #                 color=discord.Color.red(),
+    #                 description=e.error
+    #                     )
+    #             if ctx.bot.psa_message:
+    #                 er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+    #             await ctx.send(embed=er)
+    #     except errors.NotFoundError:
+    #         await ctx.send('That tag cannot be found!')
+    #     else:
+    #         ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
+    #         em = await embeds.format_offers(ctx, profile)
+    #         await ctx.send(embed=em)
 
     @commands.command()
     @embeds.has_perms(False)
@@ -319,8 +331,8 @@ class Clash_Royale:
 
         await ctx.trigger_typing()
         try:
-            raise errors.NotResponding()
             #clan = await self.cr.get_clan(tag)
+            raise errors.NotResponding()
         except (errors.NotResponding, errors.ServerError) as e:
             try:
                 url = self.url + 'clan/' + tag
