@@ -425,7 +425,7 @@ async def format_profile(ctx, p, cache=False):
     if p['profile']['arena'] > 11:
         arena_image = image + 'arena/league' + str(p['profile']['arena'] - 11) + '.png'
         if p['profile']['arena'] == 25:
-            arena_image = 'https://i.imgur.com/6285Wj6.png'
+            arena_image = 'https://raw.githubusercontent.com/cr-api/cr-api-assets/master/arena/arena11.png'
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
