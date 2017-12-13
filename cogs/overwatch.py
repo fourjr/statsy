@@ -75,7 +75,7 @@ class Overwatch:
                 try:
                     ems_temp = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile[region]['stats'])
                 except Exception as e:
-                    print(e)
+                    raise e
                 else:
                     for _em in ems_temp:
                         _em.title += f" - {r_name}"
