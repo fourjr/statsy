@@ -94,7 +94,7 @@ async def format_profile(ctx, name, p, h):
             else:
                 em.set_author(name=f"{name} - {hero.title()} (Competitive)", icon_url=ctx.author.avatar_url)
             em.set_thumbnail(url=emoji(ctx, hero).url)
-            em.add_field(name="Time Played", value=f"{h["stats"]["competitive"][hero]["general_stats"]['time_player']} hours")
+            em.add_field(name="Time Played", value=f'{h["stats"]["competitive"][hero]["general_stats"]["time_played"]} hours')
             em.add_field(name="Kills", value=int(h["stats"]["competitive"][hero]["general_stats"]["eliminations"]))
             em.add_field(name="Deaths", value=int(h["stats"]["competitive"][hero]["general_stats"]["deaths"]))
             em.add_field(name="K/D", value=h["stats"]["competitive"][hero]["general_stats"]["eliminations_per_life"])
@@ -119,7 +119,7 @@ async def format_profile(ctx, name, p, h):
         else:
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
         em.set_thumbnail(url=emoji(ctx, hero).url)
-        em.add_field(name="Time Played", value=f"{h["stats"]["quickplay"][hero]["general_stats"]['time_player']} hours")
+        em.add_field(name="Time Played", value=f'{h["stats"]["quickplay"][hero]["general_stats"]["time_played"]} hours')
         em.add_field(name="Kills", value=int(h["stats"]["quickplay"][hero]["general_stats"]["eliminations"]))
         em.add_field(name="Deaths", value=int(h["stats"]["quickplay"][hero]["general_stats"]["deaths"]))
         em.add_field(name="K/D", value=h["stats"]["quickplay"][hero]["general_stats"]["eliminations_per_life"])
