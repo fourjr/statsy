@@ -153,22 +153,31 @@ class Clash_Royale:
 
         async with ctx.typing():
             try:
-                profile = await self.cr.get_profile(tag)
+                raise errors.NotResponding()
+                # profile = await self.cr.get_profile(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
-                if cached_data:
-                    profile = cached_data
-                    em = await embeds.format_stats(ctx, profile, cache=True)
-                    await ctx.send(embed=em)
+                try:
+                    url = self.url + 'profile/' + tag
+                    async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
+                        profile = await resp.json()
+                except:
+                    cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                    if cached_data:
+                        profile = cached_data
+                        em = await embeds.format_stats(ctx, profile, cache=True)
+                        await ctx.send(embed=em)
+                    else:
+                        er = discord.Embed(
+                            title=f'Error {e.code}',
+                            color=discord.Color.red(),
+                            description=e.error
+                            )
+                        if ctx.bot.psa_message:
+                            er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                        await ctx.send(embed=er)
                 else:
-                    er = discord.Embed(
-                        title=f'Error {e.code}',
-                        color=discord.Color.red(),
-                        description=e.error
-                        )
-                    if ctx.bot.psa_message:
-                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-                    await ctx.send(embed=er)
+                    em = await embeds.format_stats(ctx, profile)
+                    await ctx.send(embed=em)
             except errors.NotFoundError:
                 await ctx.send('The tag cannot be found!')
             else:

@@ -503,27 +503,36 @@ async def format_profile(ctx, p, cache=False):
 
 async def format_stats(ctx, p, cache=False):
 
-    av = p.clan_badge_url or 'https://i.imgur.com/Y3uXsgj.png'
+    constants = ctx.bot.constants
+    try:
+        av = image + 'badge/' + constants.badges[str(p['profile']['alliance']['badge'])] + '.png'
+    except:
+        av = 'https://i.imgur.com/Y3uXsgj.png'
+    arena_image = image + 'arena/arena' + str(p['profile']['arena']) + '.png'
+    if p['profile']['arena'] > 12:
+        arena_image = image + 'arena/league' + str(p['profile']['arena'] - 11) + '.png'
+        if p['profile']['arena'] == 25:
+            arena_image = 'https://raw.githubusercontent.com/cr-api/cr-api-assets/master/arena/arena11.png'
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_author(name=str(p), icon_url=av)
-    em.set_thumbnail(url=p.arena.image_url)
+    em.set_author(name=f"{p['profile']['name']} (#{p['profile']['hashtag']})", icon_url=av)
+    em.set_thumbnail(url=arena_image)
 
-    trophies = f"{p.current_trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
+    trophies = f"{p['profile']['trophies']}/{p['profile']['maxscore']} PB {emoji(ctx, 'trophy')}"
 
     embed_fields = [
         ('Trophies', trophies, True),
-        ('Level', f"{p.level} ({'/'.join(str(x) for x in p.experience)}) {emoji(ctx, 'experience')}", True),
-        ('Clan Name', f"{p.clan_name} {emoji(ctx, 'clan')}" if p.clan_name else None, True),
-        ('Clan Tag', f"#{p.clan_tag} {emoji(ctx, 'clan')}" if p.clan_tag else None, True),
-        ('Clan Role', f"{p.clan_role} {emoji(ctx, 'clan')}" if p.clan_role else None, True),
-        ('Favourite Card', f"{p.favourite_card.replace('_',' ')} {emoji(ctx, p.favourite_card)}", True),
-        ('Battle Deck', deck, True)
+        ('Level', f"{p['profile']['level']} {emoji(ctx, 'experience')}", True),
+        ('Clan Name', f"{p['profile']['alliance']['name']} {emoji(ctx, 'clan')}" if p['profile']['alliance']['hashtag'] else None, True),
+        ('Clan Tag', f"#{p['profile']['alliance']['hashtag']} {emoji(ctx, 'clan')}" if p['profile']['alliance']['hashtag'] else None, True),
+        ('Clan Role', f"{constants.clan.roles[p['profile']['alliance']['accessLevel']]} {emoji(ctx, 'clan')}" if p['profile']['alliance']['hashtag'] else None, True),
+        ('Favourite Card', f"{get_card(ctx, p['profile']['favoriteCard'])} {emoji(ctx, get_card(ctx, p['profile']['favoriteCard']))}", True),
+        ('Battle Deck', deck, True),
         ]
 
     for n, v, i in embed_fields:
