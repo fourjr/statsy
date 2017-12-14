@@ -123,7 +123,6 @@ async def format_profile(ctx, name, p, h):
         em.add_field(name="Kills", value=int(h["stats"]["quickplay"][hero]["general_stats"]["eliminations"]))
         em.add_field(name="Deaths", value=int(h["stats"]["quickplay"][hero]["general_stats"]["deaths"]))
         em.add_field(name="K/D", value=h["stats"]["quickplay"][hero]["general_stats"]["eliminations_per_life"])
-        em.add_field(name="Solo Kills", value=int(h["stats"]["quickplay"][hero]["general_stats"]["solo_kills"]))
         em.add_field(name="Best Kill Streak", value=int(h["stats"]["quickplay"][hero]["general_stats"]["kill_streak_best"]))
         em.add_field(name="Total Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["all_damage_done"]))
         em.add_field(name="Hero Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["hero_damage_done"]))
