@@ -128,8 +128,10 @@ def get_chests(ctx, p):
     return (chests, special)
 
 async def format_chests(ctx, p, cache=False):
-    av = image + 'badge/' + ctx.bot.constants.badges[str(p['profile']['alliance']['badge'])] + '.png' \
-            or 'https://i.imgur.com/Y3uXsgj.png'
+    try:
+        av = image + 'badge/' + ctx.bot.constants.badges[str(p['profile']['alliance']['badge'])] + '.png'
+    except:
+        av = 'https://i.imgur.com/Y3uXsgj.png'
     em = discord.Embed(color=random_color())
     em.set_author(name=f"{p['profile']['name']} (#{p['profile']['hashtag']})", icon_url=av)
     if ctx.bot.psa_message:
@@ -419,10 +421,12 @@ async def format_card(ctx, c):
 
 async def format_profile(ctx, p, cache=False):
     constants = ctx.bot.constants
-    av = image + 'badge/' + constants.badges[str(p['profile']['alliance']['badge'])] + '.png' \
-        or 'https://i.imgur.com/Y3uXsgj.png'
+    try:
+        av = image + 'badge/' + constants.badges[str(p['profile']['alliance']['badge'])] + '.png'
+    except:
+        av = 'https://i.imgur.com/Y3uXsgj.png'
     arena_image = image + 'arena/arena' + str(p['profile']['arena']) + '.png'
-    if p['profile']['arena'] > 11:
+    if p['profile']['arena'] > 12:
         arena_image = image + 'arena/league' + str(p['profile']['arena'] - 11) + '.png'
         if p['profile']['arena'] == 25:
             arena_image = 'https://raw.githubusercontent.com/cr-api/cr-api-assets/master/arena/arena11.png'
@@ -432,7 +436,7 @@ async def format_profile(ctx, p, cache=False):
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_author(name=f"{p['profile']['name']} ({p['profile']['hashtag']})", icon_url=av)
+    em.set_author(name=f"{p['profile']['name']} (#{p['profile']['hashtag']})", icon_url=av)
     em.set_thumbnail(url=arena_image)
 
     deck = get_deck(ctx, p)
@@ -541,7 +545,10 @@ async def format_clan(ctx, c, cache=False):
     page1.set_footer(text='Statsy - Powered by cr-api.com')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
-    page1.set_thumbnail(url=image + 'badge/' + constants.badges[str(c['header']['badge'])] + '.png')
+    try:
+        page1.set_thumbnail(url=image + 'badge/' + constants.badges[str(c['header']['badge'])] + '.png')
+    except:
+        pass
 
     contributors = list(reversed(sorted(c['members'], key=lambda x: x['clanChestCrowns'])))
     _donators = list(reversed(sorted(c['members'], key=lambda m: m['donations'])))
