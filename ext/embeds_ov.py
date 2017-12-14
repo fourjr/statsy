@@ -99,8 +99,8 @@ async def format_profile(ctx, name, p, h):
             em.add_field(name="Deaths", value=int(h["stats"]["competitive"][hero]["general_stats"]["deaths"]))
             em.add_field(name="K/D", value=h["stats"]["competitive"][hero]["general_stats"]["eliminations_per_life"])
             em.add_field(name="Solo Kills", value=int(h["stats"]["competitive"][hero]["general_stats"]["solo_kills"]))
-            em.add_field(name="Best Kill Streak", value=int(h["stats"]["competitive"][hero]["general_stats"]["killstreak_best"]))
-            em.add_field(name="Total Damage", value=int(h["stats"]["competitive"][hero]["general_stats"]["total_damage_done"]))
+            em.add_field(name="Best Kill Streak", value=int(h["stats"]["competitive"][hero]["general_stats"]["kill_streak_best"]))
+            em.add_field(name="Total Damage", value=int(h["stats"]["competitive"][hero]["general_stats"]["all_damage_done"]))
             em.add_field(name="Hero Damage", value=int(h["stats"]["competitive"][hero]["general_stats"]["hero_damage_done"]))
             em.add_field(name="Gold Medals", value=int(h["stats"]["competitive"][hero]["general_stats"]["medals_gold"]))
             em.add_field(name="Silver Medals", value=int(h["stats"]["competitive"][hero]["general_stats"]["medals_silver"]))
@@ -109,7 +109,7 @@ async def format_profile(ctx, name, p, h):
                 em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
             embeds.append(em)
             
-    hero_playtime_quick = list(reversed(sorted(h["playtime"]["quickplay"], key=lambda x: x.__getitem__)))
+    hero_playtime_quick = list(sorted(h["playtime"]["quickplay"], key=h["playtime"]["quickplay"].__getitem__, reverse=True))
     for hero in hero_playtime_quick:
         if hero not in h["stats"]["quickplay"]:
             break
@@ -124,8 +124,8 @@ async def format_profile(ctx, name, p, h):
         em.add_field(name="Deaths", value=int(h["stats"]["quickplay"][hero]["general_stats"]["deaths"]))
         em.add_field(name="K/D", value=h["stats"]["quickplay"][hero]["general_stats"]["eliminations_per_life"])
         em.add_field(name="Solo Kills", value=int(h["stats"]["quickplay"][hero]["general_stats"]["solo_kills"]))
-        em.add_field(name="Best Kill Streak", value=int(h["stats"]["quickplay"][hero]["general_stats"]["killstreak_best"]))
-        em.add_field(name="Total Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["total_damage_done"]))
+        em.add_field(name="Best Kill Streak", value=int(h["stats"]["quickplay"][hero]["general_stats"]["kill_streak_best"]))
+        em.add_field(name="Total Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["all_damage_done"]))
         em.add_field(name="Hero Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["hero_damage_done"]))
         em.add_field(name="Gold Medals", value=int(h["stats"]["quickplay"][hero]["general_stats"]["medals_gold"]))
         em.add_field(name="Silver Medals", value=int(h["stats"]["quickplay"][hero]["general_stats"]["medals_silver"]))

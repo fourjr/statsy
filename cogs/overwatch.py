@@ -77,7 +77,7 @@ class Overwatch:
             try:
                 ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["kr"]['stats'], heroes["kr"]['heroes'])
             except Exception as e:
-                ems = []
+                raise e
             if len(ems) > 1:
                 session = PaginatorSession(
                     ctx=ctx, 
