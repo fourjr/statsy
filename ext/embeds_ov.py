@@ -17,16 +17,16 @@ def cdir(obj):
 def random_color():
     return random.randint(0, 0xFFFFFF)
 
-async def format_profile(ctx, name, p):
+async def format_profile(ctx, name, p, h):
     embeds = []
     if p["competitive"]:
         em = discord.Embed(color=random_color())
         try:
-            em.set_author(name=f"{name} - Competitive", icon_url=p['competitive']['overall_stats']['avatar'])
+            em.set_thumbnail(url=p['competitive']['overall_stats']['avatar'])
         except:
-            em.set_author(name=f"{name} - Competitive")
+            pass
 
-        em.set_thumbnail(url=p['competitive']['overall_stats']['rank_image'])
+        em.set_author(name=f"{name} - Competitive", icon_url=ctx.author.avatar_url)
         tier = p["competitive"]["overall_stats"]["tier"] or "none"
 
         embed_fields = [
@@ -52,12 +52,13 @@ async def format_profile(ctx, name, p):
 
         embeds.append(em)
     em = discord.Embed(color=random_color())
-    try:
-        em.set_author(name=f"{name} - Quickplay", icon_url=p['quickplay']['overall_stats']['avatar'])
-    except:
-        em.set_author(name=f"{name} - Quickplay")
 
-    em.set_thumbnail(url=p['quickplay']['overall_stats']['rank_image'])
+    try:
+        em.set_thumbnail(url=p['quickplay']['overall_stats']['avatar'])
+    except:
+        pass
+
+    em.set_author(name=f"{name} - Quickplay", icon_url=ctx.author.avatar_url)
     tier = p["quickplay"]["overall_stats"]["tier"] or "none"
 
     embed_fields = [
@@ -81,4 +82,18 @@ async def format_profile(ctx, name, p):
             em.add_field(name=n, value=v, inline=i)
 
     embeds.append(em)
+    name_dict = {"torbjorn": "Torbjörn", "dva": "D.Va", "soldier76": "Soldier: 76"}
+    if h["competitive"]:
+        hero_playtime_comp = list(reversed(sorted(h["playtime"]["competitive"], key=lambda x: x.__getitem__)))
+        for hero in hero_playtime_comp:
+            if hero not in h["competitive"]:
+                break
+            em = discord.Embed(color=random_color())
+            if hero in name_dict:
+                em.set_author(name=f"{name} - {name_dict[hero]} - Competitive", icon_url=ctx.author.avatar_url)
+            else:
+                em.set_author(name=f"{name} - {hero.title()} - Competitive", icon_url=ctx.author.avatar_url)
+            embeds.append(em)
+            
+    hero_playtime_quick = list(reversed(sorted(h["playtime"]["quickplay"], key=lambda x: x.__getitem__)))
     return embeds

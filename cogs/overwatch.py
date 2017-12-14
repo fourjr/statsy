@@ -68,19 +68,15 @@ class Overwatch:
         try:
             async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
                 profile = await p.json()
+            async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/heroes") as h:
+                heroes = await h.json()
         except Exception as e:
             return await ctx.send(f'`{e}`')
         else:
             try:
-                ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["kr"]['stats'])
+                ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["kr"]['stats'], tag.split('-')[0], profile["kr"]['heroes'])
             except:
-                try:
-                    ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["eu"]['stats'])
-                except:
-                    try:
-                        ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["us"]['stats'])
-                    except:
-                        ems = []
+                ems = []
             if len(ems) > 1:
                 session = PaginatorSession(
                     ctx=ctx, 
