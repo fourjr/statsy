@@ -102,7 +102,7 @@ async def format_profile(ctx, name, p, h):
             em.add_field(name="Best Kill Streak", value=int(gen_comp_stats["kill_streak_best"]))
             em.add_field(name="Total Damage", value=int(gen_comp_stats["all_damage_done"]))
             em.add_field(name="Hero Damage", value=int(gen_comp_stats["hero_damage_done"]))
-            em.add_field(name="On Fire", value=f"{round(gen_quickplay_stats['time_spent_on_fire']/gen_quickplay_stats['time_played']*100}, 2)}%")
+            em.add_field(name="On Fire", value=f"{round(gen_quickplay_stats['time_spent_on_fire']/gen_quickplay_stats['time_played']*100, 2)}%")
             for stat_name, stat in h["stats"]["competitive"][hero]["hero_stats"].items():
                 em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
             embeds.append(em)
@@ -125,7 +125,7 @@ async def format_profile(ctx, name, p, h):
         em.add_field(name="Best Kill Streak", value=int(gen_quickplay_stats["kill_streak_best"]))
         em.add_field(name="Total Damage", value=int(gen_quickplay_stats["all_damage_done"]))
         em.add_field(name="Hero Damage", value=int(gen_quickplay_stats["hero_damage_done"]))
-        em.add_field(name="On Fire", value=f"{round(gen_quickplay_stats['time_spent_on_fire']/gen_quickplay_stats['time_played']*100}, 2)}%")
+        em.add_field(name="On Fire", value=f"{round(gen_quickplay_stats['time_spent_on_fire']/gen_quickplay_stats['time_played']*100, 2)}%")
         for stat_name, stat in h["stats"]["quickplay"][hero]["hero_stats"].items():
             em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
         embeds.append(em)
