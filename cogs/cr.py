@@ -60,8 +60,7 @@ class Clash_Royale:
     async def get_clan_from_profile(self, ctx, tag, message):
         try:
             url = self.url + 'profile/' + tag
-            await ctx.session.get(url + '/update')
-            async with ctx.session.get(url + '?appjson=1') as resp:
+            async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                 profile = await resp.json()
         except Exception as e:
             er = discord.Embed(
@@ -119,8 +118,7 @@ class Clash_Royale:
             except (errors.NotResponding, errors.ServerError) as e:
                 try:
                     url = self.url + 'profile/' + tag
-                    await ctx.session.get(url + '/refresh')
-                    async with ctx.session.get(url + '?appjson=1') as resp:
+                    async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                         profile = await resp.json()
                 except:
                     cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
@@ -230,8 +228,7 @@ class Clash_Royale:
             except (errors.NotResponding, errors.ServerError) as e:
                 try:
                     url = self.url + 'profile/' + tag
-                    await ctx.session.get(url + '/refresh')
-                    async with ctx.session.get(url + '?appjson=1') as resp:
+                    async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                         profile = await resp.json()
                 except Exception as e:
                     await ctx.send(e)
@@ -297,8 +294,7 @@ class Clash_Royale:
             tag = await self.resolve_tag(ctx, tag_or_user)
             url = self.url + 'profile/' + tag
             headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
-            await ctx.session.get(url + '/refresh', headers=headers)
-            async with ctx.session.get(url + '?appjson=1', headers=headers) as resp:
+            async with ctx.session.get(url + '?appjson=1&refresh=1', headers=headers) as resp:
                 p = await resp.json()
             #try:
             em = await embeds.format_cards(ctx, p)
@@ -316,8 +312,7 @@ class Clash_Royale:
             tag = await self.resolve_tag(ctx, tag_or_user)
             url = self.url + 'profile/' + tag
             headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
-            await ctx.session.get(url + '/refresh', headers=headers)
-            async with ctx.session.get(url + '?appjson=1', headers=headers) as resp:
+            async with ctx.session.get(url + '?appjson=1&refresh=1', headers=headers) as resp:
                 p = await resp.json()
             em = await embeds.format_battles(ctx, p)
             await ctx.send(embed=em)
@@ -336,8 +331,7 @@ class Clash_Royale:
         except (errors.NotResponding, errors.ServerError) as e:
             try:
                 url = self.url + 'clan/' + tag
-                await ctx.session.get(url + '/refresh')
-                async with ctx.session.get(url + '?appjson=1') as resp:
+                async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                     clan = await resp.json()
             except Exception as e:
                 print(e)
@@ -586,7 +580,7 @@ class Clash_Royale:
     @embeds.has_perms(False)
     async def tournaments(self, ctx):
         '''Show a list of open tournaments that you can join!'''
-        async with ctx.session.get(self.url + 'tournaments?appjson=1') as resp:
+        async with ctx.session.get(self.url + 'tournaments?appjson=1&refresh=1') as resp:
             json = await resp.json()
         em = await embeds.format_tournaments(ctx, json)
         await ctx.send(embed=em)
