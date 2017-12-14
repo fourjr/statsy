@@ -54,7 +54,7 @@ class Clash_Royale:
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
-        self.url = 'https://statsroyale.com/'
+        self.url = 'https://statsroyale.herokuapp.com/'
 
 
     async def get_clan_from_profile(self, ctx, tag, message):
