@@ -82,18 +82,55 @@ async def format_profile(ctx, name, p, h):
             em.add_field(name=n, value=v, inline=i)
 
     embeds.append(em)
-    name_dict = {"torbjorn": "Torbjörn", "dva": "D.Va", "soldier76": "Soldier: 76"}
-    if h["competitive"]:
-        hero_playtime_comp = list(reversed(sorted(h["playtime"]["competitive"], key=lambda x: x.__getitem__)))
+    name_dict = {"torbjorn": "Torbjörn", "dva": "D.Va", "soldier76": "Soldier: 76", "lucio": "Lúcio"}
+    if h["stats"]["competitive"]:
+        hero_playtime_comp = list(sorted(h["playtime"]["competitive"], key=h["playtime"]["competitive"].__getitem__, reverse=True))
         for hero in hero_playtime_comp:
-            if hero not in h["competitive"]:
+            if hero not in h["stats"]["competitive"]:
                 break
             em = discord.Embed(color=random_color())
             if hero in name_dict:
-                em.set_author(name=f"{name} - {name_dict[hero]} - Competitive", icon_url=ctx.author.avatar_url)
+                em.set_author(name=f"{name} - {name_dict[hero]} (Competitive)", icon_url=ctx.author.avatar_url)
             else:
-                em.set_author(name=f"{name} - {hero.title()} - Competitive", icon_url=ctx.author.avatar_url)
+                em.set_author(name=f"{name} - {hero.title()} (Competitive)", icon_url=ctx.author.avatar_url)
+            em.set_thumbnail(url=emoji(ctx, hero).url)
+            em.add_field(name="Time Played", value=f"{h["stats"]["competitive"][hero]["general_stats"]['time_player']} hours")
+            em.add_field(name="Kills", value=int(h["stats"]["competitive"][hero]["general_stats"]["eliminations"]))
+            em.add_field(name="Deaths", value=int(h["stats"]["competitive"][hero]["general_stats"]["deaths"]))
+            em.add_field(name="K/D", value=h["stats"]["competitive"][hero]["general_stats"]["eliminations_per_life"])
+            em.add_field(name="Solo Kills", value=int(h["stats"]["competitive"][hero]["general_stats"]["solo_kills"]))
+            em.add_field(name="Best Kill Streak", value=int(h["stats"]["competitive"][hero]["general_stats"]["killstreak_best"]))
+            em.add_field(name="Total Damage", value=int(h["stats"]["competitive"][hero]["general_stats"]["total_damage_done"]))
+            em.add_field(name="Hero Damage", value=int(h["stats"]["competitive"][hero]["general_stats"]["hero_damage_done"]))
+            em.add_field(name="Gold Medals", value=int(h["stats"]["competitive"][hero]["general_stats"]["medals_gold"]))
+            em.add_field(name="Silver Medals", value=int(h["stats"]["competitive"][hero]["general_stats"]["medals_silver"]))
+            em.add_field(name="Bronze Medals", value=int(h["stats"]["competitive"][hero]["general_stats"]["medals_bronze"]))
+            for stat_name, stat in h["stats"]["competitive"][hero]["hero_stats"].items():
+                em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
             embeds.append(em)
             
     hero_playtime_quick = list(reversed(sorted(h["playtime"]["quickplay"], key=lambda x: x.__getitem__)))
+    for hero in hero_playtime_quick:
+        if hero not in h["stats"]["quickplay"]:
+            break
+        em = discord.Embed(color=random_color())
+        if hero in name_dict:
+            em.set_author(name=f"{name} - {name_dict[hero]} (Quickplay)", icon_url=ctx.author.avatar_url)
+        else:
+            em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
+        em.set_thumbnail(url=emoji(ctx, hero).url)
+        em.add_field(name="Time Played", value=f"{h["stats"]["quickplay"][hero]["general_stats"]['time_player']} hours")
+        em.add_field(name="Kills", value=int(h["stats"]["quickplay"][hero]["general_stats"]["eliminations"]))
+        em.add_field(name="Deaths", value=int(h["stats"]["quickplay"][hero]["general_stats"]["deaths"]))
+        em.add_field(name="K/D", value=h["stats"]["quickplay"][hero]["general_stats"]["eliminations_per_life"])
+        em.add_field(name="Solo Kills", value=int(h["stats"]["quickplay"][hero]["general_stats"]["solo_kills"]))
+        em.add_field(name="Best Kill Streak", value=int(h["stats"]["quickplay"][hero]["general_stats"]["killstreak_best"]))
+        em.add_field(name="Total Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["total_damage_done"]))
+        em.add_field(name="Hero Damage", value=int(h["stats"]["quickplay"][hero]["general_stats"]["hero_damage_done"]))
+        em.add_field(name="Gold Medals", value=int(h["stats"]["quickplay"][hero]["general_stats"]["medals_gold"]))
+        em.add_field(name="Silver Medals", value=int(h["stats"]["quickplay"][hero]["general_stats"]["medals_silver"]))
+        em.add_field(name="Bronze Medals", value=int(h["stats"]["quickplay"][hero]["general_stats"]["medals_bronze"]))
+        for stat_name, stat in h["stats"]["quickplay"][hero]["hero_stats"].items():
+            em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
+        embeds.append(em)
     return embeds
