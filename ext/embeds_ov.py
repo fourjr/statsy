@@ -97,11 +97,25 @@ async def format_profile(ctx, name, p, h):
             gen_comp_stats = h["stats"]["competitive"][hero]["general_stats"]
             em.add_field(name="Time Played", value=f'{gen_comp_stats["time_played"]} hours')
             em.add_field(name="Kills", value=int(gen_comp_stats["eliminations"]))
-            em.add_field(name="Deaths", value=int(gen_comp_stats["deaths"]))
             em.add_field(name="K/D", value=gen_comp_stats["eliminations_per_life"])
             em.add_field(name="Best Kill Streak", value=int(gen_comp_stats["kill_streak_best"]))
             em.add_field(name="Total Damage", value=int(gen_comp_stats["all_damage_done"]))
             em.add_field(name="Hero Damage", value=int(gen_comp_stats["hero_damage_done"]))
+            if not gen_comp_stats.get("medals_gold"):
+                g_med = "None"
+            else:
+                g_med = int(gen_comp_stats.get("medals_gold"))
+            em.add_field(name="Gold Medals", value=g_med)
+            if not gen_comp_stats.get("medals_silver"):
+                s_med = "None"
+            else:
+                s_med = int(gen_comp_stats.get("medals_silver"))
+            em.add_field(name="Silver Medals", value=s_med)
+            if not gen_comp_stats.get("medals_bronze"):
+                b_med = "None"
+            else:
+                b_med = int(gen_comp_stats.get("medals_bronze"))
+            em.add_field(name="Bronze Medals", value=b_med)
             for stat_name, stat in h["stats"]["competitive"][hero]["hero_stats"].items():
                 em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
             embeds.append(em)
@@ -119,11 +133,25 @@ async def format_profile(ctx, name, p, h):
         gen_quickplay_stats = h["stats"]["quickplay"][hero]["general_stats"]
         em.add_field(name="Time Played", value=f'{gen_quickplay_stats["time_played"]} hours')
         em.add_field(name="Kills", value=int(gen_quickplay_stats["eliminations"]))
-        em.add_field(name="Deaths", value=int(gen_quickplay_stats["deaths"]))
         em.add_field(name="K/D", value=gen_quickplay_stats["eliminations_per_life"])
         em.add_field(name="Best Kill Streak", value=int(gen_quickplay_stats["kill_streak_best"]))
         em.add_field(name="Total Damage", value=int(gen_quickplay_stats["all_damage_done"]))
         em.add_field(name="Hero Damage", value=int(gen_quickplay_stats["hero_damage_done"]))
+        if not gen_quickplay_stats.get("medals_gold"):
+            g_med = "None"
+        else:
+            g_med = int(gen_quickplay_stats.get("medals_gold"))
+        em.add_field(name="Gold Medals", value=g_med)
+        if not gen_quickplay_stats.get("medals_silver"):
+            s_med = "None"
+        else:
+            s_med = int(gen_quickplay_stats.get("medals_silver"))
+        em.add_field(name="Silver Medals", value=s_med)
+        if not gen_quickplay_stats.get("medals_bronze"):
+            b_med = "None"
+        else:
+            b_med = int(gen_quickplay_stats.get("medals_bronze"))
+        em.add_field(name="Bronze Medals", value=b_med)
         for stat_name, stat in h["stats"]["quickplay"][hero]["hero_stats"].items():
             em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
         embeds.append(em)
