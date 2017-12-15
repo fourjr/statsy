@@ -122,7 +122,7 @@ async def format_profile(ctx, name, p, h):
                     em.add_field(name=stat_name, value=f"{gen_comp_stats[stat]} hours")
                 else:
                     em.add_field(name=stat_name, value=int(gen_comp_stats[stat]))
-            em.add_field(name="Extra Stats", value=f"{'   '.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['competitive'][hero]['hero_stats'].items()])}")
+            em.add_field(name="Extra Stats", value=f"{'\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['competitive'][hero]['hero_stats'].items()])}")
             embeds.append(em)
             
     hero_playtime_quick = list(sorted(h["playtime"]["quickplay"], key=h["playtime"]["quickplay"].__getitem__, reverse=True))
@@ -145,6 +145,6 @@ async def format_profile(ctx, name, p, h):
                 em.add_field(name=stat_name, value=f"{gen_quickplay_stats[stat]} hours")
             else:
                 em.add_field(name=stat_name, value=int(gen_quickplay_stats[stat]))
-        em.add_field(name="Extra Stats", value=f"{'   '.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['quickplay'][hero]['hero_stats'].items()])}")
+        em.add_field(name="Extra Stats", value=f"{'\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['quickplay'][hero]['hero_stats'].items()])}")
         embeds.append(em)
     return embeds
