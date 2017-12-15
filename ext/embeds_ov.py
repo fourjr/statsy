@@ -102,7 +102,6 @@ async def format_profile(ctx, name, p, h):
             em.add_field(name="Best Kill Streak", value=int(gen_comp_stats["kill_streak_best"]))
             em.add_field(name="Total Damage", value=int(gen_comp_stats["all_damage_done"]))
             em.add_field(name="Hero Damage", value=int(gen_comp_stats["hero_damage_done"]))
-            em.add_field(name="On Fire", value=f"{round(gen_quickplay_stats['time_spent_on_fire']/gen_quickplay_stats['time_played']*100, 2)}%")
             for stat_name, stat in h["stats"]["competitive"][hero]["hero_stats"].items():
                 em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
             embeds.append(em)
@@ -118,6 +117,7 @@ async def format_profile(ctx, name, p, h):
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
         em.set_thumbnail(url=emoji(ctx, hero).url)
         gen_quickplay_stats = h["stats"]["quickplay"][hero]["general_stats"]
+        print(h["stats"]["quickplay"][hero]["general_stats"]["time_spent_on_fire"])
         em.add_field(name="Time Played", value=f'{gen_quickplay_stats["time_played"]} hours')
         em.add_field(name="Kills", value=int(gen_quickplay_stats["eliminations"]))
         em.add_field(name="Deaths", value=int(gen_quickplay_stats["deaths"]))
@@ -125,7 +125,6 @@ async def format_profile(ctx, name, p, h):
         em.add_field(name="Best Kill Streak", value=int(gen_quickplay_stats["kill_streak_best"]))
         em.add_field(name="Total Damage", value=int(gen_quickplay_stats["all_damage_done"]))
         em.add_field(name="Hero Damage", value=int(gen_quickplay_stats["hero_damage_done"]))
-        em.add_field(name="On Fire", value=f"{round(gen_quickplay_stats['time_spent_on_fire']/gen_quickplay_stats['time_played']*100, 2)}%")
         for stat_name, stat in h["stats"]["quickplay"][hero]["hero_stats"].items():
             em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
         embeds.append(em)
