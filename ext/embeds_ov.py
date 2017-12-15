@@ -97,6 +97,7 @@ async def format_profile(ctx, name, p, h):
         "Best Kill Streak": "kill_streak_best",
         "Total Damage": "all_damage_done",
         "Hero Damage": "hero_damage_done",
+        "On Fire": "time_spent_on_fire",
         "Gold Medals": "medals_gold",
         "Silver Medals": "medals_sliver",
         "Bronze Medals": "medals_bronze"
@@ -119,10 +120,12 @@ async def format_profile(ctx, name, p, h):
                 elif stat_name == "K/D":
                     em.add_field(name=stat_name, value=gen_comp_stats[stat])
                 elif stat_name == "Time Played":
-                    em.add_field(name=stat_name, value=f"{gen_comp_stats[stat]} hours")
+                    em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat], 2)} hours")
+                elif stat_name == "On Fire":
+                    em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat]/gen_comp_stats['time_played']*100, 2)}% of the time")
                 else:
                     em.add_field(name=stat_name, value=int(gen_comp_stats[stat]))
-            em.add_field(name="Extra Stats", value=f"{'\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['competitive'][hero]['hero_stats'].items()])}")
+            em.add_field(name="Extra Stats", value='\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['competitive'][hero]['hero_stats'].items()]))
             embeds.append(em)
             
     hero_playtime_quick = list(sorted(h["playtime"]["quickplay"], key=h["playtime"]["quickplay"].__getitem__, reverse=True))
@@ -142,9 +145,11 @@ async def format_profile(ctx, name, p, h):
             elif stat_name == "K/D":
                 em.add_field(name=stat_name, value=gen_quickplay_stats[stat])
             elif stat_name == "Time Played":
-                em.add_field(name=stat_name, value=f"{gen_quickplay_stats[stat]} hours")
+                em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat], 2)} hours")
+            elif stat_name == "On Fire":
+                em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat]/gen_quickplay_stats['time_played']*100, 2)}% of the time")
             else:
                 em.add_field(name=stat_name, value=int(gen_quickplay_stats[stat]))
-        em.add_field(name="Extra Stats", value=f"{'\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['quickplay'][hero]['hero_stats'].items()])}")
+        em.add_field(name="Extra Stats", value='\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['quickplay'][hero]['hero_stats'].items()]))
         embeds.append(em)
     return embeds
