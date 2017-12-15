@@ -120,7 +120,10 @@ async def format_profile(ctx, name, p, h):
                 elif stat_name == "K/D":
                     em.add_field(name=stat_name, value=gen_comp_stats[stat])
                 elif stat_name == "Time Played":
-                    em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat], 2)} hours")
+                    if gen_comp_stats[stat] > 1:
+                        em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat], 2)} hours")
+                    else:
+                        em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat]*60, 2)} minutes")
                 elif stat_name == "On Fire":
                     em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat]/gen_comp_stats['time_played']*100, 2)}% of the time")
                 else:
@@ -146,7 +149,10 @@ async def format_profile(ctx, name, p, h):
             elif stat_name == "K/D":
                 em.add_field(name=stat_name, value=gen_quickplay_stats[stat])
             elif stat_name == "Time Played":
-                em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat], 2)} hours")
+                if gen_quickplay_stats[stat] > 1:
+                    em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat], 2)} hours")
+                else:
+                    em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat]*60, 2)} minutes")
             elif stat_name == "On Fire":
                 em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat]/gen_quickplay_stats['time_played']*100, 2)}% of the time")
             else:
