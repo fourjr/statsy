@@ -99,7 +99,7 @@ async def format_profile(ctx, name, p, h):
         "Hero Damage": "hero_damage_done",
         "Gold Medals": "medals_gold",
         "Silver Medals": "medals_sliver",
-        "Bronze Medals": "medals_bronze
+        "Bronze Medals": "medals_bronze"
         }
     if h["stats"]["competitive"]:
         hero_playtime_comp = list(sorted(h["playtime"]["competitive"], key=h["playtime"]["competitive"].__getitem__, reverse=True))
