@@ -82,7 +82,25 @@ async def format_profile(ctx, name, p, h):
             em.add_field(name=n, value=v, inline=i)
 
     embeds.append(em)
-    name_dict = {"torbjorn": "Torbjörn", "dva": "D.Va", "soldier76": "Soldier: 76", "lucio": "Lúcio"}
+    name_dict = {
+        "torbjorn": "Torbjörn",
+        "dva": "D.Va",
+        "soldier76":
+        "Soldier: 76",
+        "lucio": "Lúcio",
+        "mccree": "McCree"
+        }
+    stats = {
+        "Time Played": "time_played",
+        "Kills": "eliminations",
+        "K/D": "eliminations_per_life",
+        "Best Kill Streak": "kill_streak_best",
+        "Total Damage": "all_damage_done",
+        "Hero Damage": "hero_damage_done",
+        "Gold Medals": "medals_gold",
+        "Silver Medals": "medals_sliver",
+        "Bronze Medals": "medals_bronze
+        }
     if h["stats"]["competitive"]:
         hero_playtime_comp = list(sorted(h["playtime"]["competitive"], key=h["playtime"]["competitive"].__getitem__, reverse=True))
         for hero in hero_playtime_comp:
@@ -95,29 +113,16 @@ async def format_profile(ctx, name, p, h):
                 em.set_author(name=f"{name} - {hero.title()} (Competitive)", icon_url=ctx.author.avatar_url)
             em.set_thumbnail(url=emoji(ctx, hero).url)
             gen_comp_stats = h["stats"]["competitive"][hero]["general_stats"]
-            em.add_field(name="Time Played", value=f'{gen_comp_stats["time_played"]} hours')
-            em.add_field(name="Kills", value=int(gen_comp_stats["eliminations"]))
-            em.add_field(name="K/D", value=gen_comp_stats["eliminations_per_life"])
-            em.add_field(name="Best Kill Streak", value=int(gen_comp_stats["kill_streak_best"]))
-            em.add_field(name="Total Damage", value=int(gen_comp_stats["all_damage_done"]))
-            em.add_field(name="Hero Damage", value=int(gen_comp_stats["hero_damage_done"]))
-            if not gen_comp_stats.get("medals_gold"):
-                g_med = "None"
-            else:
-                g_med = int(gen_comp_stats.get("medals_gold"))
-            em.add_field(name="Gold Medals", value=g_med)
-            if not gen_comp_stats.get("medals_silver"):
-                s_med = "None"
-            else:
-                s_med = int(gen_comp_stats.get("medals_silver"))
-            em.add_field(name="Silver Medals", value=s_med)
-            if not gen_comp_stats.get("medals_bronze"):
-                b_med = "None"
-            else:
-                b_med = int(gen_comp_stats.get("medals_bronze"))
-            em.add_field(name="Bronze Medals", value=b_med)
-            for stat_name, stat in h["stats"]["competitive"][hero]["hero_stats"].items():
-                em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
+            for stat_name, stat in stats.items():
+                if not gen_comp_stats.get(stat):
+                    em.add_field(name=stat_name, value="None")
+                elif stat_name == "K/D":
+                    em.add_field(name=stat_name, value=gen_comp_stats[stat])
+                elif stat_name == "Time Played":
+                    em.add_field(name=stat_name, value=f"{gen_comp_stats[stat]} hours")
+                else:
+                    em.add_field(name=stat_name, value=int(gen_comp_stats[stat]))
+            em.add_field(name="Extra Stats", value=f"{'   '.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['competitive'][hero]['hero_stats'].items()])}")
             embeds.append(em)
             
     hero_playtime_quick = list(sorted(h["playtime"]["quickplay"], key=h["playtime"]["quickplay"].__getitem__, reverse=True))
@@ -131,28 +136,15 @@ async def format_profile(ctx, name, p, h):
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
         em.set_thumbnail(url=emoji(ctx, hero).url)
         gen_quickplay_stats = h["stats"]["quickplay"][hero]["general_stats"]
-        em.add_field(name="Time Played", value=f'{gen_quickplay_stats["time_played"]} hours')
-        em.add_field(name="Kills", value=int(gen_quickplay_stats["eliminations"]))
-        em.add_field(name="K/D", value=gen_quickplay_stats["eliminations_per_life"])
-        em.add_field(name="Best Kill Streak", value=int(gen_quickplay_stats["kill_streak_best"]))
-        em.add_field(name="Total Damage", value=int(gen_quickplay_stats["all_damage_done"]))
-        em.add_field(name="Hero Damage", value=int(gen_quickplay_stats["hero_damage_done"]))
-        if not gen_quickplay_stats.get("medals_gold"):
-            g_med = "None"
-        else:
-            g_med = int(gen_quickplay_stats.get("medals_gold"))
-        em.add_field(name="Gold Medals", value=g_med)
-        if not gen_quickplay_stats.get("medals_silver"):
-            s_med = "None"
-        else:
-            s_med = int(gen_quickplay_stats.get("medals_silver"))
-        em.add_field(name="Silver Medals", value=s_med)
-        if not gen_quickplay_stats.get("medals_bronze"):
-            b_med = "None"
-        else:
-            b_med = int(gen_quickplay_stats.get("medals_bronze"))
-        em.add_field(name="Bronze Medals", value=b_med)
-        for stat_name, stat in h["stats"]["quickplay"][hero]["hero_stats"].items():
-            em.add_field(name=stat_name.replace("_", " ").title(), value=int(stat))
+        for stat_name, stat in stats.items():
+            if not gen_quickplay_stats.get(stat):
+                em.add_field(name=stat_name, value="None")
+            elif stat_name == "K/D":
+                em.add_field(name=stat_name, value=gen_quickplay_stats[stat])
+            elif stat_name == "Time Played":
+                em.add_field(name=stat_name, value=f"{gen_quickplay_stats[stat]} hours")
+            else:
+                em.add_field(name=stat_name, value=int(gen_quickplay_stats[stat]))
+        em.add_field(name="Extra Stats", value=f"{'   '.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['quickplay'][hero]['hero_stats'].items()])}")
         embeds.append(em)
     return embeds
