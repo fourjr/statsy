@@ -68,7 +68,7 @@ async def format_least_valuable(ctx, clan, cache=False):
             timestamp(clan.raw_data['updatedTime'])
     em.set_author(name=clan)
     em.set_thumbnail(url=clan.badge_url)
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
 
     for m in reversed(to_kick):
         em.add_field(
@@ -142,7 +142,7 @@ async def format_chests(ctx, p, cache=False):
     em.set_thumbnail(url=emoji(ctx, 'chest' + p['chests']['0'].lower()).url)
     em.add_field(name=f'Chests', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     return em
 
 # async def format_offers(ctx, p, cache=False):
@@ -239,7 +239,7 @@ async def format_cards(ctx, p):
 
     em = discord.Embed(description='A list of cards this player has.', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     for i, r in found_cards_pages:
@@ -258,7 +258,7 @@ async def format_battles(ctx, p):
     crapi = 'http://cr-api.com/profile/'
     em = discord.Embed(description='A list of battles played recently', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
@@ -497,7 +497,7 @@ async def format_profile(ctx, p, cache=False):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
 
     return em
 
@@ -542,7 +542,7 @@ async def format_stats(ctx, p, cache=False):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
 
     return em
 
@@ -551,7 +551,7 @@ async def format_clan(ctx, c, cache=False):
     c = c['alliance']
     page1 = discord.Embed(description=c['description'], color=random_color())
     page1.set_author(name=f"{c['header']['name']} (#{c['hashtag']})")
-    page1.set_footer(text='Statsy - Powered by cr-api.com')
+    page1.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
     try:
