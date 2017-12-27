@@ -45,11 +45,11 @@ class Brawl_Stars:
 
     def __init__(self, bot):
         self.bot = bot
-        self.url = 'https://bsproxy.herokuapp.com/'
+        self.url = 'https://brawlstarsproxy.herokuapp.com/'
         self.conv = TagCheck()
 
     async def get_band_from_profile(self, ctx, tag, message):
-        url = 'https://bsproxy.herokuapp.com/' + 'players/' + tag + '?refresh=1'
+        url = 'https://brawlstarsproxy.herokuapp.com/' + 'players/' + tag + '?refresh=1'
 
         async with ctx.session.get(url) as resp:
             soup = BeautifulSoup(await resp.text(), 'html.parser')
