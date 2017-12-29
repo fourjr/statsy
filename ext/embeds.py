@@ -39,7 +39,7 @@ def random_color():
 
 def get_card(ctx, decklink):
     for c in ctx.bot.constants.cards:
-        if int(ctx.bot.constants.cards[c].deck_link) == decklink:
+        if int(ctx.bot.constants.cards[c].id) == decklink:
             return ctx.bot.constants.cards[c].name
 
 def get_deck(ctx, p):
