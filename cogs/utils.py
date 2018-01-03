@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from collections import defaultdict
 from ext.paginator import PaginatorSession
-from ext import embeds
+from ext import embeds_cr_crapi as embeds
 from contextlib import redirect_stdout
 import datetime
 import traceback

@@ -6,7 +6,8 @@ import copy
 import datetime
 import math
 import time
-import crasync
+import clashroyale
+import box
 from discord.ext import commands
 
 image = 'https://raw.githubusercontent.com/cr-api/cr-api-assets/master/'
@@ -54,7 +55,7 @@ def timestamp(datatime:int):
 
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
-        m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+        m.score = ((m.donations/5) + (m.clan_chest_crowns*10) + (m.trophies/7)) / 3
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
 
     em = discord.Embed(
@@ -74,7 +75,7 @@ async def format_least_valuable(ctx, clan, cache=False):
         em.add_field(
             name=f'{m.name} ({m.role_name})',
             value=f"#{m.tag}\n{m.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.crowns} "
+                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}"
                   )
@@ -83,7 +84,7 @@ async def format_least_valuable(ctx, clan, cache=False):
 async def format_most_valuable(ctx, clan, cache=False):
 
     for m in clan.members:
-        m.score = ((m.donations/5) + (m.crowns*10) + (m.trophies/7)) / 3
+        m.score = ((m.donations/5) + (m.clan_chest_crowns*10) + (m.trophies/7)) / 3
 
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
@@ -104,7 +105,7 @@ async def format_most_valuable(ctx, clan, cache=False):
         em.add_field(
             name=f'{m.name} ({m.role_name})',
             value=f"#{m.tag}\n{m.trophies} "
-            f"{emoji(ctx, 'trophy')}\n{m.crowns} "
+            f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
             f"{emoji(ctx, 'cards')}"
             )
@@ -180,26 +181,25 @@ async def format_cards(ctx, p):
     notfound_cards = []
 
     for constcard in constants.cards:
-        if constants.cards[constcard].deck_link not in cards:
-            notfound_cards.append(constants.cards[constcard])
+        if str(constcard.id) not in cards.keys():
+            notfound_cards.append(constcard)
         else:
-            found_cards.append(constants.cards[constcard])
+            found_cards.append(constcard)
 
     found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity])
     notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity])
-
     def get_rarity(card):
         for a in constants.cards:
-            if constants.cards[a].name.lower().replace(' ', '').replace('-', '').replace('.', '') == card:
-                return constants.cards[a].rarity
+            if a.key.replace('-', '') == card:
+                return a.rarity
 
     fmt = ''
     found_cards_pages = []
-    oldcard = ''
-    newpage = False
+    oldcard = None
+    newpage = None
     for card in found_cards:
         txt = card.name.lower().replace(' ', '').replace('-', '').replace('.', '')
-        if isinstance(oldcard, crasync.models.CardInfo):
+        if isinstance(oldcard, box.Box):
             if oldcard.rarity != card.rarity:
                 try:
                     found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
@@ -231,9 +231,9 @@ async def format_cards(ctx, p):
     for card in notfound_cards:
         txt = card.name.lower().replace(' ', '')
         fmt += str(emoji(ctx, txt))
-        if len(fmt) > 1024:
+        if len(fmt) > 1000:
             fmt = fmt.replace(str(emoji(ctx, txt)), '')
-            found_cards_pages.append(fmt)
+            notfound_cards_pages.append(fmt)
             fmt = str(emoji(ctx, txt))
     notfound_cards_pages.append(fmt)
 
@@ -242,9 +242,9 @@ async def format_cards(ctx, p):
     em.set_footer(text='Statsy - Powered by statsroyale.com and cr-api.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    for i, r in found_cards_pages:
+    for i, v in found_cards_pages:
         if i:
-            em.add_field(name=f'Found Cards ({r})', value=i, inline=False)
+            em.add_field(name=f'Found Cards ({v})', value=i, inline=False)
     for item in notfound_cards_pages:
         if item:
             em.add_field(name='Missing Cards', value=item, inline=False)
@@ -335,7 +335,7 @@ async def format_members(ctx, c, cache=False):
         em.add_field(
             name=f'{m.name} ({m.role_name})',
             value=f"#{m.tag}\n{m.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.crowns} "
+                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}"
                   )

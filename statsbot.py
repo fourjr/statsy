@@ -23,11 +23,11 @@ SOFTWARE.
 '''
 
 import discord
-import crasync
+import clashroyale
 from discord.ext import commands
 from ext.context import CustomContext
 from ext.paginator import PaginatorSession
-from ext import embeds
+from ext import embeds_cr_statsroyale as embeds
 from collections import defaultdict
 from contextlib import redirect_stdout
 import datetime
@@ -44,21 +44,21 @@ import inspect
 import io
 import textwrap
 
-class crasyncClient(crasync.Client):
+class crClient(clashroyale.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.requests_made = [0, 0, 0]
 
-    async def request(self, url):
-        self.requests_made[2] += 1
-        try:
-            ret = await super().request(url)
-        except Exception as e:
-            self.requests_made[1] += 1
-            raise e
-        else:
-            self.requests_made[0] += 1
-            return ret
+    # async def request(self, url):
+    #     self.requests_made[2] += 1
+    #     try:
+    #         ret = await super().request(url)
+    #     except Exception as e:
+    #         self.requests_made[1] += 1
+    #         raise e
+    #     else:
+    #         self.requests_made[0] += 1
+    #         return ret
 
 class InvalidTag(commands.BadArgument):
     '''Raised when a tag is invalid.'''
@@ -92,7 +92,9 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crasyncClient(self.session, timeout=3)
+        self.cr = crClient('9ba015601c85435aa0ac200afc07223e2b1a3190927c4bb19d89fe5f8295d60e',\
+            session=self.session, is_async=True, timeout=5)
+        # 4JR's token ^^ 
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
@@ -194,7 +196,7 @@ class StatsBot(commands.AutoShardedBot):
         # Fixed now
         #self.constants = await self.cr.get_constants()
         with open('backup/clashroyale/constants.json') as f:
-            self.constants = crasync.models.Constants(self.cr, json.load(f))
+            self.constants = clashroyale.models.Constants(self.cr, json.load(f))
         with open('backup/brawlstars/constants.json') as f:
             self.bsconstants = json.load(f)
         # await self.change_presence(game=discord.Game(name='!help'))
