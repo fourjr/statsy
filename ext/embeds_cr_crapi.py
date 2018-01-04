@@ -509,7 +509,7 @@ async def format_profile(ctx, p, cache=False):
         current_rank = None
         season = None
 
-    if p.clan.role:
+    if p.clan:
         clan_role = p.clan.role.title()
     else:
         clan_role = None
@@ -563,7 +563,7 @@ async def format_stats(ctx, p, cache=False):
     trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
 
-    if p.clan.role:
+    if p.clan:
         clan_role = p.clan.role.title()
     else:
         clan_role = None
