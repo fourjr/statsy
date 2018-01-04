@@ -45,6 +45,12 @@ def get_deck(ctx, p):
 def timestamp(datatime:int):
     return str(int((datetime.datetime.utcfromtimestamp(datatime) - datetime.datetime.utcnow()).total_seconds()/60)) + ' minutes ago'
 
+def get_clan_image(p):
+    try:
+        return p.clan.badge.image
+    except:
+        return 'https://i.imgur.com/Y3uXsgj.png'
+
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
         m.score = ((m.donations/5) + (m.clan_chest_crowns*10) + (m.trophies/7)) / 3
@@ -116,7 +122,7 @@ def get_chests(ctx, p):
     return (chests, special)
 
 async def format_chests(ctx, p, cache=False):
-    av = p.clan.badge.image or 'https://i.imgur.com/Y3uXsgj.png'
+    av = get_clan_image(p)
     em = discord.Embed(color=random_color())
     em.set_author(name=p, icon_url=av)
     if ctx.bot.psa_message:
@@ -412,7 +418,7 @@ async def format_top_clans(ctx, clans):
 
 
 async def format_seasons(ctx, p, cache=False):
-    av = p.clan.badge.image or 'https://i.imgur.com/Y3uXsgj.png'
+    av = get_clan_image(p)
     embeds = []
     if p.league_statistics:
         for season in p.league_statistics.to_dict().keys():
@@ -472,7 +478,7 @@ async def format_card(ctx, c):
 
 async def format_profile(ctx, p, cache=False):
 
-    av = p.clan.badge.image or 'https://i.imgur.com/Y3uXsgj.png'
+    av = get_clan_image(p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
@@ -544,7 +550,7 @@ async def format_profile(ctx, p, cache=False):
 
 async def format_stats(ctx, p, cache=False):
 
-    av = p.clan.badge.image or 'https://i.imgur.com/Y3uXsgj.png'
+    av = get_clan_image(p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'

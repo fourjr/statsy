@@ -614,7 +614,7 @@ class Clash_Royale:
         em = discord.Embed(color=embeds.random_color())
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
-        em.set_author(name=profile, icon_url=profile.clan.badge.image or 'https://i.imgur.com/Y3uXsgj.png')
+        em.set_author(name=profile, icon_url=embeds_cr_crapi.get_clan_image(profile))
         em.set_image(url='attachment://deck.png')
         em.set_footer(text='Statsy - Powered by cr-api.com')
 
@@ -682,7 +682,7 @@ class Clash_Royale:
         d_name = ImageDraw.Draw(txt_name)
 
         line1 = profile.arena.name
-        line2 = f'{profile.current_trophies} Trophies'
+        line2 = f'{profile.trophies} Trophies'
         
         # card_text = '\n'.join([line0, line1])
 
