@@ -77,6 +77,7 @@ async def format_profile(ctx, soup, tag):
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{name} (#{tag})')
     em.set_thumbnail(url=pic)
+    em.set_footer(text='Powered by brawlstats.io')
 
     embed_fields = [
         ('Trophies', f'{trophies}/{pb} PB {emoji(ctx, "icon_trophy")}', True),
@@ -182,6 +183,9 @@ async def format_band(ctx, soup, tag):
     for f, v in fields2:
         if v:
             page2.add_field(name=f, value=v)
+    
+    page1.set_footer(text='Powered by brawlstats.io')
+    page2.set_footer(text='Powered by brawlstats.io')
 
     return [page1, page2]
 
@@ -241,4 +245,6 @@ async def format_events(ctx, soup):
         maxcoins = event['coins']['max']
         em2.add_field(name=name, value=f'**{_map}**\nTime to go: {timeleft}\nFirst game: {first}\nFree coins: {freecoins}\nMax Coins: {maxcoins}')
 
+    em1.set_footer(text='Powered by brawlstats.io')
+    em2.set_footer(text='Powered by brawlstats.io')
     return [em1, em2]
