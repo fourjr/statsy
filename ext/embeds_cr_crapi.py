@@ -65,7 +65,7 @@ async def format_least_valuable(ctx, clan, cache=False):
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(clan.raw_data['updatedTime'])
-    em.set_author(name=clan)
+    em.set_author(name=f'{clan.name} (#{clan.tag})')
     em.set_thumbnail(url=clan.badge.image)
     em.set_footer(text='Statsy - Powered by cr-api.com')
 
@@ -95,7 +95,7 @@ async def format_most_valuable(ctx, clan, cache=False):
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(clan.raw_data['updatedTime'])
-    em.set_author(name=clan)
+    em.set_author(name=f'{clan.name} (#{clan.tag})')
     em.set_thumbnail(url=clan.badge.image)
     em.set_footer(text='Statsy - Powered by cr-api.com')
 
@@ -124,7 +124,7 @@ def get_chests(ctx, p):
 async def format_chests(ctx, p, cache=False):
     av = get_clan_image(p)
     em = discord.Embed(color=random_color())
-    em.set_author(name=p, icon_url=av)
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     if cache:
@@ -429,7 +429,7 @@ async def format_seasons(ctx, p, cache=False):
             if cache:
                 em.description = 'Cached data from ' + \
                     timestamp(p.raw_data['updatedTime'])
-            em.set_author(name=str(p), icon_url=av)
+            em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
             em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
             try: 
                 em.add_field(name=season.strip('Season').title() + " Season", value=s.id)
@@ -485,7 +485,7 @@ async def format_profile(ctx, p, cache=False):
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_author(name=str(p), icon_url=av)
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
     em.set_thumbnail(url=images + 'arenas/arena' + str(p.arena.arena_id) + '.png')
 
     deck = get_deck(ctx, p)
@@ -557,7 +557,7 @@ async def format_stats(ctx, p, cache=False):
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_author(name=str(p), icon_url=av)
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
     em.set_thumbnail(url=images + 'arenas/arena' + str(p.arena.arena_id) + '.png')
 
     trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
