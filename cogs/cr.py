@@ -614,7 +614,7 @@ class Clash_Royale:
         em = discord.Embed(color=embeds.random_color())
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
-        em.set_author(name=profile, icon_url=embeds_cr_crapi.get_clan_image(profile))
+        em.set_author(name=f'{profile.name} (#{profile.tag})', icon_url=embeds_cr_crapi.get_clan_image(profile))
         em.set_image(url='attachment://deck.png')
         em.set_footer(text='Statsy - Powered by cr-api.com')
 
