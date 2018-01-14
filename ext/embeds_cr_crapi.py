@@ -518,7 +518,7 @@ async def format_profile(ctx, p, cache=False):
 
     embed_fields = [
         ('Trophies', trophies, True),
-        ('Level', f"{p.level} {emoji(ctx, 'experience')}", True),
+        ('Level', f"{p.stats.level} {emoji(ctx, 'experience')}", True),
         ('Clan Name', f"{p.clan.name} {emoji(ctx, 'clan')}" if p.clan else None, True),
         ('Clan Tag', f"#{p.clan.tag} {emoji(ctx, 'clan')}" if p.clan else None, True),
         ('Clan Role', f"{clan_role} {emoji(ctx, 'clan')}" if clan_role else None, True),
@@ -570,7 +570,7 @@ async def format_stats(ctx, p, cache=False):
 
     embed_fields = [
         ('Trophies', trophies, True),
-        ('Level', f"{p.level} {emoji(ctx, 'experience')}", True),
+        ('Level', f"{p.stats.level} {emoji(ctx, 'experience')}", True),
         ('Clan Name', f"{p.clan.name} {emoji(ctx, 'clan')}" if p.clan else None, True),
         ('Clan Tag', f"#{p.clan.tag} {emoji(ctx, 'clan')}" if p.clan else None, True),
         ('Clan Role', f"{clan_role} {emoji(ctx, 'clan')}" if clan_role else None, True),
