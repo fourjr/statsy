@@ -352,7 +352,7 @@ class Bot_Related:
             return json.load(f)['gittoken']
     
     @commands.command()
-    async def suggest(self, ctx, *, details:str=''):
+    async def suggest(self, ctx, *, details:str):
         '''Suggest a game! Or a feature!'''
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
@@ -368,17 +368,20 @@ class Bot_Related:
         await ctx.send(f'Suggestion submitted. Thanks for the feedback!')
 
     @commands.command()
-    async def bug(self, ctx, summary:str, *, details:str=''):
+    async def bug(self, ctx, *, details:str):
         '''Report a bug!'''
+
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
-        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": summary, "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+
+        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New bug reportfrom {ctx.author.name}', "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
-                await bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
-                await ctx.send('Suggestion submitted.')
+                await bot.get_channel(373646610560712704).send('Bug (APIDOWN)\n\n{summary}\n------\n{body}')
+                await ctx.send('Bug reported.')
 
-        await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
+        # TODO: make it a public repo # await ctx.send('Bug reported. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
+        await ctx.send(f'Suggestion submitted. Thanks for the feedback!')
 
     @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
