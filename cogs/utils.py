@@ -381,7 +381,7 @@ class Bot_Related:
                 await ctx.send('Bug reported.')
 
         # TODO: make it a public repo # await ctx.send('Bug reported. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
-        await ctx.send(f'Suggestion submitted. Thanks for the feedback!')
+        await ctx.send(f'Bug Reported. Thanks for the report!')
 
     @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
