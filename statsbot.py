@@ -246,6 +246,8 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_command_error(self, ctx, error):
         error = getattr(error, 'original', error)
+        if isinstance(error, clashroyale.errors.RequestError):
+            await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
         if isinstance(error, InvalidTag):
             await ctx.send(error.message)
         elif isinstance(error, commands.BotMissingPermissions):
