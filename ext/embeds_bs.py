@@ -52,10 +52,14 @@ async def format_profile(ctx, soup, tag):
         .find('div', {'class':'profile-avatar'}) \
         .find('img')['src']
 
-    trophies = profile.find('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'}).getText().strip('Trophies')
-    pb = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})[1].getText().strip('Highest trophies')
-    victories = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})[2].getText().strip('Victories')
-    showdown = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})[3].getText().strip('Showdown victories')
+    stats = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})
+    trophies = stats[0].getText().strip('Trophies')
+    pb = stats[1].getText().strip('Highest trophies')
+    victories = stats[2].getText().strip('Victories')
+    showdown = stats[3].getText().strip('Showdown victories') + 's'
+    best_boss = stats[4].getText().strip('Best time as boss') + 's'
+    best_robo_rumble = stats[5].getText().strip('Best robo rumble time')
+
     expvals = profile.find('div', attrs={'class':'row'}) \
             .find('div', attrs={'class':'col-12'}) \
             .find('div', attrs={'class':'player-profile text-center'}) \
@@ -83,6 +87,8 @@ async def format_profile(ctx, soup, tag):
         ('Trophies', f'{trophies}/{pb} PB {emoji(ctx, "icon_trophy")}', True),
         ('Victories', f'{victories} {emoji(ctx, "star_gold_00")}', True),
         ('Showdown Wins', f'{showdown} {emoji(ctx, "icon_showdown")}', True),
+        ('Best time as Boss', f'{best_boss}', True),
+        ('Best Robo Rumble Time', best_robo_rumble, True),
         ('Level', f'{exp} {emoji(ctx, "star_silver")}', True),
         ('Band Name', bandname, True),
         ('Band Tag', '#' + bandtag, True),
