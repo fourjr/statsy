@@ -499,9 +499,9 @@ async def format_profile(ctx, p, cache=False):
 
     s = None
     if p.league_statistics:
-        current_rank = p.league_statistics.current_season.rank
+        current_rank = p.league_statistics.current_season.get('rank') 
         s = p.league_statistics.previous_season
-        global_r = s.rank
+        global_r = s.get('rank')
         season = f"Highest: {s.best_trophies} {emoji(ctx, 'crownblue')}  \n" \
                  f"Finish: {s.trophies} {emoji(ctx, 'trophy')} \n" \
                  f"Global Rank: {global_r} {emoji(ctx, 'rank')}" 
