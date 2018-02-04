@@ -5,7 +5,7 @@ from ext import embeds_cr_crapi
 from ext import embeds_cr_statsroyale
 from ext import embeds_cr_statsroyale as embeds
 import json
-from __main__ import InvalidTag
+from __main__ import InvalidTag, NoTag
 from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
@@ -24,7 +24,7 @@ class TagCheck(commands.MemberConverter):
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
-        tag = tag.strip('#').upper().replace('O','0') 
+        tag = tag.strip('#').upper().replace('O', '0')
         if tag in shortcuts:
             tag = shortcuts[tag]
         if any(i not in self.check for i in tag):
@@ -37,7 +37,7 @@ class TagCheck(commands.MemberConverter):
         try:
             user = await super().convert(ctx, argument)
         except commands.BadArgument:
-            pass 
+            pass
         else:
             return user
 
@@ -83,8 +83,9 @@ class Clash_Royale:
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('clashroyale')
-            except KeyError as e:
+            except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
+                raise NoTag()
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
@@ -92,8 +93,9 @@ class Clash_Royale:
         if isinstance(tag_or_user, discord.Member):
             try:
                 tag = ctx.get_tag('clashroyale', tag_or_user.id)
-            except KeyError as e:
+            except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
+                raise NoTag()
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'That person does not have a clan!')
@@ -529,7 +531,7 @@ class Clash_Royale:
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            raise InvalidTag('Invalid tag') 
+            raise InvalidTag('Invalid tag')
 
         ctx.save_tag(tag, 'clashroyale')
 

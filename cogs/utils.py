@@ -359,7 +359,7 @@ class Bot_Related:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
-                await bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
+                await self.bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
                 await ctx.send('Suggestion submitted.')
 
         # TODO: make it a public repo # await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')

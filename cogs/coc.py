@@ -2,7 +2,7 @@ import discord, aiohttp
 from discord.ext import commands
 from ext import embeds_coc
 import json
-from __main__ import InvalidTag
+from __main__ import InvalidTag, NoTag
 from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
@@ -57,10 +57,9 @@ class Clash_of_Clans:
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('clashofclans')
-            except Exception as e:
-                print(e)
+            except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
-                raise e
+                raise NoTag()
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
@@ -68,9 +67,8 @@ class Clash_of_Clans:
         if isinstance(tag_or_user, discord.Member):
             try:
                 tag = ctx.get_tag('clashofclans', tag_or_user.id)
-            except KeyError as e:
-                await ctx.send('That person doesnt have a saved tag!')
-                raise e
+            except KeyError:
+                raise NoTag()
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'That person does not have a clan!')

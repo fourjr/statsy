@@ -2,7 +2,7 @@ import discord, aiohttp
 from discord.ext import commands
 from ext import embeds_ov
 import json
-from __main__ import InvalidTag
+from __main__ import InvalidTag, NoTag
 from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
@@ -41,15 +41,17 @@ class Overwatch:
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('overwatch')
-            except KeyError as e:
+            except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
+                raise NoTag()
             else:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
                 tag = ctx.get_tag('overwatch', tag_or_user.id)
-            except KeyError as e:
+            except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
+                raise NoTag()
             else:
                 return tag
         else:

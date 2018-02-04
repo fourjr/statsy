@@ -67,6 +67,9 @@ class InvalidTag(commands.BadArgument):
               '**Numbers:** 0, 2, 8, 9\n' \
               '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
 
+class NoTag(Exception):
+    pass
+
 class StatsBot(commands.AutoShardedBot):
     '''
     Custom client for statsy made by Kyber
@@ -250,8 +253,10 @@ class StatsBot(commands.AutoShardedBot):
         error = getattr(error, 'original', error)
         if isinstance(error, clashroyale.errors.RequestError):
             await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
-        if isinstance(error, InvalidTag):
+        elif isinstance(error, InvalidTag):
             await ctx.send(error.message)
+        elif isinstance(error, NoTag):
+            pass
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(error)
         elif isinstance(error, commands.MissingRequiredArgument):

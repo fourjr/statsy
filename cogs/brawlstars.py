@@ -2,7 +2,7 @@ import discord
 import asyncio
 from discord.ext import commands
 from bs4 import BeautifulSoup
-from __main__ import InvalidTag
+from __main__ import InvalidTag, NoTag
 from ext import embeds_bs
 from ext import embeds_cr_crapi as embeds
 from ext.paginator import PaginatorSession
@@ -60,8 +60,9 @@ class Brawl_Stars:
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('brawlstars')
-            except KeyError as e:
+            except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
+                raise NoTag()
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, 'You don\'t have a band!')
@@ -69,8 +70,9 @@ class Brawl_Stars:
         if isinstance(tag_or_user, discord.Member):
             try:
                 tag = ctx.get_tag('brawlstars', tag_or_user.id)
-            except KeyError as e:
+            except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
+                raise NoTag()
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, 'That person does not have a band!')
