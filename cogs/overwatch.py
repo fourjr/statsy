@@ -41,10 +41,8 @@ class Overwatch:
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('overwatch')
-            except Exception as e:
-                print(e)
+            except KeyError as e:
                 await ctx.send('You don\'t have a saved tag.')
-                raise e
             else:
                 return tag
         if isinstance(tag_or_user, discord.Member):
@@ -52,7 +50,6 @@ class Overwatch:
                 tag = ctx.get_tag('overwatch', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
-                raise e
             else:
                 return tag
         else:

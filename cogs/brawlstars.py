@@ -45,40 +45,23 @@ class Brawl_Stars:
 
     def __init__(self, bot):
         self.bot = bot
-        self.url = 'https://brawlstarsproxy.herokuapp.com/'
+        self.url = 'https://brawl-stars.herokuapp.com/api/'
         self.conv = TagCheck()
 
     async def get_band_from_profile(self, ctx, tag, message):
-        url = 'https://brawlstarsproxy.herokuapp.com/' + 'players/' + tag + '?refresh=1'
+        url = self.url + 'players/' + tag
 
         async with ctx.session.get(url) as resp:
-            soup = BeautifulSoup(await resp.text(), 'html.parser')
-        try:
-            band_tag = soup.find('main') \
-                .find('section', attrs={'class':'ui-card pt-4'}) \
-                .find('div', attrs={'class':'container'}) \
-                .find('div', attrs={'class':'stat-section'}) \
-                .find_all('div', attrs={'class':'col-12 mt-1'})[2] \
-                .find('div', attrs={'class':'band-history-entry'}) \
-                .find('a') \
-                .find('div', attrs={'class':'card jumpc mb-2'}) \
-                .find('div', attrs={'class':'card-body'}) \
-                .find('div', attrs={'class':'band-info'}) \
-                .find('div', attrs={'class':'band-tag'}).getText().strip('#')
-        except AttributeError:
-            await ctx.send(message)
-            raise ValueError(message)
-        else:
-            return band_tag
+            profile = await resp.json()
+        print((profile['band'] or {}).get('tag'))
+        return (profile['band'] or {}).get('tag') or await ctx.send(message)
 
     async def resolve_tag(self, ctx, tag_or_user, band=False):
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('brawlstars')
-            except Exception as e:
-                print(e)
+            except KeyError as e:
                 await ctx.send('You don\'t have a saved tag.')
-                raise e
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, 'You don\'t have a band!')
@@ -88,7 +71,6 @@ class Brawl_Stars:
                 tag = ctx.get_tag('brawlstars', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
-                raise e
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, 'That person does not have a band!')
@@ -118,11 +100,13 @@ class Brawl_Stars:
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
-            url = self.url + 'players/' + tag + '?refresh=1'
+            url = self.url + 'players/' + tag
             async with ctx.session.get(url) as resp:
-                soup = BeautifulSoup(await resp.text(), 'html.parser')
+                if resp.status == 404:
+                    raise InvalidTag('Invalid bs-tag passed')
+                profile = await resp.json()
 
-            em = await embeds_bs.format_profile(ctx, soup, tag)
+            em = await embeds_bs.format_profile(ctx, profile)
             await ctx.send(embed=em)
 
     @commands.command()
@@ -131,11 +115,13 @@ class Brawl_Stars:
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
-            url = self.url + 'bands/' + tag + '?refresh=1'
+            url = self.url + 'bands/' + tag
             async with ctx.session.get(url) as resp:
-                soup = BeautifulSoup(await resp.text(), 'html.parser')
+                if resp.status == 404:
+                    raise InvalidTag('Invalid bs-band tag provided')
+                band = await resp.json()
 
-            ems = await embeds_bs.format_band(ctx, soup, tag)
+            ems = await embeds_bs.format_band(ctx, band)
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
@@ -147,14 +133,14 @@ class Brawl_Stars:
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''
         async with ctx.channel.typing():
-            async with ctx.session.get(self.url + 'events/') as resp:
-                soup = BeautifulSoup(await resp.text(), 'html.parser')
-            ems = await embeds_bs.format_events(ctx, soup)
+            async with ctx.session.get(self.url + 'events') as resp:
+                events = await resp.json()
+            ems = await embeds_bs.format_events(ctx, events)
 
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
-            )
+        )
         await session.run()
 
 

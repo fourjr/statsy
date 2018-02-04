@@ -83,10 +83,8 @@ class Clash_Royale:
         if not tag_or_user:
             try:
                 tag = ctx.get_tag('clashroyale')
-            except Exception as e:
-                print(e)
+            except KeyError as e:
                 await ctx.send('You don\'t have a saved tag.')
-                raise e
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
@@ -96,7 +94,6 @@ class Clash_Royale:
                 tag = ctx.get_tag('clashroyale', tag_or_user.id)
             except KeyError as e:
                 await ctx.send('That person doesnt have a saved tag!')
-                raise e
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'That person does not have a clan!')

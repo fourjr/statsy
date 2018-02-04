@@ -235,6 +235,8 @@ class StatsBot(commands.AutoShardedBot):
     async def process_commands(self, message):
         '''Utilises the CustomContext subclass of discord.Context'''
         ctx = await self.get_context(message, cls=CustomContext)
+        if os.name == 'nt' and ctx.guild.id != 345787308282478592:
+            return
         if ctx.command is None:
             return
         else:

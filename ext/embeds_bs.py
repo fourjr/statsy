@@ -19,69 +19,35 @@ def emoji(ctx, name):
         return name.title()
     return e
 
-url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master'
+url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master/images/'
 
-async def format_profile(ctx, soup, tag):
-    try:
-        profile = soup.find('main') \
-                .find('section', attrs={'class':'ui-card pt-4'}) \
-                .find('div', attrs={'class':'container'}) \
-                .find('div', attrs={'class':'stat-section'})
-    except AttributeError:
-        raise InvalidTag('Invalid bs-tag passed.')
-    name = profile.find('div', attrs={'class':'row'}) \
-        .find('div', attrs={'class':'col-12'}) \
-        .find('div', attrs={'class':'player-profile text-center'}) \
-        .find('div', attrs={'class':'player-info'}) \
-        .find('div', {'class':'player-name brawlstars-font'}).getText()
+async def format_profile(ctx, p):
+    
+    name = p['username']
+    tag = p['tag']
 
-    brawlersraw = profile.find_all('div', attrs={'class':'col-12 mt-1'})[1].find_all('div')
-    brawlers = ''
-    for brawler in brawlersraw:
-        try:
-            brawlers += str(emoji(ctx, \
-            brawler.find('a').find('div').find('div') \
-            .find('div', attrs={'class':'name'}).getText()))
-        except AttributeError:
-            pass
+    brawlers = ''.join([str(emoji(ctx, i['name'])) for i in p['brawlers']])
 
-    pic = url + profile.find('div', attrs={'class':'row'}) \
-        .find('div', attrs={'class':'col-12'}) \
-        .find('div', attrs={'class':'player-profile text-center'}) \
-        .find('div', attrs={'class':'player-info'}) \
-        .find('div', {'class':'profile-avatar'}) \
-        .find('img')['src']
+    pic = url + 'thumbnails/high/' + p['avatar_export'] + '.png'
+    print(pic)
 
-    stats = profile.find_all('div', attrs={'class':'col-6 col-md-4 col-lg-3 mb-2'})
-    trophies = stats[0].getText().strip('Trophies')
-    pb = stats[1].getText().strip('Highest trophies')
-    victories = stats[2].getText().strip('Victories')
-    showdown = stats[3].getText().strip('Showdown victories') + 's'
-    best_boss = stats[4].getText().strip('Best time as boss') + 's'
-    best_robo_rumble = stats[5].getText().strip('Best robo rumble time')
+    trophies = p['trophies']
+    pb = p['highest_trophies']
+    victories = p['wins']
+    showdown = p['survival_wins']
+    best_boss = str(p['best_time_as_boss_in_seconds']) + 's'
+    best_robo_rumble = str(p['best_robo_rumble_time_in_seconds']) + 's'
 
-    expvals = profile.find('div', attrs={'class':'row'}) \
-            .find('div', attrs={'class':'col-12'}) \
-            .find('div', attrs={'class':'player-profile text-center'}) \
-            .find('div', attrs={'class':'experience-bar mt-3'})
-    exp = expvals.find('div', attrs={'class':'experience-level'}).getText() + ' (' + \
-         expvals.find('div', attrs={'class':'progress-text'}).getText() + ')'
-    bandtag = profile.find_all('div', attrs={'class':'col-12 mt-1'})[2] \
-                .find('div', attrs={'class':'band-history-entry'}) \
-                .find('a')['href'].strip('/bands/')
-    bandname = profile.find_all('div', attrs={'class':'col-12 mt-1'})[2] \
-                .find('div', attrs={'class':'band-history-entry'}) \
-                .find('a') \
-                .find('div', attrs={'class':'card jumpc mb-2'}) \
-                .find('div', attrs={'class':'band-info'}) \
-                .find('div', attrs={'class':'band-name mr-2'}).getText()
+    exp = p['current_experience']
+    bandtag = (p['band'] or {}).get('tag')
+    bandname = (p['band'] or {}).get('name')
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{name} (#{tag})')
     em.set_thumbnail(url=pic)
-    em.set_footer(text='Powered by brawlstats.io')
+    em.set_footer(text='Powered by brawl-stars.herokuapp.com')
 
     embed_fields = [
         ('Trophies', f'{trophies}/{pb} PB {emoji(ctx, "icon_trophy")}', True),
@@ -101,70 +67,41 @@ async def format_profile(ctx, soup, tag):
 
     return em
 
-async def format_band(ctx, soup, tag):
-    try:
-        band = soup.find('main') \
-                .find('section', attrs={'class':'ui-card pt-4'}) \
-                .find('div', attrs={'class':'container'}) \
-                .find('div', attrs={'class':'stat-section'})
-    except AttributeError:
-        raise InvalidTag('Invalid bs-tag passed.')
-    bandinfo = band.find('div', attrs={'class':'row'}) \
-            .find('div', attrs={'class':'col-12'}) \
-            .find('div', attrs={'class':'band-profile text-center'}) \
-            .find('div', attrs={'class':'col-12'}) \
-            .find('div', attrs={'class':'band-profile'})
+async def format_band(ctx, b):
+    name = b['name']
+    description = b['description_clean']
+    badge = url + 'bands/' + b['badge_export'] + '.png'
+    print(badge)
 
-    name = bandinfo.find('div', attrs={'class':'name'}).getText()
-    description = bandinfo.find('div', attrs={'class':'clan-description'}).getText()
-    badge = url + bandinfo.find('div', attrs={'class':'badge'}) \
-            .find('img', attrs={'class':'band-badge'})['src']
-
-    score = band.find('div', attrs={'class':'row'}) \
-            .find('div', attrs={'class':'col-6'}) \
-            .find('div', attrs={'class':'band-profile-card text-center'}).getText().strip('Trophies')
+    score = b['score']
     
-    required = band.find('div', attrs={'class':'row'}) \
-            .find_all('div', attrs={'class':'col-6'})[1] \
-            .find('div', attrs={'class':'band-profile-card text-center'}).getText().strip('Required Trophies')
+    required = b['required_score']
 
-    members = band.find('div', attrs={'class':'container'}) \
-            .find_all('div', attrs={'class':'row'})[2] \
-            .find('div', attrs={'class':'col-12'}) \
-            .find('div', attrs={'class':'members-list'}) \
-            .find('table', attrs={'class':'table brawlstars-table'}) \
-            .find('tbody') \
-            .find_all('tr')
-  
-    _experiences = sorted(members, key=lambda x: int(x.find('td', attrs={'class':'experience'}) \
-                    .find('span', attrs={'class':'experience-star'}).getText()), reverse=True)
-    experiences = [] 
+    members = b['members']
+    _experiences = sorted(members, key=lambda x: x['experience_level'], reverse=True)
+    experiences = []
     pushers = []
 
     if len(members) >= 3:
         for i in range(3):
-            pushername = members[i].find('td', attrs={'class':'player-details'}) \
-                    .find('div', attrs={'class':'player'}) \
-                    .find('div', attrs={'class':'name'}).getText()
-            trophies = members[i].find('td', attrs={'class':'player-details'}) \
-                    .find('div', attrs={'class':'trophy-count'}).getText()
+            pushername = members[i]['name']
+            trophies = members[i]['trophies']
+            tag = members[i]['tag']
             pushers.append(
                 f"**{pushername}**"
                 f"\n{trophies} " 
                 f"{emoji(ctx, 'icon_trophy')}\n" 
-                f"#{members[i]['data-href'].strip('/players/')}"
-                )
+                f"#{tag}"
+            )
 
-            xpname = _experiences[i].find('td', attrs={'class':'player-details'}) \
-                    .find('div', attrs={'class':'player'}) \
-                    .find('div', attrs={'class':'name'}).getText()
-            xp = _experiences[i].find('td', attrs={'class':'experience'}) \
-                    .find('span', attrs={'class':'experience-star'}).getText()
+            xpname = _experiences[i]['name']
+            xpval = _experiences[i]['experience_level']
+            xptag = _experiences[i]['tag']
             experiences.append(
                 f"**{xpname}**"
                 f"\n{emoji(ctx, 'star_silver')}"
-                f" {xp}\n" 
-                f"#{_experiences[i]['data-href'].strip('/players/')}"
+                f" {xpval}\n" 
+                f"#{xptag}"
                 )
 
     page1 = discord.Embed(description=description, color=random_color())
@@ -190,26 +127,25 @@ async def format_band(ctx, soup, tag):
         if v:
             page2.add_field(name=f, value=v)
     
-    page1.set_footer(text='Powered by brawlstats.io')
-    page2.set_footer(text='Powered by brawlstats.io')
+    page1.set_footer(text='Powered by brawl-stars.herokuapp.com')
+    page2.set_footer(text='Powered by brawl-stars.herokuapp.com')
 
     return [page1, page2]
 
-async def format_events(ctx, soup):
+async def format_events(ctx, events):
     em1 = discord.Embed(title='Ongoing events!', color=random_color())
     if ctx.bot.psa_message:
         em1.description = ctx.bot.psa_message
     em2 = copy.deepcopy(em1)
     em2.title = 'Upcoming events!'
-    events = soup.find('main') \
-                .find('section', attrs={'class':'ui-card pt-4'}) \
-                .find('div', attrs={'class':'container'}) \
-                .find_all('div', attrs={'class':'row'})
-    
-    ongoing = json.loads(events[0].get('data-events'))['now']
-    upcoming = json.loads(events[0].get('data-events'))['later']
 
-    i = 0
+    ongoing = events['now']
+    upcoming = events['later']
+
+    clock_emoji = u"\U0001F55B"
+    first_win_emoji = str(emoji(ctx, 'first_win'))
+    coin_emoji = str(emoji(ctx, 'icon_coin'))
+
     for event in ongoing:
         date = (datetime.datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.datetime.now()
         seconds = math.floor(date.total_seconds())
@@ -227,7 +163,12 @@ async def format_events(ctx, soup):
         first = event['coins']['first_win']
         freecoins = event['coins']['free']
         maxcoins = event['coins']['max']
-        em1.add_field(name=name, value=f'**{_map}**\nTime Left: {timeleft}\nFirst game: {first}\nFree coins: {freecoins}\nMax Coins: {maxcoins}')
+        em1.add_field(name=name, value=(f'**{_map}**\n'
+            f'Time Left: {timeleft} {clock_emoji}\n'
+            f'First game: {first} {first_win_emoji}\n'
+            f'Free coins: {freecoins} {coin_emoji}\n'
+            f'Max Coins: {maxcoins} {coin_emoji}'
+        ))
 
     for event in upcoming:
         date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.now()
@@ -249,8 +190,14 @@ async def format_events(ctx, soup):
         first = event['coins']['first_win']
         freecoins = event['coins']['free']
         maxcoins = event['coins']['max']
-        em2.add_field(name=name, value=f'**{_map}**\nTime to go: {timeleft}\nFirst game: {first}\nFree coins: {freecoins}\nMax Coins: {maxcoins}')
+        em2.add_field(name=name, value=(
+            f'**{_map}**\n'
+            f'Time to go: {timeleft} {clock_emoji}\n'
+            f'First game: {first} {first_win_emoji}\n'
+            f'Free coins: {freecoins} {coin_emoji}\n'
+            f'Max Coins: {maxcoins} {coin_emoji}'
+        ))
 
-    em1.set_footer(text='Powered by brawlstats.io')
-    em2.set_footer(text='Powered by brawlstats.io')
+    em1.set_footer(text='Powered by brawl-stars.herokuapp.com')
+    em2.set_footer(text='Powered by brawl-stars.herokuapp.com')
     return [em1, em2]
