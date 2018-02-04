@@ -116,8 +116,11 @@ class CustomContext(commands.Context):
         _type = f'backup/{_type}/'
         if mode == 'update':
             obj['updatedTime'] = time.time()
-            with open(_type + obj['tag'] + '.json', "w+") as f:
-                f.write(json.dumps(obj, indent=4))
+            try:
+                with open(_type + obj['tag'] + '.json', "w+") as f:
+                    f.write(json.dumps(obj, indent=4))
+            except FileNotFoundError:
+                pass
         elif mode == 'get':
             try:
                 with open(_type + obj + '.json') as f:

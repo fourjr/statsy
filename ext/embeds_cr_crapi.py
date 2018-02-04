@@ -431,16 +431,17 @@ async def format_seasons(ctx, p, cache=False):
                     timestamp(p.raw_data['updatedTime'])
             em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
             em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
-            try: 
+            try:
                 em.add_field(name=season.strip('Season').title() + " Season", value=s.id)
-            except: 
-                prev = p.league_statistics.previous_season
-                old_time = prev.id.split('-')
-                time = [int(old_time[0]), int(old_time[1]) + 1]
-                if time[1] > 12: #check month
-                    time[0] += 1
-                    time[1] = 1
-                em.add_field(name=season.strip('Season').title() + " Season", value=f'{time[0]}-{time[1]}')
+            except:
+                if p.league_statistics.get('previous_season'):
+                    prev = p.league_statistics.previous_season
+                    old_time = prev.id.split('-')
+                    time = [int(old_time[0]), int(old_time[1]) + 1]
+                    if time[1] > 12: #check month
+                        time[0] += 1
+                        time[1] = 1
+                    em.add_field(name=season.strip('Season').title() + " Season", value=f'{time[0]}-{time[1]}')
             try: em.add_field(name="Season Highest", value=f"{s.best_trophies} {emoji(ctx, 'trophy')}")
             except: pass
             try: em.add_field(name="Season Finish", value=f"{s.trophies} {emoji(ctx, 'trophy')}")
@@ -500,11 +501,15 @@ async def format_profile(ctx, p, cache=False):
     s = None
     if p.league_statistics:
         current_rank = p.league_statistics.current_season.get('rank') 
-        s = p.league_statistics.previous_season
-        global_r = s.get('rank')
-        season = f"Highest: {s.best_trophies} {emoji(ctx, 'crownblue')}  \n" \
-                 f"Finish: {s.trophies} {emoji(ctx, 'trophy')} \n" \
-                 f"Global Rank: {global_r} {emoji(ctx, 'rank')}" 
+        if p.league_statistics.get('previous_season'):
+            s = p.league_statistics.previous_season
+            global_r = s.get('rank')
+            season = (f"Highest: {s.best_trophies} {emoji(ctx, 'crownblue')} \n"
+                     f"Finish: {s.trophies} {emoji(ctx, 'trophy')} \n"
+                     f"Global Rank: {global_r} {emoji(ctx, 'rank')}"
+            )
+        else:
+            season = None
     else:
         current_rank = None
         season = None

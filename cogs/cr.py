@@ -111,6 +111,7 @@ class Clash_Royale:
             try:
                 profile = await self.cr.get_player(tag)
             except (errors.NotResponding, errors.ServerError) as e:
+                print(e)
                 try:
                     url = self.url + 'profile/' + tag
                     async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
