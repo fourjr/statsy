@@ -163,19 +163,17 @@ class Bot_Related:
         await ctx.send(embed=em)
 
     @commands.command(hidden=True)
-    async def update(self, ctx):
-        '''Update the bot.'''
+    async def restart(self, ctx):
+        '''Restarts the bot.'''
         if ctx.author.id not in self.bot.developers:
             return
-        with open('data/config.json') as f:
-            password = json.load(f).get('password')
 
         em = discord.Embed(color=0xf9c93d)
-        em.title = 'Updating Bot'
-        em.description = 'Pulling from repository and restarting `stats.service`.'
+        em.title = 'Restarting Bot'
+        em.description = 'Restarting `stats.service`.'
         await ctx.send(embed=em)
         command = 'sh ../stats.sh'
-        p = os.system(f'echo {password}|sudo -S {command}')
+        p = os.system(f'echo a|sudo -S {command}')
 
     @commands.command(hidden=True)
     async def tokenupdate(self, ctx, _token):
