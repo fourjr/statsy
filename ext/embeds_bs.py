@@ -19,24 +19,38 @@ def emoji(ctx, name):
         return name.title()
     return e
 
+def format_timestamp(seconds:int):
+    minutes = max(math.floor(seconds/60), 0)
+    seconds -= minutes*60
+    hours = max(math.floor(minutes/60), 0)
+    minutes -= hours*60
+    days = max(math.floor(hours/60), 0)
+    hours -= days*60
+    timeleft = ''
+    if days > 0: timeleft += f'{days}d'
+    if hours > 0: timeleft += f' {hours}h'
+    if minutes > 0: timeleft += f' {minutes}m'
+    if seconds > 0: timeleft += f' {seconds}s'
+
+    return timeleft
+
 url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master/images/'
 
 async def format_profile(ctx, p):
-    
+
     name = p['username']
     tag = p['tag']
 
     brawlers = ''.join([str(emoji(ctx, i['name'])) for i in p['brawlers']])
 
     pic = url + 'thumbnails/high/' + p['avatar_export'] + '.png'
-    print(pic)
 
     trophies = p['trophies']
     pb = p['highest_trophies']
     victories = p['wins']
     showdown = p['survival_wins']
-    best_boss = str(p['best_time_as_boss_in_seconds']) + 's'
-    best_robo_rumble = str(p['best_robo_rumble_time_in_seconds']) + 's'
+    best_boss = format_timestamp(p['best_time_as_boss_in_seconds'])
+    best_robo_rumble = format_timestamp(p['best_robo_rumble_time_in_seconds'])
 
     exp = p['current_experience']
     bandtag = (p['band'] or {}).get('tag')
@@ -71,10 +85,9 @@ async def format_band(ctx, b):
     name = b['name']
     description = b['description_clean']
     badge = url + 'bands/' + b['badge_export'] + '.png'
-    print(badge)
 
     score = b['score']
-    
+
     required = b['required_score']
 
     members = b['members']
@@ -173,17 +186,7 @@ async def format_events(ctx, events):
     for event in upcoming:
         date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.now()
         seconds = math.floor(date.total_seconds())
-        minutes = max(math.floor(seconds/60), 0)
-        seconds -= minutes*60
-        hours = max(math.floor(minutes/60), 0)
-        minutes -= hours*60
-        days = max(math.floor(hours/60), 0)
-        hours -= days*60
-        timeleft = ''
-        if days > 0: timeleft += f'{days}d'
-        if hours > 0: timeleft += f' {hours}h'
-        if minutes > 0: timeleft += f' {minutes}m'
-        if seconds > 0: timeleft += f' {seconds}s'
+        timeleft = format_timestamp(seconds)
 
         name = event['mode']['name']
         _map = event['location']
