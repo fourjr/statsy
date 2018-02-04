@@ -53,7 +53,7 @@ def get_clan_image(p):
 
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
-        m.score = ((m.donations/5) + (m.clan_chest_crowns*10) + (m.trophies/7)) / 3
+        m.score = ((m.donations/5) + ((m.clan_chest_crowns or 0)*10) + (m.trophies/7)) / 3
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
 
     em = discord.Embed(
@@ -73,7 +73,7 @@ async def format_least_valuable(ctx, clan, cache=False):
         em.add_field(
             name=f'{m.name} ({m.role_name})', 
             value=f"#{m.tag}\n{m.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns} "
+                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}"
                   )
@@ -82,7 +82,7 @@ async def format_least_valuable(ctx, clan, cache=False):
 async def format_most_valuable(ctx, clan, cache=False):
     
     for m in clan.members:
-        m.score = ((m.donations/5) + (m.clan_chest_crowns*10) + (m.trophies/7)) / 3
+        m.score = ((m.donations/5) + ((m.clan_chest_crowns or 0)*10) + (m.trophies/7)) / 3
 
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
@@ -103,7 +103,7 @@ async def format_most_valuable(ctx, clan, cache=False):
         em.add_field(
             name=f'{m.name} ({m.role_name})', 
             value=f"#{m.tag}\n{m.trophies} "
-            f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns} "
+            f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
             f"{emoji(ctx, 'cards')}"
             )
@@ -379,7 +379,7 @@ async def format_members(ctx, c, cache=False):
         em.add_field(
             name=f'{m.name} ({m.role.title()})', 
             value=f"#{m.tag}\n{m.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns} "
+                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}"
                   )
@@ -597,7 +597,7 @@ async def format_clan(ctx, c, cache=False):
     page2.description = 'Top Players/Donators/Contributors for this clan.'
     page1.set_thumbnail(url=c.badge.image)
     
-    contributors = list(reversed(sorted(c.members, key=lambda x: x.clan_chest_crowns)))
+    contributors = list(reversed(sorted(c.members, key=lambda x: x.clan_chest_crowns or 0)))
     _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
 
     pushers = []
@@ -620,7 +620,7 @@ async def format_clan(ctx, c, cache=False):
                 )
             ccc.append(
                 f"**{contributors[i].name}**" 
-                f"\n{contributors[i].clan_chest_crowns} " 
+                f"\n{contributors[i].clan_chest_crowns or 0} " 
                 f"{emoji(ctx, 'crownred')}\n" 
                 f"#{contributors[i].tag}"
                 )
