@@ -1,5 +1,7 @@
 import discord
 import asyncio
+import abrawlpy
+import box
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from __main__ import InvalidTag, NoTag
@@ -45,16 +47,14 @@ class Brawl_Stars:
 
     def __init__(self, bot):
         self.bot = bot
-        self.url = 'https://brawl-stars.herokuapp.com/api/'
-        self.conv = TagCheck()
+        self.conv = TagCheck
 
     async def get_band_from_profile(self, ctx, tag, message):
-        url = self.url + 'players/' + tag
-
-        async with ctx.session.get(url) as resp:
-            profile = await resp.json()
-        print((profile['band'] or {}).get('tag'))
-        return (profile['band'] or {}).get('tag') or await ctx.send(message)
+        profile = await self.bot.bs.get_player(tag)
+        try:
+            return profile.band.tag
+        except box.BoxKeyError:
+            return await ctx.send(message)
 
     async def resolve_tag(self, ctx, tag_or_user, band=False):
         if not tag_or_user:
@@ -86,7 +86,7 @@ class Brawl_Stars:
 
         Ability to save multiple tags coming soon.
         '''
-        tag = self.conv.resolve_tag(tag)
+        tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
             raise InvalidTag('Invalid tag') 
@@ -102,14 +102,17 @@ class Brawl_Stars:
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
-            url = self.url + 'players/' + tag
-            async with ctx.session.get(url) as resp:
-                if resp.status == 404:
-                    raise InvalidTag('Invalid bs-tag passed')
-                profile = await resp.json()
-
-            em = await embeds_bs.format_profile(ctx, profile)
-            await ctx.send(embed=em)
+            try:
+                profile = await self.bot.bs.get_player(tag)
+            except abrawlpy.errors.RequestError as e:
+                await ctx.send(embed=discord.Embed(
+                    title=e.code,
+                    description=e.error,
+                    color=0xd22630
+                ))
+            else:
+                em = await embeds_bs.format_profile(ctx, profile)
+                await ctx.send(embed=em)
 
     @commands.command()
     @embeds.has_perms()
@@ -117,20 +120,23 @@ class Brawl_Stars:
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
-            url = self.url + 'bands/' + tag
-            async with ctx.session.get(url) as resp:
-                if resp.status == 404:
-                    raise InvalidTag('Invalid bs-band tag provided')
-                band = await resp.json()
-
-            ems = await embeds_bs.format_band(ctx, band)
+            try:
+                band = await self.bot.bs.get_band(tag)
+            except abrawlpy.errors.RequestError as e:
+                return await ctx.send(embed=discord.Embed(
+                    title=e.code,
+                    description=e.error,
+                    color=0xd22630
+                ))
+            else:
+                ems = await embeds_bs.format_band(ctx, band)
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
             )
         await session.run()
 
-    @commands.command()
+    @commands.command(enabled=False, hidden=True)
     @embeds.has_perms()
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''

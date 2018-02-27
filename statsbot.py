@@ -24,6 +24,7 @@ SOFTWARE.
 
 import discord
 import clashroyale
+from abrawlpy import Client as bsClient
 from discord.ext import commands
 from ext.context import CustomContext
 from ext.paginator import PaginatorSession
@@ -97,6 +98,7 @@ class StatsBot(commands.AutoShardedBot):
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.cr = crClient('9ba015601c85435aa0ac200afc07223e2b1a3190927c4bb19d89fe5f8295d60e',\
             session=self.session, is_async=True, timeout=5)
+        self.bs = bsClient('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGlvbiI6MTUxOTcyNTU4MDkxMywidXNlcklEIjoiMzQ3MDA2NDk5Njc3MTQzMDQxIn0.cnf4mVzZZXDPutUGhsPc7O_1wDykWChPs6f0hoePsPg', session=self.session)
         # 4JR's token ^^ 
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
