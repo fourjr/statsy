@@ -47,7 +47,7 @@ class Brawl_Stars:
 
     def __init__(self, bot):
         self.bot = bot
-        self.conv = TagCheck
+        self.conv = TagCheck()
 
     async def get_band_from_profile(self, ctx, tag, message):
         profile = await self.bot.bs.get_player(tag)
@@ -86,7 +86,7 @@ class Brawl_Stars:
 
         Ability to save multiple tags coming soon.
         '''
-        tag = self.conv.resolve_tag(ctx, tag)
+        tag = self.conv.resolve_tag(tag)
 
         if not tag:
             raise InvalidTag('Invalid tag') 
