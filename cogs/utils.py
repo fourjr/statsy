@@ -140,7 +140,7 @@ class Bot_Related:
         else:
             em.description = 'Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR.'
 
-        cbot = '<:certifiedbot:308880575379275776>'
+        cbot = '<:certifiedbot:427089403060551700>'
 
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
