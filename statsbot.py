@@ -173,6 +173,7 @@ class StatsBot(commands.AutoShardedBot):
 
         need to switch to a db soon
         '''
+
         with open('data/guild.json') as f:
             cfg = json.load(f)
 

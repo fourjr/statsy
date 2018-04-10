@@ -94,17 +94,7 @@ class Bot_Related:
     @commands.command(name='bot',aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
         '''Shows information and stats about the bot.'''
-        cmd = r'git show -s HEAD~3..HEAD --format="[{}](http://statsy.ml) %s (%cr)"'
-
-        if os.name == 'posix':
-            cmd = cmd.format(r'\`%h\`')
-        else:
-            cmd = cmd.format(r'`%h`')
-
-        revision = os.popen(cmd).read().strip()
-
         em = discord.Embed()
-        em.add_field(name='Latest Changes', value=revision, inline=False)
         em.timestamp = datetime.datetime.utcnow()
         status = str(ctx.guild.me.status)
         if status == 'online':
