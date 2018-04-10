@@ -616,7 +616,7 @@ class Clash_Royale:
             em.description = f'*{self.bot.psa_message}*'
         em.set_author(name=f'{profile.name} (#{profile.tag})', icon_url=embeds_cr_crapi.get_clan_image(profile))
         em.set_image(url='attachment://deck.png')
-        em.set_footer(text='Statsy - Powered by cr-api.com')
+        em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
 
 
         await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)

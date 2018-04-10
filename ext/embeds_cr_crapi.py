@@ -8,7 +8,7 @@ import math
 import time
 from discord.ext import commands
 
-images = 'https://cr-api.github.io/cr-api-assets/'
+images = 'https://RoyaleAPI.github.io/RoyaleAPI-assets/'
 
 def has_perms(add_reactions=True, external_emojis=True):
     perms = {
@@ -67,7 +67,7 @@ async def format_least_valuable(ctx, clan, cache=False):
             timestamp(clan.raw_data['updatedTime'])
     em.set_author(name=f'{clan.name} (#{clan.tag})')
     em.set_thumbnail(url=clan.badge.image)
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
 
     for m in reversed(to_kick):
         em.add_field(
@@ -97,7 +97,7 @@ async def format_most_valuable(ctx, clan, cache=False):
             timestamp(clan.raw_data['updatedTime'])
     em.set_author(name=f'{clan.name} (#{clan.tag})')
     em.set_thumbnail(url=clan.badge.image)
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
 
     for m in reversed(best):
         em.add_field(
@@ -133,7 +133,7 @@ async def format_chests(ctx, p, cache=False):
     em.set_thumbnail(url=emoji(ctx, 'chest' + p.chest_cycle.upcoming[0].lower()).url)
     em.add_field(name=f'Chests', value=get_chests(ctx, p)[0])
     em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     return em
 
 async def format_cards(ctx, soup):
@@ -237,7 +237,7 @@ async def format_cards(ctx, soup):
 
     em = discord.Embed(description='A list of cards this player has.', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     for i, r in found_cards_pages:
@@ -265,10 +265,10 @@ async def format_battles(ctx, soup):
             .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
             ['href'].strip('/profile/')
 
-    crapi = 'http://cr-api.com/profile/'
+    crapi = 'http://RoyaleAPI.com/profile/'
     em = discord.Embed(description='A list of battles played recently', color=random_color())
     em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
@@ -474,7 +474,7 @@ async def format_card(ctx, c):
     em.add_field(name='Elixir Cost', value=f"{c.elixir} {emoji(ctx, 'elixirdrop')}")
     em.add_field(name='Type', value=f"{c.type} {emoji(ctx, 'challengedraft')}")
     em.add_field(name='Arena Found', value=f"{arenas[c.arena]} {emoji(ctx, 'arena'+str(c.arena))}")
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     return em
 
 async def format_profile(ctx, p, cache=False):
@@ -549,7 +549,7 @@ async def format_profile(ctx, p, cache=False):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     
     return em
 
@@ -590,14 +590,14 @@ async def format_stats(ctx, p, cache=False):
             if n == 'Clan Name':
                 em.add_field(name='Clan', value=f"None {emoji(ctx, 'noclan')}")
 
-    em.set_footer(text='Statsy - Powered by cr-api.com')
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     
     return em
 
 async def format_clan(ctx, c, cache=False):
     page1 = discord.Embed(description = c.description, color=random_color())
     page1.set_author(name=f"{c.name} (#{c.tag})")
-    page1.set_footer(text='Statsy - Powered by cr-api.com')
+    page1.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
     page1.set_thumbnail(url=c.badge.image)
@@ -639,7 +639,7 @@ async def format_clan(ctx, c, cache=False):
         ('Members', str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}"),
         ('Required Trophies', f"{c.required_score} {emoji(ctx, 'trophy')}"),
         #('Global Rank', f"{'Unranked' if c.rank is None else c.rank} {emoji(ctx, 'rank')}") 
-        # **I have no idea if cr-api has this
+        # **I have no idea if RoyaleAPI has this
     ]
 
     fields2 = [
