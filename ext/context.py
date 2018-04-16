@@ -112,12 +112,13 @@ class CustomContext(commands.Context):
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
 
-    def cache(self, mode, _type, obj):
+    def cache(self, mode, _type, obj, tag = None):
+        tag = tag or obj.get('tag')
         _type = f'backup/{_type}/'
         if mode == 'update':
             obj['updatedTime'] = time.time()
             try:
-                with open(_type + obj['tag'] + '.json', "w+") as f:
+                with open(_type + tag + '.json', "w+") as f:
                     f.write(json.dumps(obj, indent=4))
             except FileNotFoundError:
                 pass

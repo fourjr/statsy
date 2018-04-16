@@ -196,16 +196,9 @@ class StatsBot(commands.AutoShardedBot):
         print('StatsBot connected!')
         print('----------------------------')
 
-        # self._add_commands()
-        # had to put this here due to an issue with the
-        # latencies property
-        # Fixed now
-        #self.constants = await self.cr.get_constants()
-        with open('backup/clashroyale/constants.json') as f:
-            self.constants = clashroyale.models.Constants(self.cr, json.load(f))
+        self.constants = await self.cr.get_constants()
         with open('backup/brawlstars/constants.json') as f:
             self.bsconstants = json.load(f)
-        # await self.change_presence(game=discord.Game(name='!help'))
 
     async def on_ready(self):
         '''
@@ -240,6 +233,7 @@ class StatsBot(commands.AutoShardedBot):
 
     async def process_commands(self, message):
         '''Utilises the CustomContext subclass of discord.Context'''
+        await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
         if os.name == 'nt' and ctx.guild.id != 345787308282478592:
             return

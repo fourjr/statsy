@@ -111,7 +111,6 @@ async def format_most_valuable(ctx, clan, cache=False):
     return em
 
 def get_chests(ctx, p):
-    cycle = p.chest_cycle
     chests = '| '+str(emoji(ctx, 'chest' + p.chest_cycle.upcoming[0].lower())) + ' | '
     chests += ''.join([str(emoji(ctx, 'chest' + p.chest_cycle.upcoming[x].lower())) for x in range(1,8)])
     special = ''
@@ -248,113 +247,45 @@ async def format_cards(ctx, soup):
             em.add_field(name='Missing Cards', value=item, inline=False)
     return em
 
-async def format_battles(ctx, soup):
-    constants = ctx.bot.constants
-    profile = soup.find('div', attrs={'class':'layout__page'}) \
-            .find('div', attrs={'class':'layout__content layout__container'}) \
-            .find('div', attrs={'class':'profile ui__card'})
+async def format_battles(ctx, battles, cache=False):
 
-    name = profile.find('div', attrs={'class':'profileHeader profile__header'}) \
-            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}).getText().strip() \
-            \
-            .strip(profile.find('div', attrs={'class':'profileHeader profile__header'}) \
-            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}) \
-            .find('span', attrs={'class':'profileHeader__userLevel'}).getText().strip())
-
-    tag = profile.find('div', attrs={'class':'profileTabs profile__tabs'}) \
-            .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
-            ['href'].strip('/profile/')
-
-    crapi = 'http://RoyaleAPI.com/profile/'
     em = discord.Embed(description='A list of battles played recently', color=random_color())
-    em.set_author(name=f"{name} (#{tag})")
+
+    for b in battles:
+        if b.type == 'PvP':
+            name = b.team[0].name
+            tag = b.team[0].tag
+            em.set_author(name=f"{name} (#{tag})")
+            break
+
+    crapi = 'https://RoyaleApi.com/profile/'
+
     em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
-    try:
-        battles = profile.find('div', attrs={'class':'replay profile__replays'}) \
-                .find_all('div', attrs={'class':'replay__container'})
-        for battle in battles:
-            right = []
-            left = []
-            _type = battle['data-type'].title()
-            score = battle.find('div', attrs={'class':'replay__header'}) \
-                    .find('div', attrs={'class':'replay__record'}).getText().strip()
-            sc = score.split('-')
-            if int(sc[0]) > int(sc[1]):
-                if int(sc[0]) == 3:
-                    winner = 'blue3crown'
-                else:
-                    winner = 'crownblue'
-            elif int(sc[1]) > int(sc[0]):
-                if int(sc[1]) == 3:
-                    winner = 'red3crown'
-                else:
-                    winner = 'crownred'
-            else:
-                if int(sc[0]) == 3:
-                    winner = 'gray3crown'
-                winner = 'crowngray'
-            match = battle.find('div', attrs={'class':'replay__match'})
-            left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
-                    .find('div', attrs={'class':'replay__playerName'}) \
-                    .find('div', attrs={'class':'replay__userInfo'}) \
-                    .find('div', attrs={'class':'replay__userName'}))
-            left.append(left[0].getText().strip())
-            try:
-                left.append(left[0].find('a', attrs={'class':'ui__link'}) \
-                    ['href'].replace('/profile/', ''))
-            except KeyError:
-                continue
+    for b in battles:
+        if b.winner < 0:
+            # OP Lost
+            winner = 'crownred'
+        elif b.winner > 0:
+            # OP Won
+            winner = 'crownblue'
+        elif b.winner == 0:
+            # Draw
+            winner = 'crowngrey'
+        score = f'{b.team_crowns}-{b.opponent_crowns}'
 
-            right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
-                    .find('div', attrs={'class':'replay__playerName'}) \
-                    .find('div', attrs={'class':'replay__userInfo'}) \
-                    .find('div', attrs={'class':'replay__userName'}))
-            right.append(right[0].getText().strip())
-            try:
-                right.append(right[0].find('a', attrs={'class':'ui__link'}) \
-                    ['href'].replace('/profile/', ''))
-            except KeyError:
-                continue
-            else:
-                if right[2] is not None: right[2] += ')'
+        try:
+            value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].tag}) \n[{b.team[1].name}]({crapi}{b.team[1].tag}) {emoji(ctx, "battle")} [{b.opponent[1].name}]({crapi}{b.opponent[1].tag})**'
+        except IndexError:
+            value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].name})**'
 
-            if _type == '2V2':
-                _type = '2v2'
+        em.add_field(name=f'{b.type} {emoji(ctx, winner)} {score}', value=value, inline=False)
 
-                try:
-                    left.append(match.find('div', attrs={'class':'replay__player replay__leftPlayer'}) \
-                    .find('div', attrs={'class':'replay__playerName'}) \
-                    .find('div', attrs={'class':'replay__userInfo'}) \
-                    .find_all('div', attrs={'class':'replay__userName'})[1])
-                    left.append(left[3].getText().strip())
-                    left.append(left[3].find('a', attrs={'class':'ui__link'}) \
-                        ['href'].replace('/profile/', ''))
-                except KeyError:
-                    continue
-                try:
-                    right.append(match.find('div', attrs={'class':'replay__player replay__rightPlayer'}) \
-                            .find('div', attrs={'class':'replay__playerName'}) \
-                            .find('div', attrs={'class':'replay__userInfo'}) \
-                            .find_all('div', attrs={'class':'replay__userName'})[1])
-                    right.append(right[3].getText().strip())
-                    right.append(right[3].find('a', attrs={'class':'ui__link'}) \
-                        ['href'].replace('/profile/', ''))
-                except KeyError:
-                    continue
-                else:
-                    if right[5] is not None: right[5] += ')'
-
-                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[1]}]({crapi}{left[2]}) {emoji(ctx, "battle")} [{right[1]}]({crapi}{right[2]} \n[{left[4]}]({crapi}{left[5]}) {emoji(ctx, "battle")} [{right[4]}]({crapi}{right[5]}**', inline=False)
-            else:
-                em.add_field(name=f'{_type} {emoji(ctx, winner)} {score}', value=f'**[{left[1]}]({crapi}{left[2]}) {emoji(ctx, "battle")} [{right[1]}]({crapi}{right[2]}**', inline=False)
-            i += 1
-            if i > 5: break
-    except AttributeError:
-        em.description += '\nToo few battles, fight a tiny bit more to get your battles here!'
+        i += 1
+        if i > 5: break
     return em
 
 async def format_members(ctx, c, cache=False):
@@ -393,7 +324,10 @@ async def format_top_clans(ctx, clans):
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = 'Top 200 global clans right now.'
-    em.set_author(name='Top Clans', icon_url=clans[0].badge.image)
+    badge_image = clans[0].badge.image
+    if not badge_image.startswith('http'):
+        badge_image = None
+    em.set_author(name='Top Clans', icon_url=badge_image)
     embeds = []
     counter = 0
     for c in clans:
@@ -493,8 +427,6 @@ async def format_profile(ctx, p, cache=False):
 
     chests = get_chests(ctx, p)[0]
 
-    cycle = p.chest_cycle
-
     special = ''
     trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
 
@@ -521,6 +453,11 @@ async def format_profile(ctx, p, cache=False):
 
     special = get_chests(ctx, p)[1]
 
+    try:
+        favourite_card = p.stats.favorite_card.name + ' ' + emoji(ctx, p.stats.favorite_card.key.replace('-', ''))
+    except AttributeError:
+        favourite_card = 'No favourite card :('
+
     embed_fields = [
         ('Trophies', trophies, True),
         ('Level', f"{p.stats.level} {emoji(ctx, 'experience')}", True),
@@ -530,7 +467,7 @@ async def format_profile(ctx, p, cache=False):
         ('Games Played', f"{p.games.total} {emoji(ctx, 'battle')}", True),
         ('Wins/Losses/Draws', f"{p.games.wins}/{p.games.losses}/{p.games.draws} {emoji(ctx, 'battle')}", True),
         ('Three Crown Wins', f"{p.stats.three_crown_wins} {emoji(ctx, '3crown')}", True),
-        ('Favourite Card', f"{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace('-', ''))}", True),
+        ('Favourite Card', favourite_card, True),
         ('Tournament Cards Won', f"{p.stats.tournament_cards_won} {emoji(ctx, 'cards')}", True),
         ('Challenge Cards Won', f"{p.stats.challenge_cards_won} {emoji(ctx, 'cards')}", True),
         ('Challenge Max Wins', f"{p.stats.challenge_max_wins} {emoji(ctx, 'tournament')}", True),
@@ -658,28 +595,32 @@ async def format_clan(ctx, c, cache=False):
     
     return [page1, page2]
 
-async def format_tournaments(ctx, json, cache=False):
+async def format_tournaments(ctx, t):
     rewards = {
         50: (175, 25, 10),
         100: (700, 100, 20),
         200: (400, 57, 40),
         1000: (2000, 285, 200)
     }
+
     em = discord.Embed(description='A list of open tournaments you can join right now!', color=random_color())
     em.set_author(name='Open Tournaments')
     em.set_thumbnail(url='https://i.imgur.com/bwql3WU.png')
+
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
-    em.set_footer(text='Statsy - Powered by statsroyale.com')
-    tourneys = sorted(json['tournaments'], key=lambda x: int(x['maxPlayers']))
+    em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
+
+    tournaments = sorted(t, key=lambda x: int(x.max_capacity))
     i = 0
-    for tournament in tourneys:
-        if tournament['full']: continue
-        members = '/'.join((str(tournament['totalPlayers']), str(tournament['maxPlayers'])))
-        tag = tournament['hashtag']
-        name = tournament['title']
+    for t in tournaments:
+        if t.player_count == t.max_capacity:
+            continue
+
+        members = '/'.join((str(t.player_count), str(t.max_capacity)))
+
         timeleft = ''
-        date = (datetime.datetime.fromtimestamp(tournament['timeLeft'] + int(time.time()))) - datetime.datetime.now()
+        date = datetime.datetime.now() - datetime.datetime.fromtimestamp(t.create_time)
         seconds = math.floor(date.total_seconds())
         minutes = max(math.floor(seconds/60), 0)
         seconds -= minutes*60
@@ -688,11 +629,13 @@ async def format_tournaments(ctx, json, cache=False):
         if hours > 0: timeleft += f'{hours}h'
         if minutes > 0: timeleft += f' {minutes}m'
         if seconds > 0: timeleft += f' {seconds}s'
-        gold = rewards[tournament['maxPlayers']][1]
-        cards = rewards[tournament['maxPlayers']][0]
 
-        em.add_field(name=f'{name}', value=f'Time left: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n#{tag}')
+        gold = rewards[t.max_capacity][1]
+        cards = rewards[t.max_capacity][0]
+
+        value = f'Time since creation: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n'
+        em.add_field(name=f'{t.name} (#{t.tag})', value=value)
         i += 1
-        if i > 11: break
+        if i > 6: break
     
     return em

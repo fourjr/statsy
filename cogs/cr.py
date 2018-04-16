@@ -314,12 +314,29 @@ class Clash_Royale:
         '''Get the latest 5 battles by the player!'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
-            url = self.url + 'profile/' + tag
-            headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
-            async with ctx.session.get(url + '?appjson=1&refresh=1', headers=headers) as resp:
-                p = await resp.json()
-            em = await embeds.format_battles(ctx, p)
-            await ctx.send(embed=em)
+            try:
+                b = await self.cr.get_player_battles(tag)
+            except (errors.NotResponding, errors.ServerError) as e:
+                cached_data = ctx.cache('get', 'clashroyale/battles', tag)['data']
+                if cached_data:
+                    b = cached_data
+                    em = await embeds_cr_crapi.format_battles(ctx, b, cache=True)
+                    await ctx.send(embed=em)
+                else:
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                            )
+                    if ctx.bot.psa_message:
+                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
+            except errors.NotFoundError:
+                await ctx.send('That tag cannot be found!')
+            else:
+                ctx.cache('update', 'clashroyale/battles', {'data':b}, tag=b[0]['team'][0]['tag'])
+                em = await embeds_cr_crapi.format_battles(ctx, b)
+                await ctx.send(embed=em)
 
 
     @commands.group(invoke_without_command=True)
@@ -566,9 +583,9 @@ class Clash_Royale:
                 ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
                 await self.format_deck_and_send(ctx, profile)
 
-    @commands.command()
+    @commands.command(name='card')
     @embeds.has_perms(False)
-    async def card(self, ctx, *, card):
+    async def _card(self, ctx, *, card):
         '''Get information about a Clash Royale card.'''
         aliases = {
             "log": "the log", 
@@ -582,33 +599,48 @@ class Clash_Royale:
         if card in aliases:
             card = aliases[card]
         constants = self.bot.constants
-        try:
-            found_card = constants.cards[card]
-        except KeyError:
+
+        found_card = None
+        for c in constants.cards:
+            if c.name.lower() == card.lower():
+                found_card = c
+
+        if found_card is None:
             return await ctx.send("That's not a card!")
+
         em = await embeds.format_card(ctx, found_card)
-        with open(f"data/cards/{card.replace(' ', '-').replace('.','')}.png", 'rb') as c:
-            with open(f"data/cards_ingame/{card.replace(' ', '-').replace('.','')}.png", 'rb') as i:
-                await ctx.send(embed=em, files=[discord.File(c, 'card.png'), discord.File(i, 'ingame.png')])
+        try:
+            with open(f"data/cards/{card.replace(' ', '-').replace('.','')}.png", 'rb') as c:
+                with open(f"data/cards_ingame/{card.replace(' ', '-').replace('.','')}.png", 'rb') as i:
+                    await ctx.send(embed=em, files=[discord.File(c, 'card.png'), discord.File(i, 'ingame.png')])
+        except FileNotFoundError:
+            await ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
 
 
     @commands.command(aliases=['tourneys'])
     @embeds.has_perms(False)
     async def tournaments(self, ctx):
         '''Show a list of open tournaments that you can join!'''
-        async with ctx.session.get(self.url + 'tournaments?appjson=1&refresh=1') as resp:
-            json = await resp.json()
-        em = await embeds.format_tournaments(ctx, json)
-        await ctx.send(embed=em)
+        try:
+            t = await self.cr.get_open_tournaments()
+        except errors.RequestError as e:
+            er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+            )
+            await ctx.send(embed=er)
+        else:
+            em = await embeds_cr_crapi.format_tournaments(ctx, t)
+            await ctx.send(embed=em)
 
     async def format_deck_and_send(self, ctx, profile):
-        deck = profile.current_deck
         author = profile.name
 
         deck_image = await self.bot.loop.run_in_executor(
             None,
             self.get_deck_image,
-            profile, author
+            ctx, profile, author
         )
 
         em = discord.Embed(description=f'[Copy this deck!]({profile.deck_link})', color=embeds.random_color())
@@ -623,7 +655,7 @@ class Clash_Royale:
 
         deck_image.close()
 
-    def get_deck_image(self, profile, deck_author=None):
+    def get_deck_image(self, ctx, profile, deck_author=None):
         """Construct the deck with Pillow and return image."""
 
         deck = profile.current_deck
@@ -654,7 +686,10 @@ class Clash_Royale:
         # cards
         for i, card in enumerate(cards):
             card_image_file = "data/cards/{}.png".format(card)
-            card_image = Image.open(card_image_file)
+            try:
+                card_image = Image.open(card_image_file)
+            except FileNotFoundError:
+                self.bot.loop.create_task(ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`'))
             # size = (card_w, card_h)
             # card_image.thumbnail(size)
             box = (card_x + card_w * i,
@@ -671,7 +706,6 @@ class Clash_Royale:
 
         # text
         # Take out hyphnens and capitlize the name of each card
-        card_names = [string.capwords(c.replace('-', ' ')) for c in cards]
 
         txt = Image.new("RGBA", size)
         txt_name = Image.new("RGBA", (txt_x_cards - 30, size[1]))
