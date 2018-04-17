@@ -107,7 +107,7 @@ class StatsBot(commands.AutoShardedBot):
         self.messages_sent = 0
         self.maintenance_mode = False
         self.psa_message = None
-        self.loop.create_task(self.backup_task())
+        self.loop.create_task(self.backup_task
         self._add_commands()
         self.load_extensions()
 
