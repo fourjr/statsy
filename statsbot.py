@@ -289,12 +289,6 @@ class StatsBot(commands.AutoShardedBot):
         channel = self.get_channel(378546850376056832)
         url = 'https://hastebin.com/documents'
 
-        em = discord.Embed(color=0x00FFFF)
-        em.set_author(
-            name='Tag Backup',
-            icon_url=self.user.avatar_url
-            )
-
         while not self.is_closed():
             with open('data/stats.json') as f:
                 data = f.read()
@@ -304,10 +298,15 @@ class StatsBot(commands.AutoShardedBot):
 
             key = k['key']
 
+            em = discord.Embed(color=0x00FFFF)
+            em.set_author(
+                name='Tag Backup',
+                icon_url=self.user.avatar_url
+            )
             em.description = f'http://hastebin.com/{key}.json'
             await channel.send(embed=em)
             await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json={"server_count": len(self.guilds)}, headers={'Authorization': self.botlist})
-            await asyncio.sleep(36000)
+            await asyncio.sleep(3600)
 
     @commands.command()
     async def ping(self, ctx):
