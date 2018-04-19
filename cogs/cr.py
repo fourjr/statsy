@@ -660,14 +660,13 @@ class Clash_Royale:
             await ctx.send(f'Images not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
             await ctx.send(embed=em)
 
-    @commands.command(alises=['tourney'], hidden=True)
+    @commands.command(aliases=['tourney'])
     @embeds.has_perms(False)
     async def tournament(self, ctx, tag: TagOnly):
-        ## REMOVE BEFORE WROKING
-        return
-        ## LOL ##
+        '''View statistics about a tournament'''
         try:
-            t = await self.cr.get_tournament(tag)
+            async with ctx.typing():
+                t = await self.cr.get_tournament(tag)
         except errors.RequestError as e:
             er = discord.Embed(
                     title=f'Error {e.code}',
@@ -675,8 +674,12 @@ class Clash_Royale:
                     description=e.error
             )
         else:
-            em = await embeds_cr_crapi.format_tournament(ctx, t)
-            await ctx.send(embed=em)
+            ems = await embeds_cr_crapi.format_tournament(ctx, t)
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems
+                )
+            await session.run()
 
     @commands.command(aliases=['tourneys'])
     @embeds.has_perms(False)

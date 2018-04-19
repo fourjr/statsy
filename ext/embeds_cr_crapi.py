@@ -1,11 +1,13 @@
-import discord
-from collections import OrderedDict
-import json
-import random
 import copy
 import datetime
+import json
 import math
+import random
+import re
 import time
+from collections import OrderedDict
+
+import discord
 from discord.ext import commands
 
 images = 'https://RoyaleAPI.github.io/RoyaleAPI-assets/'
@@ -51,6 +53,10 @@ def get_clan_image(p):
     except:
         return 'https://i.imgur.com/Y3uXsgj.png'
 
+def camel_case(text):
+    # from stackoverflow :p
+    return re.sub(r'([a-z])([A-Z])', r'\g<1> \g<2>', text).title()
+
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
         m.score = ((m.donations/5) + ((m.clan_chest_crowns or 0)*10) + (m.trophies/7)) / 3
@@ -71,7 +77,7 @@ async def format_least_valuable(ctx, clan, cache=False):
 
     for m in reversed(to_kick):
         em.add_field(
-            name=f'{m.name} ({m.role.title()})', 
+            name=f'{m.name} ({camel_case(m.role)})', 
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -101,7 +107,7 @@ async def format_most_valuable(ctx, clan, cache=False):
 
     for m in reversed(best):
         em.add_field(
-            name=f'{m.name} ({m.role.title()})', 
+            name=f'{m.name} ({camel_case(m.role)})', 
             value=f"#{m.tag}\n{m.trophies} "
             f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -275,7 +281,7 @@ async def format_members(ctx, c, cache=False):
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge.image)
         em.add_field(
-            name=f'{m.name} ({m.role.title()})', 
+            name=f'{m.name} ({camel_case(m.role.title)})', 
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -606,3 +612,53 @@ async def format_tournaments(ctx, t):
         if i > 6: break
     
     return em
+
+async def format_tournament(ctx, t):
+    page1 = discord.Embed(description = t.description, color=random_color())
+    page1.set_author(name=f"{t.name} (#{t.tag})")
+    page1.set_footer(text='Statsy - Powered by RoyaleAPI.com')
+    page2 = copy.deepcopy(page1)
+    page2.description = 'Top players of this tournament'
+
+    pushers = []
+    for i in range(9):
+        pushers.append(
+            f"**{t.members[i].name}**" 
+            f"\n{t.members[i].score} "
+            f"{emoji(ctx, 'trophy')}\n" 
+            f"#{t.members[i].tag}"
+        )
+
+        timeleft = ''
+        date = datetime.datetime.now() - datetime.datetime.fromtimestamp(t.create_time)
+        seconds = math.floor(date.total_seconds())
+        minutes = max(math.floor(seconds/60), 0)
+        seconds -= minutes*60
+        hours = max(math.floor(minutes/60), 0)
+        minutes -= hours*60
+        if hours > 0: timeleft += f'{hours}h'
+        if minutes > 0: timeleft += f' {minutes}m'
+        if seconds > 0: timeleft += f' {seconds}s'
+
+    fields1 = [
+        ('Type', t.type.title() + ' 📩'),
+        ('Status', camel_case(t.status)),
+        ('Members', f"{t.player_count}/{t.max_capacity} {emoji(ctx, 'clan')}"),
+        ('Time since creation', timeleft)
+    ]
+
+    fields2 = [
+        ("Top Players", '\n\n'.join(pushers[0:3])),
+        ("Top Players", '\n\n'.join(pushers[3:6])),
+        ("Top Players", '\n\n'.join(pushers[6:9]))
+    ]
+
+    for f, v in fields1:
+        page1.add_field(name=f, value=v)
+
+    for f, v in fields2:
+        if v:
+            page2.add_field(name=f, value=v)
+
+    
+    return [page1, page2]
