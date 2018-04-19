@@ -641,7 +641,7 @@ async def format_tournament(ctx, t):
         if seconds > 0: timeleft += f' {seconds}s'
 
     fields1 = [
-        ('Type', t.type.title() + ' 📩'),
+        ('Type', camel_case(t.type) + ' 📩'),
         ('Status', camel_case(t.status)),
         ('Members', f"{t.player_count}/{t.max_capacity} {emoji(ctx, 'clan')}"),
         ('Time since creation', timeleft)
