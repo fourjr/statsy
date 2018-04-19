@@ -19,6 +19,27 @@ import asyncio
 
 shortcuts = {'SA1':'88PYQV', 'SA2':'29UQQ282', 'SA3':'28JU8P0Y', 'SA4':'8PUUGRYG', 'SA5':'8YUU2CQV', 'UNDERBELLY':'2J8UVG99'}
 
+class TagOnly(commands.Converter):
+
+    check = 'PYLQGRJCUV0289'
+
+    def resolve_tag(self, tag):
+        tag = tag.strip('#').upper().replace('O', '0')
+        if tag in shortcuts:
+            tag = shortcuts[tag]
+        if any(i not in self.check for i in tag):
+            return False
+        else:
+            return tag
+
+    async def convert(self, ctx, argument):
+        tag = self.resolve_tag(argument)
+
+        if not tag:
+            raise InvalidTag('Invalid cr-tag passed.')
+        else:
+            return tag
+
 class TagCheck(commands.MemberConverter):
 
     check = 'PYLQGRJCUV0289'
@@ -103,7 +124,7 @@ class Clash_Royale:
         else:
             return tag_or_user
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, aliases=['player'])
     @embeds.has_perms(False)
     async def profile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the clash royale profile of a player.'''
@@ -294,19 +315,41 @@ class Clash_Royale:
     @embeds.has_perms(False)
     async def cards(self, ctx, *, tag_or_user:TagCheck=None):
         '''Get a list of cards the user has and does not have'''
-        async with ctx.channel.typing():
-            tag = await self.resolve_tag(ctx, tag_or_user)
-            url = self.url + 'profile/' + tag
-            headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
-            async with ctx.session.get(url + '?appjson=1&refresh=1', headers=headers) as resp:
-                p = await resp.json()
-            #try:
-            em = await embeds.format_cards(ctx, p)
-            await ctx.send(embed=em)
-            # except AttributeError:
-            #     await ctx.send('Please do the command again to get your latest results.')
-            # else:
-            #     await ctx.send(embed=em)
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        async with ctx.typing():
+            try:
+                profile = await self.cr.get_player(tag)
+            except (errors.NotResponding, errors.ServerError) as e:
+                print(e)
+                try:
+                    url = self.url + 'profile/' + tag
+                    async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
+                        profile = await resp.json()
+                except:
+                    cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
+                    if cached_data:
+                        profile = cached_data
+                        em = await embeds_cr_crapi.format_profile(ctx, profile, cache=True)
+                        await ctx.send(embed=em)
+                    else:
+                        er = discord.Embed(
+                            title=f'Error {e.code}',
+                            color=discord.Color.red(),
+                            description=e.error
+                            )
+                        if ctx.bot.psa_message:
+                            er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                        await ctx.send(embed=er)
+                else:
+                    em = await embeds_cr_statsroyale.format_profile(ctx, profile)
+                    await ctx.send(embed=em)
+            except errors.NotFoundError:
+                await ctx.send('The tag cannot be found!')
+            else:
+                ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
+                em = await embeds_cr_crapi.format_cards(ctx, profile)
+                await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, aliases=['matches'])
     @embeds.has_perms(False)
@@ -616,6 +659,23 @@ class Clash_Royale:
         except FileNotFoundError:
             await ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
 
+    @commands.command(alises=['tourney'], hidden=True)
+    @embeds.has_perms(False)
+    async def tournament(self, ctx, tag: TagOnly):
+        ## REMOVE BEFORE WROKING
+        return
+        ## LOL ##
+        try:
+            t = await self.cr.get_tournament(tag)
+        except errors.RequestError as e:
+            er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+            )
+        else:
+            em = await embeds_cr_crapi.format_tournament(ctx, t)
+            await ctx.send(embed=em)
 
     @commands.command(aliases=['tourneys'])
     @embeds.has_perms(False)

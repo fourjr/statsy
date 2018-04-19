@@ -28,7 +28,7 @@ def emoji(ctx, name):
     if name == 'chestmagic':
         name = 'chestmagical'
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
-    return e
+    return e or name
 
 def cdir(obj):
     return [x for x in dir(obj) if not x.startswith('_')]
@@ -135,22 +135,11 @@ async def format_chests(ctx, p, cache=False):
     em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     return em
 
-async def format_cards(ctx, soup):
+async def format_cards(ctx, p):
     constants = ctx.bot.constants
-    profile = soup.find('div', attrs={'class':'layout__page'}) \
-            .find('div', attrs={'class':'layout__content layout__container'}) \
-            .find('div', attrs={'class':'profile ui__card'})
 
-    name = profile.find('div', attrs={'class':'profileHeader profile__header'}) \
-            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}).getText().strip() \
-            \
-            .strip(profile.find('div', attrs={'class':'profileHeader profile__header'}) \
-            .find('div', attrs={'class':'ui__headerMedium profileHeader__name'}) \
-            .find('span', attrs={'class':'profileHeader__userLevel'}).getText().strip())
-
-    tag = profile.find('div', attrs={'class':'profileTabs profile__tabs'}) \
-            .find('a', attrs={'class':'ui__mediumText ui__link ui__tab '}) \
-            ['href'].strip('/profile/')
+    name = p.name
+    tag = p.tag
 
     rarity = {
         'Common': 1,
@@ -158,63 +147,45 @@ async def format_cards(ctx, soup):
         'Epic': 3,
         'Legendary': 4
     }
-    found_cards = profile.find('div', attrs={'class':'cards__group'}) \
-                .find('div', attrs={'class':'profileCards__cards'}) \
-                .find_all('div')
 
-    notfound_cards = profile.find_all('div', attrs={'class':'cards__group'})[1] \
-                    .find('div', attrs={'class':'profileCards__cards'}) \
-                    .find_all('div')
+    found_cards = p.cards
+    notfound_cards = [i for i in constants.cards if i.id not in [j.id for j in found_cards]]
+
+    found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity])
+    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity])
+
 
     def get_rarity(card):
-        try:
-            return constants.cards[card.find('a')['href'].lower().replace('/card/', '').replace('+', ' ').replace('.', '').replace('-', '')].rarity
-        except TypeError:
-            return 10495
-
-    def get_rarity_s(card):
         for a in constants.cards:
-            if constants.cards[a].raw_data['key'].replace('-', '') == card:
-                return constants.cards[a].rarity
+            if a.key.replace('-', '') == card:
+                return a.rarity
         return 10495
-
-    def key(x):
-        val = get_rarity(x)
-        if val == 10495: return val
-        else: return rarity[val]
-
-    found_cards = sorted(found_cards, key=key)
-    notfound_cards = sorted(notfound_cards, key=key)
 
     fmt = ''
     found_cards_pages = []
-    oldcard = ''
+    oldcard = None
     for card in found_cards:
         if card is None: continue
-        try:
-            txt = card.find('div', attrs={'class':'ui__tooltip ui__tooltipTop ui__tooltipMiddle cards__tooltip'}) \
-            .getText().strip()
-        except:
-            continue
 
-        if get_rarity(oldcard) != get_rarity(card):
+        if oldcard != None and oldcard.rarity != card.rarity:
             try:
-                found_cards_pages.append((fmt, get_rarity_s(fmt.split(':')[1])))
+                found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
             except IndexError:
                 found_cards_pages.append((fmt, fmt.split(':')[0]))
-            fmt = str(emoji(ctx, txt))
+            fmt = str(emoji(ctx, card.name))
         else:
-            fmt += str(emoji(ctx, txt))
+            fmt += str(emoji(ctx, card.name))
+
             if len(fmt) > 1024:
-                fmt = fmt.replace(str(emoji(ctx, txt)), '')
+                fmt = fmt.replace(str(emoji(ctx, card.name)), '')
                 try:
-                    found_cards_pages.append((fmt, get_rarity_s(fmt.split(':')[1])))
+                    found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
                 except IndexError:
                     found_cards_pages.append((fmt, fmt.split(':')[0]))
-                fmt = str(emoji(ctx, txt))
+                fmt = str(emoji(ctx, card.name))
         oldcard = card
     try:
-        found_cards_pages.append((fmt, get_rarity_s(fmt.split(':')[1])))
+        found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
     except IndexError:
         found_cards_pages.append((fmt, fmt.split(':')[0]))
 
@@ -222,16 +193,12 @@ async def format_cards(ctx, soup):
     notfound_cards_pages = []
     for card in notfound_cards:
         if card is None: continue
-        try:
-            txt = card.find('div', attrs={'class':'ui__tooltip ui__tooltipTop ui__tooltipMiddle cards__tooltip'}) \
-            .getText().strip()
-        except:
-            continue
-        fmt += str(emoji(ctx, txt))
+
+        fmt += str(emoji(ctx, card.name))
         if len(fmt) > 1024:
-            fmt = fmt.replace(str(emoji(ctx, txt)), '')
+            fmt = fmt.replace(str(emoji(ctx, card.name)), '')
             found_cards_pages.append(fmt)
-            fmt = str(emoji(ctx, txt))
+            fmt = str(emoji(ctx, card.name))
     notfound_cards_pages.append(fmt)
 
     em = discord.Embed(description='A list of cards this player has.', color=random_color())
