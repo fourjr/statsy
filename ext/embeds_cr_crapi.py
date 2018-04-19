@@ -421,9 +421,9 @@ async def format_profile(ctx, p, cache=False):
     special = get_chests(ctx, p)[1]
 
     try:
-        favourite_card = p.stats.favorite_card.name + ' ' + emoji(ctx, p.stats.favorite_card.key.replace('-', ''))
+        favourite_card = f'{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace("-", ""))}'
     except AttributeError:
-        favourite_card = 'No favourite card :('
+        favourite_card = 'No favourite card {emoji(ctx, "soon")}'
 
     embed_fields = [
         ('Trophies', trophies, True),
