@@ -657,7 +657,8 @@ class Clash_Royale:
                 with open(f"data/cards_ingame/{card.replace(' ', '-').replace('.','')}.png", 'rb') as i:
                     await ctx.send(embed=em, files=[discord.File(c, 'card.png'), discord.File(i, 'ingame.png')])
         except FileNotFoundError:
-            await ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
+            await ctx.send(f'Images not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
+            await ctx.send(embed=em)
 
     @commands.command(alises=['tourney'], hidden=True)
     @embeds.has_perms(False)
@@ -750,13 +751,14 @@ class Clash_Royale:
                 card_image = Image.open(card_image_file)
             except FileNotFoundError:
                 self.bot.loop.create_task(ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`'))
-            # size = (card_w, card_h)
-            # card_image.thumbnail(size)
-            box = (card_x + card_w * i,
-                   card_y,
-                   card_x + card_w * (i + 1),
-                   card_h + card_y)
-            image.paste(card_image, box, card_image)
+            else:
+                # size = (card_w, card_h)
+                # card_image.thumbnail(size)
+                box = (card_x + card_w * i,
+                    card_y,
+                    card_x + card_w * (i + 1),
+                    card_h + card_y)
+                image.paste(card_image, box, card_image)
 
         # elixir
         total_elixir = sum(c.elixir for c in deck)
