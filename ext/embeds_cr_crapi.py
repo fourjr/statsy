@@ -71,7 +71,7 @@ async def format_least_valuable(ctx, clan, cache=False):
 
     for m in reversed(to_kick):
         em.add_field(
-            name=f'{m.name} ({m.role_name})', 
+            name=f'{m.name} ({m.role.title()})', 
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -101,7 +101,7 @@ async def format_most_valuable(ctx, clan, cache=False):
 
     for m in reversed(best):
         em.add_field(
-            name=f'{m.name} ({m.role_name})', 
+            name=f'{m.name} ({m.role.title()})', 
             value=f"#{m.tag}\n{m.trophies} "
             f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
