@@ -85,10 +85,7 @@ class Bot_Related:
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx, *, prefix):
         '''Change the bot prefix for your server.'''
-        id = str(ctx.guild.id)
-        g_config = ctx.load_json('data/guild.json')
-        g_config[id] = prefix
-        ctx.save_json(g_config, 'data/guild.json')
+        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id},{'$set': {'prefix': prefix}}, upsert=True)
         await ctx.send(f'Changed the prefix to: `{prefix}`')
 
     @commands.command(name='bot',aliases=['about', 'info', 'botto'])
@@ -122,8 +119,6 @@ class Bot_Related:
         if days:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-        data = ctx.load_json()
-        saved_tags = len(data['clashroyale'])+len(data['clashofclans']) + len(data['overwatch']) + len(data['brawlstars'])
 
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
@@ -143,7 +138,6 @@ class Bot_Related:
         em.add_field(name='RAM Usage', value=f'{memory_usage:.2f} MiB')
         em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
         em.add_field(name='Commands Run', value=sum(self.bot.commands_used.values()))
-        em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Library', value='discord.py')
         em.add_field(name='Discord', value='[Click Here](https://discord.gg/nBd7cp6)')
         em.add_field(name='Follow us on Twitter!', value='https://twitter.com/StatsyBot', inline=False)
@@ -160,10 +154,9 @@ class Bot_Related:
 
         em = discord.Embed(color=0xf9c93d)
         em.title = 'Restarting Bot'
-        em.description = 'Restarting `stats.service`.'
+        em.description = 'Restarting `Statsy`.'
         await ctx.send(embed=em)
-        command = 'sh ../stats.sh'
-        p = os.system(f'echo a|sudo -S {command}')
+        os.system('pm2 restart Statsy')
 
     @commands.command(hidden=True)
     async def tokenupdate(self, ctx, _token):
@@ -349,7 +342,7 @@ class Bot_Related:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
-                await self.bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{summary}\n------\n{body}')
+                await self.bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{details}')
                 await ctx.send('Suggestion submitted.')
 
         # TODO: make it a public repo # await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
@@ -361,11 +354,11 @@ class Bot_Related:
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
-        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New bug reportfrom {ctx.author.name}', "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New bug report from {ctx.author.name}', "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
-                await bot.get_channel(373646610560712704).send('Bug (APIDOWN)\n\n{summary}\n------\n{body}')
+                await self.bot.get_channel(373646610560712704).send(f'Bug (APIDOWN)\n\n{details}')
                 await ctx.send('Bug reported.')
 
         # TODO: make it a public repo # await ctx.send('Bug reported. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')

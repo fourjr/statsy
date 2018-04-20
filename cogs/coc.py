@@ -36,10 +36,13 @@ class Clash_of_Clans:
         with open('data/config.json') as config:
             self.session = aiohttp.ClientSession(
                 headers={
-                'Authorization': f"Bearer {json.load(config)['coc-token']}"
-                })
+                    'Authorization': f"Bearer {json.load(config)['coc-token']}"
+                }
+            )
         self.conv = TagCheck()
 
+    def __unload(self):
+        self.bot.loop.create_task(self.session.close())
 
     async def get_clan_from_profile(self, ctx, tag, message):
         async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
@@ -56,7 +59,7 @@ class Clash_of_Clans:
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag('clashofclans')
+                tag = await ctx.get_tag('clashofclans')
             except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
                 raise NoTag()
@@ -66,7 +69,7 @@ class Clash_of_Clans:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag('clashofclans', tag_or_user.id)
+                tag = await ctx.get_tag('clashofclans', tag_or_user.id)
             except KeyError:
                 raise NoTag()
             else:
@@ -201,7 +204,7 @@ class Clash_of_Clans:
 
         Ability to save multiple tags coming soon.
         '''
-        ctx.save_tag(tag.replace("#", ""), 'clashofclans')
+        await ctx.save_tag(tag.replace("#", ""), 'clashofclans')
         await ctx.send('Successfuly saved tag.')
 
     @commands.command()

@@ -59,44 +59,21 @@ class CustomContext(commands.Context):
             
         return discord.Color.from_rgb(*color)
 
-    def load_json(self, path=None):
-        with open(path or 'data/stats.json') as f:
-            return json.load(f)
-
-    def save_json(self, data, path=None):
-        with open(path or 'data/stats.json', 'w') as f:
-            f.write(json.dumps(data, indent=4))
-
-    def save_tag(self, tag, game, id=None):
+    async def save_tag(self, tag, game, id=None, *, index = 0):
         id = id or self.author.id
-        data = self.load_json()
-        data[game][str(id)] = [tag]
-        self.save_json(data)
+        await self.bot.mongo.player_tags[game].find_one_and_update({'user_id': id}, {'$set':{'tag': [tag]}}, upsert=True)
 
-    def add_tag(self, tag, game, id=None):
+    async def remove_tag(self, game, id=None):
         id = id or self.author.id
-        data = self.load_json()
-        if str(id) not in data:
-            data[game][str(id)] = []
-        data[game][str(id)].append(tag)
-        self.save_json(data)
+        await self.bot.mongo.player_tags[game].find_one_and_delete({'user_id': id})
 
-    def remove_tag(self, tag, game, id=None):
+    async def get_tag(self, game, id=None):
         id = id or self.author.id
-        data = self.load_json()
-        tags = data[game][str(id)]
-        tags.remove(tag)
-        self.save_json(data)
+        data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
-    def get_tag(self, game, id=None, *, index=0):
-        id = id or self.author.id
-        data = self.load_json()
-        if game not in data:
-            data[game] = {}
-            self.save_json(data, 'data/stats.json')
-            return self.get_tag(game, id)
-        tags = data[game][str(id)]
-        return tags[index]
+        if data is not None:
+            return data['tag']
+        raise KeyError
 
     @staticmethod
     def paginate(text: str):

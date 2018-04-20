@@ -59,7 +59,7 @@ class Brawl_Stars:
     async def resolve_tag(self, ctx, tag_or_user, band=False):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag('brawlstars')
+                tag = await ctx.get_tag('brawlstars')
             except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
                 raise NoTag()
@@ -69,7 +69,7 @@ class Brawl_Stars:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag('brawlstars', tag_or_user.id)
+                tag = await ctx.get_tag('brawlstars', tag_or_user.id)
             except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise NoTag()
@@ -91,7 +91,7 @@ class Brawl_Stars:
         if not tag:
             raise InvalidTag('Invalid tag') 
 
-        ctx.save_tag(tag, 'brawlstars')
+        await ctx.save_tag(tag, 'brawlstars')
 
         await ctx.send('Successfully saved tag.')
 

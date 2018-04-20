@@ -22,28 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-import discord
-import clashroyale
-from abrawlpy import Client as bsClient
-from discord.ext import commands
-from ext.context import CustomContext
-from ext.paginator import PaginatorSession
-from ext import embeds_cr_statsroyale as embeds
-from collections import defaultdict
-from contextlib import redirect_stdout
-import datetime
-import traceback
 import asyncio
-import aiohttp
-import psutil
-import time
-import json
-import sys
-import os
-import re
+import datetime
 import inspect
 import io
+import json
+import os
+import re
+import platform
+import sys
 import textwrap
+import time
+import traceback
+from collections import defaultdict
+from contextlib import redirect_stdout
+
+import aiohttp
+import clashroyale
+import discord
+import psutil
+from abrawlpy import Client as bsClient
+from discord.ext import commands
+from motor.motor_asyncio import AsyncIOMotorClient
+
+from ext import embeds_cr_statsroyale as embeds
+from ext.context import CustomContext
+from ext.paginator import PaginatorSession
+
 
 class crClient(clashroyale.Client):
     def __init__(self, *args, **kwargs):
@@ -93,13 +98,14 @@ class StatsBot(commands.AutoShardedBot):
         168143064517443584
     ]
 
-    def __init__(self):
+    def __init__(self, token=None):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.cr = crClient('9ba015601c85435aa0ac200afc07223e2b1a3190927c4bb19d89fe5f8295d60e',\
             session=self.session, is_async=True, timeout=5)
         self.bs = bsClient('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGlvbiI6MTUxOTc3MDk4ODQ0MywidXNlcklEIjoiMTgwMzE0MzEwMjk4MzA0NTEyIn0.PpwJXH32hyK7_NDUVXYLVFFPIT3fdzhM5YLbMSWw34Q', session=self.session)
         # 4JR's token ^^ 
+        self.mongo = AsyncIOMotorClient('mongodb+srv://statsy:cRh199QzDdKaOhX9@statsy-lpu1v.mongodb.net')
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
@@ -107,9 +113,19 @@ class StatsBot(commands.AutoShardedBot):
         self.messages_sent = 0
         self.maintenance_mode = False
         self.psa_message = None
+        self.dev_mode = platform.system() != 'Linux'
         self.loop.create_task(self.backup_task())
         self._add_commands()
         self.load_extensions()
+
+        token = token or self.token
+        try:
+            self.run(token.strip('"'), bot=True, reconnect=True)
+        except Exception as e:
+            print('Error in starting the bot. Check your token.')
+
+    def __del__(self):
+        self.loop.create_task(self.session.close())
 
     def get_game_emojis(self):
         emojis = []
@@ -154,35 +170,25 @@ class StatsBot(commands.AutoShardedBot):
         except FileNotFoundError:
             return None
 
-    @classmethod
-    def init(bot, token=None):
-        '''Starts the actual bot'''
-        bot = StatsBot()
-        token = token or bot.token
-        try:
-            bot.run(token.strip('"'), bot=True, reconnect=True)
-        except Exception as e:
-            print('Error in starting the bot. Check your token.')
-
     def restart(self):
         '''Forcefully restart the bot.'''
         os.execv(sys.executable, ['python'] + sys.argv)
 
     async def get_prefix(self, message):
         '''Returns the prefix.
-
-        need to switch to a db soon
         '''
 
-        with open('data/guild.json') as f:
-            cfg = json.load(f)
+        if self.dev_mode:
+            return './'
 
-        id = str(getattr(message.guild, 'id', None))
+        id = getattr(message.guild, 'id', None)
+
+        cfg = await self.mongo.config.guilds.find_one({'guild_id': id}) or {}
 
         prefixes = [
             f'<@{self.user.id}> ',
             f'<@!{self.user.id}> ',
-            cfg.get(id, '!')
+            cfg.get('prefix', '!')
             ]
 
         return prefixes
@@ -235,7 +241,7 @@ class StatsBot(commands.AutoShardedBot):
         '''Utilises the CustomContext subclass of discord.Context'''
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
-        if os.name == 'nt' and ctx.guild.id != 345787308282478592:
+        if self.dev_mode and ctx.guild.id != 345787308282478592:
             return
         if ctx.command is None:
             return
@@ -290,22 +296,8 @@ class StatsBot(commands.AutoShardedBot):
         url = 'https://hastebin.com/documents'
 
         while not self.is_closed():
-            with open('data/stats.json') as f:
-                data = f.read()
-
-            async with self.session.post(url=url, data=data) as resp:
-                k = await resp.json()
-
-            key = k['key']
-
-            em = discord.Embed(color=0x00FFFF)
-            em.set_author(
-                name='Tag Backup',
-                icon_url=self.user.avatar_url
-            )
-            em.description = f'http://hastebin.com/{key}.json'
-            await channel.send(embed=em)
-            await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json={"server_count": len(self.guilds)}, headers={'Authorization': self.botlist})
+            server_count = {"server_count": len(self.guilds)}
+            await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': self.botlist})
             await asyncio.sleep(3600)
 
     @commands.command()
@@ -321,4 +313,4 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send(em.title + em.description)
 
 if __name__ == '__main__':
-    StatsBot.init()
+    StatsBot()

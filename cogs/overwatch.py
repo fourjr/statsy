@@ -37,10 +37,15 @@ class Overwatch:
         self.session2 = aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"})
         self.session3 = aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"})
 
+    def __unload(self):
+        self.bot.loop.create_task(self.session.close())
+        self.bot.loop.create_task(self.session2.close())
+        self.bot.loop.create_task(self.session3.close())
+
     async def resolve_tag(self, ctx, tag_or_user):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag('overwatch')
+                tag = await ctx.get_tag('overwatch')
             except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
                 raise NoTag()
@@ -48,7 +53,7 @@ class Overwatch:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag('overwatch', tag_or_user.id)
+                tag = await ctx.get_tag('overwatch', tag_or_user.id)
             except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise NoTag()
@@ -103,7 +108,7 @@ class Overwatch:
 
         Ability to save multiple tags coming soon.
         '''
-        ctx.save_tag(tag.replace("#", "-"), 'overwatch')
+        await ctx.save_tag(tag.replace("#", "-"), 'overwatch')
         await ctx.send('Successfuly saved tag.')
 
 

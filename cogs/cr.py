@@ -103,7 +103,7 @@ class Clash_Royale:
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
             try:
-                tag = ctx.get_tag('clashroyale')
+                tag = await ctx.get_tag('clashroyale')
             except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
                 raise NoTag()
@@ -113,7 +113,7 @@ class Clash_Royale:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = ctx.get_tag('clashroyale', tag_or_user.id)
+                tag = await ctx.get_tag('clashroyale', tag_or_user.id)
             except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise NoTag()
@@ -593,7 +593,7 @@ class Clash_Royale:
         if not tag:
             raise InvalidTag('Invalid tag')
 
-        ctx.save_tag(tag, 'clashroyale')
+        await ctx.save_tag(tag, 'clashroyale')
 
         await ctx.send('Successfully saved tag.')
 
