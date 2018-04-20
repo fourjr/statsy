@@ -85,7 +85,10 @@ class Bot_Related:
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx, *, prefix):
         '''Change the bot prefix for your server.'''
-        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id},{'$set': {'prefix': prefix}}, upsert=True)
+        if prefix == '!':
+            await self.bot.mongo.config.guilds.find_one_and_delete({'guild_id': ctx.guild.id})
+        else:
+            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {'prefix': prefix}}, upsert=True)
         await ctx.send(f'Changed the prefix to: `{prefix}`')
 
     @commands.command(name='bot',aliases=['about', 'info', 'botto'])
