@@ -220,9 +220,10 @@ class StatsBot(commands.AutoShardedBot):
               f'Users: {len(self.users)}\n' \
               '----------------------------'
         print(fmt)
-        channel = self.get_channel(376622292106608640)
         self.game_emojis = self.get_game_emojis()
-        await channel.send(f'```{fmt}```')
+        if not self.dev_mode:
+            channel = self.get_channel(376622292106608640)
+            await channel.send(f'```{fmt}```')
 
     async def on_shard_connect(self, shard_id):
         '''
@@ -270,7 +271,7 @@ class StatsBot(commands.AutoShardedBot):
                     title=f'``Usage: {prefix}{ctx.command.signature}``',
                     description=ctx.command.help)
                 )
-        else:
+        elif not self.dev_mode:
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
             log_channel = self.get_channel(376622292106608640)

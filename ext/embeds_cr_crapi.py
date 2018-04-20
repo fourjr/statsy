@@ -123,7 +123,7 @@ def get_chests(ctx, p):
     special_chests = ['superMagical', 'magical', 'legendary', 'epic', 'giant']
     for i in special_chests:
         e = emoji(ctx, 'chest' + i.lower())
-        special += f"{e}+{p.chest_cycle[i]} "
+        special += f"{e}+{p.chest_cycle[i] + 1} "
     return (chests, special)
 
 async def format_chests(ctx, p, cache=False):
