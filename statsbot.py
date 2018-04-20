@@ -122,7 +122,7 @@ class StatsBot(commands.AutoShardedBot):
         try:
             self.run(token.strip('"'), bot=True, reconnect=True)
         except Exception as e:
-            print('Error in starting the bot. Check your token.')
+            print(f'Error in starting the bot. Check your token.\n{e}')
 
     def __del__(self):
         self.loop.create_task(self.session.close())
@@ -137,7 +137,7 @@ class StatsBot(commands.AutoShardedBot):
 
     def _add_commands(self):
         '''Adds commands automatically'''
-        for name, attr in inspect.getmembers(self):
+        for _, attr in inspect.getmembers(self):
             if isinstance(attr, commands.Command):
                 self.add_command(attr)
 
@@ -148,7 +148,7 @@ class StatsBot(commands.AutoShardedBot):
             try:
                 self.load_extension(f'{path}{extension}')
                 print(f'Loaded extension: {extension}')
-            except Exception as e:
+            except Exception:
                 print(f'LoadError: {extension}')
                 traceback.print_exc()
 
@@ -291,14 +291,21 @@ class StatsBot(commands.AutoShardedBot):
         await self.process_commands(message)
 
     async def backup_task(self):
-        '''Backup tags.'''
+        '''Publish to botlists.'''
         await self.wait_until_ready()
-        channel = self.get_channel(378546850376056832)
-        url = 'https://hastebin.com/documents'
-
         while not self.is_closed():
-            server_count = {"server_count": len(self.guilds)}
+            server_count = {'server_count': len(self.guilds)}
+            # DBL
             await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': self.botlist})
+            # bots.pw
+            await self.session.post('https://bots.discord.pw/api/bots/347006499677143041/stats', json=server_count, headers={
+                'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODAzMTQzMTAyOTgzMDQ1MTIiLCJyYW5kIjo1OSwiaWF0IjoxNTI0MjIxNTg4fQ.2hs1gnQ-w8Rvi_3oNICdX2loVnmVDMAnHAJVGm9Taj8'
+            })
+            # Bots for Discord
+            await self.session.post('https://botsfordiscord.com/api/v1/bots/347006499677143041', json=server_count, headers={
+                'Authorization': '17d4a786d15ee1e134b93a8cf84ff3a3bd025bc3bd94eee328232e1dd3b8d3b140d62d19b485b8309c9d1bd3846fb5ebf78b83111a8700dca22f00963128c52c',
+                'Content-Type': 'application/json'
+            })
             await asyncio.sleep(3600)
 
     @commands.command()

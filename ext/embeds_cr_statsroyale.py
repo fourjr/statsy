@@ -251,7 +251,6 @@ async def format_cards(ctx, p):
     return em
 
 async def format_battles(ctx, p):
-    constants = ctx.bot.constants
     name = p['profile']['name']
     tag = p['profile']['hashtag']
 
