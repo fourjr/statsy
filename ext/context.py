@@ -67,12 +67,12 @@ class CustomContext(commands.Context):
         id = id or self.author.id
         await self.bot.mongo.player_tags[game].find_one_and_delete({'user_id': id})
 
-    async def get_tag(self, game, id=None):
+    async def get_tag(self, game, id=None, *, index = 0):
         id = id or self.author.id
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
         if data is not None:
-            return data['tag']
+            return data['tag'][index]
         raise KeyError
 
     @staticmethod
