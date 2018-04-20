@@ -53,7 +53,7 @@ def get_clan_image(p):
     except:
         return 'https://i.imgur.com/Y3uXsgj.png'
 
-def camel_case(text):
+def camel_case(text: str):
     # from stackoverflow :p
     return re.sub(r'([a-z])([A-Z])', r'\g<1> \g<2>', text).title()
 
