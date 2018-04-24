@@ -40,7 +40,7 @@ shortcuts = {
     # the quest family
     'TQUEST': '2GV80JP',
     'TJOURNEY': '2802UYC2',
-    TIDEA': '2JPPGGJ0'
+    'TIDEA': '2JPPGGJ0'
 }
 
 class TagOnly(commands.Converter):
