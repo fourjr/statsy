@@ -18,11 +18,12 @@ from crasync import errors
 import asyncio
 
 shortcuts = {
-    'SA1':'88PYQV',
-    'SA2':'29UQQ282',
-    'SA3':'28JU8P0Y',
-    'SA4':'8PUUGRYG',
-    'UNDERBELLY':'2J8UVG99'
+    'SA1': '88PYQV',
+    'SA2': '29UQQ282',
+    'SA3': '28JU8P0Y',
+    'SA4': '8PUUGRYG',
+    'UNDERBELLY': '2J8UVG99',
+    'BANANA': '9YOCVVL2'
 }
 
 class TagOnly(commands.Converter):
@@ -30,9 +31,10 @@ class TagOnly(commands.Converter):
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
-        tag = tag.strip('#').upper().replace('O', '0')
+        tag = tag.strip('#').upper()
         if tag in shortcuts:
             tag = shortcuts[tag]
+        tag = tag.replace('O', '0')
         if any(i not in self.check for i in tag):
             return False
         else:
