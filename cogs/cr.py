@@ -17,7 +17,13 @@ import crasync
 from crasync import errors
 import asyncio
 
-shortcuts = {'SA1':'88PYQV', 'SA2':'29UQQ282', 'SA3':'28JU8P0Y', 'SA4':'8PUUGRYG', 'SA5':'8YUU2CQV', 'UNDERBELLY':'2J8UVG99'}
+shortcuts = {
+    'SA1':'88PYQV',
+    'SA2':'29UQQ282',
+    'SA3':'28JU8P0Y',
+    'SA4':'8PUUGRYG',
+    'UNDERBELLY':'2J8UVG99'
+}
 
 class TagOnly(commands.Converter):
 

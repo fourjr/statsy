@@ -281,7 +281,7 @@ async def format_members(ctx, c, cache=False):
             em.set_author(name=f"{c.name} (#{c.tag})")
             em.set_thumbnail(url=c.badge.image)
         em.add_field(
-            name=f'{m.name} ({camel_case(m.role.title)})', 
+            name=f'{m.name} ({camel_case(m.role)})', 
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
@@ -519,26 +519,27 @@ async def format_clan(ctx, c, cache=False):
     donators = []
     ccc = []
 
-    if len(c.members) >= 3:
-        for i in range(3):
-            pushers.append(
-                f"**{c.members[i].name}**" 
-                f"\n{c.members[i].trophies} " 
-                f"{emoji(ctx, 'trophy')}\n" 
-                f"#{c.members[i].tag}"
-                )
-            donators.append(
-                f"**{_donators[i].name}**"
-                f"\n{_donators[i].donations} "
-                f"{emoji(ctx, 'cards')}\n" 
-                f"#{_donators[i].tag}"
-                )
-            ccc.append(
-                f"**{contributors[i].name}**" 
-                f"\n{contributors[i].clan_chest_crowns or 0} " 
-                f"{emoji(ctx, 'crownred')}\n" 
-                f"#{contributors[i].tag}"
-                )
+    for i in range(3):
+        if len(c.members) < i+1:
+            break
+        pushers.append(
+            f"**{c.members[i].name}**" 
+            f"\n{c.members[i].trophies} " 
+            f"{emoji(ctx, 'trophy')}\n" 
+            f"#{c.members[i].tag}"
+            )
+        donators.append(
+            f"**{_donators[i].name}**"
+            f"\n{_donators[i].donations} "
+            f"{emoji(ctx, 'cards')}\n" 
+            f"#{_donators[i].tag}"
+            )
+        ccc.append(
+            f"**{contributors[i].name}**" 
+            f"\n{contributors[i].clan_chest_crowns or 0} " 
+            f"{emoji(ctx, 'crownred')}\n" 
+            f"#{contributors[i].tag}"
+            )
 
     fields1 = [
         ('Type', c.type.title() + ' 📩'),

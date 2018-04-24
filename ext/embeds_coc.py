@@ -223,6 +223,8 @@ async def format_clan(ctx, c):
 
     pushers = []
     for i in range(3):
+        if len(c.members) < i+1:
+            break
         pushers.append(f"**{c['memberList'][i]['name']}**\n{c['memberList'][i]['trophies']} {emoji(ctx, 'trophy')}\n{c['memberList'][i]['tag']}")
 
     _donators = list(reversed(sorted(c['memberList'], key=lambda m: m['donations'])))
