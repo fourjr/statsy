@@ -735,7 +735,7 @@ class Clash_Royale:
         txt_x_cards = 700
         txt_x_elixir = 1872
 
-        bg_image = Image.open("data/deck-bg.png")
+        bg_image = Image.open("data/deck-bg.png").convert("RGBA")
         size = bg_image.size
 
         font_file_regular = "data/fonts/OpenSans-Regular.ttf"
@@ -751,7 +751,7 @@ class Clash_Royale:
         for i, card in enumerate(cards):
             card_image_file = "data/cards/{}.png".format(card)
             try:
-                card_image = Image.open(card_image_file)
+                card_image = Image.open(card_image_file).convert("RGBA")
             except FileNotFoundError:
                 self.bot.loop.create_task(ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`'))
             else:
