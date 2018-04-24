@@ -47,7 +47,7 @@ class Overwatch:
             try:
                 tag = await ctx.get_tag('overwatch')
             except KeyError:
-                await ctx.send('You don\'t have a saved tag.')
+                await ctx.send(f'You don\'t have a saved tag. Save one using {ctx.prefix}owsave <tag>!')
                 raise NoTag()
             else:
                 return tag
