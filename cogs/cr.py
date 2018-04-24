@@ -18,12 +18,21 @@ from crasync import errors
 import asyncio
 
 shortcuts = {
+    # stus army
     'SA1': '88PYQV',
     'SA2': '29UQQ282',
     'SA3': '28JU8P0Y',
     'SA4': '8PUUGRYG',
+    # underbelly
     'UNDERBELLY': '2J8UVG99',
-    'BANANA': '9Y0CVVL2'
+    # dat banana boi
+    'BANANA': '9Y0CVVL2',
+    # the reapers
+    'VOIDER': '99U9Q2Q8',
+    'FLAMER': '22UY8R9Q',
+    'ICYR': 'CJCRRCR',
+    'STORMR': 'UV2C8L2',
+    'NIGHTR': '998V02G2'
 }
 
 class TagOnly(commands.Converter):
