@@ -707,7 +707,9 @@ class Clash_Royale:
             ctx, profile, author
         )
 
-        em = discord.Embed(description=f'[Copy this deck!]({profile.deck_link})', color=embeds.random_color())
+        copydeck = '<:copydeck:376367880289124366>'
+
+        em = discord.Embed(description=f'[Copy this deck! {copydeck}]({profile.deck_link})', color=embeds.random_color())
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
         em.set_author(name=f'{profile.name} (#{profile.tag})', icon_url=embeds_cr_crapi.get_clan_image(profile))
