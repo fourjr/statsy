@@ -123,6 +123,9 @@ class Bot_Related:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
+        games = ('clashroyale', 'brawlstars', 'clashofclans', 'overwatch')
+        saved_tags = sum([await self.bot.mongo.player_tags[i].find().count() for i in games])
+
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
         else:
@@ -141,7 +144,8 @@ class Bot_Related:
         em.add_field(name='RAM Usage', value=f'{memory_usage:.2f} MiB')
         em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
         em.add_field(name='Commands Run', value=sum(self.bot.commands_used.values()))
-        em.add_field(name='Library', value='discord.py')
+        em.add_field(name='Saved Tags', value=saved_tags)
+        em.add_field(name='Library', value='discord.py 1.0.0a')
         em.add_field(name='Discord', value='[Click Here](https://discord.gg/nBd7cp6)')
         em.add_field(name='Follow us on Twitter!', value='https://twitter.com/StatsyBot', inline=False)
         em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
