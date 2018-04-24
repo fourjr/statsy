@@ -23,7 +23,7 @@ shortcuts = {
     'SA3': '28JU8P0Y',
     'SA4': '8PUUGRYG',
     'UNDERBELLY': '2J8UVG99',
-    'BANANA': '9YOCVVL2'
+    'BANANA': '9Y0CVVL2'
 }
 
 class TagOnly(commands.Converter):
