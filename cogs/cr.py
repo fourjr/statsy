@@ -33,6 +33,14 @@ shortcuts = {
     'ICYR': 'CJCRRCR',
     'STORMR': 'UV2C8L2',
     'NIGHTR': '998V02G2'
+    # the parliament hill
+    'MAMBA': '9YC80UQ9',
+    'COLLTONMOUTH': '9JJQLVU8',
+    'SNAKE': '99VPJ29G',
+    # the quest family
+    'TQUEST': '2GV80JP',
+    'TJOURNEY': '2802UYC2',
+    TIDEA': '2JPPGGJ0'
 }
 
 class TagOnly(commands.Converter):
