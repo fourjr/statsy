@@ -28,7 +28,7 @@ shortcuts = {
     # dat banana boi
     'BANANA': '9Y0CVVL2',
     # the reapers
-    'VOIDR': '99U9Q2Q8',
+    'VOIDR': '9L2PLGRR',
     'FLAMER': '22UY8R9Q',
     'ICYR': 'CJCRRCR',
     'STORMR': 'UV2C8L2',
