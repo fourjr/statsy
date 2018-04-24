@@ -12,20 +12,37 @@ import io
 import string
 import os
 
+shortcuts = {}
 
 class TagCheck(commands.MemberConverter):
+
+    check = 'PYLQGRJCUV0289'
+
+    def resolve_tag(self, tag):
+        tag = tag.strip('#').upper().replace('O', '0')
+        if tag in shortcuts:
+            tag = shortcuts[tag]
+        if any(i not in self.check for i in tag):
+            return False
+        else:
+            return tag
 
     async def convert(self, ctx, argument):
         # Try to convert it to a member.
         try:
             user = await super().convert(ctx, argument)
         except commands.BadArgument:
-            pass 
+            pass
         else:
             return user
 
         # Not a user so its a tag.
-        return argument.strip('#').upper()
+        tag = self.resolve_tag(argument)
+
+        if not tag:
+            raise InvalidTag('Invalid coc-tag passed.')
+        else:
+            return tag
 
 class Clash_of_Clans:
 
@@ -204,8 +221,14 @@ class Clash_of_Clans:
 
         Ability to save multiple tags coming soon.
         '''
-        await ctx.save_tag(tag.replace("#", ""), 'clashofclans')
-        await ctx.send('Successfuly saved tag.')
+        tag = self.conv.resolve_tag(tag)
+
+        if not tag:
+            raise InvalidTag('Invalid tag')
+
+        await ctx.save_tag(tag, 'clashofclans')
+
+        await ctx.send('Successfully saved tag.')
 
     @commands.command()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
