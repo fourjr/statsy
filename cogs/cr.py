@@ -32,7 +32,7 @@ shortcuts = {
     'FLAMER': '22UY8R9Q',
     'ICYR': 'CJCRRCR',
     'STORMR': 'UV2C8L2',
-    'NIGHTR': '998V02G2'
+    'NIGHTR': '998V02G2',
     # the parliament hill
     'MAMBA': '9YC80UQ9',
     'COLLTONMOUTH': '9JJQLVU8',
