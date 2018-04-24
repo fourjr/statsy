@@ -124,9 +124,6 @@ class StatsBot(commands.AutoShardedBot):
         except Exception as e:
             print(f'Error in starting the bot. Check your token.\n{e}')
 
-    def __del__(self):
-        self.loop.create_task(self.session.close())
-
     def get_game_emojis(self):
         emojis = []
         for id in self.emoji_servers:

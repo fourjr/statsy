@@ -62,9 +62,10 @@ class TagCheck(commands.MemberConverter):
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
-        tag = tag.strip('#').upper().replace('O', '0')
+        tag = tag.strip('#').upper()
         if tag in shortcuts:
             tag = shortcuts[tag]
+        tag = tag.replace('O', '0')
         if any(i not in self.check for i in tag):
             return False
         else:
