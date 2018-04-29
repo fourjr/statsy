@@ -133,6 +133,8 @@ class Bot_Related:
 
         cbot = '<:certifiedbot:427089403060551700>'
 
+        royaleapi_donate = '[Paypal](https://paypal.me/royaleapi) [Patreon](https://www.patreon.com/RoyaleAPI)'
+
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
         em.add_field(name='Latency', value=f'{self.bot.latency*1000:.2f} ms')
@@ -145,7 +147,8 @@ class Bot_Related:
         em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
         em.add_field(name='Commands Run', value=sum(self.bot.commands_used.values()))
         em.add_field(name='Saved Tags', value=saved_tags)
-        em.add_field(name='Library', value='discord.py 1.0.0a')
+        em.add_field(name='Library', value='discord.py rewrite')
+        em.add_field(name='Donate!', value=f'Support RoyaleAPI: {royaleapi_donate}')
         em.add_field(name='Discord', value='[Click Here](https://discord.gg/nBd7cp6)')
         em.add_field(name='Follow us on Twitter!', value='https://twitter.com/StatsyBot', inline=False)
         em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
