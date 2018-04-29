@@ -133,7 +133,7 @@ class Bot_Related:
 
         cbot = '<:certifiedbot:427089403060551700>'
 
-        royaleapi_donate = '[Paypal](https://paypal.me/royaleapi) [Patreon](https://www.patreon.com/RoyaleAPI)'
+        royaleapi_donate = '[Paypal](https://paypal.me/royaleapi) | [Patreon](https://www.patreon.com/RoyaleAPI)'
 
         em.add_field(name='Current Status', value=str(status).title())
         em.add_field(name='Uptime', value=uptime)
