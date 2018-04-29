@@ -131,7 +131,7 @@ class Bot_Related:
         else:
             em.description = 'Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR.'
 
-        em.descriptiom += \n\n'This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy.'
+        em.description += "\n\nThis content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy." 
 
         cbot = '<:certifiedbot:427089403060551700>'
 
