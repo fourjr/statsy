@@ -403,7 +403,8 @@ Tiny Servers    [ 10+  ]:  {tiny}
 Small Servers   [ 100+ ]:  {small}
 Medium Servers  [ 500+ ]:  {medium}
 Large Servers   [ 1000+]:  {large}
-Massive Servers [ 5000+]:  {massive}```'''))
+Massive Servers [ 5000+]:  {massive}
+Total                  :  {len(self.bot.guilds)}```'''))
 
 def setup(bot):
     c = Bot_Related(bot)
