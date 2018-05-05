@@ -7,7 +7,7 @@ import io
 import os
 import time
 import json
-import crasync
+import clashroyale
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
@@ -102,6 +102,6 @@ class CustomContext(commands.Context):
         elif mode == 'get':
             try:
                 with open(_type + obj + '.json') as f:
-                    return crasync.models.Profile(self.bot.cr, json.load(f))
+                    return clashroyale.models.Player(self.bot.cr, json.load(f))
             except (FileNotFoundError, json.decoder.JSONDecodeError):
                 return False

@@ -17,7 +17,6 @@ import re
 import inspect
 import io
 import textwrap
-import crasync
 
 
 class Bot_Related:

@@ -10,11 +10,10 @@ from ext.paginator import PaginatorSession
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+from clashroyale import errors
 import io
 import string
 import time
-import crasync
-from crasync import errors
 import asyncio
 
 shortcuts = {
