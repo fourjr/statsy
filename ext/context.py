@@ -101,7 +101,7 @@ class CustomContext(commands.Context):
                 pass
         elif mode == 'get':
             try:
-                with open(_type + obj + '.json') as f:
+                with open(_type + tag + '.json') as f:
                     return clashroyale.models.Player(self.bot.cr, json.load(f))
             except (FileNotFoundError, json.decoder.JSONDecodeError):
                 return False
