@@ -81,8 +81,7 @@ class CustomContext(commands.Context):
         try:
             if data['tag'][index] is not None:
                 return data['tag'][index]
-        except TypeError:
-            print('type')
+        except (TypeError, IndexError):
             pass
         raise KeyError
 
