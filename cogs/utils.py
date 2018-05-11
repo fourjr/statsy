@@ -365,7 +365,7 @@ class Bot_Related:
         # TODO: make it a public repo # await ctx.send('Bug reported. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
         await ctx.send(f'Bug Reported. Thanks for the report!')
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def sudo(self, ctx, user: discord.Member, command, *, args=None):
         if ctx.author.id not in self.bot.developers:
             return
