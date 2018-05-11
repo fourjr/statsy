@@ -621,12 +621,12 @@ class Clash_Royale:
     async def save(self, ctx, tag, index=0):
         '''Saves a Clash Royale tag to your discord profile.
         '''
-        tag = self.conv.resolve_tag(ctx, tag)[0]
+        tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
             raise InvalidTag('Invalid tag')
 
-        await ctx.save_tag(tag, 'clashroyale', index=index)
+        await ctx.save_tag(tag[0], 'clashroyale', index=index)
 
         await ctx.send('Successfully saved tag.')
 
