@@ -101,7 +101,7 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self, token=None):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crClient('9ba015601c85435aa0ac200afc07223e2b1a3190927c4bb19d89fe5f8295d60e',\
+        self.cr = crClient(self.config['cr-token'],\
             session=self.session, is_async=True, timeout=5)
         self.bs = bsClient('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGlvbiI6MTUxOTc3MDk4ODQ0MywidXNlcklEIjoiMTgwMzE0MzEwMjk4MzA0NTEyIn0.PpwJXH32hyK7_NDUVXYLVFFPIT3fdzhM5YLbMSWw34Q', session=self.session)
         # 4JR's token ^^ 
@@ -123,6 +123,11 @@ class StatsBot(commands.AutoShardedBot):
             self.run(token.strip('"'), bot=True, reconnect=True)
         except Exception as e:
             print(f'Error in starting the bot. Check your token.\n{e}')
+
+    @property
+    def config(self):
+        with open('data/config.json') as f:
+            return json.load(f)
 
     def get_game_emojis(self):
         emojis = []
