@@ -370,7 +370,7 @@ class Clash_Royale:
                     cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
                     if cached_data:
                         profile = cached_data
-                        em = await embeds_cr_crapi.format_profile(ctx, profile, cache=True)
+                        em = await embeds_cr_crapi.format_cards(ctx, profile, cache=True)
                         await ctx.send(embed=em)
                     else:
                         er = discord.Embed(
@@ -393,7 +393,7 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True, aliases=['matches'])
     @embeds.has_perms(False)
-    async def battles(self, ctx, tag_or_user:TagCheck=None):
+    async def battles(self, ctx, tag_or_user: TagCheck=(None, 0)):
         '''Get the latest 5 battles by the player!'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
