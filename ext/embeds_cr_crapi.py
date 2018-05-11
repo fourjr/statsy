@@ -116,17 +116,17 @@ async def format_most_valuable(ctx, clan, cache=False):
 
     return em
 
-def get_chests(ctx, p):
-    chests = '| '+str(emoji(ctx, 'chest' + p.chest_cycle.upcoming[0].lower())) + ' | '
-    chests += ''.join([str(emoji(ctx, 'chest' + p.chest_cycle.upcoming[x].lower())) for x in range(1,8)])
+def get_chests(ctx, cycle):
+    chests = '| '+str(emoji(ctx, 'chest' + cycle.upcoming[0].lower())) + ' | '
+    chests += ''.join([str(emoji(ctx, 'chest' + cycle.upcoming[x].lower())) for x in range(1,8)])
     special = ''
     special_chests = ['superMagical', 'magical', 'legendary', 'epic', 'giant']
     for i in special_chests:
         e = emoji(ctx, 'chest' + i.lower())
-        special += f"{e}+{p.chest_cycle[i] + 1} "
+        special += f"{e}+{cycle[i] + 1} "
     return (chests, special)
 
-async def format_chests(ctx, p, cache=False):
+async def format_chests(ctx, p, c, cache=False):
     av = get_clan_image(p)
     em = discord.Embed(color=random_color())
     em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
@@ -135,9 +135,9 @@ async def format_chests(ctx, p, cache=False):
     if cache:
         em.description = 'Cached data from ' + \
             timestamp(p.raw_data['updatedTime'])
-    em.set_thumbnail(url=emoji(ctx, 'chest' + p.chest_cycle.upcoming[0].lower()).url)
-    em.add_field(name=f'Chests', value=get_chests(ctx, p)[0])
-    em.add_field(name="Chests Until", value=get_chests(ctx, p)[1])
+    em.set_thumbnail(url=emoji(ctx, 'chest' + c.upcoming[0].lower()).url)
+    em.add_field(name=f'Chests', value=get_chests(ctx, c)[0])
+    em.add_field(name="Chests Until", value=get_chests(ctx, c)[1])
     em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     return em
 
@@ -384,7 +384,7 @@ async def format_card(ctx, c):
     em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     return em
 
-async def format_profile(ctx, p, cache=False):
+async def format_profile(ctx, p, c, cache=False):
 
     av = get_clan_image(p)
     em = discord.Embed(color=random_color())
@@ -398,7 +398,7 @@ async def format_profile(ctx, p, cache=False):
 
     deck = get_deck(ctx, p)
 
-    chests = get_chests(ctx, p)[0]
+    chests = get_chests(ctx, c)[0]
 
     special = ''
     trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
@@ -424,7 +424,7 @@ async def format_profile(ctx, p, cache=False):
     else:
         clan_role = None
 
-    special = get_chests(ctx, p)[1]
+    special = get_chests(ctx, c)[1]
 
     try:
         favourite_card = f"{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace('-', ''))}"

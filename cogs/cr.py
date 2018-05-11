@@ -171,16 +171,17 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_player(tag)
+                cycle = await self.cr.get_player_chests(tag)
             except (errors.NotResponding, errors.ServerError) as e:
                 try:
                     url = self.url + 'profile/' + tag
                     async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                         profile = await resp.json()
                 except:
-                    cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
-                    if cached_data:
-                        profile = cached_data
-                        em = await embeds_cr_crapi.format_profile(ctx, profile, cache=True)
+                    cached_profile = ctx.cache('get', 'clashroyale/profiles', tag)
+                    cached_cycle = ctx.cache('get', 'clashroyale/chests', tag)
+                    if cached_cycle and cached_profile:
+                        em = await embeds_cr_crapi.format_profile(ctx, cached_profile, cached_cycle, cache=True)
                         await ctx.send(embed=em)
                     else:
                         er = discord.Embed(
@@ -198,7 +199,8 @@ class Clash_Royale:
                 await ctx.send('The tag cannot be found!')
             else:
                 ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
-                em = await embeds_cr_crapi.format_profile(ctx, profile)
+                ctx.cache('update', 'clashroyale/chests', cycle.raw_data, tag=tag)
+                em = await embeds_cr_crapi.format_profile(ctx, profile, cycle)
                 await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, alises=['statistics'])
@@ -288,16 +290,17 @@ class Clash_Royale:
         async with ctx.typing():
             try:
                 profile = await self.cr.get_player(tag)
+                cycle = await self.cr.get_player_chests(tag)
             except (errors.NotResponding, errors.ServerError) as e:
                 try:
                     url = self.url + 'profile/' + tag
                     async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                         profile = await resp.json()
                 except:
-                    cached_data = ctx.cache('get', 'clashroyale/profiles', tag)
-                    if cached_data:
-                        profile = cached_data
-                        em = await embeds_cr_crapi.format_chests(ctx, profile, cache=True)
+                    cached_profile = ctx.cache('get', 'clashroyale/profiles', tag)
+                    cached_cycle = ctx.cache('get', 'clashroyale/chests', tag)
+                    if cached_profile and cached_cycle:
+                        em = await embeds_cr_crapi.format_chests(ctx, cached_profile, cached_cycle, cache=True)
                         await ctx.send(embed=em)
                     else:
                         er = discord.Embed(
@@ -315,7 +318,8 @@ class Clash_Royale:
                 await ctx.send('The tag cannot be found!')
             else:
                 ctx.cache('update', 'clashroyale/profiles', profile.raw_data)
-                em = await embeds_cr_crapi.format_chests(ctx, profile)
+                ctx.cache('update', 'clashroyale/chests', cycle.raw_data, tag=tag)
+                em = await embeds_cr_crapi.format_chests(ctx, profile, cycle)
                 await ctx.send(embed=em)
 
     # @commands.group(invoke_without_command=True)
@@ -350,7 +354,7 @@ class Clash_Royale:
 
     @commands.command()
     @embeds.has_perms(False)
-    async def cards(self, ctx, *, tag_or_user:TagCheck=None):
+    async def cards(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Get a list of cards the user has and does not have'''
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
