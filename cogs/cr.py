@@ -628,7 +628,12 @@ class Clash_Royale:
 
         await ctx.save_tag(tag[0], 'clashroyale', index=index)
 
-        await ctx.send('Successfully saved tag.')
+        if index == 0:
+            prompt = f'Check your stats with `{ctx.prefix}profile`!')
+        else:
+            prompt = f'Check your stats with `{ctx.prefix}profile -{index}`!')
+
+        await ctx.send('Successfully saved tag. ' + prompt)
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False, False)
