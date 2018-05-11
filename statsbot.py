@@ -268,7 +268,7 @@ class StatsBot(commands.AutoShardedBot):
                     title=f'``Usage: {prefix}{ctx.command.signature}``',
                     description=ctx.command.help)
                 )
-        elif not self.dev_mode:
+        else:
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
             log_channel = self.get_channel(376622292106608640)
@@ -278,7 +278,8 @@ class StatsBot(commands.AutoShardedBot):
                 title=ctx.message.content)
             em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id} | U: {ctx.author.id}')
             print(error_message, file=sys.stderr)
-            await log_channel.send(embed=em)
+            if not self.dev_mode:
+                await log_channel.send(embed=em)
 
     async def on_message(self, message):
         '''Called when a message is sent/recieved.'''

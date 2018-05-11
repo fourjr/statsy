@@ -61,7 +61,14 @@ class CustomContext(commands.Context):
 
     async def save_tag(self, tag, game, id=None, *, index = 0):
         id = id or self.author.id
-        await self.bot.mongo.player_tags[game].find_one_and_update({'user_id': id}, {'$set':{'tag': [tag]}}, upsert=True)
+        await self.bot.mongo.player_tags[game].find_one_and_update({
+                'user_id': id
+            },
+            {
+                '$set':{f'tag.{index}': tag}
+            },
+            upsert=True
+        )
 
     async def remove_tag(self, game, id=None):
         id = id or self.author.id
@@ -71,8 +78,12 @@ class CustomContext(commands.Context):
         id = id or self.author.id
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
-        if data is not None:
-            return data['tag'][index]
+        try:
+            if data['tag'][index] is not None:
+                return data['tag'][index]
+        except TypeError:
+            print('type')
+            pass
         raise KeyError
 
     @staticmethod

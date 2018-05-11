@@ -54,7 +54,7 @@ class TagOnly(commands.Converter):
         if any(i not in self.check for i in tag):
             return False
         else:
-            return tag
+            return (tag, 0)
 
     async def convert(self, ctx, argument):
         tag = self.resolve_tag(argument)
@@ -68,7 +68,15 @@ class TagCheck(commands.MemberConverter):
 
     check = 'PYLQGRJCUV0289'
 
-    def resolve_tag(self, tag):
+    def resolve_tag(self, ctx, tag):
+        if tag.startswith('-'):
+            try:
+                index = int(tag.replace('-', ''))
+                print(index)
+            except ValueError:
+                pass
+            else:
+                return (ctx.author, index)
         tag = tag.strip('#').upper()
         if tag in shortcuts:
             tag = shortcuts[tag]
@@ -76,19 +84,25 @@ class TagCheck(commands.MemberConverter):
         if any(i not in self.check for i in tag):
             return False
         else:
-            return tag
+            return (tag, 0)
 
     async def convert(self, ctx, argument):
         # Try to convert it to a member.
         try:
-            user = await super().convert(ctx, argument)
+            arg_split = argument.split(' -')
+            user = await super().convert(ctx, arg_split[0])
         except commands.BadArgument:
             pass
         else:
-            return user
+            try:
+                return (user, int(arg_split[1]))
+            except IndexError:
+                return (user, 0)
+            except ValueError:
+                pass
 
         # Not a user so its a tag.
-        tag = self.resolve_tag(argument)
+        tag = self.resolve_tag(ctx, argument)
 
         if not tag:
             raise InvalidTag('Invalid cr-tag passed.')
@@ -125,12 +139,12 @@ class Clash_Royale:
             return p.clan.tag
 
 
-    async def resolve_tag(self, ctx, tag_or_user, clan=False):
+    async def resolve_tag(self, ctx, tag_or_user, *, clan=False, index=0):
         if not tag_or_user:
             try:
-                tag = await ctx.get_tag('clashroyale')
+                tag = await ctx.get_tag('clashroyale', index=index)
             except KeyError:
-                await ctx.send(f'You don\'t have a saved tag. Save one using {ctx.prefix}save <tag>!')
+                await ctx.send(f'You don\'t have a saved tag. Save one using `{ctx.prefix}save <tag>!`')
                 raise NoTag()
             else:
                 if clan is True:
@@ -138,7 +152,7 @@ class Clash_Royale:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = await ctx.get_tag('clashroyale', tag_or_user.id)
+                tag = await ctx.get_tag('clashroyale', tag_or_user.id, index=index)
             except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise NoTag()
@@ -151,15 +165,13 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True, aliases=['player'])
     @embeds.has_perms(False)
-    async def profile(self, ctx, *, tag_or_user: TagCheck=None):
+    async def profile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets the clash royale profile of a player.'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
-
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
         async with ctx.typing():
             try:
                 profile = await self.cr.get_player(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                print(e)
                 try:
                     url = self.url + 'profile/' + tag
                     async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
@@ -191,9 +203,9 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True, alises=['statistics'])
     @embeds.has_perms(False)
-    async def stats(self, ctx, *, tag_or_user: TagCheck=None):
+    async def stats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets the clash royale profile of a player.'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
             try:
@@ -230,9 +242,9 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True, aliases=['season'])
     @embeds.has_perms()
-    async def seasons(self, ctx, *, tag_or_user: TagCheck=None):
+    async def seasons(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets the season results a player.'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         await ctx.trigger_typing()
         try:
@@ -269,9 +281,9 @@ class Clash_Royale:
                 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
-    async def chests(self, ctx, *, tag_or_user: TagCheck=None):
+    async def chests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets the next chests of a player.'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
             try:
@@ -310,7 +322,7 @@ class Clash_Royale:
     # @embeds.has_perms(False)
     # async def offers(self, ctx, *, tag_or_user:TagCheck=None):
     #     '''Get the upcoming offers of a player'''
-    #     tag = await self.resolve_tag(ctx, tag_or_user)
+    #     tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
     #     await ctx.trigger_typing()
     #     try:
     #         profile = await self.cr.get_player(tag)
@@ -340,13 +352,12 @@ class Clash_Royale:
     @embeds.has_perms(False)
     async def cards(self, ctx, *, tag_or_user:TagCheck=None):
         '''Get a list of cards the user has and does not have'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
             try:
                 profile = await self.cr.get_player(tag)
             except (errors.NotResponding, errors.ServerError) as e:
-                print(e)
                 try:
                     url = self.url + 'profile/' + tag
                     async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
@@ -381,7 +392,7 @@ class Clash_Royale:
     async def battles(self, ctx, tag_or_user:TagCheck=None):
         '''Get the latest 5 battles by the player!'''
         async with ctx.channel.typing():
-            tag = await self.resolve_tag(ctx, tag_or_user)
+            tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
             try:
                 b = await self.cr.get_player_battles(tag)
             except (errors.NotResponding, errors.ServerError) as e:
@@ -409,9 +420,9 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
-    async def clan(self, ctx, *, tag_or_user: TagCheck=None):
+    async def clan(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets a clan by tag or by profile. (tagging the user)'''
-        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         await ctx.trigger_typing()
         try:
@@ -422,7 +433,6 @@ class Clash_Royale:
                 async with ctx.session.get(url + '?appjson=1&refresh=1') as resp:
                     clan = await resp.json()
             except Exception as e:
-                print(e)
                 cached_data = ctx.cache('get', 'clashroyale/clans', tag)
                 if cached_data:
                     clan = cached_data
@@ -482,9 +492,9 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
-    async def members(self, ctx, *, tag_or_user: TagCheck=None):
+    async def members(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets all the members of a clan.'''
-        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         await ctx.trigger_typing()
         try:
@@ -542,9 +552,9 @@ class Clash_Royale:
 
     @members.command()
     @embeds.has_perms(False)
-    async def best(self, ctx, *, tag_or_user: TagCheck=None):
+    async def best(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Finds the best members of the clan currently.'''
-        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
@@ -575,9 +585,9 @@ class Clash_Royale:
 
     @members.command()
     @embeds.has_perms(False)
-    async def worst(self, ctx, *, tag_or_user: TagCheck=None):
+    async def worst(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Finds the worst members of the clan currently.'''
-        tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
         async with ctx.typing():
             try:
                 clan = await self.cr.get_clan(tag)
@@ -608,25 +618,23 @@ class Clash_Royale:
 
             
     @commands.command()
-    async def save(self, ctx, *, tag):
+    async def save(self, ctx, tag, index=0):
         '''Saves a Clash Royale tag to your discord profile.
-
-        Ability to save multiple tags coming soon.
         '''
-        tag = self.conv.resolve_tag(tag)
+        tag = self.conv.resolve_tag(ctx, tag)[0]
 
         if not tag:
             raise InvalidTag('Invalid tag')
 
-        await ctx.save_tag(tag, 'clashroyale')
+        await ctx.save_tag(tag, 'clashroyale', index=index)
 
         await ctx.send('Successfully saved tag.')
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False, False)
-    async def deck(self, ctx, *, tag_or_user: TagCheck=None):
+    async def deck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         '''Gets the current deck of a player.'''
-        tag = await self.resolve_tag(ctx, tag_or_user)
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
             try:
@@ -696,7 +704,7 @@ class Clash_Royale:
             er = discord.Embed(
                     title=f'Error {e.code}',
                     color=discord.Color.red(),
-                    description=e.error
+                    description=er.error
             )
         else:
             ems = await embeds_cr_crapi.format_tournament(ctx, t)

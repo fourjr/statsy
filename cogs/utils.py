@@ -1,22 +1,25 @@
-import discord
-from discord.ext import commands
-from collections import defaultdict
-from ext.paginator import PaginatorSession
-from ext import embeds_cr_crapi as embeds
-from contextlib import redirect_stdout
-import datetime
-import traceback
 import asyncio
-import aiohttp
-import psutil
-import time
-import json
-import sys
-import os
-import re
+import copy
+import datetime
 import inspect
 import io
+import json
+import os
+import re
+import sys
 import textwrap
+import time
+import traceback
+from collections import defaultdict
+from contextlib import redirect_stdout
+
+import aiohttp
+import discord
+import psutil
+from discord.ext import commands
+
+from ext import embeds_cr_crapi as embeds
+from ext.paginator import PaginatorSession
 
 
 class Bot_Related:
@@ -168,19 +171,6 @@ class Bot_Related:
         em.description = 'Restarting `Statsy`.'
         await ctx.send(embed=em)
         os.system('pm2 restart Statsy')
-
-    @commands.command(hidden=True)
-    async def tokenupdate(self, ctx, _token):
-        '''Update the bot's botlist token'''
-        if ctx.author.id not in self.bot.developers:
-            return
-        with open('data/config.json') as f:
-            config = json.load(f)
-        config['botlist'] = _token
-        with open('data/config.json', 'w') as f:
-            json.dump(config, f, indent=4)
-        await ctx.send('Updated bot list token, restarting bot.')
-        await ctx.invoke(StatsBot.update)
 
 
     def format_cog_help(self, name, cog, prefix):
@@ -374,6 +364,18 @@ class Bot_Related:
 
         # TODO: make it a public repo # await ctx.send('Bug reported. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
         await ctx.send(f'Bug Reported. Thanks for the report!')
+
+    @commands.command()
+    async def sudo(self, ctx, user: discord.Member, command, *, args=None):
+        if ctx.author.id not in self.bot.developers:
+            return
+        new_ctx = copy.copy(ctx)
+        new_ctx.author = user
+        command = self.bot.get_command(command)
+        if not command:
+            return await ctx.send('Invalid command')
+        args = {j.split(':')[0]: j.split(':')[1] for j in args.split(' ')} if args else {}
+        await new_ctx.invoke(command, **args)
 
     @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
