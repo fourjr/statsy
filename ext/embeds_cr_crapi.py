@@ -607,7 +607,7 @@ async def format_tournaments(ctx, t):
         gold = rewards[t.max_capacity][1]
         cards = rewards[t.max_capacity][0]
 
-        join_link = 'https://link.clashroyale.com/?joinTournament?id=' + t.tag
+        join_link = 'https://fourjr-webserver.herokuapp.com/redirect?url=https://link.clashroyale.com/?joinTournament?id=' + t.tag
         value = f'Time since creation: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n[Join now]({join_link})'
         em.add_field(name=f'{t.name} (#{t.tag})', value=value)
         i += 1
