@@ -79,8 +79,8 @@ class CustomContext(commands.Context):
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
         try:
-            if data['tag'][index] is not None:
-                return data['tag'][index]
+            if data['tag'][str(index)] is not None:
+                return data['tag'][str(index)]
         except (TypeError, IndexError):
             pass
         raise KeyError
