@@ -61,11 +61,21 @@ class CustomContext(commands.Context):
 
     async def save_tag(self, tag, game, id=None, *, index = 0):
         id = id or self.author.id
+        old_data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})or {'tag':[]}
+        old_data['tag'][index] = tag
         await self.bot.mongo.player_tags[game].find_one_and_update({
                 'user_id': id
             },
             {
-                '$set':{f'tag.{index}': tag}
+                '$set':{
+                    '$push': {
+                        '$each': {
+                            'tag': tag
+                        }, {
+                            '$position': index
+                        }
+                    }
+                }
             },
             upsert=True
         )
@@ -79,8 +89,8 @@ class CustomContext(commands.Context):
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
         try:
-            if data['tag'][str(index)] is not None:
-                return data['tag'][str(index)]
+            if data['tag'][index] is not None:
+                return data['tag'][index]
         except (TypeError, IndexError):
             pass
         raise KeyError
