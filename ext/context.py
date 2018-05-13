@@ -73,9 +73,9 @@ class CustomContext(commands.Context):
                             'tag': tag
                         }, {
                             '$position': index
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             },
             upsert=True
         )
