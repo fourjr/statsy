@@ -69,9 +69,8 @@ class CustomContext(commands.Context):
             {
                 '$set':{
                     '$push': {
-                        '$each': {
-                            'tag': tag
-                        }, {
+                        'tag': {
+                            '$each': [tag],
                             '$position': index
                         },
                     },
