@@ -61,8 +61,6 @@ class CustomContext(commands.Context):
 
     async def save_tag(self, tag, game, id=None, *, index = 0):
         id = id or self.author.id
-        old_data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})or {'tag':[]}
-        old_data['tag'][index] = tag
         await self.bot.mongo.player_tags[game].find_one_and_update({
                 'user_id': id
             },
