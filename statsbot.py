@@ -261,10 +261,15 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
         elif isinstance(error, InvalidTag):
             await ctx.send(error.message)
-        elif isinstance(error, NoTag):
+        elif isinstance(error, (NoTag, discord.Forbidden)):
             pass
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(error)
+        elif isinstance(error, commands.BadArgument) and ctx.command.name == 'save':
+            try:
+                await ctx.invoke(ctx.command, tag=ctx.args[2])
+            except Exception as e:
+                await self.on_command_error(ctx, e)
         elif isinstance(error, commands.MissingRequiredArgument):
             prefix = (await self.get_prefix(ctx.message))[2]
             await ctx.send(
@@ -282,9 +287,10 @@ class StatsBot(commands.AutoShardedBot):
                 description=f"```\n{error_message}\n```",
                 title=ctx.message.content)
             em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id} | U: {ctx.author.id}')
-            print(error_message, file=sys.stderr)
             if not self.dev_mode:
                 await log_channel.send(embed=em)
+            else:
+                print(error_message, file=sys.stderr)
 
     async def on_message(self, message):
         '''Called when a message is sent/recieved.'''

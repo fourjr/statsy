@@ -623,12 +623,11 @@ class Clash_Royale:
             
     @commands.command()
     async def save(self, ctx, tag, index=0):
-        '''Saves a Clash Royale tag to your discord profile.
-        '''
+        '''Saves a Clash Royale tag to your discord profile.'''
         tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
-            raise InvalidTag('Invalid tag')
+            raise InvalidTag('Invalid cr-tag passed')
 
         await ctx.save_tag(tag[0], 'clashroyale', index=index)
 

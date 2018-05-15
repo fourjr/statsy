@@ -65,14 +65,12 @@ class CustomContext(commands.Context):
                 'user_id': id
             },
             {
-                #'$set':{
-                    '$push': {
-                        'tag': {
-                            '$each': [tag],
-                            '$position': index
-                        },
+                '$push': {
+                    'tag': {
+                        '$each': [tag],
+                        '$position': index
                     },
-               # },
+                },
             },
             upsert=True
         )
