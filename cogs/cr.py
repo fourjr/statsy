@@ -447,7 +447,7 @@ class Clash_Royale:
                         title=f'Error {e.code}',
                         color=discord.Color.red(),
                         description=e.error
-                            )
+                    )
                     if ctx.bot.psa_message:
                         er.add_field(name='Please Note!', value=ctx.bot.psa_message)
                     await ctx.send(embed=er)
@@ -468,6 +468,30 @@ class Clash_Royale:
                 pages=ems
                 )
             await session.run()
+
+    @commands.group(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
+    @embeds.has_perms()
+    async def clanwar(self, ctx, tag_or_user: TagCheck=(None, 0)):
+        tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
+        async with ctx.typing():
+            try:
+                war = await self.cr.get_clan_war(tag)
+            except (errors.NotResponding, errors.ServerError) as e:
+                    er = discord.Embed(
+                        title=f'Error {e.code}',
+                        color=discord.Color.red(),
+                        description=e.error
+                    )
+                    if ctx.bot.psa_message:
+                        er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
+            else:
+                ems = await embeds_cr_crapi.format_clan_war(ctx, war)
+        session = PaginatorSession(
+                ctx=ctx,
+                pages=ems
+                )
+        await session.run()
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()

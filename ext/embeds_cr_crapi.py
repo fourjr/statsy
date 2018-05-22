@@ -55,7 +55,8 @@ def get_clan_image(p):
 
 def camel_case(text: str):
     # from stackoverflow :p
-    return re.sub(r'([a-z])([A-Z])', r'\g<1> \g<2>', text).title()
+    matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
+    return ' '.join(m.group(0) for m in matches).title()
 
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
@@ -231,7 +232,7 @@ async def format_battles(ctx, battles, cache=False):
             em.set_author(name=f"{name} (#{tag})")
             break
 
-    crapi = 'https://RoyaleApi.com/profile/'
+    crapi = 'https://royaleapi.com/profile/'
 
     em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     if ctx.bot.psa_message:
@@ -253,7 +254,7 @@ async def format_battles(ctx, battles, cache=False):
         try:
             value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].tag}) \n[{b.team[1].name}]({crapi}{b.team[1].tag}) {emoji(ctx, "battle")} [{b.opponent[1].name}]({crapi}{b.opponent[1].tag})**'
         except IndexError:
-            value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].name})**'
+            value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].tag})**'
 
         em.add_field(name=f'{b.type} {emoji(ctx, winner)} {score}', value=value, inline=False)
 
@@ -511,13 +512,11 @@ async def format_clan(ctx, c, cache=False):
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Donators/Contributors for this clan.'
     page1.set_thumbnail(url=c.badge.image)
-    
-    contributors = list(reversed(sorted(c.members, key=lambda x: x.clan_chest_crowns or 0)))
+
     _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
 
     pushers = []
     donators = []
-    ccc = []
 
     for i in range(3):
         if len(c.members) < i+1:
@@ -527,25 +526,18 @@ async def format_clan(ctx, c, cache=False):
             f"\n{c.members[i].trophies} " 
             f"{emoji(ctx, 'trophy')}\n" 
             f"#{c.members[i].tag}"
-            )
+        )
         donators.append(
             f"**{_donators[i].name}**"
             f"\n{_donators[i].donations} "
             f"{emoji(ctx, 'cards')}\n" 
             f"#{_donators[i].tag}"
-            )
-        ccc.append(
-            f"**{contributors[i].name}**" 
-            f"\n{contributors[i].clan_chest_crowns or 0} " 
-            f"{emoji(ctx, 'crownred')}\n" 
-            f"#{contributors[i].tag}"
-            )
+        )
 
     fields1 = [
         ('Type', c.type.title() + ' 📩'),
         ('Score', str(c.score) + ' Trophies ' + str(emoji(ctx, 'trophy'))),
         ('Donations/Week', str(c.donations) + ' Cards ' + str(emoji(ctx, 'cards'))),
-        ('Clan Chest', c.clan_chest.status.title() + ' ' + str(emoji(ctx, 'chestclan'))),
         ('Location', c.location.name + ' 🌎'),
         ('Members', str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}"),
         ('Required Trophies', f"{c.required_score} {emoji(ctx, 'trophy')}"),
@@ -555,8 +547,7 @@ async def format_clan(ctx, c, cache=False):
 
     fields2 = [
         ("Top Players", '\n\n'.join(pushers)),
-        ("Top Donators", '\n\n'.join(donators)),
-        ("Top Contributors", '\n\n'.join(ccc))
+        ("Top Donators", '\n\n'.join(donators))
     ]
 
     for f, v in fields1:
@@ -568,6 +559,67 @@ async def format_clan(ctx, c, cache=False):
 
     
     return [page1, page2]
+
+async def format_clan_war(ctx, w):
+    page1 = discord.Embed(color=random_color())
+    page1.set_author(name=f"{w.clan.name} (#{w.clan.tag})", icon_url=w.clan.badge.image)
+
+    if ctx.bot.psa_message:
+        page1.description = ctx.bot.psa_message
+
+    page2 = copy.deepcopy(page1)
+    return_vals = [page1, page2]
+
+    fields1 = [
+            ('Day', f'{camel_case(w.state)} {emoji(ctx, "clanwar")}'),
+            ('War Throphies', f"{w.clan.war_trophies} Trophies {emoji(ctx, 'wartrophy')}"),
+            ('Participants', f"{w.clan.participants} {emoji(ctx, 'clan')}"),
+            ('Battles Played', f"{w.clan.battles_played} {emoji(ctx, 'battle')}"),
+            ('Wins', f"{w.clan.wins} {emoji(ctx, 'crownblue')}")
+    ]
+
+    if w.state == 'collectionDay':
+        pass
+    elif w.state == 'warDay':
+        fields1.append(('Crowns', f'{w.clan.crowns} {emoji(ctx, "3crown")}'))
+        page3 = copy.deepcopy(page1)
+
+        standings = []
+
+        for i in w.standings:
+            standings.append(
+                f"**{i.name}**"
+                f"\n{i.battles_played} Batles Played {emoji(ctx, 'battle')}"
+                f"\n{i.wins} Wins {emoji(ctx, 'crownblue')}"
+                f"\n{i.crowns} Crowns {emoji(ctx, '3crown')}"
+                f"\n#{i.tag}"
+            )
+
+        page3.add_field(name='Clans Participating', value='\n\n'.join(standings))
+        return_vals.append(page3)
+
+    else:
+        raise NotImplementedError(f'{w.state} not implemented in format_clan_war (L588, ext/embeds_cr_crapi)')
+
+    members = []
+
+    for i in range(3):
+        if len(w.participants) < i+1:
+            break
+        members.append(
+            f"**{w.participants[i].name}**"
+            f"\n{w.participants[i].battles_played} Battles Played {emoji(ctx, 'battle')}"
+            f"\n{w.participants[i].wins} Wins {emoji(ctx, 'crownblue')}"
+            f"\n{w.participants[i].cards_earned} Cards Earned {emoji(ctx, 'cards')}"
+            f"\n#{w.participants[i].tag}"
+        )
+
+    for f, v in fields1:
+        page1.add_field(name=f, value=v)
+
+    page2.add_field(name='Top Fighters', value='\n\n'.join(members))
+
+    return return_vals
 
 async def format_tournaments(ctx, t):
     rewards = {
