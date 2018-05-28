@@ -164,7 +164,7 @@ class Clash_Royale:
             return tag_or_user
 
     async def on_message(self, m):
-        if m.channel.id != 387795598486667264:
+        if self.bot.dev_mode:
             return
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
@@ -196,7 +196,7 @@ class Clash_Royale:
                     except (discord.NotFound, commands.BotMissingPermissions):
                         pass
 
-                    await m.channel.send(embed=em)
+                    await m.channel.send(re.sub(friend_link_pattern, '', m.content), embed=em)
 
                     await asyncio.sleep(0.5)
 
