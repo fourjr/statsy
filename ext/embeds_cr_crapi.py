@@ -567,7 +567,7 @@ async def format_clan_war(ctx, w):
     except AttributeError as e:
         async with ctx.session.post('https://hastebin.com/documents', data=json.dumps(w.raw_data, indent=4)) as resp:
             haste = await resp.json()
-        await ctx.bot.on_command_error(ctx, e, haste['key'])
+        await ctx.bot.on_command_error(ctx, e, 'https://hastebin.com/' + haste['key'])
         return
 
     if ctx.bot.psa_message:
