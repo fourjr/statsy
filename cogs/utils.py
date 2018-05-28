@@ -153,7 +153,7 @@ class Bot_Related:
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Library', value='discord.py rewrite')
         em.add_field(name='Donate!', value=f'Support RoyaleAPI: {royaleapi_donate}')
-        em.add_field(name='Discord', value='[Click Here](https://discord.gg/nBd7cp6)')
+        em.add_field(name='Discord', value='[Click Here](https://discord.gg/cBqsdPt)')
         em.add_field(name='Follow us on Twitter!', value='https://twitter.com/StatsyBot', inline=False)
         em.add_field(name='Upvote This Bot!', value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
         em.set_footer(text=f'Bot ID: {self.bot.user.id}')
