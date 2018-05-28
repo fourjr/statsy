@@ -255,7 +255,7 @@ class StatsBot(commands.AutoShardedBot):
             else:
                 await self.invoke(ctx)
 
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx, error, description=None):
         error = getattr(error, 'original', error)
         if isinstance(error, clashroyale.errors.RequestError):
             await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
@@ -279,6 +279,8 @@ class StatsBot(commands.AutoShardedBot):
                     description=ctx.command.help)
                 )
         else:
+            if not description:
+                await ctx.send('Something went wrong and we are investigating the issue now :(')
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
             log_channel = self.get_channel(376622292106608640)
@@ -288,7 +290,7 @@ class StatsBot(commands.AutoShardedBot):
                 title=ctx.message.content)
             em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id} | U: {ctx.author.id}')
             if not self.dev_mode:
-                await log_channel.send(embed=em)
+                await log_channel.send(description, embed=em)
             else:
                 print(error_message, file=sys.stderr)
 
