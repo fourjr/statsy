@@ -166,6 +166,7 @@ class Clash_Royale:
     async def on_message(self, m):
         if self.bot.dev_mode:
             return
+
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
 

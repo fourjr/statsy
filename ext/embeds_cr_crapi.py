@@ -732,7 +732,7 @@ async def format_friend_link(ctx, p, link, default):
 
     em.description = f'[Add {ctx.author.mention} as friend {emoji(ctx, "clan")}]({link})'
     if default:
-        prefix = await ctx.bot.get_prefix(ctx.message)
+        prefix = (await ctx.bot.get_prefix(ctx.message))[2]
         em.set_footer(text=f'Run `{prefix}friendlink disable` to disable this feature')
     else:
         em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
