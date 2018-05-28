@@ -115,8 +115,10 @@ class StatsBot(commands.AutoShardedBot):
         self.psa_message = None
         self.dev_mode = platform.system() != 'Linux'
         self.loop.create_task(self.backup_task())
-        self._add_commands()
         self.load_extensions()
+
+        self.log_hook = discord.Webhook.partial(450623469495779328, 'fkuVOFeWm79odmlCbtPFA2qNAj80Q5w5UynLDxf0DCDulvgnqSGghVa4y7Ezv9CsegiB', adapter=discord.AsyncWebhookAdapter(self.session))
+        self.error_hook = discord.Webhook.partial(450622686616485888, 'I49t55RNZp-sAQix4Gk4isnnbnuo_CE9nrLfE2EIHiNAsueaex9HYlsIxUINxJD6k80I', adapter=discord.AsyncWebhookAdapter(self.session))
 
         token = token or self.token
         try:
@@ -223,9 +225,8 @@ class StatsBot(commands.AutoShardedBot):
               '----------------------------'
         print(fmt)
         self.game_emojis = self.get_game_emojis()
-        if not self.dev_mode:
-            channel = self.get_channel(376622292106608640)
-            await channel.send(f'```{fmt}```')
+        if self.dev_mode:
+            await self.log_hook.send(f'```{fmt}```')
 
     async def on_shard_connect(self, shard_id):
         '''
@@ -283,14 +284,13 @@ class StatsBot(commands.AutoShardedBot):
                 await ctx.send('Something went wrong and we are investigating the issue now :(')
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
-            log_channel = self.get_channel(376622292106608640)
             em = discord.Embed(
                 color=discord.Color.orange(),
                 description=f"```\n{error_message}\n```",
                 title=ctx.message.content)
             em.set_footer(text=f'G: {ctx.guild.id} | C: {ctx.channel.id} | U: {ctx.author.id}')
             if not self.dev_mode:
-                await log_channel.send(description, embed=em)
+                await self.error_hook.send(content=description, embed=em)
             else:
                 print(error_message, file=sys.stderr)
 
