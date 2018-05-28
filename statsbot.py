@@ -225,7 +225,7 @@ class StatsBot(commands.AutoShardedBot):
               '----------------------------'
         print(fmt)
         self.game_emojis = self.get_game_emojis()
-        if self.dev_mode:
+        if not self.dev_mode:
             await self.log_hook.send(f'```{fmt}```')
 
     async def on_shard_connect(self, shard_id):
