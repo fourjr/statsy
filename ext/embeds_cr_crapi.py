@@ -730,7 +730,7 @@ async def format_friend_link(ctx, p, link, default):
     if not link.startswith('http'):
         link = 'https://' + link
 
-    em.description = f'[Add as friend {emoji(ctx, "clan")}]({link})'
+    em.description = f'[Add {ctx.author.mention} as friend {emoji(ctx, "clan")}]({link})'
     if default:
         prefix = await ctx.bot.get_prefix(ctx.message)
         em.set_footer(text=f'Run `{prefix}friendlink disable` to disable this feature')
