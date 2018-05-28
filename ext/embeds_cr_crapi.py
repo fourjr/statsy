@@ -465,7 +465,6 @@ async def format_profile(ctx, p, c, cache=False):
     return em
 
 async def format_stats(ctx, p, cache=False):
-
     av = get_clan_image(p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
@@ -562,6 +561,7 @@ async def format_clan(ctx, c, cache=False):
 
 async def format_clan_war(ctx, w):
     page1 = discord.Embed(color=random_color())
+    page1.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     try:
         page1.set_author(name=f"{w.clan.name} (#{w.clan.tag})", icon_url=w.clan.badge.image)
     except AttributeError as e:
@@ -722,3 +722,35 @@ async def format_tournament(ctx, t):
 
     
     return [page1, page2]
+
+async def format_friend_link(ctx, p, link, default):
+    
+    av = get_clan_image(p)
+    em = discord.Embed(color=random_color())
+    if not link.startswith('http'):
+        link = 'https://' + link
+
+    em.description = f'[Add as friend {emoji(ctx, "clan")}]({link})'
+    if default:
+        prefix = await ctx.bot.get_prefix(ctx.message)
+        em.set_footer(text=f'Run `{prefix}friendlink disable` to disable this feature')
+    else:
+        em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
+
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
+    em.set_thumbnail(url=images + 'arenas/arena' + str(p.arena.arena_id) + '.png')
+
+    trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
+    deck = get_deck(ctx, p)
+
+
+    embed_fields = [
+        ('Trophies', trophies, True),
+        ('Level', f"{p.stats.level} {emoji(ctx, 'experience')}", True),
+        ('Battle Deck', deck, False)
+        ]
+
+    for n, v, i in embed_fields:
+        em.add_field(name=n, value=v, inline=i)
+
+    return em

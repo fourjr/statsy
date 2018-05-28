@@ -1,20 +1,20 @@
-import discord
-from discord.ext import commands
-#from ext import embeds
-from ext import embeds_cr_crapi
-from ext import embeds_cr_statsroyale
-from ext import embeds_cr_statsroyale as embeds
-import json
-from __main__ import InvalidTag, NoTag
-from ext.paginator import PaginatorSession
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-from clashroyale import errors
+import asyncio
 import io
+import json
+import re
 import string
 import time
-import asyncio
+
+import discord
+from clashroyale import errors
+from discord.ext import commands
+from PIL import Image, ImageDraw, ImageFont
+
+from __main__ import InvalidTag, NoTag
+from ext import embeds_cr_statsroyale as embeds
+#from ext import embeds
+from ext import embeds_cr_crapi
+from ext.paginator import PaginatorSession
 
 shortcuts = {
     # stus army
@@ -162,6 +162,68 @@ class Clash_Royale:
                 return tag
         else:
             return tag_or_user
+
+    async def on_message(self, m):
+        if m.channel.id != 387795598486667264:
+            return
+        guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
+        friend_config = guild_config.get('friend_link')
+
+        default = False
+
+        if friend_config is None and self.bot.get_user(402656158667767808) not in m.guild.members:
+            default = friend_config = True
+
+        if friend_config:
+            ctx = await self.bot.get_context(m)
+            if ctx.command is not None:
+                return
+
+            friend_link_pattern = r'((http(s|):\/\/|)(www\.|)link.clashroyale\.com\/invite\/friend\/en(\/|)(\?|)([A-z]*=[0-z]*(&|))*)'
+            links = re.findall(friend_link_pattern, m.content)
+            if links:
+                for link in links:
+                    link = link[0]
+                    params = {i.split('=')[0]: i.split('=')[1] for i in re.findall(r'[A-z]*=[0-z]*', link)}
+                    try:
+                        profile = await self.cr.get_player(params['tag'])
+                    except errors.ServerError:
+                        return
+
+                    em = await embeds_cr_crapi.format_friend_link(ctx, profile, link, default)
+                    try:
+                        await m.delete()
+                    except (discord.NotFound, commands.BotMissingPermissions):
+                        pass
+
+                    await m.channel.send(embed=em)
+
+                    await asyncio.sleep(0.5)
+
+    @commands.group(invoke_without_command=True)
+    async def friendlink(self, ctx):
+        guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+        friend_config = guild_config.get('friend_link')
+
+        default = False
+
+        if friend_config is None and self.bot.get_user(402656158667767808) not in ctx.guild.members:
+            default = friend_config = True
+        
+        resp = f'Current status: {friend_config}'
+        if default:
+            resp += ' (default)'
+        await ctx.send(resp)
+
+    @friendlink.command()
+    async def enable(self, ctx):
+        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': True}}, upsert=True)
+        await ctx.send('Successfully set friend link to be enabled.')
+
+    @friendlink.command()
+    async def disable(self, ctx):
+        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': False}}, upsert=True)
+        await ctx.send('Successfully set friend link to be disabled.')
 
     @commands.group(invoke_without_command=True, aliases=['player'])
     @embeds.has_perms(False)
