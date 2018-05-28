@@ -188,23 +188,34 @@ class Bot_Related:
 
         maxlen = max(sigs)
 
-        fmt = ''
+        fmt = ['']
+        index = 0
         for cmd in self.bot.commands:
             if cmd.instance is cog:
                 if cmd.hidden:
                     continue
-                fmt += f'`{prefix+cmd.qualified_name:<{maxlen}} '
-                fmt += f'{cmd.short_doc:<{maxlen}}`\n'
+                if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
+                    index += 1
+                    fmt.append('')
+                fmt[index] += f'`{prefix+cmd.qualified_name:<{maxlen}} '
+                fmt[index] += f'{cmd.short_doc:<{maxlen}}`\n'
                 if hasattr(cmd, 'commands'):
                     for c in cmd.commands:
                         branch = '\u200b  └─ ' + c.name
-                        fmt += f"`{branch:<{maxlen+1}} " 
-                        fmt += f"{c.short_doc:<{maxlen}}`\n"
+                        if len(fmt[index] + f"`{branch:<{maxlen+1}} " +  f"{c.short_doc:<{maxlen}}`\n") > 1024:
+                            index += 1
+                            fmt.append('')
+                        fmt[index] += f"`{branch:<{maxlen+1}} "
+                        fmt[index] += f"{c.short_doc:<{maxlen}}`\n"
 
         em = discord.Embed(title=name.replace('_',' '))
         em.color = embeds.random_color()
         em.description = '*'+(self.bot.psa_message or inspect.getdoc(cog))+'*'
-        em.add_field(name='Commands', value=fmt)
+        for n, i in enumerate(fmt):
+            if n == 0:
+                em.add_field(name='Commands', value=i)
+            else:
+                em.add_field(name=u'\u200b', value=i)
         em.set_footer(text=f'Type {prefix}help command for more info on a command.')
 
         return em
@@ -226,7 +237,10 @@ class Bot_Related:
     @commands.command()
     async def help(self, ctx, *, command=None):
         """Shows the help message."""
-        prefix = (await self.bot.get_prefix(ctx.message))[2]
+        try:
+            prefix = (await self.bot.get_prefix(ctx.message))[2]
+        except IndexError:
+            prefix = await self.bot.get_prefix(ctx.message)
 
         if command:
             em = self.format_command_help(command, prefix)

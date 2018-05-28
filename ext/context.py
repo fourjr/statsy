@@ -1,13 +1,16 @@
-import discord
-from discord.ext import commands
 import asyncio
-from colorthief import ColorThief
-from urllib.parse import urlparse
 import io
+import json
 import os
 import time
-import json
+from urllib.parse import urlparse
+
 import clashroyale
+import discord
+import pymongo
+from colorthief import ColorThief
+from discord.ext import commands
+
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
@@ -72,7 +75,8 @@ class CustomContext(commands.Context):
                     },
                 },
             },
-            upsert=True
+            upsert=True,
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
     async def remove_tag(self, game, id=None):

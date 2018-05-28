@@ -203,6 +203,7 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     async def friendlink(self, ctx):
+        '''Check your guild's friend link status'''
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
 
@@ -219,12 +220,14 @@ class Clash_Royale:
     @friendlink.command()
     @commands.has_permissions(manage_guild=True)
     async def enable(self, ctx):
+        '''Enables friend link'''
         await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': True}}, upsert=True)
         await ctx.send('Successfully set friend link to be enabled.')
 
     @friendlink.command()
     @commands.has_permissions(manage_guild=True)
     async def disable(self, ctx):
+        '''Disables friend link'''
         await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': False}}, upsert=True)
         await ctx.send('Successfully set friend link to be disabled.')
 
