@@ -581,7 +581,9 @@ async def format_clan_war(ctx, w):
             ('Wins', f"{w.clan.wins} {emoji(ctx, 'crownblue')}")
     ]
 
-    if w.state == 'collectionDay':
+    if w.state == 'matchmaking':
+        pass
+    elif w.state == 'collectionDay':
         pass
     elif w.state == 'warDay':
         fields1.append(('Crowns', f'{w.clan.crowns} {emoji(ctx, "3crown")}'))
