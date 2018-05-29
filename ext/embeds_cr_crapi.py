@@ -87,7 +87,7 @@ async def format_least_valuable(ctx, clan, cache=False):
     return em
 
 async def format_most_valuable(ctx, clan, cache=False):
-    
+    # TODO CLAN_CHEST_CROWNS
     for m in clan.members:
         m.score = ((m.donations/5) + ((m.clan_chest_crowns or 0)*10) + (m.trophies/7)) / 3
 
@@ -562,16 +562,13 @@ async def format_clan(ctx, c, cache=False):
 async def format_clan_war(ctx, w):
     page1 = discord.Embed(color=random_color())
     page1.set_footer(text='Statsy - Powered by RoyaleAPI.com')
-    try:
-        page1.set_author(name=f"{w.clan.name} (#{w.clan.tag})", icon_url=w.clan.badge.image)
-    except AttributeError as e:
-        async with ctx.session.post('https://hastebin.com/documents', data=json.dumps(w.raw_data, indent=4)) as resp:
-            haste = await resp.json()
-        await ctx.bot.on_command_error(ctx, e, 'https://hastebin.com/' + haste['key'])
-        return
-
     if ctx.bot.psa_message:
         page1.description = ctx.bot.psa_message
+    if w.state == 'notInWar':
+        page1.add_field(name='Day', value=f'{camel_case(w.state)} {emoji(ctx, "clanwar")}')
+        return [page1]
+
+    page1.set_author(name=f"{w.clan.name} (#{w.clan.tag})", icon_url=w.clan.badge.image)
 
     page2 = copy.deepcopy(page1)
     return_vals = [page1, page2]
