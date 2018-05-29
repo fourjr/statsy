@@ -186,6 +186,9 @@ class Bot_Related:
                     for c in cmd.all_commands.values():
                         sigs.append(len('\u200b  └─ ' + c.name)+1)
 
+        if not sigs:
+            return
+
         maxlen = max(sigs)
 
         fmt = ['']
@@ -227,7 +230,7 @@ class Bot_Related:
         if cog is not None:
             return self.format_cog_help(name, cog, prefix)
         cmd = self.bot.get_command(command)
-        if cmd is not None:
+        if cmd is not None and not cmd.hidden:
             return discord.Embed(
                     color=embeds.random_color(),
                     title=f'`{prefix}{cmd.signature}`', 
@@ -252,6 +255,9 @@ class Bot_Related:
         pages = []
 
         for name, cog in sorted(self.bot.cogs.items()):
+            if name == 'Moderation':
+                # hidden cog :p
+                continue
             em = self.format_cog_help(name, cog, prefix)
             pages.append(em)
 
