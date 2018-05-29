@@ -262,7 +262,7 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
         elif isinstance(error, InvalidTag):
             await ctx.send(error.message)
-        elif isinstance(error, (NoTag, discord.Forbidden)):
+        elif isinstance(error, (NoTag, discord.Forbidden, commands.CheckFailure)):
             pass
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(error)
