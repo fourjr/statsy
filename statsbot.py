@@ -116,6 +116,7 @@ class StatsBot(commands.AutoShardedBot):
         self.dev_mode = platform.system() != 'Linux'
         self.loop.create_task(self.backup_task())
         self.load_extensions()
+        self._add_commands()
 
         self.log_hook = discord.Webhook.partial(450623469495779328, 'fkuVOFeWm79odmlCbtPFA2qNAj80Q5w5UynLDxf0DCDulvgnqSGghVa4y7Ezv9CsegiB', adapter=discord.AsyncWebhookAdapter(self.session))
         self.error_hook = discord.Webhook.partial(450622686616485888, 'I49t55RNZp-sAQix4Gk4isnnbnuo_CE9nrLfE2EIHiNAsueaex9HYlsIxUINxJD6k80I', adapter=discord.AsyncWebhookAdapter(self.session))
