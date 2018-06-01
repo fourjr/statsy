@@ -65,11 +65,11 @@ class Fortnite:
             'Authorization': self.token,
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        async with self.session.post('https://fortniteapi.com/api/'  + endpoint, data=urlencode(payload), headers=headers) as resp:
+        async with self.session.post('https://fortnite-public-api.theapinetwork.com/prod09'  + endpoint, data=urlencode(payload), headers=headers) as resp:
             return await resp.json()
 
     async def get_player_uid(self, name):
-        data = await self.post('getUserID', {'username': name})
+        data = await self.post('/users/id', {'username': name})
         return data['uid']
 
     @commands.command()
@@ -82,8 +82,7 @@ class Fortnite:
         async with ctx.typing():
             username = await self.resolve_username(ctx, username, platform)
             uid = await self.get_player_uid(username)
-            player = await self.post('playerData', {'user_id': uid, 'window': 'alltime', 'platform': platform})
-            print(json.dumps(player, indent=4))
+            player = await self.post('/users/public/br_stats_all', {'user_id': uid, 'window': 'alltime', 'platform': platform})
 
             ems = []
             top = {'solo': (10, 25), 'duo': (5, 12), 'squad': (3, 6)}
@@ -101,19 +100,19 @@ class Fortnite:
 
             for n, mode in enumerate(('solo', 'duo', 'squad')):
                 fields = [
-                    ('Score', player['stats'][f'score_{mode}']),
-                    (f'Kills {emoji(ctx, "fnskull")}', player['stats'][f'kills_{mode}']),
-                    ('Total Battles', player['stats'][f'matchesplayed_{mode}']),
-                    (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player['stats'][f'placetop1_{mode}']} ({player['stats'][f'winrate_{mode}']}%)"),
+                    ('Score', player[platform][f'score_{mode}']),
+                    (f'Kills {emoji(ctx, "fnskull")}', player[platform][f'kills_{mode}']),
+                    ('Total Battles', player[platform][f'matchesplayed_{mode}']),
+                    (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player[platform][f'placetop1_{mode}']} ({player[platform][f'winrate_{mode}']}%)"),
                     (f'Top {emoji(ctx, "fnleague")}', 'Top {}: {}\nTop {}: {}'.format(
                             top[mode][0],
-                            player['stats'][f'placetop{top[mode][0]}_{mode}'],
+                            player[platform][f'placetop{top[mode][0]}_{mode}'],
                             top[mode][1],
-                            player['stats'][f'placetop{top[mode][1]}_{mode}']
+                            player[platform][f'placetop{top[mode][1]}_{mode}']
                         )
                     ),
-                    ('Kill Death Ratio', player['stats'][f'kd_{mode}']),
-                    ('Time Played', self.timestamp(player['stats'][f'minutesplayed_{mode}']))
+                    ('Kill Death Ratio', player[platform][f'kd_{mode}']),
+                    ('Time Played', self.timestamp(player[platform][f'minutesplayed_{mode}']))
                 ]
                 ems.append(discord.Embed(description=f'{mode.title()} Statistics', color=random_color()))
                 ems[n+1].set_author(name=player['username'])
