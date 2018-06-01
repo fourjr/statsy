@@ -1,6 +1,7 @@
 import datetime
 import random
 
+import asyncio
 import discord
 from discord.ext import commands
 
@@ -59,6 +60,15 @@ class Moderation:
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
         '''
         await ctx.guild.unban(member, reason=f'{ctx.author}: {reason}')
+
+    @commands.command(hidden=True)
+    async def softban(self, ctx, member: discord.Member, *, reason='Not specified'):
+        '''Softbans a user
+        Only works on the official Statsy support server: https://discord.gg/cBqsdPt
+        '''
+        await member.ban(reason=f'{ctx.author}: {reason}', delete_message_days=0)
+        await asyncio.sleep(0.2)
+        await member.unban(reason=f'{ctx.author}: {reason}')
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

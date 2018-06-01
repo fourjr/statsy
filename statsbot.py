@@ -73,6 +73,12 @@ class InvalidTag(commands.BadArgument):
               '**Numbers:** 0, 2, 8, 9\n' \
               '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
 
+
+class InvalidPlatform(commands.BadArgument):
+    '''Raised when a tag is invalid.'''
+    message = 'Platforms should only be one of the following:\n' \
+              'pc, ps4, xb1'
+
 class NoTag(Exception):
     pass
 
@@ -261,7 +267,7 @@ class StatsBot(commands.AutoShardedBot):
         error = getattr(error, 'original', error)
         if isinstance(error, clashroyale.errors.RequestError):
             await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
-        elif isinstance(error, InvalidTag):
+        elif isinstance(error, (InvalidTag, InvalidPlatform)):
             await ctx.send(error.message)
         elif isinstance(error, (NoTag, discord.Forbidden, commands.CheckFailure)):
             pass

@@ -112,7 +112,7 @@ async def format_profile(ctx, name, p, h):
                 em.set_author(name=f"{name} - {name_dict[hero]} (Competitive)", icon_url=ctx.author.avatar_url)
             else:
                 em.set_author(name=f"{name} - {hero.title()} (Competitive)", icon_url=ctx.author.avatar_url)
-            em.set_thumbnail(url=emoji(ctx, hero).url)
+            em.set_thumbnail(url=getattr(emoji(ctx, hero), 'url', None))
             gen_comp_stats = h["stats"]["competitive"][hero]["general_stats"]
             for stat_name, stat in stats.items():
                 if not gen_comp_stats.get(stat):
@@ -141,7 +141,7 @@ async def format_profile(ctx, name, p, h):
             em.set_author(name=f"{name} - {name_dict[hero]} (Quickplay)", icon_url=ctx.author.avatar_url)
         else:
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
-        em.set_thumbnail(url=emoji(ctx, hero).url)
+        em.set_thumbnail(url=getattr(emoji(ctx, hero), 'url', None))
         gen_quickplay_stats = h["stats"]["quickplay"][hero]["general_stats"]
         for stat_name, stat in stats.items():
             if not gen_quickplay_stats.get(stat):

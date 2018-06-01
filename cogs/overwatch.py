@@ -74,6 +74,8 @@ class Overwatch:
         try:
             async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
                 profile = await p.json()
+                if p.status == 404:
+                    return await ctx.send('The battletag cannot be found! Make sure to include the part after the `#`')
             async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/heroes") as h:
                 heroes = await h.json()
                 if "error" in heroes:
