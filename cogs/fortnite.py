@@ -31,6 +31,7 @@ def emoji(ctx, name):
     return e or name
 
 class Fortnite:
+    """Commands related to the Fortnite game
     def __init__(self, bot):
         self.bot = bot
         self.session = aiohttp.ClientSession(loop=bot.loop)
