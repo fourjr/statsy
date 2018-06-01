@@ -78,7 +78,7 @@ class Fortnite:
         await ctx.send(f'Successfully saved tag. Check your stats with `{ctx.prefix}fnprofile`!')
 
     @commands.command()
-    async def fnprofile(self, ctx, platform: lower=None, *, username: TagOrUser=None):
+    async def fnprofile(self, ctx, platform: lower, *, username: TagOrUser=None):
         async with ctx.typing():
             username = await self.resolve_username(ctx, username, platform)
             uid = await self.get_player_uid(username)
