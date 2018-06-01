@@ -79,6 +79,8 @@ class InvalidPlatform(commands.BadArgument):
     message = 'Platforms should only be one of the following:\n' \
               'pc, ps4, xb1'
 
+from statsbot import InvalidPlatform, InvalidTag
+
 class NoTag(Exception):
     pass
 
