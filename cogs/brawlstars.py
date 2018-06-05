@@ -50,11 +50,19 @@ class Brawl_Stars:
         self.conv = TagCheck()
 
     async def get_band_from_profile(self, ctx, tag, message):
-        profile = await self.bot.bs.get_player(tag)
         try:
-            return profile.band.tag
-        except box.BoxKeyError:
-            return await ctx.send(message)
+            profile = await self.bot.bs.get_player(tag)
+        except abrawlpy.errors.RequestError as e:
+                await ctx.send(embed=discord.Embed(
+                    title=e.code,
+                    description=e.error,
+                    color=0xd22630
+                ))
+        else:
+            try:
+                return profile.band.tag
+            except box.BoxKeyError:
+                return await ctx.send(message)
 
     async def resolve_tag(self, ctx, tag_or_user, band=False):
         if not tag_or_user:
