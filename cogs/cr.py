@@ -485,7 +485,10 @@ class Clash_Royale:
             except errors.NotFoundError:
                 await ctx.send('That tag cannot be found!')
             else:
-                ctx.cache('update', 'clashroyale/battles', {'data':b}, tag=b[0]['team'][0]['tag'])
+                try:
+                    ctx.cache('update', 'clashroyale/battles', {'data':b}, tag=b[0]['team'][0]['tag'])
+                except IndexError:
+                    pass
                 em = await embeds_cr_crapi.format_battles(ctx, b)
                 await ctx.send(embed=em)
 
@@ -540,6 +543,7 @@ class Clash_Royale:
     @commands.group(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
     @embeds.has_perms()
     async def clanwar(self, ctx, tag_or_user: TagCheck=(None, 0)):
+        """Shows your clan clan war statistics"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
         async with ctx.typing():
             try:
@@ -900,7 +904,7 @@ class Clash_Royale:
 
         # elixir
         total_elixir = sum(c.elixir for c in deck)
-        card_count = 8
+        card_count = len(deck)
 
         average_elixir = "{:.3f}".format(total_elixir / card_count)
 

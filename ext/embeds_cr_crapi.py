@@ -204,7 +204,7 @@ async def format_cards(ctx, p):
         fmt += str(emoji(ctx, card.name))
         if len(fmt) > 1024:
             fmt = fmt.replace(str(emoji(ctx, card.name)), '')
-            found_cards_pages.append(fmt)
+            notfound_cards_pages.append(fmt)
             fmt = str(emoji(ctx, card.name))
     notfound_cards_pages.append(fmt)
 
@@ -213,9 +213,15 @@ async def format_cards(ctx, p):
     em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
+
+    paginated_text = ctx.paginate(str(found_cards_pages))
+    for page in paginated_text:
+        await ctx.author.send(page)
+    # DEBUG
     for i, r in found_cards_pages:
         if i:
             em.add_field(name=f'Found Cards ({r})', value=i, inline=False)
+
     for item in notfound_cards_pages:
         if item:
             em.add_field(name='Missing Cards', value=item, inline=False)
@@ -248,7 +254,7 @@ async def format_battles(ctx, battles, cache=False):
             winner = 'crownblue'
         elif b.winner == 0:
             # Draw
-            winner = 'crowngrey'
+            winner = 'crowngray'
         score = f'{b.team_crowns}-{b.opponent_crowns}'
 
         try:
@@ -260,6 +266,8 @@ async def format_battles(ctx, battles, cache=False):
 
         i += 1
         if i > 5: break
+    if not battles:
+        em.add_field(name='No battles', value='Player has not played any battles yet')
     return em
 
 async def format_members(ctx, c, cache=False):
@@ -484,13 +492,18 @@ async def format_stats(ctx, p, cache=False):
     else:
         clan_role = None
 
+    try:
+        favourite_card = f"{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace('-', ''))}"
+    except AttributeError:
+        favourite_card = 'No favourite card :('
+
     embed_fields = [
         ('Trophies', trophies, True),
         ('Level', f"{p.stats.level} {emoji(ctx, 'experience')}", True),
         ('Clan Name', f"{p.clan.name} {emoji(ctx, 'clan')}" if p.clan else None, True),
         ('Clan Tag', f"#{p.clan.tag} {emoji(ctx, 'clan')}" if p.clan else None, True),
         ('Clan Role', f"{clan_role} {emoji(ctx, 'clan')}" if clan_role else None, True),
-        ('Favourite Card', f"{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace('-', ''))}", True),
+        ('Favourite Card', favourite_card, True),
         ('Battle Deck', deck, True)
         ]
 

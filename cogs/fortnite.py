@@ -74,20 +74,26 @@ class Fortnite:
             except json.JSONDecodeError:
                 raise FortniteServerError
 
-    async def get_player_uid(self, name):
+    async def get_player_uid(self, ctx, name):
         data = await self.post('/users/id', {'username': name})
+        if data.get('code') in ('1012', '1006'):
+            await ctx.send('The username cannot be found!')
+            raise NoTag
+
         return data['uid']
 
     @commands.command()
     async def fnsave(self, ctx, platform: lower, *, username: str):
+        """Saves a fortnite tag to your discord profile."""
         await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}')
         await ctx.send(f'Successfully saved tag. Check your stats with `{ctx.prefix}fnprofile`!')
 
     @commands.command()
     async def fnprofile(self, ctx, platform: lower, *, username: TagOrUser=None):
+        """Gets the fortnite profile of a player with a provided platform"""
         async with ctx.typing():
             username = await self.resolve_username(ctx, username, platform)
-            uid = await self.get_player_uid(username)
+            uid = await self.get_player_uid(ctx, username)
             player = await self.post('/users/public/br_stats_all', {'user_id': uid, 'window': 'alltime', 'platform': platform})
 
             ems = []

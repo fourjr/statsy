@@ -83,10 +83,10 @@ class FortniteServerError(Exception):
     '''Raised when the Fortnite API is down'''
     pass
 
-from statsbot import InvalidPlatform, InvalidTag, ServerError
-
 class NoTag(Exception):
     pass
+
+from statsbot import InvalidPlatform, NoTag, InvalidTag, FortniteServerError
 
 class StatsBot(commands.AutoShardedBot):
     '''
