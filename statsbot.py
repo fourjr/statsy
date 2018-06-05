@@ -258,8 +258,6 @@ class StatsBot(commands.AutoShardedBot):
         '''Utilises the CustomContext subclass of discord.Context'''
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
-        if self.dev_mode and ctx.guild.id != 345787308282478592 and ctx.guild.id != 444482551139008522:
-            return
         if ctx.command is None:
             return
         else:
