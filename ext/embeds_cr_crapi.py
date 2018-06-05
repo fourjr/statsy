@@ -441,6 +441,7 @@ async def format_profile(ctx, p, c, cache=False):
         ('Games Played', f"{p.games.total} {emoji(ctx, 'battle')}", True),
         ('Wins/Losses/Draws', f"{p.games.wins}/{p.games.losses}/{p.games.draws} {emoji(ctx, 'battle')}", True),
         ('Three Crown Wins', f"{p.stats.three_crown_wins} {emoji(ctx, '3crown')}", True),
+        ('War Day Wins', f"{p.games.war_day_wins} {emoji(ctx, 'clanwar')}", True),
         ('Favourite Card', favourite_card, True),
         ('Tournament Cards Won', f"{p.stats.tournament_cards_won} {emoji(ctx, 'cards')}", True),
         ('Challenge Cards Won', f"{p.stats.challenge_cards_won} {emoji(ctx, 'cards')}", True),
