@@ -79,7 +79,11 @@ class InvalidPlatform(commands.BadArgument):
     message = 'Platforms should only be one of the following:\n' \
               'pc, ps4, xb1'
 
-from statsbot import InvalidPlatform, InvalidTag
+class FortniteServerError(Exception):
+    '''Raised when the Fortnite API is down'''
+    pass
+
+from statsbot import InvalidPlatform, InvalidTag, ServerError
 
 class NoTag(Exception):
     pass
@@ -267,8 +271,8 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_command_error(self, ctx, error, description=None):
         error = getattr(error, 'original', error)
-        if isinstance(error, clashroyale.errors.RequestError):
-            await ctx.send('CR Commands are temporarily down due to the API. Give us a bit.')
+        if isinstance(error, FortniteServerError):
+            await ctx.send('Fortnite API is currently undergoing maintenance. Please try again later.')
         elif isinstance(error, (InvalidTag, InvalidPlatform)):
             await ctx.send(error.message)
         elif isinstance(error, (NoTag, discord.Forbidden, commands.CheckFailure)):

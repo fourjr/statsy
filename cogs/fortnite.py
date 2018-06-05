@@ -7,7 +7,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from statsbot import NoTag, InvalidPlatform
+from statsbot import NoTag, InvalidPlatform, FortniteServerError
 from ext.paginator import PaginatorSession
 
 class TagOrUser(commands.MemberConverter):
@@ -66,7 +66,12 @@ class Fortnite:
             'Content-Type': 'application/x-www-form-urlencoded'
         }
         async with self.session.post('https://fortnite-public-api.theapinetwork.com/prod09'  + endpoint, data=urlencode(payload), headers=headers) as resp:
-            return await resp.json()
+            if resp.status != 200:
+                raise FortniteServerError
+            try:
+                return await resp.json()
+            except json.JSONDecodeError:
+                raise FortniteServerError
 
     async def get_player_uid(self, name):
         data = await self.post('/users/id', {'username': name})
