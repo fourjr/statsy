@@ -87,6 +87,8 @@ class Bot_Related:
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx, *, prefix):
         '''Change the bot prefix for your server.'''
+        if not ctx.guild:
+            return await ctx.send("Changing prefix isn't allowed in DMs")
         if prefix == '!':
             await self.bot.mongo.config.guilds.find_one_and_delete({'guild_id': ctx.guild.id})
         else:
@@ -98,7 +100,7 @@ class Bot_Related:
         '''Shows information and stats about the bot.'''
         em = discord.Embed()
         em.timestamp = datetime.datetime.utcnow()
-        status = str(ctx.guild.me.status)
+        status = str(getattr(ctx.guild, 'me', self.bot.guilds[0].me).status)
         if status == 'online':
             em.set_author(name="Bot Information", icon_url='https://i.imgur.com/wlh1Uwb.png')
             em.color = discord.Color.green()
