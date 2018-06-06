@@ -1,4 +1,4 @@
-'''
+"""
 MIT License
 
 Copyright (c) 2017 grokkers
@@ -20,7 +20,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import asyncio
 import datetime
@@ -67,7 +67,7 @@ class crClient(clashroyale.Client):
     #         return ret
 
 class InvalidTag(commands.BadArgument):
-    '''Raised when a tag is invalid.'''
+    """Raised when a tag is invalid."""
 
     message = 'Player tags should only contain these characters:\n' \
               '**Numbers:** 0, 2, 8, 9\n' \
@@ -75,12 +75,12 @@ class InvalidTag(commands.BadArgument):
 
 
 class InvalidPlatform(commands.BadArgument):
-    '''Raised when a tag is invalid.'''
+    """Raised when a tag is invalid."""
     message = 'Platforms should only be one of the following:\n' \
               'pc, ps4, xb1'
 
 class FortniteServerError(Exception):
-    '''Raised when the Fortnite API is down'''
+    """Raised when the Fortnite API is down"""
     pass
 
 class NoTag(Exception):
@@ -89,9 +89,9 @@ class NoTag(Exception):
 from statsbot import InvalidPlatform, NoTag, InvalidTag, FortniteServerError
 
 class StatsBot(commands.AutoShardedBot):
-    '''
+    """
     Custom client for statsy made by Kyber
-    '''
+    """
     emoji_servers = [
         376364364636094465,
         376368487037140992,
@@ -153,13 +153,13 @@ class StatsBot(commands.AutoShardedBot):
         return emojis
 
     def _add_commands(self):
-        '''Adds commands automatically'''
+        """Adds commands automatically"""
         for _, attr in inspect.getmembers(self):
             if isinstance(attr, commands.Command):
                 self.add_command(attr)
 
     def load_extensions(self, cogs=None, path='cogs.'):
-        '''Loads the default set of extensions or a seperate one if given'''
+        """Loads the default set of extensions or a seperate one if given"""
         base_extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         for extension in cogs or base_extensions:
             try:
@@ -171,7 +171,7 @@ class StatsBot(commands.AutoShardedBot):
 
     @property
     def token(self):
-        '''Returns your token wherever it is'''
+        """Returns your token wherever it is"""
         try:
             with open('data/config.json') as f:
                 return json.load(f)['token'].strip('"')
@@ -180,7 +180,7 @@ class StatsBot(commands.AutoShardedBot):
 
     @property
     def botlist(self):
-        '''Returns your botlist token wherever it is'''
+        """Returns your botlist token wherever it is"""
         try:
             with open('data/config.json') as f:
                 return json.load(f)['botlist'].strip('"')
@@ -188,12 +188,12 @@ class StatsBot(commands.AutoShardedBot):
             return None
 
     def restart(self):
-        '''Forcefully restart the bot.'''
+        """Forcefully restart the bot."""
         os.execv(sys.executable, ['python'] + sys.argv)
 
     async def get_prefix(self, message):
-        '''Returns the prefix.
-        '''
+        """Returns the prefix.
+        """
 
         if self.dev_mode:
             return './'
@@ -206,15 +206,15 @@ class StatsBot(commands.AutoShardedBot):
             f'<@{self.user.id}> ',
             f'<@!{self.user.id}> ',
             cfg.get('prefix', '!')
-            ]
+        ]
 
         return prefixes
 
     async def on_connect(self):
-        '''
+        """
         Called when the bot has established a
         gateway connection with discord
-        '''
+        """
         print('----------------------------')
         print('StatsBot connected!')
         print('----------------------------')
@@ -224,10 +224,10 @@ class StatsBot(commands.AutoShardedBot):
             self.bsconstants = json.load(f)
 
     async def on_ready(self):
-        '''
+        """
         Called when guild streaming is complete
         and the client's internal cache is ready.
-        '''
+        """
         fmt = 'StatsBot is ready!\n' \
               '----------------------------\n' \
               f'Logged in as: {self.user}\n' \
@@ -242,20 +242,20 @@ class StatsBot(commands.AutoShardedBot):
             await self.log_hook.send(f'```{fmt}```')
 
     async def on_shard_connect(self, shard_id):
-        '''
+        """
         Called when a shard has successfuly
         connected to the gateway.
-        '''
+        """
         print(f'Shard `{shard_id}` ready!')
         print('----------------------------')
 
     async def on_command(self, ctx):
-        '''Called when a command is invoked.'''
+        """Called when a command is invoked."""
         cmd = ctx.command.qualified_name.replace(' ', '_')
         self.commands_used[cmd] += 1
 
     async def process_commands(self, message):
-        '''Utilises the CustomContext subclass of discord.Context'''
+        """Utilises the CustomContext subclass of discord.Context"""
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
         if ctx.command is None:
@@ -306,14 +306,14 @@ class StatsBot(commands.AutoShardedBot):
                 print(error_message, file=sys.stderr)
 
     async def on_message(self, message):
-        '''Called when a message is sent/recieved.'''
+        """Called when a message is sent/recieved."""
         self.messages_sent += 1
         if message.author.bot:
             return
         await self.process_commands(message)
 
     async def backup_task(self):
-        '''Publish to botlists.'''
+        """Publish to botlists."""
         await self.wait_until_ready()
         while not self.is_closed():
             server_count = {'server_count': len(self.guilds)}

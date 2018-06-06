@@ -12,7 +12,7 @@ def listget(l: list, index: int, default=None):
         return default
 
 class Moderation:
-    '''These commands only work on the official Statsy support server: https://discord.gg/cBqsdPt'''
+    """These commands only work on the official Statsy support server: https://discord.gg/cBqsdPt"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -34,38 +34,38 @@ class Moderation:
 
     @commands.command(hidden=True)
     async def warn(self, ctx, member: discord.Member, *, reason):
-        '''Warns a user
+        """Warns a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
-        '''
+        """
         pass
 
     @commands.command(hidden=True)
     async def kick(self, ctx, member: discord.Member, *, reason='Not specified'):
-        '''Kicks a user
+        """Kicks a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
-        '''
+        """
         await member.kick(reason=f'{ctx.author}: {reason}')
 
     @commands.command(hidden=True)
     async def ban(self, ctx, member: discord.User, days=7, *, reason='Not specified'):
-        '''Bans a user
+        """Bans a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
-        '''
+        """
         await ctx.guild.ban(member, reason=f'{ctx.author}: {reason}', delete_message_days=days)
 
 
     @commands.command(hidden=True)
     async def unban(self, ctx, member: discord.User, *, reason='Not specified'):
-        '''Unbans a user
+        """Unbans a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
-        '''
+        """
         await ctx.guild.unban(member, reason=f'{ctx.author}: {reason}')
 
     @commands.command(hidden=True)
     async def softban(self, ctx, member: discord.Member, *, reason='Not specified'):
-        '''Softbans a user
+        """Softbans a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
-        '''
+        """
         await member.ban(reason=f'{ctx.author}: {reason}', delete_message_days=0)
         await asyncio.sleep(0.2)
         await member.unban(reason=f'{ctx.author}: {reason}')

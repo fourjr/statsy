@@ -23,7 +23,7 @@ from ext.paginator import PaginatorSession
 
 
 class Bot_Related:
-    '''Commands that pertain to bot utility.'''
+    """Commands that pertain to bot utility."""
     def __init__(self, bot):
         self.bot = bot
 
@@ -86,7 +86,7 @@ class Bot_Related:
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx, *, prefix):
-        '''Change the bot prefix for your server.'''
+        """Change the bot prefix for your server."""
         if not ctx.guild:
             return await ctx.send("Changing prefix isn't allowed in DMs")
         if prefix == '!':
@@ -97,7 +97,7 @@ class Bot_Related:
 
     @commands.command(name='bot',aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
-        '''Shows information and stats about the bot.'''
+        """Shows information and stats about the bot."""
         em = discord.Embed()
         em.timestamp = datetime.datetime.utcnow()
         status = str(getattr(ctx.guild, 'me', self.bot.guilds[0].me).status)
@@ -164,7 +164,7 @@ class Bot_Related:
 
     @commands.command(hidden=True)
     async def restart(self, ctx):
-        '''Restarts the bot.'''
+        """Restarts the bot."""
         if ctx.author.id not in self.bot.developers:
             return
 
@@ -176,7 +176,7 @@ class Bot_Related:
 
 
     def format_cog_help(self, name, cog, prefix):
-        '''Formats the text for a cog help'''
+        """Formats the text for a cog help"""
         sigs = []
 
         for cmd in self.bot.commands:
@@ -226,7 +226,7 @@ class Bot_Related:
         return em
 
     def format_command_help(self, command, prefix):
-        '''Formats command help.'''
+        """Formats command help."""
         name = command.replace(' ', '_')
         cog = self.bot.cogs.get(name)
         if cog is not None:
@@ -357,7 +357,7 @@ class Bot_Related:
     
     @commands.command()
     async def suggest(self, ctx, *, details:str):
-        '''Suggest a game! Or a feature!'''
+        """Suggest a game! Or a feature!"""
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
@@ -373,7 +373,7 @@ class Bot_Related:
 
     @commands.command()
     async def bug(self, ctx, *, details:str):
-        '''Report a bug!'''
+        """Report a bug!"""
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
@@ -421,14 +421,14 @@ class Bot_Related:
             elif len(guild.members) < 5000:
                 large += 1
             else: massive += 1
-        await ctx.send(textwrap.dedent(f'''```css
+        await ctx.send(textwrap.dedent(f"""```css
 Nano Servers    [ <10  ]:  {nano}
 Tiny Servers    [ 10+  ]:  {tiny}
 Small Servers   [ 100+ ]:  {small}
 Medium Servers  [ 500+ ]:  {medium}
 Large Servers   [ 1000+]:  {large}
 Massive Servers [ 5000+]:  {massive}
-Total                   :  {len(self.bot.guilds)}```'''))
+Total                   :  {len(self.bot.guilds)}```"""))
 
 def setup(bot):
     c = Bot_Related(bot)

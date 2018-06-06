@@ -28,7 +28,7 @@ class TagCheck(commands.MemberConverter):
         return argument.replace("#", "-")
 
 class Overwatch:
-    '''Commands relating to the Overwatch game.'''
+    """Commands relating to the Overwatch game."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -64,7 +64,7 @@ class Overwatch:
 
     @commands.group(invoke_without_command=True)
     async def owprofile(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the Overwatch profile of a player.'''
+        """Gets the Overwatch profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user)
         tag = tag.replace('#', '-')
         ems = []
@@ -106,10 +106,10 @@ class Overwatch:
             
     @commands.command()
     async def owsave(self, ctx, *, tag):
-        '''Saves a Overwatch tag to your discord.
+        """Saves a Overwatch tag to your discord.
 
         Ability to save multiple tags coming soon.
-        '''
+        """
         await ctx.save_tag(tag.replace("#", "-"), 'overwatch')
         await ctx.send('Successfuly saved tag.')
 

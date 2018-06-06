@@ -111,7 +111,7 @@ class TagCheck(commands.MemberConverter):
 
 class Clash_Royale:
 
-    '''Commands relating to the Clash Royale game made by supercell.'''
+    """Commands relating to the Clash Royale game made by supercell."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -203,7 +203,7 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     async def friendlink(self, ctx):
-        '''Check your guild's friend link status'''
+        """Check your guild's friend link status"""
         if not ctx.guild:
             return await ctx.send("Friend link is always disabled in DMs.")
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
@@ -222,7 +222,7 @@ class Clash_Royale:
     @friendlink.command()
     @commands.has_permissions(manage_guild=True)
     async def enable(self, ctx):
-        '''Enables friend link'''
+        """Enables friend link"""
         if not ctx.guild:
             return await ctx.send("Configuring friend link status isn't allowed in DMs")
         await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': True}}, upsert=True)
@@ -231,7 +231,7 @@ class Clash_Royale:
     @friendlink.command()
     @commands.has_permissions(manage_guild=True)
     async def disable(self, ctx):
-        '''Disables friend link'''
+        """Disables friend link"""
         if not ctx.guild:
             return await ctx.send("Configuring friend link status isn't allowed in DMs")
         await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': False}}, upsert=True)
@@ -240,7 +240,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True, aliases=['player'])
     @embeds.has_perms(False)
     async def profile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets the clash royale profile of a player.'''
+        """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
         async with ctx.typing():
             try:
@@ -280,7 +280,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True, alises=['statistics'])
     @embeds.has_perms(False)
     async def stats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets the clash royale profile of a player.'''
+        """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
@@ -319,7 +319,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True, aliases=['season'])
     @embeds.has_perms()
     async def seasons(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets the season results a player.'''
+        """Gets the season results a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         await ctx.trigger_typing()
@@ -358,7 +358,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
     async def chests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets the next chests of a player.'''
+        """Gets the next chests of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
@@ -399,7 +399,7 @@ class Clash_Royale:
     # @commands.group(invoke_without_command=True)
     # @embeds.has_perms(False)
     # async def offers(self, ctx, *, tag_or_user:TagCheck=None):
-    #     '''Get the upcoming offers of a player'''
+    #     """Get the upcoming offers of a player"""
     #     tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
     #     await ctx.trigger_typing()
     #     try:
@@ -429,7 +429,7 @@ class Clash_Royale:
     @commands.command()
     @embeds.has_perms(False)
     async def cards(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Get a list of cards the user has and does not have'''
+        """Get a list of cards the user has and does not have"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
@@ -468,7 +468,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True, aliases=['matches'])
     @embeds.has_perms(False)
     async def battles(self, ctx, tag_or_user: TagCheck=(None, 0)):
-        '''Get the latest 5 battles by the player!'''
+        """Get the latest 5 battles by the player!"""
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
             try:
@@ -502,7 +502,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
     async def clan(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets a clan by tag or by profile. (tagging the user)'''
+        """Gets a clan by tag or by profile. (tagging the user)"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         await ctx.trigger_typing()
@@ -574,7 +574,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
     async def topclans(self, ctx):
-        '''Returns the global top 50 clans.'''
+        """Returns the global top 50 clans."""
 
         await ctx.trigger_typing()
         try:
@@ -599,7 +599,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
     async def members(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets all the members of a clan.'''
+        """Gets all the members of a clan."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         await ctx.trigger_typing()
@@ -659,7 +659,7 @@ class Clash_Royale:
     @members.command()
     @embeds.has_perms(False)
     async def best(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Finds the best members of the clan currently.'''
+        """Finds the best members of the clan currently."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
         async with ctx.typing():
             try:
@@ -692,7 +692,7 @@ class Clash_Royale:
     @members.command()
     @embeds.has_perms(False)
     async def worst(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Finds the worst members of the clan currently.'''
+        """Finds the worst members of the clan currently."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
         async with ctx.typing():
             try:
@@ -725,7 +725,7 @@ class Clash_Royale:
             
     @commands.command()
     async def save(self, ctx, tag, index=0):
-        '''Saves a Clash Royale tag to your discord profile.'''
+        """Saves a Clash Royale tag to your discord profile."""
         tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
@@ -743,7 +743,7 @@ class Clash_Royale:
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False, False)
     async def deck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        '''Gets the current deck of a player.'''
+        """Gets the current deck of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
@@ -772,7 +772,7 @@ class Clash_Royale:
     @commands.command(name='card')
     @embeds.has_perms(False)
     async def _card(self, ctx, *, card):
-        '''Get information about a Clash Royale card.'''
+        """Get information about a Clash Royale card."""
         aliases = {
             "log": "the log", 
             "pump": 'elixir collector', 
@@ -806,7 +806,7 @@ class Clash_Royale:
     @commands.command(aliases=['tourney'])
     @embeds.has_perms(False)
     async def tournament(self, ctx, tag: TagOnly):
-        '''View statistics about a tournament'''
+        """View statistics about a tournament"""
         try:
             async with ctx.typing():
                 t = await self.cr.get_tournament(tag)
@@ -827,7 +827,7 @@ class Clash_Royale:
     @commands.command(aliases=['tourneys'])
     @embeds.has_perms(False)
     async def tournaments(self, ctx):
-        '''Show a list of open tournaments that you can join!'''
+        """Show a list of open tournaments that you can join!"""
         try:
             t = await self.cr.get_open_tournaments()
         except errors.RequestError as e:
