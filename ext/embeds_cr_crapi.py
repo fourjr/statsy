@@ -316,7 +316,11 @@ async def format_top_clans(ctx, clans):
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
                 em.description = 'Top 200 global clans right now.'
-            em.set_author(name='Top Clans', icon_url=clans[0].badge_url)
+
+            badge_image = c.badge.image
+            if not badge_image.startswith('http'):
+                badge_image = None
+            em.set_author(name='Top Clans', icon_url=badge_image)
         em.add_field(
             name=c.name,
             value=f"#{c.tag}\n{c.score} "
