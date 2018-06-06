@@ -214,10 +214,6 @@ async def format_cards(ctx, p):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
-    paginated_text = ctx.paginate(str(found_cards_pages))
-    for page in paginated_text:
-        await ctx.author.send(page)
-    # DEBUG
     for i, r in found_cards_pages:
         if i:
             em.add_field(name=f'Found Cards ({r})', value=i, inline=False)
