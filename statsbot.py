@@ -299,7 +299,7 @@ class StatsBot(commands.AutoShardedBot):
                 color=discord.Color.orange(),
                 description=f"```\n{error_message}\n```",
                 title=ctx.message.content)
-            em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM"} | C: {ctx.channel.id} | U: {ctx.author.id}')
+            em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM")} | C: {ctx.channel.id} | U: {ctx.author.id}')
             if not self.dev_mode:
                 await self.error_hook.send(content=description, embed=em)
             else:
