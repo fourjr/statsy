@@ -72,7 +72,6 @@ class TagCheck(commands.MemberConverter):
         if tag.startswith('-'):
             try:
                 index = int(tag.replace('-', ''))
-                print(index)
             except ValueError:
                 pass
             else:
@@ -142,7 +141,7 @@ class Clash_Royale:
     async def resolve_tag(self, ctx, tag_or_user, *, clan=False, index=0):
         if not tag_or_user:
             try:
-                tag = await ctx.get_tag('clashroyale', index=index)
+                tag = await ctx.get_tag('clashroyale', index=str(index))
             except KeyError:
                 await ctx.send(f'You don\'t have a saved tag. Save one using `{ctx.prefix}save <tag>!`')
                 raise NoTag()
@@ -152,7 +151,7 @@ class Clash_Royale:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = await ctx.get_tag('clashroyale', tag_or_user.id, index=index)
+                tag = await ctx.get_tag('clashroyale', tag_or_user.id, index=str(index))
             except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise NoTag()
@@ -242,6 +241,7 @@ class Clash_Royale:
     async def profile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
+
         async with ctx.typing():
             try:
                 profile = await self.cr.get_player(tag)
@@ -724,14 +724,14 @@ class Clash_Royale:
 
             
     @commands.command()
-    async def save(self, ctx, tag, index=0):
+    async def save(self, ctx, tag, index: str='0'):
         """Saves a Clash Royale tag to your discord profile."""
         tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
             raise InvalidTag('Invalid cr-tag passed')
 
-        await ctx.save_tag(tag[0], 'clashroyale', index=index)
+        await ctx.save_tag(tag[0], 'clashroyale', index=index.replace('-', ''))
 
         if index == 0:
             prompt = f'Check your stats with `{ctx.prefix}profile`!'

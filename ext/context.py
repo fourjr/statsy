@@ -62,18 +62,14 @@ class CustomContext(commands.Context):
             
         return discord.Color.from_rgb(*color)
 
-    async def save_tag(self, tag, game, id=None, *, index = 0):
+    async def save_tag(self, tag, game, id=None, *, index = '0'):
         id = id or self.author.id
+
         await self.bot.mongo.player_tags[game].find_one_and_update({
                 'user_id': id
             },
             {
-                '$push': {
-                    'tag': {
-                        '$each': [tag],
-                        '$position': index
-                    },
-                },
+                '$set':{f'tag.{index}': tag}
             },
             upsert=True,
             return_document=pymongo.ReturnDocument.AFTER
@@ -83,14 +79,17 @@ class CustomContext(commands.Context):
         id = id or self.author.id
         await self.bot.mongo.player_tags[game].find_one_and_delete({'user_id': id})
 
-    async def get_tag(self, game, id=None, *, index = 0):
+    async def get_tag(self, game, id=None, *, index = '0'):
         id = id or self.author.id
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
+
+        if index == 'all':
+            return data['tag']
 
         try:
             if data['tag'][index] is not None:
                 return data['tag'][index]
-        except (TypeError, IndexError):
+        except (TypeError, KeyError):
             pass
         raise KeyError
 
