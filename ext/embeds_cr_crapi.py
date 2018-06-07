@@ -25,10 +25,11 @@ def has_perms(add_reactions=True, external_emojis=True):
         perms['external_emojis'] = True
     return commands.bot_has_permissions(**perms)
 
-def emoji(ctx, name):
-    name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
-    if name == 'chestmagic':
-        name = 'chestmagical'
+def emoji(ctx, name, should_format=True):
+    if should_format:
+        name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
+        if name == 'chestmagic':
+            name = 'chestmagical'
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     return e or name
 
@@ -296,12 +297,12 @@ async def format_members(ctx, c, cache=False):
     embeds.append(em)
     return embeds
 
-async def format_top_clans(ctx, clans):
+async def format_top_clans(ctx, clans, region):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
-        em.description = 'Top 200 global clans right now.'
+        em.description = f'Top 200 {region} clans right now.'
     badge_image = clans[0].badge.image
     if not badge_image.startswith('http'):
         badge_image = None
@@ -322,12 +323,12 @@ async def format_top_clans(ctx, clans):
                 badge_image = None
             em.set_author(name='Top Clans', icon_url=badge_image)
         em.add_field(
-            name=c.name,
-            value=f"#{c.tag}\n{c.score} "
-                  f"{emoji(ctx, 'trophy')}\nRank: {c.rank} "
-                  f"{emoji(ctx, 'rank')}\n{c.member_count}/50 "
-                  f"{emoji(ctx, 'clan')}"
-                  )
+            name=f'{emoji(ctx, c.badge.name, should_format=False)} {c.name}',
+            value=f"#{c.tag}"
+                  f"{emoji(ctx, 'trophy')} {c.score}"
+                  f"\n{emoji(ctx, 'rank')} Rank: {c.rank} "
+                  f"\n{emoji(ctx, 'clan')} {c.member_count}/50 "
+            )
         counter += 1
     embeds.append(em)
     return embeds

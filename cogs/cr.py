@@ -573,28 +573,38 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
-    async def topclans(self, ctx):
+    async def topclans(self, ctx, region: str = None):
         """Returns the global top 50 clans."""
+        async with ctx.typing():
+            if region:
+                for i in self.bot.constants.regions:
+                    if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
+                        region = i.key
+                        name = i.name
+            else:
+                name = 'Global'
 
-        await ctx.trigger_typing()
-        try:
-            clans = await self.cr.get_top_clans()
-        except (errors.NotResponding, errors.ServerError) as e:
-            er = discord.Embed(
-                title=f'Error {e.code}',
-                color=discord.Color.red(),
-                description=e.error
-                    )
-            if ctx.bot.psa_message:
-                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
-            await ctx.send(embed=er)
-        else:
-            ems = await embeds_cr_crapi.format_top_clans(ctx, clans)
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems
-                )
-            await session.run()
+            try:
+                clans = await self.cr.get_top_clans(region)
+            except (errors.NotResponding, errors.ServerError) as e:
+                er = discord.Embed(
+                    title=f'Error {e.code}',
+                    color=discord.Color.red(),
+                    description=e.error
+                        )
+                if ctx.bot.psa_message:
+                    er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                return await ctx.send(embed=er)
+            except errors.NotFoundError:
+                await ctx.send('Invalid location. Click on `Global` here https://royaleapi.com/clans/leaderboard to see a list of acceptable locations')
+                return
+            else:
+                ems = await embeds_cr_crapi.format_top_clans(ctx, clans, name)
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems
+            )
+        await session.run()
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
@@ -739,6 +749,17 @@ class Clash_Royale:
             prompt = f'Check your stats with `{ctx.prefix}profile -{index}`!'
 
         await ctx.send('Successfully saved tag. ' + prompt)
+
+    @commands.command()
+    async def usertag(self, ctx, member: discord.Member = None):
+        member = member or ctx.author
+        tag = await self.resolve_tag(ctx, member, index='all')
+        em = discord.Embed(description='Tags saved', color=embeds.random_color())
+        em.set_author(name=member.name, icon_url=member.avatar_url)
+        for i in tag:
+            em.add_field(name=f'Tag index: {i}', value=tag[i])
+        await ctx.send(embed=em)
+        
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False, False)
