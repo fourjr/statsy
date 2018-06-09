@@ -255,6 +255,8 @@ class StatsBot(commands.AutoShardedBot):
     async def on_command(self, ctx):
         """Called when a command is invoked."""
         cmd = ctx.command.qualified_name.replace(' ', '_')
+        if not self.dev_mode:
+            await self.mongo.config.admin.find_one_and_update({'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True)
         self.commands_used[cmd] += 1
 
     async def process_commands(self, message):

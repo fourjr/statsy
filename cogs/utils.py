@@ -430,6 +430,15 @@ Large Servers   [ 1000+]:  {large}
 Massive Servers [ 5000+]:  {massive}
 Total                   :  {len(self.bot.guilds)}```"""))
 
+    @commands.command(name='commands', aliases=['cmd'], hidden=True)
+    async def commands_(self, ctx):
+        """Displays command usage"""
+        if ctx.author.id not in self.bot.developers:
+            return
+        command_usage = (await self.bot.mongo.config.admin.find_one({'_id': 'master'}))['commands']
+        sorted_commands = {i: command_usage[i] for i in sorted(command_usage, key=lambda x: command_usage[x], reverse=True)}
+        await ctx.send('```json\n' + json.dumps(sorted_commands, indent=4) + '\n```')
+
 def setup(bot):
     c = Bot_Related(bot)
     bot.add_cog(c)
