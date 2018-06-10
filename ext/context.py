@@ -108,6 +108,7 @@ class CustomContext(commands.Context):
         return list(filter(lambda a: a != '', pages))
 
     def cache(self, mode, _type, obj, tag=None):
+        return Nonew
         _type = f'backup/{_type}/'
         if mode == 'update':
             tag = tag or obj.get('tag')
