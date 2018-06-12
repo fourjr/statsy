@@ -112,7 +112,7 @@ async def format_profile(ctx, name, p, h):
             else:
                 em.set_author(name=f"{name} - {hero.title()} (Competitive)", icon_url=ctx.author.avatar_url)
 
-            avatar_url = getattr(emoji(ctx, hero), 'url', None)
+            avatar_url = getattr(emoji(ctx, hero), 'url', '')
             if avatar_url.startswith('http'):
                 em.set_thumbnail(url=avatar_url)
 
@@ -145,7 +145,7 @@ async def format_profile(ctx, name, p, h):
         else:
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
 
-        avatar_url = getattr(emoji(ctx, hero), 'url', None)
+        avatar_url = getattr(emoji(ctx, hero), 'url', '')
         if avatar_url.startswith('http'):
             em.set_thumbnail(url=avatar_url)
 
