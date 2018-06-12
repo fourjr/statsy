@@ -53,10 +53,9 @@ async def format_profile(ctx, name, p, h):
         embeds.append(em)
     em = discord.Embed(color=random_color())
 
-    try:
-        em.set_thumbnail(url=p['quickplay']['overall_stats']['avatar'])
-    except:
-        pass
+    avatar_url = p['quickplay']['overall_stats']['avatar']
+    if avatar_url.startswith('http'):
+        em.set_thumbnail(url=avatar_url)
 
     em.set_author(name=f"{name} - Quickplay", icon_url=ctx.author.avatar_url)
     tier = p["quickplay"]["overall_stats"]["tier"] or "none"
