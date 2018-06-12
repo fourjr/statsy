@@ -146,8 +146,8 @@ async def format_profile(ctx, name, p, h):
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
 
         avatar_url = getattr(emoji(ctx, hero), 'url', None)
-            if avatar_url.startswith('http'):
-                em.set_thumbnail(url=avatar_url)
+        if avatar_url.startswith('http'):
+            em.set_thumbnail(url=avatar_url)
 
         gen_quickplay_stats = h["stats"]["quickplay"][hero]["general_stats"]
         for stat_name, stat in stats.items():
