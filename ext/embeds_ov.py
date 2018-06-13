@@ -21,10 +21,10 @@ async def format_profile(ctx, name, p, h):
     embeds = []
     if p["competitive"]:
         em = discord.Embed(color=random_color())
-        try:
-            em.set_thumbnail(url=p['competitive']['overall_stats']['avatar'])
-        except:
-            pass
+
+        avatar_url = p['competitive']['overall_stats']['avatar']
+        if avatar_url.startswith('http'):
+            em.set_thumbnail(url=avatar_url)
 
         em.set_author(name=f"{name} - Competitive", icon_url=ctx.author.avatar_url)
         tier = p["competitive"]["overall_stats"]["tier"] or "none"
@@ -53,10 +53,9 @@ async def format_profile(ctx, name, p, h):
         embeds.append(em)
     em = discord.Embed(color=random_color())
 
-    try:
-        em.set_thumbnail(url=p['quickplay']['overall_stats']['avatar'])
-    except:
-        pass
+    avatar_url = p['quickplay']['overall_stats']['avatar']
+    if avatar_url.startswith('http'):
+        em.set_thumbnail(url=avatar_url)
 
     em.set_author(name=f"{name} - Quickplay", icon_url=ctx.author.avatar_url)
     tier = p["quickplay"]["overall_stats"]["tier"] or "none"
@@ -112,7 +111,11 @@ async def format_profile(ctx, name, p, h):
                 em.set_author(name=f"{name} - {name_dict[hero]} (Competitive)", icon_url=ctx.author.avatar_url)
             else:
                 em.set_author(name=f"{name} - {hero.title()} (Competitive)", icon_url=ctx.author.avatar_url)
-            em.set_thumbnail(url=getattr(emoji(ctx, hero), 'url', None))
+
+            avatar_url = getattr(emoji(ctx, hero), 'url', '')
+            if avatar_url.startswith('http'):
+                em.set_thumbnail(url=avatar_url)
+
             gen_comp_stats = h["stats"]["competitive"][hero]["general_stats"]
             for stat_name, stat in stats.items():
                 if not gen_comp_stats.get(stat):
@@ -141,7 +144,11 @@ async def format_profile(ctx, name, p, h):
             em.set_author(name=f"{name} - {name_dict[hero]} (Quickplay)", icon_url=ctx.author.avatar_url)
         else:
             em.set_author(name=f"{name} - {hero.title()} (Quickplay)", icon_url=ctx.author.avatar_url)
-        em.set_thumbnail(url=getattr(emoji(ctx, hero), 'url', None))
+
+        avatar_url = getattr(emoji(ctx, hero), 'url', '')
+        if avatar_url.startswith('http'):
+            em.set_thumbnail(url=avatar_url)
+
         gen_quickplay_stats = h["stats"]["quickplay"][hero]["general_stats"]
         for stat_name, stat in stats.items():
             if not gen_quickplay_stats.get(stat):

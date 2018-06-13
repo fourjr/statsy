@@ -274,9 +274,13 @@ class StatsBot(commands.AutoShardedBot):
                 await ctx.send('Something went wrong and we are investigating the issue now :(')
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
+            error_message = f"```py\n{error_message}\n```"
+            if len(error_message) > 2000:
+                async with self.session.post('https://www.hastebin.com/documents', data=error_message) as resp:
+                    error_message = 'https://www.hastebin.com/' + (await resp.json())['key']
             em = discord.Embed(
                 color=discord.Color.orange(),
-                description=f"```\n{error_message}\n```",
+                description=error_message,
                 title=ctx.message.content)
             em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM")} | C: {ctx.channel.id} | U: {ctx.author.id}')
             if not self.dev_mode:
