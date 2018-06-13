@@ -7,8 +7,13 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from statsbot import NoTag, InvalidPlatform, FortniteServerError
+from statsbot import NoTag, InvalidPlatform
 from ext.paginator import PaginatorSession
+
+
+class FortniteServerError(Exception):
+    """Raised when the Fortnite API is down"""
+    pass
 
 class TagOrUser(commands.MemberConverter):
     async def convert(self, ctx, argument):
@@ -59,7 +64,11 @@ class Fortnite:
                     raise NoTag()
             else:
                 return username
-            
+
+    async def __error(self, ctx, error):
+        error = getattr(error, 'original', error)
+        if isinstance(error, FortniteServerError):
+            await ctx.send('Fortnite API is currently undergoing maintenance. Please try again later.')    
 
     async def post(self, endpoint, payload):
         headers = {

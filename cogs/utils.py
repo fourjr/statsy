@@ -308,9 +308,7 @@ class Bot_Related:
             value = stdout.getvalue()
             err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
-            value = stdout.getvalue()
-            if self.bot.token in value:
-                value = value.replace(self.bot.token,"[EXPUNGED]")
+            value = stdout.getvalue().replace(os.getenv('token'),"[EXPUNGED]")
             if ret is None:
                 if value:
                     try:

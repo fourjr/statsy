@@ -33,6 +33,9 @@ class Overwatch:
     def __init__(self, bot):
         self.bot = bot
         self.conv = TagCheck()
+        bot.loop.create_task(self.__ainit__)
+
+    async def __ainit__(self):
         self.session = aiohttp.ClientSession(headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'})
         self.session2 = aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"})
         self.session3 = aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"})

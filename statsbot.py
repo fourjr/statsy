@@ -43,6 +43,7 @@ import discord
 import psutil
 from abrawlpy import Client as bsClient
 from discord.ext import commands
+from dotenv import load_dotenv, find_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from ext import embeds_cr_statsroyale as embeds
@@ -79,14 +80,10 @@ class InvalidPlatform(commands.BadArgument):
     message = 'Platforms should only be one of the following:\n' \
               'pc, ps4, xb1'
 
-class FortniteServerError(Exception):
-    """Raised when the Fortnite API is down"""
-    pass
-
 class NoTag(Exception):
     pass
 
-from statsbot import InvalidPlatform, NoTag, InvalidTag, FortniteServerError
+from statsbot import InvalidPlatform, NoTag, InvalidTag
 
 class StatsBot(commands.AutoShardedBot):
     """
@@ -113,14 +110,11 @@ class StatsBot(commands.AutoShardedBot):
         168143064517443584
     ]
 
-    def __init__(self, token=None):
+    def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crClient(self.config['cr-token'],\
-            session=self.session, is_async=True, timeout=5)
-        self.bs = bsClient('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGlvbiI6MTUxOTc3MDk4ODQ0MywidXNlcklEIjoiMTgwMzE0MzEwMjk4MzA0NTEyIn0.PpwJXH32hyK7_NDUVXYLVFFPIT3fdzhM5YLbMSWw34Q', session=self.session)
-        # 4JR's token ^^ 
-        self.mongo = AsyncIOMotorClient('mongodb+srv://statsy:cRh199QzDdKaOhX9@statsy-lpu1v.mongodb.net')
+        self.cr = crClient(os.getenv('royaleapi'), session=self.session, is_async=True, timeout=10)
+        self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
@@ -133,19 +127,13 @@ class StatsBot(commands.AutoShardedBot):
         self.load_extensions()
         self._add_commands()
 
-        self.log_hook = discord.Webhook.partial(450623469495779328, 'fkuVOFeWm79odmlCbtPFA2qNAj80Q5w5UynLDxf0DCDulvgnqSGghVa4y7Ezv9CsegiB', adapter=discord.AsyncWebhookAdapter(self.session))
-        self.error_hook = discord.Webhook.partial(450622686616485888, 'I49t55RNZp-sAQix4Gk4isnnbnuo_CE9nrLfE2EIHiNAsueaex9HYlsIxUINxJD6k80I', adapter=discord.AsyncWebhookAdapter(self.session))
+        self.log_hook = discord.Webhook.from_url(os.getenv('log_hook'), adapter=discord.AsyncWebhookAdapter(self.session))
+        self.error_hook = discord.Webhook.from_url(os.getenv('error_hook'), adapter=discord.AsyncWebhookAdapter(self.session))
 
-        token = token or self.token
         try:
-            self.run(token.strip('"'), bot=True, reconnect=True)
+            self.run(os.getenv('token').strip('"'))
         except Exception as e:
             print(f'Error in starting the bot. Check your token.\n{e}')
-
-    @property
-    def config(self):
-        with open('data/config.json') as f:
-            return json.load(f)
 
     def get_game_emojis(self):
         emojis = []
@@ -171,24 +159,6 @@ class StatsBot(commands.AutoShardedBot):
             except Exception:
                 print(f'LoadError: {extension}')
                 traceback.print_exc()
-
-    @property
-    def token(self):
-        """Returns your token wherever it is"""
-        try:
-            with open('data/config.json') as f:
-                return json.load(f)['token'].strip('"')
-        except FileNotFoundError:
-            return None
-
-    @property
-    def botlist(self):
-        """Returns your botlist token wherever it is"""
-        try:
-            with open('data/config.json') as f:
-                return json.load(f)['botlist'].strip('"')
-        except FileNotFoundError:
-            return None
 
     def restart(self):
         """Forcefully restart the bot."""
@@ -274,15 +244,19 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_command_error(self, ctx, error, description=None):
         error = getattr(error, 'original', error)
-        if isinstance(error, FortniteServerError):
-            await ctx.send('Fortnite API is currently undergoing maintenance. Please try again later.')
-        elif isinstance(error, (InvalidTag, InvalidPlatform)):
+        ignored = (
+            NoTag,
+            discord.Forbidden,
+            commands.CheckFailure,
+            clashroyale.RequestError
+        )
+        if isinstance(error, (InvalidTag, InvalidPlatform)):
             await ctx.send(error.message)
-        elif isinstance(error, (NoTag, discord.Forbidden, commands.CheckFailure)):
+        elif isinstance(error, ignored):
             pass
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(error)
-        elif isinstance(error, commands.BadArgument) and ctx.command.name == 'save':
+        elif isinstance(error, commands.BadArgument) and ctx.command.name.endswith('save'):
             try:
                 await ctx.invoke(ctx.command, tag=ctx.args[2])
             except Exception as e:
@@ -313,9 +287,8 @@ class StatsBot(commands.AutoShardedBot):
     async def on_message(self, message):
         """Called when a message is sent/recieved."""
         self.messages_sent += 1
-        if message.author.bot:
-            return
-        await self.process_commands(message)
+        if not message.author.bot:
+            await self.process_commands(message)
 
     async def backup_task(self):
         """Publish to botlists."""
@@ -323,14 +296,12 @@ class StatsBot(commands.AutoShardedBot):
         while not self.is_closed():
             server_count = {'server_count': len(self.guilds)}
             # DBL
-            await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': self.botlist})
+            await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': os.getenv('dbl')})
             # bots.pw
-            await self.session.post('https://bots.discord.pw/api/bots/347006499677143041/stats', json=server_count, headers={
-                'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODAzMTQzMTAyOTgzMDQ1MTIiLCJyYW5kIjo1OSwiaWF0IjoxNTI0MjIxNTg4fQ.2hs1gnQ-w8Rvi_3oNICdX2loVnmVDMAnHAJVGm9Taj8'
-            })
+            await self.session.post('https://bots.discord.pw/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': os.getenv('botspw')})
             # Bots for Discord
             await self.session.post('https://botsfordiscord.com/api/v1/bots/347006499677143041', json=server_count, headers={
-                'Authorization': '17d4a786d15ee1e134b93a8cf84ff3a3bd025bc3bd94eee328232e1dd3b8d3b140d62d19b485b8309c9d1bd3846fb5ebf78b83111a8700dca22f00963128c52c',
+                'Authorization': os.getenv('bfd'),
                 'Content-Type': 'application/json'
             })
             await asyncio.sleep(3600)
@@ -338,14 +309,16 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command()
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
-        em = discord.Embed()
-        em.title ='Pong! Websocket Latency: '
-        em.description = f'{self.latency * 1000:.4f} ms'
-        em.color = 0xf9c93d
+        em = discord.Embed(
+            title='Pong! Websocket Latency:',
+            description = f'{self.latency * 1000:.4f} ms',
+            color=0xf9c93d
+        )
         try:
             await ctx.send(embed=em)
         except discord.Forbidden:
             await ctx.send(em.title + em.description)
 
 if __name__ == '__main__':
+    load_dotenv(find_dotenv())
     StatsBot()

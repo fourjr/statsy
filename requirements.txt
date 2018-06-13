@@ -3,6 +3,6 @@ bs4
 clashroyale==3.2.6
 colorthief==0.2.1
 dnspython==1.15.0
-git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py==1.0.0a1462+g60f0b22
+git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py==1.0.0a1473+g607771c
 motor==1.2.1
-yarl<1.2
+python-dotenv==0.8.2

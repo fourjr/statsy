@@ -1,16 +1,15 @@
-import discord, aiohttp
-from discord.ext import commands
-from ext import embeds_coc
-import json
-from __main__ import InvalidTag, NoTag
-from ext.paginator import PaginatorSession
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-from urllib.request import urlretrieve
 import io
-import string
+import json
 import os
+
+import aiohttp
+import discord
+from discord.ext import commands
+from PIL import Image, ImageDraw, ImageFont
+
+from __main__ import InvalidTag, NoTag
+from ext import embeds_coc
+from ext.paginator import PaginatorSession
 
 shortcuts = {}
 
@@ -50,13 +49,11 @@ class Clash_of_Clans:
 
     def __init__(self, bot):
         self.bot = bot
-        with open('data/config.json') as config:
-            self.session = aiohttp.ClientSession(
-                headers={
-                    'Authorization': f"Bearer {json.load(config)['coc-token']}"
-                }
-            )
         self.conv = TagCheck()
+        bot.loop.create_task(self.__ainit__)
+
+    async def __ainit__(self):
+        self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {os.getenv('coc-token')}"})
 
     def __unload(self):
         self.bot.loop.create_task(self.session.close())

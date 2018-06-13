@@ -96,6 +96,8 @@ class PaginatorSession:
     async def run(self):
         if not self.running:
             await self.show_page(0)
+        if len(self.pages) == 1:
+            return await self.show_page(0)
         while self.running:
             try:
                 reaction, user = await self.ctx.bot.wait_for('reaction_add', check=self.react_check, timeout=self.timeout)
