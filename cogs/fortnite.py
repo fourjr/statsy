@@ -1,6 +1,7 @@
 import datetime
 import random
 import json
+import os
 from urllib.parse import urlencode
 
 import aiohttp
@@ -40,8 +41,6 @@ class Fortnite:
     def __init__(self, bot):
         self.bot = bot
         self.session = aiohttp.ClientSession(loop=bot.loop)
-        with open('data/config.json') as f:
-            self.token = json.load(f)['fortnite']
 
     def timestamp(self, minutes):
         return str(datetime.timedelta(minutes=minutes))[:-3]
@@ -72,7 +71,7 @@ class Fortnite:
 
     async def post(self, endpoint, payload):
         headers = {
-            'Authorization': self.token,
+            'Authorization': os.getenv('fortnite'),
             'Content-Type': 'application/x-www-form-urlencoded'
         }
         async with self.session.post('https://fortnite-public-api.theapinetwork.com/prod09'  + endpoint, data=urlencode(payload), headers=headers) as resp:

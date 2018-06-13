@@ -10,6 +10,7 @@ import sys
 import textwrap
 import time
 import traceback
+import os
 from collections import defaultdict
 from contextlib import redirect_stdout
 
@@ -347,11 +348,6 @@ class Bot_Related:
 
         # remove `foo`
         return content.strip('` \n')
-
-    @property
-    def gitpw(self): 
-        with open('data/config.json') as f: 
-            return json.load(f)['gittoken']
     
     @commands.command()
     async def suggest(self, ctx, *, details:str):
@@ -359,7 +355,7 @@ class Bot_Related:
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
-        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New suggestion from {ctx.author.name}', "body": details, "labels":['suggestion', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New suggestion from {ctx.author.name}', "body": details, "labels":['suggestion', 'discord']}, headers={'Authorization': f'Bearer {os.getenv("github")}'}) as resp:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
