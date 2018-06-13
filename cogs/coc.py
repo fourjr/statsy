@@ -50,7 +50,7 @@ class Clash_of_Clans:
     def __init__(self, bot):
         self.bot = bot
         self.conv = TagCheck()
-        bot.loop.create_task(self.__ainit__)
+        bot.loop.create_task(self.__ainit__())
 
     async def __ainit__(self):
         self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {os.getenv('coc-token')}"})
