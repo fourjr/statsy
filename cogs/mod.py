@@ -114,5 +114,12 @@ class Moderation:
             timestamp=datetime.datetime.utcnow()
         ))
 
+    async def on_message(self, m):
+        if m.channel.id == 456803934334615552:
+            member = m.guild.get_member(int(m.content))
+            if member:
+                member.add_roles(discord.utils.get(m.guild.roles, id=455392833130594304))
+                await m.add_reaction(u'\U00002705')
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
