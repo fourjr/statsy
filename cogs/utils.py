@@ -371,7 +371,7 @@ class Bot_Related:
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
-        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New bug report from {ctx.author.name}', "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {self.gitpw}'}) as resp:
+        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New bug report from {ctx.author.name}', "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {os.getenv("github")}'}) as resp:
             if 300 > resp.status >= 200:
                 issueinfo = await resp.json()
             else:
