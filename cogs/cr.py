@@ -311,7 +311,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            b = await self.cr.get_player_battles(tag)
+            battles = await self.cr.get_player_battles(tag)
             em = await embeds_cr_crapi.format_battles(ctx, battles)
 
         await ctx.send(embed=em)
