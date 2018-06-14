@@ -37,7 +37,7 @@ async def format_profile(ctx, name, p, h):
             ("Tier", tier.title(), True),
             ('Kills', int(p['competitive']['game_stats']["eliminations"]), True),
             ("Top Kills in a Game", int(p["competitive"]["game_stats"]["eliminations_most_in_game"]), True),
-            ("Solo Kills", int(p["competitive"]["game_stats"].get("solo_kills")), True),
+            ("Solo Kills", p["competitive"]["game_stats"].get("solo_kills"), True),
             ("Final Blows", int(p["competitive"]["game_stats"]["final_blows"]), True),
             ("Deaths", int(p["competitive"]["game_stats"]["deaths"]), True),
             ("K/D", p["competitive"]["game_stats"]["kpd"], True),
