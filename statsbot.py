@@ -34,7 +34,6 @@ import traceback
 from collections import defaultdict
 
 import aiohttp
-import bugsnag
 import clashroyale
 import discord
 import psutil
@@ -102,7 +101,8 @@ class StatsBot(commands.AutoShardedBot):
         self.maintenance_mode = False
         self.psa_message = None
         self.dev_mode = platform.system() != 'Linux'
-        self.loop.create_task(self.backup_task())
+        if not self.dev_mode:
+            self.backup_task_loop = self.loop.create_task(self.backup_task())
         self.load_extensions()
         self._add_commands()
 
@@ -116,9 +116,20 @@ class StatsBot(commands.AutoShardedBot):
         )
 
         try:
-            self.run(os.getenv('token').strip('"'))
-        except Exception as e:
-            print(f'Error in starting the bot. Check your token.\n{e}')
+            self.loop.run_until_complete(self.start(os.getenv('token')))
+        except discord.LoginFailure:
+            print('Invalid token')
+        except KeyboardInterrupt:
+            pass
+        except Exception:
+            print('Fatal exception')
+            traceback.print_exc()
+        finally:
+            if not self.dev_mode:
+                self.backup_task_loop.cancel()
+            self.loop.run_until_complete(self.logout())
+            self.loop.run_until_complete(self.session.close())
+            self.loop.close()
 
     def get_game_emojis(self):
         emojis = []

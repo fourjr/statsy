@@ -175,7 +175,7 @@ async def format_events(ctx, events):
     coin_emoji = str(emoji(ctx, 'icon_coin'))
 
     for event in ongoing:
-        date = (datetime.datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.datetime.now()
+        date = (datetime.datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.datetime.utcnow()
         seconds = math.floor(date.total_seconds())
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
@@ -206,7 +206,7 @@ async def format_events(ctx, events):
         )
 
     for event in upcoming:
-        date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.now()
+        date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.utcnow()
         seconds = math.floor(date.total_seconds())
         timeleft = format_timestamp(seconds)
 

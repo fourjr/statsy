@@ -12,7 +12,7 @@ import discord
 import psutil
 from discord.ext import commands
 
-from ext import embeds_cr_crapi as embeds
+from ext import embeds_cr as embeds
 from ext.paginator import PaginatorSession
 
 
@@ -96,7 +96,7 @@ class Bot_Related:
     @commands.command(name='bot', aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
         """Shows information and stats about the bot."""
-        em = discord.Embed(timestamp=datetime.datetime.now())
+        em = discord.Embed(timestamp=datetime.datetime.utcnow())
         status = str(getattr(ctx.guild, 'me', self.bot.guilds[0].me).status)
         if status == 'online':
             em.set_author(name="Bot Information", icon_url='https://i.imgur.com/wlh1Uwb.png')

@@ -45,7 +45,13 @@ class Fortnite:
     """Commands related to the Fortnite game"""
     def __init__(self, bot):
         self.bot = bot
-        self.session = aiohttp.ClientSession(loop=bot.loop)
+        bot.loop.create_task(self.__ainit__())
+
+    async def __ainit__(self):
+        self.session = aiohttp.ClientSession(loop=self.bot.loop)
+
+    def __unload(self):
+        self.bot.loop.create_task(self.session.close())
 
     def timestamp(self, minutes):
         return str(datetime.timedelta(minutes=minutes))[:-3]

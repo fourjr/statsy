@@ -695,7 +695,7 @@ async def format_tournaments(ctx, t):
         members = '/'.join((str(t.player_count), str(t.max_capacity)))
 
         timeleft = ''
-        date = datetime.datetime.now() - datetime.datetime.fromtimestamp(t.create_time)
+        date = datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(t.create_time)
         seconds = math.floor(date.total_seconds())
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
@@ -738,7 +738,7 @@ async def format_tournament(ctx, t):
         )
 
         timeleft = ''
-        date = datetime.datetime.now() - datetime.datetime.fromtimestamp(t.create_time)
+        date = datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(t.create_time)
         seconds = math.floor(date.total_seconds())
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60

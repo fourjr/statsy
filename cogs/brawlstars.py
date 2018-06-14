@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 import box
-from ext import embeds_cr_crapi as embeds
+from ext import embeds_cr  as embeds
 from ext import embeds_bs
 from ext.paginator import PaginatorSession
 from statsbot import InvalidTag, NoTag
@@ -56,10 +56,10 @@ class Brawl_Stars:
     async def get_band_from_profile(self, ctx, tag, message):
         try:
             profile = await self.bot.bs.get_player(tag)
-        except abrawlpy.errors.RequestError as e:
+        except abrawlpy.errors.RequestError:
                 await ctx.send(embed=discord.Embed(
-                    title=e.code,
-                    description=e.error,
+                    title='API Down',
+                    description='API Error',
                     color=0xd22630
                 ))
         else:
@@ -115,10 +115,10 @@ class Brawl_Stars:
             tag = await self.resolve_tag(ctx, tag_or_user)
             try:
                 profile = await self.bot.bs.get_player(tag)
-            except abrawlpy.errors.RequestError as e:
+            except abrawlpy.errors.RequestError:
                 await ctx.send(embed=discord.Embed(
-                    title=e.code,
-                    description=e.error,
+                    title='API Down',
+                    description='API Error',
                     color=0xd22630
                 ))
             else:
@@ -133,10 +133,10 @@ class Brawl_Stars:
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
             try:
                 band = await self.bot.bs.get_band(tag)
-            except abrawlpy.errors.RequestError as e:
+            except abrawlpy.errors.RequestError:
                 return await ctx.send(embed=discord.Embed(
-                    title=e.code,
-                    description=e.error,
+                    title='API Down',
+                    description='API Error',
                     color=0xd22630
                 ))
             else:

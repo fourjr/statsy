@@ -100,9 +100,8 @@ ENV/
 .mypy_cache/
 data/.DS_Store
 .DS_Store
-data/config.json.sample
-test.js
-patches.py
+
+# Custom
 data/pic.png
 Pipfile*
 .vscode/*

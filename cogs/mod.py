@@ -34,7 +34,7 @@ class Moderation:
                 f'Reason: {ctx.kwargs["reason"]}',
                 f'Days: {listget(ctx.args, 3, "N.A.")}'
             )),
-            timestamp=datetime.datetime.now(),
+            timestamp=datetime.datetime.utcnow(),
             color=random.randint(0, 0xffffff)
         )
         await channel.send(embed=em)
@@ -76,6 +76,43 @@ class Moderation:
         await asyncio.sleep(0.2)
         await member.unban(reason=f'{ctx.author}: {reason}')
 
+    async def on_message_edit(self, b, a):
+        if self.bot.dev_mode or b.guild.id != 444482551139008522 or b.content == a.content or\
+           b.author.id == 180314310298304512 or b.author == self.bot.user:
+            return
+        await self.bot.get_channel(456793628736618509).send(embed=discord.Embed(
+            description=f'\U0001F4DD {b.author} ({b.author.id}) message ({b.id}) edited in **#{b.channel.name}**:\n**B:** {b.content}\n**A:** {a.content}',
+            color=0x36393e,
+            timestamp=datetime.datetime.utcnow()
+        ))
+
+    async def on_message_delete(self, m):
+        if self.bot.dev_mode or m.guild.id != 444482551139008522 or m.author.id == 180314310298304512 or\
+           m.author == self.bot.user:
+            return
+        await self.bot.get_channel(456793628736618509).send(embed=discord.Embed(
+            description=f'\U0001F5D1 {m.author} ({m.author.id}) message ({m.id}) edited in **#{m.channel.name}**:\n{m.content}',
+            color=0x36393e,
+            timestamp=datetime.datetime.utcnow()
+        ))
+
+    async def on_member_join(self, m):
+        if self.bot.dev_mode or m.guild.id != 444482551139008522:
+            return
+        await self.bot.get_channel(456793628736618509).send(embed=discord.Embed(
+            description=f'\U0001F4E5 {m} ({m.id}) joined (created {m.created_at})',
+            color=0x36393e,
+            timestamp=datetime.datetime.utcnow()
+        ))
+
+    async def on_member_remove(self, m):
+        if self.bot.dev_mode or m.guild.id != 444482551139008522:
+            return
+        await self.bot.get_channel(456793628736618509).send(embed=discord.Embed(
+            description=f'\U0001F4E5 {m} ({m.id}) left (created {m.created_at})',
+            color=0x36393e,
+            timestamp=datetime.datetime.utcnow()
+        ))
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
