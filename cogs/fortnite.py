@@ -107,9 +107,14 @@ class Fortnite:
             ems = []
             top = {'solo': (10, 25), 'duo': (5, 12), 'squad': (3, 6)}
 
+            if player['totals']['matchesplayed']:
+                kdr = player['totals']['wins']/player['totals']['matchesplayed']*100
+            else:
+                kdr = 0
+
             fields = [
                 (f'Kills {emoji(ctx, "fnskull")}', player['totals']['kills']),
-                (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player['totals']['wins']} ({(player['totals']['wins']/player['totals']['matchesplayed']*100):.2f})"),
+                (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player['totals']['wins']} ({kdr:.2f})"),
                 ('Kill Death Ratio', player['totals']['kd']),
                 ('Time Played', self.timestamp(player['totals']['minutesplayed']))
             ]
