@@ -94,10 +94,6 @@ class StatsBot(commands.AutoShardedBot):
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.cr = clashroyale.Client(os.getenv('royaleapi'), session=self.session, is_async=True, timeout=10)
         self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
-        bugsnag.configure(
-            api_key=os.getenv('bugsnag'),
-            project_root=os.getcwd(),
-        )
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
@@ -110,6 +106,10 @@ class StatsBot(commands.AutoShardedBot):
         self.load_extensions()
         self._add_commands()
 
+        self.error_hook = discord.Webhook.from_url(
+            os.getenv('error_hook'),
+            adapter=discord.AsyncWebhookAdapter(self.session)
+        )
         self.log_hook = discord.Webhook.from_url(
             os.getenv('log_hook'),
             adapter=discord.AsyncWebhookAdapter(self.session)
@@ -271,17 +271,8 @@ class StatsBot(commands.AutoShardedBot):
                 description=error_message,
                 title=ctx.message.content)
             em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM")} | C: {ctx.channel.id} | U: {ctx.author.id}')
-            if True:  # if not self.dev_mode:
-                bugsnag.notify(
-                    error,
-                    meta_data={
-                        'content': ctx.message.content,
-                        'message': ctx.message.id,
-                        'user': ctx.author.id,
-                        'guild': getattr(ctx.guild, "id", "DM"),
-                        'channel': ctx.channel.id
-                    }
-                )
+            if not self.dev_mode:
+                await self.error_hook.send(content=description, embed=em)
             else:
                 print(error_message)
 
