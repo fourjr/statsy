@@ -1,21 +1,21 @@
-import discord
-from collections import OrderedDict
-import json
 import random
-import copy
+
+import discord
+
 
 def emoji(ctx, name):
-    name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
-    if name == 'chestmagic':
-        name = 'chestmagical'
+    name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     return e
+
 
 def cdir(obj):
     return [x for x in dir(obj) if not x.startswith('_')]
 
+
 def random_color():
     return random.randint(0, 0xFFFFFF)
+
 
 async def format_profile(ctx, name, p, h):
     embeds = []
@@ -29,9 +29,12 @@ async def format_profile(ctx, name, p, h):
         em.set_author(name=f"{name} - Competitive", icon_url=ctx.author.avatar_url)
         tier = p["competitive"]["overall_stats"]["tier"] or "none"
 
+        level = p['competitive']['overall_stats']['prestige'] * 100 + p['competitive']['overall_stats']['level']
+        wld = f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}"
+
         embed_fields = [
-            ('Level', p['competitive']['overall_stats']['prestige']*100+p['competitive']['overall_stats']['level'], True),
-            ('Win-Loss-Draw', f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}", True),
+            ('Level', level, True),
+            ('Win-Loss-Draw', wld, True),
             ('Games Played', p['competitive']['overall_stats']['games'], True),
             ('Win Rate', int(p['competitive']['overall_stats']["win_rate"]), True),
             ("Tier", tier.title(), True),
@@ -44,7 +47,7 @@ async def format_profile(ctx, name, p, h):
             ("Gold Medals", int(p["competitive"]["game_stats"]["medals_gold"]), True),
             ("Silver Medals", int(p["competitive"]["game_stats"]["medals_silver"]), True),
             ("Bronze Medals", int(p["competitive"]["game_stats"]["medals_bronze"]), True)
-            ]
+        ]
 
         for n, v, i in embed_fields:
             if v:
@@ -60,8 +63,10 @@ async def format_profile(ctx, name, p, h):
     em.set_author(name=f"{name} - Quickplay", icon_url=ctx.author.avatar_url)
     tier = p["quickplay"]["overall_stats"]["tier"] or "none"
 
+    level = p['quickplay']['overall_stats']['prestige'] * 100 + p['quickplay']['overall_stats']['level']
+
     embed_fields = [
-        ('Level', p['quickplay']['overall_stats']['prestige']*100+p['quickplay']['overall_stats']['level'], True),
+        ('Level', level, True),
         ('Wins', f"{p['quickplay']['overall_stats']['wins']}", True),
         ('Games Played', p['quickplay']['overall_stats']['games'], True),
         ("Tier", tier.title(), True),
@@ -74,7 +79,7 @@ async def format_profile(ctx, name, p, h):
         ("Gold Medals", int(p["quickplay"]["game_stats"]["medals_gold"]), True),
         ("Silver Medals", int(p["quickplay"]["game_stats"]["medals_silver"]), True),
         ("Bronze Medals", int(p["quickplay"]["game_stats"]["medals_bronze"]), True)
-        ]
+    ]
 
     for n, v, i in embed_fields:
         if v:
@@ -88,7 +93,8 @@ async def format_profile(ctx, name, p, h):
         "Soldier: 76",
         "lucio": "Lúcio",
         "mccree": "McCree"
-        }
+    }
+
     stats = {
         "Time Played": "time_played",
         "Kills": "eliminations",
@@ -100,9 +106,12 @@ async def format_profile(ctx, name, p, h):
         "Gold Medals": "medals_gold",
         "Silver Medals": "medals_sliver",
         "Bronze Medals": "medals_bronze"
-        }
+    }
+
     if h["stats"]["competitive"]:
-        hero_playtime_comp = list(sorted(h["playtime"]["competitive"], key=h["playtime"]["competitive"].__getitem__, reverse=True))
+        hero_playtime_comp = list(sorted(
+            h["playtime"]["competitive"], key=h["playtime"]["competitive"].__getitem__, reverse=True
+        ))
         for hero in hero_playtime_comp:
             if hero not in h["stats"]["competitive"]:
                 break
@@ -128,14 +137,20 @@ async def format_profile(ctx, name, p, h):
                     else:
                         em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat]*60, 2)} minutes")
                 elif stat_name == "On Fire":
-                    em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat]/gen_comp_stats['time_played']*100, 2)}% of the time")
+                    em.add_field(
+                        name=stat_name,
+                        value=f"{round(gen_comp_stats[stat]/gen_comp_stats['time_played']*100, 2)}% of the time"
+                    )
                 else:
                     em.add_field(name=stat_name, value=int(gen_comp_stats[stat]))
             if h['stats']['competitive'][hero]['hero_stats'] != {}:
-                em.add_field(name="Extra Stats", value='\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['competitive'][hero]['hero_stats'].items()]))
+                extra_stats = [f'**{x.replace("_", " ").title()}**: {y}' for x, y in h['stats']['competitive'][hero]['hero_stats'].items()]
+                em.add_field(name="Extra Stats", value='\n'.join(extra_stats))
             embeds.append(em)
-            
-    hero_playtime_quick = list(sorted(h["playtime"]["quickplay"], key=h["playtime"]["quickplay"].__getitem__, reverse=True))
+
+    hero_playtime_quick = list(sorted(
+        h["playtime"]["quickplay"], key=h["playtime"]["quickplay"].__getitem__, reverse=True)
+    )
     for hero in hero_playtime_quick:
         if hero not in h["stats"]["quickplay"]:
             break
@@ -161,10 +176,14 @@ async def format_profile(ctx, name, p, h):
                 else:
                     em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat]*60, 2)} minutes")
             elif stat_name == "On Fire":
-                em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat]/gen_quickplay_stats['time_played']*100, 2)}% of the time")
+                em.add_field(
+                    name=stat_name,
+                    value=f"{round(gen_quickplay_stats[stat]/gen_quickplay_stats['time_played']*100, 2)}% of the time"
+                )
             else:
                 em.add_field(name=stat_name, value=int(gen_quickplay_stats[stat]))
         if h['stats']['quickplay'][hero]['hero_stats'] != {}:
-            em.add_field(name="Extra Stats", value='\n'.join(['**' + stat_name.replace('_', ' ').title() + '**: ' + str(int(stat)) for stat_name, stat in h['stats']['quickplay'][hero]['hero_stats'].items()]))
+            extra_stats = [f'**{x.replace("_", " ").title()}**: {y}' for x, y in h['stats']['quickplay'][hero]['hero_stats'].items()]
+            em.add_field(name="Extra Stats", value='\n'.join(extra_stats))
         embeds.append(em)
     return embeds

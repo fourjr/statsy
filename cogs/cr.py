@@ -1,9 +1,6 @@
 import asyncio
 import io
-import json
 import re
-import string
-import time
 
 import clashroyale
 import discord
@@ -11,9 +8,7 @@ from discord.ext import commands
 from PIL import Image, ImageDraw, ImageFont
 
 from statsbot import InvalidTag, NoTag
-from ext import embeds_cr_statsroyale as embeds
-#from ext import embeds
-from ext import embeds_cr_crapi
+from ext import embeds_cr as embeds
 from ext.paginator import PaginatorSession
 
 shortcuts = {
@@ -42,6 +37,7 @@ shortcuts = {
     'TIDEA': '2JPPGGJ0'
 }
 
+
 class TagOnly(commands.Converter):
 
     check = 'PYLQGRJCUV0289'
@@ -63,6 +59,7 @@ class TagOnly(commands.Converter):
             raise InvalidTag('Invalid cr-tag passed.')
         else:
             return tag
+
 
 class TagCheck(commands.MemberConverter):
 
@@ -107,6 +104,7 @@ class TagCheck(commands.MemberConverter):
             raise InvalidTag('Invalid cr-tag passed.')
         else:
             return tag
+
 
 class Clash_Royale:
 
@@ -188,7 +186,7 @@ class Clash_Royale:
                     params = {i.split('=')[0]: i.split('=')[1] for i in re.findall(r'[A-z]*=[0-z]*', link)}
                     profile = await self.cr.get_player(params['tag'])
 
-                    em = await embeds_cr_crapi.format_friend_link(ctx, profile, link, default)
+                    em = await embeds.format_friend_link(ctx, profile, link, default)
                     try:
                         await m.delete()
                     except (discord.NotFound, commands.BotMissingPermissions):
@@ -210,7 +208,7 @@ class Clash_Royale:
 
         if friend_config is None and self.bot.get_user(402656158667767808) not in ctx.guild.members:
             default = friend_config = True
-        
+
         resp = f'Current status: {friend_config}'
         if default:
             resp += ' (default)'
@@ -222,7 +220,9 @@ class Clash_Royale:
         """Enables friend link"""
         if not ctx.guild:
             return await ctx.send("Configuring friend link status isn't allowed in DMs")
-        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': True}}, upsert=True)
+        await self.bot.mongo.config.guilds.find_one_and_update(
+            {'guild_id': ctx.guild.id}, {'$set': {'friend_link': True}}, upsert=True
+        )
         await ctx.send('Successfully set friend link to be enabled.')
 
     @friendlink.command()
@@ -231,7 +231,9 @@ class Clash_Royale:
         """Disables friend link"""
         if not ctx.guild:
             return await ctx.send("Configuring friend link status isn't allowed in DMs")
-        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set':{'friend_link': False}}, upsert=True)
+        await self.bot.mongo.config.guilds.find_one_and_update(
+            {'guild_id': ctx.guild.id}, {'$set': {'friend_link': False}}, upsert=True
+        )
         await ctx.send('Successfully set friend link to be disabled.')
 
     @commands.group(invoke_without_command=True, aliases=['player'])
@@ -243,7 +245,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.cr.get_player(tag)
             cycle = await self.cr.get_player_chests(tag)
-            em = await embeds_cr_crapi.format_profile(ctx, profile, cycle)
+            em = await embeds.format_profile(ctx, profile, cycle)
 
         await ctx.send(embed=em)
 
@@ -255,7 +257,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.cr.get_player(tag)
-            em = await embeds_cr_crapi.format_stats(ctx, profile)
+            em = await embeds.format_stats(ctx, profile)
 
         await ctx.send(embed=em)
 
@@ -267,18 +269,17 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.cr.get_player(tag)
-            ems = await embeds_cr_crapi.format_seasons(ctx, profile)
+            ems = await embeds.format_seasons(ctx, profile)
 
         if len(ems) > 0:
             session = PaginatorSession(
-                ctx=ctx, 
-                pages=ems, 
-                footer_text=f'{len(ems)} seasons'
-                )
+                ctx=ctx,
+                pages=ems
+            )
             await session.run()
         else:
             await ctx.send(f"**{profile.name}** doesn't have any season results.")
-                
+
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False)
     async def chests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
@@ -288,7 +289,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.cr.get_player(tag)
             cycle = await self.cr.get_player_chests(tag)
-            em = await embeds_cr_crapi.format_chests(ctx, profile, cycle)
+            em = await embeds.format_chests(ctx, profile, cycle)
 
         await ctx.send(embed=em)
 
@@ -300,7 +301,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.cr.get_player(tag)
-            em = await embeds_cr_crapi.format_cards(ctx, profile)
+            em = await embeds.format_cards(ctx, profile)
 
         await ctx.send(embed=em)
 
@@ -312,10 +313,9 @@ class Clash_Royale:
 
         async with ctx.typing():
             battles = await self.cr.get_player_battles(tag)
-            em = await embeds_cr_crapi.format_battles(ctx, battles)
+            em = await embeds.format_battles(ctx, battles)
 
         await ctx.send(embed=em)
-
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
@@ -325,12 +325,12 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.cr.get_clan(tag)
-            ems = await embeds_cr_crapi.format_clan(ctx, clan)
+            ems = await embeds.format_clan(ctx, clan)
 
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
-            )
+        )
         await session.run()
 
     @commands.group(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
@@ -341,12 +341,12 @@ class Clash_Royale:
 
         async with ctx.typing():
             war = await self.cr.get_clan_war(tag)
-            ems = await embeds_cr_crapi.format_clan_war(ctx, war)
+            ems = await embeds.format_clan_war(ctx, war)
 
         session = PaginatorSession(
-                ctx=ctx,
-                pages=ems
-                )
+            ctx=ctx,
+            pages=ems
+        )
         await session.run()
 
     @commands.group(invoke_without_command=True)
@@ -363,12 +363,12 @@ class Clash_Royale:
                 name = 'Global'
 
             clans = await self.cr.get_top_clans(region)
-            ems = await embeds_cr_crapi.format_top_clans(ctx, clans, name)
+            ems = await embeds.format_top_clans(ctx, clans, name)
 
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
-            )
+        )
         await session.run()
 
     @commands.group(invoke_without_command=True)
@@ -379,13 +379,13 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.cr.get_clan(tag)
-            ems = await embeds_cr_crapi.format_members(ctx, clan)
+            ems = await embeds.format_members(ctx, clan)
 
         session = PaginatorSession(
-            ctx=ctx, 
-            pages=ems, 
+            ctx=ctx,
+            pages=ems,
             footer_text=f'{len(clan.members)}/50 members'
-            )
+        )
         await session.run()
 
     @members.command()
@@ -400,7 +400,7 @@ class Clash_Royale:
             if len(clan.members) < 4:
                 await ctx.send('Clan must have more than 4 players for these statistics.')
             else:
-                em = await embeds_cr_crapi.format_most_valuable(ctx, clan)
+                em = await embeds.format_most_valuable(ctx, clan)
                 await ctx.send(embed=em)
 
     @members.command()
@@ -415,10 +415,9 @@ class Clash_Royale:
             if len(clan.members) < 4:
                 return await ctx.send('Clan must have more than 4 players for these statistics.')
             else:
-                em = await embeds_cr_crapi.format_least_valuable(ctx, clan)
+                em = await embeds.format_least_valuable(ctx, clan)
                 await ctx.send(embed=em)
 
-            
     @commands.command()
     async def save(self, ctx, tag, index: str='0'):
         """Saves a Clash Royale tag to your discord profile."""
@@ -445,7 +444,6 @@ class Clash_Royale:
         for i in tag:
             em.add_field(name=f'Tag index: {i}', value=tag[i])
         await ctx.send(embed=em)
-        
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms(False, False)
@@ -462,13 +460,13 @@ class Clash_Royale:
     async def _card(self, ctx, *, card):
         """Get information about a Clash Royale card."""
         aliases = {
-            "log": "the log", 
-            "pump": 'elixir collector', 
+            "log": "the log",
+            "pump": 'elixir collector',
             'skarmy': 'skeleton army',
             'pekka': 'p.e.k.k.a',
             'mini pekka': 'mini p.e.k.k.a',
             'xbow': 'x-bow'
-            }
+        }
         card = card.lower()
         if card in aliases:
             card = aliases[card]
@@ -497,12 +495,12 @@ class Clash_Royale:
         """View statistics about a tournament"""
         async with ctx.typing():
             t = await self.cr.get_tournament(tag)
-            ems = await embeds_cr_crapi.format_tournament(ctx, t)
+            ems = await embeds.format_tournament(ctx, t)
 
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
-            )
+        )
         await session.run()
 
     @commands.command(aliases=['tourneys'])
@@ -511,7 +509,7 @@ class Clash_Royale:
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
             t = await self.cr.get_open_tournaments()
-            em = await embeds_cr_crapi.format_tournaments(ctx, t)
+            em = await embeds.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)
 
@@ -526,13 +524,14 @@ class Clash_Royale:
 
         copydeck = '<:copydeck:376367880289124366>'
 
-        em = discord.Embed(description=f'[Copy this deck! {copydeck}]({profile.deck_link})', color=embeds.random_color())
+        em = discord.Embed(
+            description=f'[Copy this deck! {copydeck}]({profile.deck_link})', color=embeds.random_color()
+        )
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
-        em.set_author(name=f'{profile.name} (#{profile.tag})', icon_url=embeds_cr_crapi.get_clan_image(profile))
+        em.set_author(name=f'{profile.name} (#{profile.tag})', icon_url=embeds.get_clan_image(profile))
         em.set_image(url='attachment://deck.png')
         em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
-
 
         await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)
 
@@ -572,14 +571,18 @@ class Clash_Royale:
             try:
                 card_image = Image.open(card_image_file).convert("RGBA")
             except FileNotFoundError:
-                self.bot.loop.create_task(ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`'))
+                self.bot.loop.create_task(
+                    ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
+                )
             else:
                 # size = (card_w, card_h)
                 # card_image.thumbnail(size)
-                box = (card_x + card_w * i,
+                box = (
+                    card_x + card_w * i,
                     card_y,
                     card_x + card_w * (i + 1),
-                    card_h + card_y)
+                    card_h + card_y
+                )
                 image.paste(card_image, box, card_image)
 
         # elixir
@@ -601,7 +604,7 @@ class Clash_Royale:
 
         line1 = profile.arena.name
         line2 = f'{profile.trophies} Trophies'
-        
+
         # card_text = '\n'.join([line0, line1])
 
         deck_author_name = deck_author
@@ -640,6 +643,7 @@ class Clash_Royale:
         file.seek(0)
 
         return file
+
 
 def setup(bot):
     cog = Clash_Royale(bot)

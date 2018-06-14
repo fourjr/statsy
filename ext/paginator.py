@@ -1,8 +1,8 @@
-import discord
-from discord.ext import commands
-from collections import OrderedDict
 import asyncio
-import inspect
+from collections import OrderedDict
+
+import discord
+
 
 class PaginatorSession:
     '''
@@ -42,7 +42,7 @@ class PaginatorSession:
             '⏹': self.close,
             '▶': self.next_page,
             '⏭': self.last_page
-            })
+        })
         self.help_color = help_color
         self.page_num_enabled = page_nums
         self.file = file
@@ -56,7 +56,7 @@ class PaginatorSession:
             raise TypeError('Page must be an Embed object.')
 
     def valid_page(self, index):
-        if index < 0 or index+1 > len(self.pages):
+        if index < 0 or index + 1 > len(self.pages):
             return False
         else:
             return True
@@ -69,7 +69,10 @@ class PaginatorSession:
         page = self.pages[index]
 
         if self.page_num_enabled:
-            fmt = f'Page {index+1}/{len(self.pages)} · {self.footer_text}' if self.footer_text else f'Page {index+1}/{len(self.pages)}'
+            if self.footer_text:
+                fmt = f'Page {index+1}/{len(self.pages)} · {self.footer_text}'
+            else:
+                fmt = f'Page {index+1}/{len(self.pages)}'
             page.set_footer(text=fmt)
 
         if self.running:
@@ -100,7 +103,11 @@ class PaginatorSession:
             return await self.show_page(0)
         while self.running:
             try:
-                reaction, user = await self.ctx.bot.wait_for('reaction_add', check=self.react_check, timeout=self.timeout)
+                reaction, user = await self.ctx.bot.wait_for(
+                    'reaction_add',
+                    check=self.react_check,
+                    timeout=self.timeout
+                )
             except asyncio.TimeoutError:
                 self.paginating = False
                 try:
@@ -120,11 +127,11 @@ class PaginatorSession:
 
     def previous_page(self):
         '''Go to the previous page.'''
-        return self.show_page(self.current-1)
+        return self.show_page(self.current - 1)
 
     def next_page(self):
         '''Go to the next page'''
-        return self.show_page(self.current+1)
+        return self.show_page(self.current + 1)
 
     def message_check(self, m):
         return m.author == self.ctx.author and \
@@ -143,4 +150,4 @@ class PaginatorSession:
 
     def last_page(self):
         '''Go to immediately to the last page'''
-        return self.show_page(len(self.pages)-1)
+        return self.show_page(len(self.pages) - 1)

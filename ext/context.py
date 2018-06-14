@@ -1,7 +1,5 @@
-import asyncio
 import io
 import json
-import os
 import time
 from urllib.parse import urlparse
 
@@ -59,17 +57,18 @@ class CustomContext(commands.Context):
                 color = ColorThief(f).get_color(quality=quality)
             except:
                 return discord.Color.dark_grey()
-            
+
         return discord.Color.from_rgb(*color)
 
-    async def save_tag(self, tag, game, id=None, *, index = '0'):
+    async def save_tag(self, tag, game, id=None, *, index='0'):
         id = id or self.author.id
 
-        await self.bot.mongo.player_tags[game].find_one_and_update({
+        await self.bot.mongo.player_tags[game].find_one_and_update(
+            {
                 'user_id': id
             },
             {
-                '$set':{f'tag.{index}': tag}
+                '$set': {f'tag.{index}': tag}
             },
             upsert=True,
             return_document=pymongo.ReturnDocument.AFTER
@@ -79,7 +78,7 @@ class CustomContext(commands.Context):
         id = id or self.author.id
         await self.bot.mongo.player_tags[game].find_one_and_delete({'user_id': id})
 
-    async def get_tag(self, game, id=None, *, index = '0'):
+    async def get_tag(self, game, id=None, *, index='0'):
         id = id or self.author.id
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
@@ -103,7 +102,7 @@ class CustomContext(commands.Context):
                 pages.append(text[last:curr])
                 last = curr
                 appd_index = curr
-        if appd_index != len(text)-1:
+        if appd_index != len(text) - 1:
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
 

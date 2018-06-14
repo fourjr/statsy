@@ -1,17 +1,17 @@
 import io
-import json
 import os
 
 import aiohttp
 import discord
 from discord.ext import commands
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 from __main__ import InvalidTag, NoTag
 from ext import embeds_coc
 from ext.paginator import PaginatorSession
 
 shortcuts = {}
+
 
 class TagCheck(commands.MemberConverter):
 
@@ -43,6 +43,7 @@ class TagCheck(commands.MemberConverter):
         else:
             return tag
 
+
 class Clash_of_Clans:
 
     '''Commands relating to the Clash of Clans game made by supercell.'''
@@ -68,7 +69,6 @@ class Clash_of_Clans:
             raise ValueError(message)
         else:
             return clan_tag.replace("#", "")
-
 
     async def resolve_tag(self, ctx, tag_or_user, clan=False):
         if not tag_or_user:
@@ -110,7 +110,7 @@ class Clash_of_Clans:
                 ctx=ctx,
                 pages=ems,
                 footer_text='Statsy | Powered by the COC API'
-                )
+            )
             await session.run()
 
     @commands.group(invoke_without_command=True)
@@ -130,9 +130,8 @@ class Clash_of_Clans:
                 ctx=ctx,
                 pages=ems,
                 footer_text='Statsy | Powered by the COC API'
-                )
+            )
             await session.run()
-
 
     @commands.group(invoke_without_command=True)
     async def cocclan(self, ctx, *, tag_or_user: TagCheck=None):
@@ -151,7 +150,7 @@ class Clash_of_Clans:
                 ctx=ctx,
                 pages=ems,
                 footer_text='Statsy | Powered by the COC API'
-                )
+            )
             await session.run()
 
     @commands.group(invoke_without_command=True)
@@ -169,10 +168,10 @@ class Clash_of_Clans:
             ems = await embeds_coc.format_members(ctx, clan)
             if len(ems) > 1:
                 session = PaginatorSession(
-                    ctx=ctx, 
-                    pages=ems, 
+                    ctx=ctx,
+                    pages=ems,
                     footer_text=f'{clan["members"]}/50 members'
-                    )
+                )
                 await session.run()
             else:
                 await ctx.send(embed=ems[0])
@@ -211,7 +210,6 @@ class Clash_of_Clans:
                     em = await embeds_coc.format_least_valuable(ctx, clan)
                     await ctx.send(embed=em)
 
-            
     @commands.command()
     async def cocsave(self, ctx, *, tag):
         '''Saves a Clash of Clans tag to your discord.

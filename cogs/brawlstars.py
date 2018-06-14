@@ -1,24 +1,27 @@
-import discord
-import asyncio
 import abrawlpy
-import box
+import discord
 from discord.ext import commands
-from bs4 import BeautifulSoup
-from __main__ import InvalidTag, NoTag
-from ext import embeds_bs
-from ext import embeds_cr_crapi as embeds
-from ext.paginator import PaginatorSession
 
-shortcuts = {'juice':'2PP00', 'pulp':'PY9JLV'}
+import box
+from ext import embeds_cr_crapi as embeds
+from ext import embeds_bs
+from ext.paginator import PaginatorSession
+from statsbot import InvalidTag, NoTag
+
+shortcuts = {
+    'juice': '2PP00',
+    'pulp': 'PY9JLV'
+}
+
 
 class TagCheck(commands.MemberConverter):
-    
+
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
         if tag in shortcuts:
             tag = shortcuts[tag]
-        tag = tag.strip('#').upper().replace('O','0')
+        tag = tag.strip('#').upper().replace('O', '0')
         if any(i not in self.check for i in tag):
             return False
         else:
@@ -29,7 +32,7 @@ class TagCheck(commands.MemberConverter):
         try:
             user = await super().convert(ctx, argument)
         except commands.BadArgument:
-            pass 
+            pass
         else:
             return user
 
@@ -40,7 +43,8 @@ class TagCheck(commands.MemberConverter):
             raise InvalidTag('Invalid bs-tag passed.')
         else:
             return tag
-        
+
+
 class Brawl_Stars:
 
     '''Commands relating to the Brawl Stars game made by supercell.'''
@@ -97,16 +101,15 @@ class Brawl_Stars:
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            raise InvalidTag('Invalid tag') 
+            raise InvalidTag('Invalid tag')
 
         await ctx.save_tag(tag, 'brawlstars')
 
         await ctx.send('Successfully saved tag.')
 
-
     @commands.command()
     @embeds.has_perms(False)
-    async def bsprofile(self, ctx, tag_or_user:TagCheck=None):
+    async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user)
@@ -124,7 +127,7 @@ class Brawl_Stars:
 
     @commands.command()
     @embeds.has_perms()
-    async def bsband(self, ctx, tag_or_user:TagCheck=None):
+    async def bsband(self, ctx, tag_or_user: TagCheck=None):
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
             tag = await self.resolve_tag(ctx, tag_or_user, band=True)
@@ -141,7 +144,7 @@ class Brawl_Stars:
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
-            )
+        )
         await session.run()
 
     @commands.command(enabled=False, hidden=True)

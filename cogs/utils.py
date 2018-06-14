@@ -1,20 +1,13 @@
-import asyncio
 import copy
 import datetime
 import inspect
 import io
 import json
 import os
-import re
-import sys
 import textwrap
-import time
 import traceback
-import os
-from collections import defaultdict
 from contextlib import redirect_stdout
 
-import aiohttp
 import discord
 import psutil
 from discord.ext import commands
@@ -55,7 +48,7 @@ class Bot_Related:
             await self.bot.change_presence(
                 status=discord.Status.online,
                 game=None
-                )
+            )
 
             self.bot.maintenance_mode = False
 
@@ -65,7 +58,7 @@ class Bot_Related:
             await self.bot.change_presence(
                 status=discord.Status.dnd,
                 game=discord.Game(name='maintenance!')
-                )
+            )
 
             self.bot.maintenance_mode = True
 
@@ -91,16 +84,19 @@ class Bot_Related:
         if not ctx.guild:
             return await ctx.send("Changing prefix isn't allowed in DMs")
         if prefix == '!':
-            await self.bot.mongo.config.guilds.find_one_and_delete({'guild_id': ctx.guild.id})
+            await self.bot.mongo.config.guilds.find_one_and_delete(
+                {'guild_id': ctx.guild.id}
+            )
         else:
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {'prefix': prefix}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update(
+                {'guild_id': ctx.guild.id}, {'$set': {'prefix': prefix}}, upsert=True
+            )
         await ctx.send(f'Changed the prefix to: `{prefix}`')
 
-    @commands.command(name='bot',aliases=['about', 'info', 'botto'])
+    @commands.command(name='bot', aliases=['about', 'info', 'botto'])
     async def _bot(self, ctx):
         """Shows information and stats about the bot."""
-        em = discord.Embed()
-        em.timestamp = datetime.datetime.utcnow()
+        em = discord.Embed(timestamp=datetime.datetime.now())
         status = str(getattr(ctx.guild, 'me', self.bot.guilds[0].me).status)
         if status == 'online':
             em.set_author(name="Bot Information", icon_url='https://i.imgur.com/wlh1Uwb.png')
@@ -136,7 +132,7 @@ class Bot_Related:
         else:
             em.description = 'Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR.'
 
-        em.description += "\n\nThis content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy." 
+        em.description += "\n\nThis content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy."
 
         cbot = '<:certifiedbot:427089403060551700>'
 
@@ -151,7 +147,7 @@ class Bot_Related:
         memory_usage = self.bot.process.memory_full_info().uss / 1024**2
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
         em.add_field(name='RAM Usage', value=f'{memory_usage:.2f} MiB')
-        em.add_field(name='CPU Usage',value=f'{cpu_usage:.2f}% CPU')
+        em.add_field(name='CPU Usage', value=f'{cpu_usage:.2f}% CPU')
         em.add_field(name='Commands Run', value=sum(self.bot.commands_used.values()))
         em.add_field(name='Saved Tags', value=saved_tags)
         em.add_field(name='Library', value='discord.py rewrite')
@@ -173,8 +169,7 @@ class Bot_Related:
         em.title = 'Restarting Bot'
         em.description = 'Restarting `Statsy`.'
         await ctx.send(embed=em)
-        os.system('pm2 restart Statsy')
-
+        await self.bot.logout()
 
     def format_cog_help(self, name, cog, prefix):
         """Formats the text for a cog help"""
@@ -184,10 +179,10 @@ class Bot_Related:
             if cmd.hidden:
                 continue
             if cmd.instance is cog:
-                sigs.append(len(cmd.qualified_name)+len(prefix))
+                sigs.append(len(cmd.qualified_name) + len(prefix))
                 if hasattr(cmd, 'all_commands'):
                     for c in cmd.all_commands.values():
-                        sigs.append(len('\u200b  └─ ' + c.name)+1)
+                        sigs.append(len('\u200b  └─ ' + c.name) + 1)
 
         if not sigs:
             return
@@ -208,15 +203,17 @@ class Bot_Related:
                 if hasattr(cmd, 'commands'):
                     for c in cmd.commands:
                         branch = '\u200b  └─ ' + c.name
-                        if len(fmt[index] + f"`{branch:<{maxlen+1}} " +  f"{c.short_doc:<{maxlen}}`\n") > 1024:
+                        if len(fmt[index] + f"`{branch:<{maxlen+1}} " + f"{c.short_doc:<{maxlen}}`\n") > 1024:
                             index += 1
                             fmt.append('')
                         fmt[index] += f"`{branch:<{maxlen+1}} "
                         fmt[index] += f"{c.short_doc:<{maxlen}}`\n"
 
-        em = discord.Embed(title=name.replace('_',' '))
-        em.color = embeds.random_color()
-        em.description = '*'+(self.bot.psa_message or inspect.getdoc(cog))+'*'
+        em = discord.Embed(
+            title=name.replace('_', ' '),
+            description='*' + (self.bot.psa_message or inspect.getdoc(cog)) + '*',
+            color=embeds.random_color()
+        )
         for n, i in enumerate(fmt):
             if n == 0:
                 em.add_field(name='Commands', value=i)
@@ -235,11 +232,11 @@ class Bot_Related:
         cmd = self.bot.get_command(command)
         if cmd is not None and not cmd.hidden:
             return discord.Embed(
-                    color=embeds.random_color(),
-                    title=f'`{prefix}{cmd.signature}`', 
-                    description=cmd.help
-                    )
-                
+                color=embeds.random_color(),
+                title=f'`{prefix}{cmd.signature}`',
+                description=cmd.help
+            )
+
     @commands.command()
     async def help(self, ctx, *, command=None):
         """Shows the help message."""
@@ -264,10 +261,11 @@ class Bot_Related:
             em = self.format_cog_help(name, cog, prefix)
             pages.append(em)
 
-        p_session = PaginatorSession(ctx, 
+        p_session = PaginatorSession(
+            ctx,
             footer_text=f'Type {prefix}help command for more info on a command.',
             pages=pages
-            )
+        )
 
         await p_session.run()
 
@@ -275,8 +273,9 @@ class Bot_Related:
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
 
-        if ctx.author.id not in self.bot.developers: return
-        
+        if ctx.author.id not in self.bot.developers:
+            return
+
         env = {
             'bot': self.bot,
             'ctx': ctx,
@@ -309,7 +308,7 @@ class Bot_Related:
             value = stdout.getvalue()
             err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
-            value = stdout.getvalue().replace(os.getenv('token'),"[EXPUNGED]")
+            value = stdout.getvalue().replace(os.getenv('token'), "[EXPUNGED]")
             if ret is None:
                 if value:
                     try:
@@ -334,9 +333,9 @@ class Bot_Related:
                         await ctx.send(f'```py\n{page}\n```')
 
         if out:
-            await ctx.message.add_reaction('\u2705') #tick
+            await ctx.message.add_reaction('\u2705')  # tick
         if err:
-            await ctx.message.add_reaction('\u2049') #x
+            await ctx.message.add_reaction('\u2049')  # x
         else:
             await ctx.message.add_reaction('\u2705')
 
@@ -348,37 +347,47 @@ class Bot_Related:
 
         # remove `foo`
         return content.strip('` \n')
-    
+
     @commands.command()
-    async def suggest(self, ctx, *, details:str):
+    async def suggest(self, ctx, *, details: str):
         """Suggest a game! Or a feature!"""
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
-        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New suggestion from {ctx.author.name}', "body": details, "labels":['suggestion', 'discord']}, headers={'Authorization': f'Bearer {os.getenv("github")}'}) as resp:
-            if 300 > resp.status >= 200:
-                issueinfo = await resp.json()
-            else:
+        async with self.bot.session.post(
+            'https://api.github.com/repos/kyb3r/statsy/issues',
+            json={
+                'title': f'New suggestion from {ctx.author.name}',
+                'body': details,
+                'labels': ['suggestion', 'discord']
+            },
+            headers={'Authorization': f'Bearer {os.getenv("github")}'}
+        ) as resp:
+            if not 300 > resp.status >= 200:
                 await self.bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{details}')
                 await ctx.send('Suggestion submitted.')
 
-        # TODO: make it a public repo # await ctx.send(f'Suggestion submitted. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
         await ctx.send(f'Suggestion submitted. Thanks for the feedback!')
 
     @commands.command()
-    async def bug(self, ctx, *, details:str):
+    async def bug(self, ctx, *, details: str):
         """Report a bug!"""
 
         details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
 
-        async with self.bot.session.post('https://api.github.com/repos/kyb3r/statsy/issues', json={"title": f'New bug report from {ctx.author.name}', "body": details, "labels":['bug', 'discord']}, headers={'Authorization': f'Bearer {os.getenv("github")}'}) as resp:
-            if 300 > resp.status >= 200:
-                issueinfo = await resp.json()
-            else:
+        async with self.bot.session.post(
+            'https://api.github.com/repos/kyb3r/statsy/issues',
+            json={
+                'title': f'New bug report from {ctx.author.name}',
+                'body': details,
+                'labels': ['bug', 'discord']
+            },
+            headers={'Authorization': f'Bearer {os.getenv("github")}'}
+        ) as resp:
+            if not 300 > resp.status >= 200:
                 await self.bot.get_channel(373646610560712704).send(f'Bug (APIDOWN)\n\n{details}')
                 await ctx.send('Bug reported.')
 
-        # TODO: make it a public repo # await ctx.send('Bug reported. You can follow up on your suggestion through the link below! \n<{issueinfo["html_url"]}>')
         await ctx.send(f'Bug Reported. Thanks for the report!')
 
     @commands.command(hidden=True)
@@ -414,7 +423,8 @@ class Bot_Related:
                 medium += 1
             elif len(guild.members) < 5000:
                 large += 1
-            else: massive += 1
+            else:
+                massive += 1
         await ctx.send(textwrap.dedent(f"""```css
 Nano Servers    [ <10  ]:  {nano}
 Tiny Servers    [ 10+  ]:  {tiny}
@@ -430,8 +440,10 @@ Total                   :  {len(self.bot.guilds)}```"""))
         if ctx.author.id not in self.bot.developers:
             return
         command_usage = (await self.bot.mongo.config.admin.find_one({'_id': 'master'}))['commands']
-        sorted_commands = {i: command_usage[i] for i in sorted(command_usage, key=lambda x: command_usage[x], reverse=True)}
+        sorted_usage = sorted(command_usage, key=lambda x: command_usage[x], reverse=True)
+        sorted_commands = {i: command_usage[i] for i in sorted_usage}
         await ctx.send('```json\n' + json.dumps(sorted_commands, indent=4) + '\n```')
+
 
 def setup(bot):
     c = Bot_Related(bot)

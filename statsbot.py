@@ -25,47 +25,25 @@ SOFTWARE.
 import asyncio
 import datetime
 import inspect
-import io
 import json
 import os
-import re
 import platform
+import random
 import sys
-import textwrap
-import time
 import traceback
 from collections import defaultdict
-from contextlib import redirect_stdout
 
 import aiohttp
+import bugsnag
 import clashroyale
 import discord
 import psutil
-from abrawlpy import Client as bsClient
 from discord.ext import commands
 from dotenv import load_dotenv, find_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from ext import embeds_cr_statsroyale as embeds
 from ext.context import CustomContext
-from ext.paginator import PaginatorSession
 
-
-class crClient(clashroyale.Client):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.requests_made = [0, 0, 0]
-
-    # async def request(self, url):
-    #     self.requests_made[2] += 1
-    #     try:
-    #         ret = await super().request(url)
-    #     except Exception as e:
-    #         self.requests_made[1] += 1
-    #         raise e
-    #     else:
-    #         self.requests_made[0] += 1
-    #         return ret
 
 class InvalidTag(commands.BadArgument):
     """Raised when a tag is invalid."""
@@ -80,15 +58,16 @@ class InvalidPlatform(commands.BadArgument):
     message = 'Platforms should only be one of the following:\n' \
               'pc, ps4, xb1'
 
+
 class NoTag(Exception):
     pass
 
+
 from statsbot import InvalidPlatform, NoTag, InvalidTag
 
+
 class StatsBot(commands.AutoShardedBot):
-    """
-    Custom client for statsy made by Kyber
-    """
+    """Custom client for statsy made by Kyber"""
     emoji_servers = [
         376364364636094465,
         376368487037140992,
@@ -113,8 +92,12 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crClient(os.getenv('royaleapi'), session=self.session, is_async=True, timeout=10)
+        self.cr = clashroyale.Client(os.getenv('royaleapi'), session=self.session, is_async=True, timeout=10)
         self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
+        bugsnag.configure(
+            api_key=os.getenv('bugsnag'),
+            project_root=os.getcwd(),
+        )
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
         self.process = psutil.Process()
@@ -127,8 +110,10 @@ class StatsBot(commands.AutoShardedBot):
         self.load_extensions()
         self._add_commands()
 
-        self.log_hook = discord.Webhook.from_url(os.getenv('log_hook'), adapter=discord.AsyncWebhookAdapter(self.session))
-        self.error_hook = discord.Webhook.from_url(os.getenv('error_hook'), adapter=discord.AsyncWebhookAdapter(self.session))
+        self.log_hook = discord.Webhook.from_url(
+            os.getenv('log_hook'),
+            adapter=discord.AsyncWebhookAdapter(self.session)
+        )
 
         try:
             self.run(os.getenv('token').strip('"'))
@@ -226,7 +211,9 @@ class StatsBot(commands.AutoShardedBot):
         """Called when a command is invoked."""
         cmd = ctx.command.qualified_name.replace(' ', '_')
         if not self.dev_mode:
-            await self.mongo.config.admin.find_one_and_update({'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True)
+            await self.mongo.config.admin.find_one_and_update(
+                {'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True
+            )
         self.commands_used[cmd] += 1
 
     async def process_commands(self, message):
@@ -265,10 +252,11 @@ class StatsBot(commands.AutoShardedBot):
             prefix = (await self.get_prefix(ctx.message))[2]
             await ctx.send(
                 embed=discord.Embed(
-                    color=embeds.random_color(),
+                    color=random.randint(0, 0xffffff),
                     title=f'``Usage: {prefix}{ctx.command.signature}``',
-                    description=ctx.command.help)
+                    description=ctx.command.help
                 )
+            )
         else:
             if not description:
                 await ctx.send('Something went wrong and we are investigating the issue now :(')
@@ -283,10 +271,19 @@ class StatsBot(commands.AutoShardedBot):
                 description=error_message,
                 title=ctx.message.content)
             em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM")} | C: {ctx.channel.id} | U: {ctx.author.id}')
-            if not self.dev_mode:
-                await self.error_hook.send(content=description, embed=em)
+            if True:  # if not self.dev_mode:
+                bugsnag.notify(
+                    error,
+                    meta_data={
+                        'content': ctx.message.content,
+                        'message': ctx.message.id,
+                        'user': ctx.author.id,
+                        'guild': getattr(ctx.guild, "id", "DM"),
+                        'channel': ctx.channel.id
+                    }
+                )
             else:
-                print(error_message, file=sys.stderr)
+                print(error_message)
 
     async def on_message(self, message):
         """Called when a message is sent/recieved."""
@@ -300,14 +297,24 @@ class StatsBot(commands.AutoShardedBot):
         while not self.is_closed():
             server_count = {'server_count': len(self.guilds)}
             # DBL
-            await self.session.post('https://discordbots.org/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': os.getenv('dbl')})
+            await self.session.post(
+                'https://discordbots.org/api/bots/347006499677143041/stats', json=server_count, headers={
+                    'Authorization': os.getenv('dbl')
+                }
+            )
             # bots.pw
-            await self.session.post('https://bots.discord.pw/api/bots/347006499677143041/stats', json=server_count, headers={'Authorization': os.getenv('botspw')})
+            await self.session.post(
+                'https://bots.discord.pw/api/bots/347006499677143041/stats', json=server_count, headers={
+                    'Authorization': os.getenv('botspw')
+                }
+            )
             # Bots for Discord
-            await self.session.post('https://botsfordiscord.com/api/v1/bots/347006499677143041', json=server_count, headers={
-                'Authorization': os.getenv('bfd'),
-                'Content-Type': 'application/json'
-            })
+            await self.session.post(
+                'https://botsfordiscord.com/api/v1/bots/347006499677143041', json=server_count, headers={
+                    'Authorization': os.getenv('bfd'),
+                    'Content-Type': 'application/json'
+                }
+            )
             await asyncio.sleep(3600)
 
     @commands.command()
@@ -315,13 +322,14 @@ class StatsBot(commands.AutoShardedBot):
         """Pong! Returns average shard latency."""
         em = discord.Embed(
             title='Pong! Websocket Latency:',
-            description = f'{self.latency * 1000:.4f} ms',
+            description=f'{self.latency * 1000:.4f} ms',
             color=0xf9c93d
         )
         try:
             await ctx.send(embed=em)
         except discord.Forbidden:
             await ctx.send(em.title + em.description)
+
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())

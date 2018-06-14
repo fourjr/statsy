@@ -1,41 +1,49 @@
-import discord
-import random
 import copy
-import json
-import io
 import datetime
 import math
-import box
-from __main__ import InvalidTag
+import random
 from time import time
-from bs4 import BeautifulSoup
+
+import discord
+
+import box
+
 
 def random_color():
     return random.randint(0, 0xFFFFFF)
 
+
 def emoji(ctx, name):
-    name = name.lower().replace('ricochet', 'rico').replace('el primo', 'primo').replace('jessie', 'jess').replace('dynamike', 'mike')
+    name = name.lower().replace('ricochet', 'rico').replace('el primo', 'primo')
+    name = name.replace('jessie', 'jess').replace('dynamike', 'mike')
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     if e is None:
         return name.title()
     return e
 
-def format_timestamp(seconds:int):
-    minutes = max(math.floor(seconds/60), 0)
-    seconds -= minutes*60
-    hours = max(math.floor(minutes/60), 0)
-    minutes -= hours*60
-    days = max(math.floor(hours/60), 0)
-    hours -= days*60
+
+def format_timestamp(seconds: int):
+    minutes = max(math.floor(seconds / 60), 0)
+    seconds -= minutes * 60
+    hours = max(math.floor(minutes / 60), 0)
+    minutes -= hours * 60
+    days = max(math.floor(hours / 60), 0)
+    hours -= days * 60
     timeleft = ''
-    if days > 0: timeleft += f'{days}d'
-    if hours > 0: timeleft += f' {hours}h'
-    if minutes > 0: timeleft += f' {minutes}m'
-    if seconds > 0: timeleft += f' {seconds}s'
+    if days > 0:
+        timeleft += f'{days}d'
+    if hours > 0:
+        timeleft += f' {hours}h'
+    if minutes > 0:
+        timeleft += f' {minutes}m'
+    if seconds > 0:
+        timeleft += f' {seconds}s'
 
     return timeleft
 
+
 url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master/images/'
+
 
 async def format_profile(ctx, p):
 
@@ -44,7 +52,7 @@ async def format_profile(ctx, p):
 
     brawlers = ''.join([str(emoji(ctx, i.name)) for i in p.brawlers])
 
-    #pic = url + 'thumbnails/high/' + p['avatar_export'] + '.png'
+    # pic = url + 'thumbnails/high/' + p['avatar_export'] + '.png'
 
     trophies = p.trophies
     pb = p.highestTrophies
@@ -65,7 +73,7 @@ async def format_profile(ctx, p):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{name} (#{tag})')
-    #em.set_thumbnail(url=pic)
+    # em.set_thumbnail(url=pic)
     em.set_footer(text='Powered by brawlstars-api')
 
     embed_fields = [
@@ -86,10 +94,11 @@ async def format_profile(ctx, p):
 
     return em
 
+
 async def format_band(ctx, b):
     name = b.name
     description = b.description
-    #badge = url + 'bands/' + b['badge_export'] + '.png'
+    # badge = url + 'bands/' + b['badge_export'] + '.png'
 
     score = b.trophies
 
@@ -107,8 +116,8 @@ async def format_band(ctx, b):
             tag = members[i].tag
             pushers.append(
                 f"**{pushername}**"
-                f"\n{trophies} " 
-                f"{emoji(ctx, 'icon_trophy')}\n" 
+                f"\n{trophies} "
+                f"{emoji(ctx, 'icon_trophy')}\n"
                 f"#{tag}"
             )
 
@@ -118,9 +127,9 @@ async def format_band(ctx, b):
             experiences.append(
                 f"**{xpname}**"
                 f"\n{emoji(ctx, 'star_silver')}"
-                f" {xpval}\n" 
+                f" {xpval}\n"
                 f"#{xptag}"
-                )
+            )
 
     page1 = discord.Embed(description=description, color=random_color())
     page1.set_author(name=f"{name} (#{tag})")
@@ -144,11 +153,12 @@ async def format_band(ctx, b):
     for f, v in fields2:
         if v:
             page2.add_field(name=f, value=v)
-    
+
     page1.set_footer(text='Powered by brawlstars-api')
     page2.set_footer(text='Powered by brawlstars-api')
 
     return [page1, page2]
+
 
 async def format_events(ctx, events):
     em1 = discord.Embed(title='Ongoing events!', color=random_color())
@@ -167,26 +177,33 @@ async def format_events(ctx, events):
     for event in ongoing:
         date = (datetime.datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.datetime.now()
         seconds = math.floor(date.total_seconds())
-        minutes = max(math.floor(seconds/60), 0)
-        seconds -= minutes*60
-        hours = max(math.floor(minutes/60), 0)
-        minutes -= hours*60
+        minutes = max(math.floor(seconds / 60), 0)
+        seconds -= minutes * 60
+        hours = max(math.floor(minutes / 60), 0)
+        minutes -= hours * 60
         timeleft = ''
-        if hours > 0: timeleft += f'{hours}h'
-        if minutes > 0: timeleft += f' {minutes}m'
-        if seconds > 0: timeleft += f' {seconds}s'
+        if hours > 0:
+            timeleft += f'{hours}h'
+        if minutes > 0:
+            timeleft += f' {minutes}m'
+        if seconds > 0:
+            timeleft += f' {seconds}s'
 
         name = event['mode']['name']
         _map = event['location']
         first = event['coins']['first_win']
         freecoins = event['coins']['free']
         maxcoins = event['coins']['max']
-        em1.add_field(name=name, value=(f'**{_map}**\n'
-            f'Time Left: {timeleft} {clock_emoji}\n'
-            f'First game: {first} {first_win_emoji}\n'
-            f'Free coins: {freecoins} {coin_emoji}\n'
-            f'Max Coins: {maxcoins} {coin_emoji}'
-        ))
+        em1.add_field(
+            name=name,
+            value=(
+                f'**{_map}**\n'
+                f'Time Left: {timeleft} {clock_emoji}\n'
+                f'First game: {first} {first_win_emoji}\n'
+                f'Free coins: {freecoins} {coin_emoji}\n'
+                f'Max Coins: {maxcoins} {coin_emoji}'
+            )
+        )
 
     for event in upcoming:
         date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.now()

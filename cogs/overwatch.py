@@ -1,16 +1,10 @@
-import discord, aiohttp
+import aiohttp
+import discord
 from discord.ext import commands
+
 from ext import embeds_ov
-import json
-from __main__ import InvalidTag, NoTag
 from ext.paginator import PaginatorSession
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-from urllib.request import urlretrieve
-import io
-import string
-import os
+from statsbot import NoTag
 
 
 class TagCheck(commands.MemberConverter):
@@ -20,12 +14,13 @@ class TagCheck(commands.MemberConverter):
         try:
             user = await super().convert(ctx, argument)
         except commands.BadArgument:
-            pass 
+            pass
         else:
             return user
 
         # Not a user so its a tag.
         return argument.replace("#", "-")
+
 
 class Overwatch:
     """Commands relating to the Overwatch game."""
@@ -36,9 +31,15 @@ class Overwatch:
         bot.loop.create_task(self.__ainit__())
 
     async def __ainit__(self):
-        self.session = aiohttp.ClientSession(headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'})
-        self.session2 = aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"})
-        self.session3 = aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"})
+        self.session = aiohttp.ClientSession(headers={
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36'
+        })
+        self.session2 = aiohttp.ClientSession(headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"
+        })
+        self.session3 = aiohttp.ClientSession(headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"
+        })
 
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
@@ -87,26 +88,27 @@ class Overwatch:
                         if "error" in heroes:
                             async with self.session3.get(f"https://owapi.net/api/v3/u/{tag}/heroes") as h:
                                 heroes = await h.json()
-                
+
         except Exception as e:
             return await ctx.send(f'`{e}`')
         else:
             try:
-                ems = await embeds_ov.format_profile(ctx, tag.split('-')[0], profile["kr"]['stats'], heroes["kr"]['heroes'])
+                ems = await embeds_ov.format_profile(
+                    ctx, tag.split('-')[0], profile["kr"]['stats'], heroes["kr"]['heroes']
+                )
             except Exception as e:
                 raise e
             if len(ems) > 1:
                 session = PaginatorSession(
-                    ctx=ctx, 
+                    ctx=ctx,
                     pages=ems
-                    )
+                )
                 await session.run()
             elif len(ems) == 0:
                 await ctx.send("There aren't any stats for this user!")
             else:
                 await ctx.send(embed=ems[0])
 
-            
     @commands.command()
     async def owsave(self, ctx, *, tag):
         """Saves a Overwatch tag to your discord.
@@ -115,7 +117,6 @@ class Overwatch:
         """
         await ctx.save_tag(tag.replace("#", "-"), 'overwatch')
         await ctx.send('Successfuly saved tag.')
-
 
 
 def setup(bot):

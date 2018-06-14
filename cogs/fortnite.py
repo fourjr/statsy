@@ -16,6 +16,7 @@ class FortniteServerError(Exception):
     """Raised when the Fortnite API is down"""
     pass
 
+
 class TagOrUser(commands.MemberConverter):
     async def convert(self, ctx, argument):
         try:
@@ -23,18 +24,22 @@ class TagOrUser(commands.MemberConverter):
         except commands.BadArgument:
             return argument
 
+
 def lower(argument):
     return argument.lower()
+
 
 def random_color():
     return random.randint(0, 0xffffff)
 
+
 def emoji(ctx, name):
-    name = name.replace('.','').lower().replace(' ','').replace('_','').replace('-','')
+    name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
     if name == 'chestmagic':
         name = 'chestmagical'
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     return e or name
+
 
 class Fortnite:
     """Commands related to the Fortnite game"""
@@ -67,14 +72,16 @@ class Fortnite:
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
         if isinstance(error, FortniteServerError):
-            await ctx.send('Fortnite API is currently undergoing maintenance. Please try again later.')    
+            await ctx.send('Fortnite API is currently undergoing maintenance. Please try again later.')
 
     async def post(self, endpoint, payload):
         headers = {
             'Authorization': os.getenv('fortnite'),
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        async with self.session.post('https://fortnite-public-api.theapinetwork.com/prod09'  + endpoint, data=urlencode(payload), headers=headers) as resp:
+        async with self.session.post(
+            'https://fortnite-public-api.theapinetwork.com/prod09' + endpoint, data=urlencode(payload), headers=headers
+        ) as resp:
             if resp.status != 200:
                 raise FortniteServerError
             try:
@@ -102,13 +109,15 @@ class Fortnite:
         async with ctx.typing():
             username = await self.resolve_username(ctx, username, platform)
             uid = await self.get_player_uid(ctx, username)
-            player = await self.post('/users/public/br_stats_all', {'user_id': uid, 'window': 'alltime', 'platform': platform})
+            player = await self.post('/users/public/br_stats_all', {
+                'user_id': uid, 'window': 'alltime', 'platform': platform
+            })
 
             ems = []
             top = {'solo': (10, 25), 'duo': (5, 12), 'squad': (3, 6)}
 
             if player['totals']['matchesplayed']:
-                kdr = player['totals']['wins']/player['totals']['matchesplayed']*100
+                kdr = player['totals']['wins'] / player['totals']['matchesplayed'] * 100
             else:
                 kdr = 0
 
@@ -124,33 +133,34 @@ class Fortnite:
                 ems[0].add_field(name=str(name), value=str(value))
 
             for n, mode in enumerate(('solo', 'duo', 'squad')):
+                kdr = player[platform][f'winrate_{mode}']
                 fields = [
                     ('Score', player[platform][f'score_{mode}']),
                     (f'Kills {emoji(ctx, "fnskull")}', player[platform][f'kills_{mode}']),
                     ('Total Battles', player[platform][f'matchesplayed_{mode}']),
-                    (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player[platform][f'placetop1_{mode}']} ({player[platform][f'winrate_{mode}']}%)"),
+                    (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player[platform][f'placetop1_{mode}']} ({kdr}%)"),
                     (f'Top {emoji(ctx, "fnleague")}', 'Top {}: {}\nTop {}: {}'.format(
-                            top[mode][0],
-                            player[platform][f'placetop{top[mode][0]}_{mode}'],
-                            top[mode][1],
-                            player[platform][f'placetop{top[mode][1]}_{mode}']
-                        )
-                    ),
+                        top[mode][0],
+                        player[platform][f'placetop{top[mode][0]}_{mode}'],
+                        top[mode][1],
+                        player[platform][f'placetop{top[mode][1]}_{mode}']
+                    )),
                     ('Kill Death Ratio', player[platform][f'kd_{mode}']),
                     ('Time Played', self.timestamp(player[platform][f'minutesplayed_{mode}']))
                 ]
                 ems.append(discord.Embed(description=f'{mode.title()} Statistics', color=random_color()))
-                ems[n+1].set_author(name=player['username'])
+                ems[n + 1].set_author(name=player['username'])
 
                 for name, value in fields:
-                    ems[n+1].add_field(name=str(name), value=str(value))
+                    ems[n + 1].add_field(name=str(name), value=str(value))
 
             session = PaginatorSession(
-                ctx=ctx, 
+                ctx=ctx,
                 pages=ems,
                 footer_text=f'Statsy - Powered by fortniteapi.com'
             )
         await session.run()
+
 
 def setup(bot):
     bot.add_cog(Fortnite(bot))
