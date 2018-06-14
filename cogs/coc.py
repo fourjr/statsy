@@ -53,7 +53,7 @@ class Clash_of_Clans:
         bot.loop.create_task(self.__ainit__())
 
     async def __ainit__(self):
-        self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {os.getenv('clashofclans)}"})
+        self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"})
 
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
