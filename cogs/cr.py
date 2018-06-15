@@ -181,6 +181,9 @@ class Clash_Royale:
         # if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
         #     return
 
+        if not ('http://link.clashroyale.com' in m.content or 'https://link.clashroyale.com' in m.content):
+            return
+
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
 
@@ -190,30 +193,25 @@ class Clash_Royale:
             default = friend_config = True
 
         if friend_config:
-            ctx = await self.bot.get_context(m)
-            if ctx.command is not None:
-                return
+            tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
+            token = m.content[m.content.find('&token=') + 7:m.content.find('&platform')]
+            link = 'https://link.clashroyale.com?tag={tag}&token={token}'
+            profile = await self.request('get_player', tag)
 
-            if 'http://link.clashroyale.com' in m.content or 'https://link.clashroyale.com' in m.content:
-                tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
-                token = m.content[m.content.find('&token=') + 7:m.content.find('&platform')]
-                link = 'https://link.clashroyale.com?tag={tag}&token={token}'
-                profile = await self.request('get_player', tag)
+            if m.content.find('android'):
+                platform = m.content.find('platform=android') + len('platform=android')
+            else:
+                platform = m.content.find('platform=ios') + len('platform=ios')
 
-                if m.content.find('android'):
-                    platform = m.content.find('platform=android') + len('platform=android')
-                else:
-                    platform = m.content.find('platform=ios') + len('platform=ios')
+            text = m.content[0:m.content.find('http')] + ' ' + m.content[platform:]
 
-                text = m.content[0:m.content.find('http')] + ' ' + m.content[platform:]
+            em = await embeds.format_friend_link(ctx, profile, link, default)
+            try:
+                await m.delete()
+            except (discord.NotFound, commands.BotMissingPermissions):
+                pass
 
-                em = await embeds.format_friend_link(ctx, profile, link, default)
-                try:
-                    await m.delete()
-                except (discord.NotFound, commands.BotMissingPermissions):
-                    pass
-
-                await m.channel.send(text, embed=em)
+            await m.channel.send(text, embed=em)
 
     @commands.group(invoke_without_command=True)
     async def friendlink(self, ctx):
