@@ -201,7 +201,7 @@ class Clash_Royale:
 
             if m.content.find('android'):
                 platform = m.content.find('platform=android') + len('platform=android')
-            elif m.content.find('ios')
+            elif m.content.find('ios'):
                 platform = m.content.find('platform=ios') + len('platform=ios')
             else:
                platform = -1
