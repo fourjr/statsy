@@ -199,9 +199,9 @@ class Clash_Royale:
             link = 'https://link.clashroyale.com?tag={tag}&token={token}/'
             profile = await self.request('get_player', tag)
 
-            if m.content.find('android'):
+            if m.content.find('android') != -1:
                 platform = m.content.find('platform=android') + len('platform=android')
-            elif m.content.find('ios'):
+            elif m.content.find('ios') != -1:
                 platform = m.content.find('platform=ios') + len('platform=ios')
             else:
                platform = -1
