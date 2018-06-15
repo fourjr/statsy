@@ -178,7 +178,7 @@ class Clash_Royale:
             return tag_or_user
 
     async def on_message(self, m):
-        if self.bot.dev_mode or not m.guild:
+        if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
             return
 
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
