@@ -204,7 +204,7 @@ class Clash_Royale:
             elif m.content.find('ios') != -1:
                 platform = m.content.find('platform=ios') + len('platform=ios')
             else:
-               platform = len(m.content
+               platform = len(m.content)
 
             text = m.content[0:m.content.find('http')] + ' ' + m.content[platform:]
 
