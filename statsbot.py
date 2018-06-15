@@ -161,11 +161,10 @@ class StatsBot(commands.AutoShardedBot):
         os.execv(sys.executable, ['python'] + sys.argv)
 
     async def get_prefix(self, message):
-        """Returns the prefix.
-        """
+        """Returns the prefix."""
 
         if self.dev_mode:
-            return './'
+            return ['./', './', './']
 
         id = getattr(message.guild, 'id', None)
 

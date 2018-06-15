@@ -178,9 +178,8 @@ class Clash_Royale:
             return tag_or_user
 
     async def on_message(self, m):
-	return
-        if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
-            return
+        # if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
+        #     return
 
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
@@ -195,23 +194,26 @@ class Clash_Royale:
             if ctx.command is not None:
                 return
 
-            friend_link_pattern = r'((http(s|):\/\/|)(www\.|)link.clashroyale\.com\/invite\/friend\/en(\/|)(\?|)([A-z]*=[0-z]*(&|))*)'
-            links = re.findall(friend_link_pattern, m.content)
-            if links:
-                for link in links:
-                    link = link[0]
-                    params = {i.split('=')[0]: i.split('=')[1] for i in re.findall(r'[A-z]*=[0-z]*', link)}
-                    profile = await self.request('get_player', params['tag'])
+            if 'http://link.clashroyale.com' in m.content or 'https://link.clashroyale.com' in m.content:
+                tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
+                token = m.content[m.content.find('&token=') + 7:m.content.find('&platform')]
+                link = 'https://link.clashroyale.com?tag={tag}&token={token}'
+                profile = await self.request('get_player', tag)
 
-                    em = await embeds.format_friend_link(ctx, profile, link, default)
-                    try:
-                        await m.delete()
-                    except (discord.NotFound, commands.BotMissingPermissions):
-                        pass
+                if m.content.find('android'):
+                    platform = m.content.find('platform=android') + len('platform=android')
+                else:
+                    platform = m.content.find('platform=ios') + len('platform=ios')
 
-                    await m.channel.send(re.sub(friend_link_pattern, '', m.content), embed=em)
+                text = m.content[0:m.content.find('http')] + ' ' + m.content[platform:]
 
-                    await asyncio.sleep(0.5)
+                em = await embeds.format_friend_link(ctx, profile, link, default)
+                try:
+                    await m.delete()
+                except (discord.NotFound, commands.BotMissingPermissions):
+                    pass
+
+                await m.channel.send(text, embed=em)
 
     @commands.group(invoke_without_command=True)
     async def friendlink(self, ctx):
