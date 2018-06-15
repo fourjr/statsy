@@ -77,7 +77,7 @@ class Moderation:
         await member.unban(reason=f'{ctx.author}: {reason}')
 
     async def on_message_edit(self, b, a):
-        if self.bot.dev_mode or getattr(b.guild, 'id', None).id != 444482551139008522 or\
+        if self.bot.dev_mode or getattr(b.guild, 'id', None) != 444482551139008522 or\
            b.content == a.content or b.author.id == 180314310298304512 or b.author == self.bot.user:
             return
         await self.bot.get_channel(456793628736618509).send(embed=discord.Embed(
