@@ -105,21 +105,3 @@ class CustomContext(commands.Context):
         if appd_index != len(text) - 1:
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
-
-    def cache(self, mode, _type, obj, tag=None):
-        return None
-        _type = f'backup/{_type}/'
-        if mode == 'update':
-            tag = tag or obj.get('tag')
-            obj['updatedTime'] = time.time()
-            try:
-                with open(_type + tag + '.json', "w+") as f:
-                    f.write(json.dumps(obj, indent=4))
-            except FileNotFoundError:
-                pass
-        elif mode == 'get':
-            try:
-                with open(_type + obj + '.json') as f:
-                    return clashroyale.models.Player(self.bot.cr, json.load(f))
-            except (FileNotFoundError, json.decoder.JSONDecodeError):
-                return False

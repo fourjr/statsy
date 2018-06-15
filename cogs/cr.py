@@ -2,6 +2,7 @@ import asyncio
 import io
 import re
 
+from cachetools import TTLCache
 import clashroyale
 import discord
 from discord.ext import commands
@@ -114,6 +115,7 @@ class Clash_Royale:
         self.bot = bot
         self.cr = bot.cr
         self.conv = TagCheck()
+        self.cache = TTLCache(500, 180)
         self.url = 'https://statsroyale.herokuapp.com/'
 
     async def __error(self, ctx, error):
@@ -130,8 +132,22 @@ class Clash_Royale:
                 er.add_field(name='Please Note!', value=ctx.bot.psa_message)
             await ctx.send(embed=er)
 
+    async def request(self, method, *args):
+        try:
+            data = self.cache[f'{method}{args}']
+        except KeyError:
+            data = await getattr(self.cr, method)(*args)
+            if isinstance(data, list):
+                self.cache[f'{method}{args}'] = data
+            else:
+                self.cache[f'{method}{args}'] = data.raw_data
+        else:
+            if not isinstance(data, list):
+                data = clashroyale.BaseAttrDict(self.cr, data, None)
+        return data
+
     async def get_clan_from_profile(self, ctx, tag, message):
-        p = await self.cr.get_player(tag)
+        p = await self.request('get_player', tag)
         if p.clan is None:
             await ctx.send(message)
             raise ValueError(message)
@@ -184,7 +200,7 @@ class Clash_Royale:
                 for link in links:
                     link = link[0]
                     params = {i.split('=')[0]: i.split('=')[1] for i in re.findall(r'[A-z]*=[0-z]*', link)}
-                    profile = await self.cr.get_player(params['tag'])
+                    profile = await self.request('get_player', params['tag'])
 
                     em = await embeds.format_friend_link(ctx, profile, link, default)
                     try:
@@ -243,8 +259,8 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            profile = await self.cr.get_player(tag)
-            cycle = await self.cr.get_player_chests(tag)
+            profile = await self.request('get_player', tag)
+            cycle = await self.request('get_player_chests', tag)
             em = await embeds.format_profile(ctx, profile, cycle)
 
         await ctx.send(embed=em)
@@ -256,7 +272,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            profile = await self.cr.get_player(tag)
+            profile = await self.request('get_player', tag)
             em = await embeds.format_stats(ctx, profile)
 
         await ctx.send(embed=em)
@@ -268,7 +284,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            profile = await self.cr.get_player(tag)
+            profile = await self.request('get_player', tag)
             ems = await embeds.format_seasons(ctx, profile)
 
         if len(ems) > 0:
@@ -287,8 +303,8 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            profile = await self.cr.get_player(tag)
-            cycle = await self.cr.get_player_chests(tag)
+            profile = await self.request('get_player', tag)
+            cycle = await self.request('get_player_chests', tag)
             em = await embeds.format_chests(ctx, profile, cycle)
 
         await ctx.send(embed=em)
@@ -300,7 +316,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            profile = await self.cr.get_player(tag)
+            profile = await self.request('get_player', tag)
             em = await embeds.format_cards(ctx, profile)
 
         await ctx.send(embed=em)
@@ -312,7 +328,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            battles = await self.cr.get_player_battles(tag)
+            battles = await self.request('get_player_battles', tag)
             em = await embeds.format_battles(ctx, battles)
 
         await ctx.send(embed=em)
@@ -324,7 +340,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         async with ctx.typing():
-            clan = await self.cr.get_clan(tag)
+            clan = await self.request('get_clan', tag)
             ems = await embeds.format_clan(ctx, clan)
 
         session = PaginatorSession(
@@ -340,7 +356,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         async with ctx.typing():
-            war = await self.cr.get_clan_war(tag)
+            war = await self.request('get_clan_war', tag)
             ems = await embeds.format_clan_war(ctx, war)
 
         session = PaginatorSession(
@@ -362,7 +378,7 @@ class Clash_Royale:
             else:
                 name = 'Global'
 
-            clans = await self.cr.get_top_clans(region)
+            clans = await self.request('get_top_clans', region)
             ems = await embeds.format_top_clans(ctx, clans, name)
 
         session = PaginatorSession(
@@ -378,7 +394,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         async with ctx.typing():
-            clan = await self.cr.get_clan(tag)
+            clan = await self.request('get_clan', tag)
             ems = await embeds.format_members(ctx, clan)
 
         session = PaginatorSession(
@@ -395,7 +411,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         async with ctx.typing():
-            clan = await self.cr.get_clan(tag)
+            clan = await self.request('get_clan', tag)
 
             if len(clan.members) < 4:
                 await ctx.send('Clan must have more than 4 players for these statistics.')
@@ -410,7 +426,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
         async with ctx.typing():
-            clan = await self.cr.get_clan(tag)
+            clan = await self.request('get_clan', tag)
 
             if len(clan.members) < 4:
                 return await ctx.send('Clan must have more than 4 players for these statistics.')
@@ -452,7 +468,7 @@ class Clash_Royale:
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
         async with ctx.typing():
-            profile = await self.cr.get_player(tag)
+            profile = await self.request('get_player', tag)
             await self.format_deck_and_send(ctx, profile)
 
     @commands.command(name='card')
@@ -494,7 +510,7 @@ class Clash_Royale:
     async def tournament(self, ctx, tag: TagOnly):
         """View statistics about a tournament"""
         async with ctx.typing():
-            t = await self.cr.get_tournament(tag)
+            t = await self.request('get_tournament', tag)
             ems = await embeds.format_tournament(ctx, t)
 
         session = PaginatorSession(
@@ -508,7 +524,7 @@ class Clash_Royale:
     async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
-            t = await self.cr.get_open_tournaments()
+            t = await self.request('get_open_tournaments')
             em = await embeds.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)
