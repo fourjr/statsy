@@ -654,7 +654,7 @@ class Clash_Royale:
 
         file = io.BytesIO()
 
-        image.save(file, format='PNG')
+        image.save(file, optimize=False, quality=10, format='PNG')
 
         file.seek(0)
 
