@@ -193,6 +193,7 @@ class Clash_Royale:
             default = friend_config = True
 
         if friend_config:
+            ctx = await bot.get_context(m)
             tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
             token = m.content[m.content.find('&token=') + 7:m.content.find('&platform')]
             link = 'https://link.clashroyale.com?tag={tag}&token={token}'
