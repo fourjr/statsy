@@ -178,6 +178,7 @@ class Clash_Royale:
             return tag_or_user
 
     async def on_message(self, m):
+	return
         if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
             return
 
