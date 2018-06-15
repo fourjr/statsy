@@ -178,8 +178,8 @@ class Clash_Royale:
             return tag_or_user
 
     async def on_message(self, m):
-        # if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
-        #     return
+        if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
+            return
 
         if not ('http://link.clashroyale.com' in m.content or 'https://link.clashroyale.com' in m.content):
             return
