@@ -196,13 +196,15 @@ class Clash_Royale:
             ctx = await self.bot.get_context(m)
             tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
             token = m.content[m.content.find('&token=') + 7:m.content.find('&platform')]
-            link = 'https://link.clashroyale.com?tag={tag}&token={token}'
+            link = 'https://link.clashroyale.com?tag={tag}&token={token}/'
             profile = await self.request('get_player', tag)
 
             if m.content.find('android'):
                 platform = m.content.find('platform=android') + len('platform=android')
-            else:
+            elif m.content.find('ios')
                 platform = m.content.find('platform=ios') + len('platform=ios')
+            else:
+               platform = -1
 
             text = m.content[0:m.content.find('http')] + ' ' + m.content[platform:]
 
