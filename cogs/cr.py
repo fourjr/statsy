@@ -196,7 +196,7 @@ class Clash_Royale:
             ctx = await self.bot.get_context(m)
             tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
             token = m.content[m.content.find('&token=') + 7:m.content.find('&token=') + 7 + 8]
-            link = 'https://link.clashroyale.com?tag={tag}&token={token}/'
+            link = fhttps://link.clashroyale.com?tag={tag}&token={token}/'
             profile = await self.request('get_player', tag)
 
             if m.content.find('android') != -1:
