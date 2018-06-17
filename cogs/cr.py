@@ -457,6 +457,7 @@ class Clash_Royale:
 
     @commands.command()
     async def usertag(self, ctx, member: discord.Member = None):
+        """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await self.resolve_tag(ctx, member, index='all')
         em = discord.Embed(description='Tags saved', color=embeds.random_color())

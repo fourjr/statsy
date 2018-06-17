@@ -247,6 +247,7 @@ class StatsBot(commands.AutoShardedBot):
             commands.CheckFailure,
             clashroyale.RequestError
         )
+
         if isinstance(error, (InvalidTag, InvalidPlatform)):
             await ctx.send(error.message)
         elif isinstance(error, ignored):
@@ -258,7 +259,7 @@ class StatsBot(commands.AutoShardedBot):
                 await ctx.invoke(ctx.command, tag=ctx.args[2])
             except Exception as e:
                 await self.on_command_error(ctx, e)
-        elif isinstance(error, commands.MissingRequiredArgument):
+        elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
             prefix = (await self.get_prefix(ctx.message))[2]
             await ctx.send(
                 embed=discord.Embed(
