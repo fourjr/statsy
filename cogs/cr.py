@@ -512,7 +512,7 @@ class Clash_Royale:
     async def tournament(self, ctx, tag: TagOnly):
         """View statistics about a tournament"""
         async with ctx.typing():
-            t = await self.request('get_tournament', tag)
+            t = await self.request('get_tournament', tag[0])
             ems = await embeds.format_tournament(ctx, t)
 
         session = PaginatorSession(
