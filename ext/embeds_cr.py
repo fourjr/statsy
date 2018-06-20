@@ -189,7 +189,7 @@ async def format_cards(ctx, p):
         if not card:
             continue
 
-        if oldcard and oldcard.rarity != card.rarity:
+        if oldcard and oldcard.rarity.title() != card.rarity.title():
             try:
                 found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
             except IndexError:
