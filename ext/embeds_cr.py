@@ -170,7 +170,8 @@ async def format_cards(ctx, p):
     }
 
     found_cards = p.cards
-    notfound_cards = [i for i in constants.cards if i.id not in [j.id for j in found_cards]]
+    found_cards_id = [getattr(i, 'id', None) for i in found_cards] #cr-api#375
+    notfound_cards = [i for i in constants.cards if i.id not in found_cards_id]
 
     found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity])
     notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity])
