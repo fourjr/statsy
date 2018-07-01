@@ -164,10 +164,11 @@ async def format_cards(ctx, p):
     }
 
     found_cards = p.cards
-    notfound_cards = [i for i in constants.cards if i.id not in [j.id for j in found_cards]]
+    found_cards_id = [getattr(i, 'id', None) for i in found_cards if getattr(i, 'id', None)] #cr-api#375
+    notfound_cards = [i for i in constants.cards if i.id not in found_cards_id]
 
-    found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity])
-    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity])
+    found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity.title()])
+    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity.title()])
 
     def get_rarity(card):
         for a in constants.cards:
@@ -182,7 +183,7 @@ async def format_cards(ctx, p):
         if not card:
             continue
 
-        if oldcard and oldcard.rarity != card.rarity:
+        if oldcard and oldcard.rarity.title() != card.rarity.title():
             try:
                 found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
             except IndexError:
