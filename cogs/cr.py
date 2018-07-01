@@ -156,7 +156,7 @@ class Clash_Royale:
         p = await self.request('get_player', tag)
         if p.clan is None:
             await ctx.send(message)
-            raise ValueError(message)
+            raise NoTag(message)
         return p.clan.tag
 
     async def resolve_tag(self, ctx, tag_or_user, *, clan=False, index=0):

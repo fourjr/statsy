@@ -245,7 +245,6 @@ class StatsBot(commands.AutoShardedBot):
                 await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error, description=None):
-        traceback.print_exc()
         error = getattr(error, 'original', error)
         ignored = (
             NoTag,
@@ -328,8 +327,6 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command()
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
-        print('a')
-        print('a', _('Pong! Websocket Latency:', ctx))
         em = discord.Embed(
             title=_('Pong! Websocket Latency:', ctx),
             description=f'{self.latency * 1000:.4f} ms',
