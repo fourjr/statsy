@@ -1,0 +1,29 @@
+# Statsy.
+# Copyright (C) 2018 fourjr
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0.0\n"
+"POT-Creation-Date: 2018-07-01 21:49+Malay Peninsula Standard Time\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ../cogs/cr.py:236
+msgid " (default, ctx)"
+msgstr ""
+
+#: ../ext/embeds_coc.py:259
+msgid "{}s Collection ({}, ctx)"
+msgstr ""
+
+#: ../ext/embeds_cr.py:228
+msgid "Found Cards ({}, ctx)"
+msgstr ""
+
+#: ../ext/embeds_cr.py:475
+msgid "Previous Season Results ({}, ctx)"
+msgstr ""
+

@@ -3,6 +3,10 @@ import random
 
 import discord
 
+from locales.i18n import Translator
+
+_ = Translator('COC Embeds', __file__)
+
 
 def emoji(ctx, name):
     name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
@@ -29,10 +33,10 @@ async def format_least_valuable(ctx, c):
 
     to_kick = sorted(c['memberList'], key=lambda m: m['score'])[:4]
 
-    em = discord.Embed(color=random_color(), description='Here are the least valuable members of the clan currently.')
+    em = discord.Embed(color=random_color(), description=_('Here are the least valuable members of the clan currently.', ctx))
     em.set_author(name=f"{c['name']} ({c['tag']})")
     em.set_thumbnail(url=c['badgeUrls']['medium'])
-    em.set_footer(text='Statsy - Powered by the COC API')
+    em.set_footer(text=_('Statsy - Powered by the COC API', ctx))
 
     for m in reversed(to_kick):
         try:
@@ -60,10 +64,10 @@ async def format_most_valuable(ctx, c):
 
     best = sorted(c['memberList'], key=lambda m: m['score'], reverse=True)[:4]
 
-    em = discord.Embed(color=random_color(), description='Here are the most valuable members of the clan currently.')
+    em = discord.Embed(color=random_color(), description=_('Here are the most valuable members of the clan currently.', ctx))
     em.set_author(name=f"{c['name']} ({c['tag']})")
     em.set_thumbnail(url=c['badgeUrls']['medium'])
-    em.set_footer(text='Statsy - Powered by the COC API')
+    em.set_footer(text=_('Statsy - Powered by the COC API', ctx))
 
     for m in reversed(best):
         try:
@@ -84,7 +88,7 @@ async def format_most_valuable(ctx, c):
 
 
 async def format_members(ctx, c):
-    em = discord.Embed(description='A list of all members in this clan.', color=random_color())
+    em = discord.Embed(description=_('A list of all members in this clan.', ctx), color=random_color())
     em.set_author(name=f"{c['name']} ({c['tag']})")
     em.set_thumbnail(url=c['badgeUrls']['medium'])
     embeds = []
@@ -92,7 +96,7 @@ async def format_members(ctx, c):
     for m in c['memberList']:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
-            em = discord.Embed(description='A list of all members in this clan.', color=random_color())
+            em = discord.Embed(description=_('A list of all members in this clan.', ctx), color=random_color())
             em.set_author(name=f"{c['name']} ({c['tag']})")
             em.set_thumbnail(url=c['badgeUrls']['medium'])
         try:
@@ -114,22 +118,22 @@ async def format_members(ctx, c):
 
 
 async def format_achievements(ctx, p):
-    em = discord.Embed(description=f"All of {p['name']}'s achievements", color=random_color())
+    em = discord.Embed(description=_("All of {}'s achievements", ctx).format(p['name']), color=random_color())
     em.set_author(name=f"{p['name']} ({p['tag']})")
     embeds = []
     counter = 0
     for achievement in p['achievements']:
         if counter % 4 == 0 and counter != 0:
             embeds.append(em)
-            em = discord.Embed(description=f"All of {p['name']}'s achievements", color=random_color())
+            em = discord.Embed(description=_("All of {}'s achievements", ctx).format(p['name']), color=random_color())
             em.set_author(name=f"{p['name']} ({p['tag']})")
         try:
             status = achievement['completionInfo']
         except KeyError:
-            status = "N/A"
+            status = _('N/A', ctx)
         em.add_field(
             name=f"{achievement['name']} ({achievement['stars']})",
-            value=f"**Requirement:** {achievement['info']}\n**Status:** {status}",
+            value=_('**Requirement:** {}\n**Status:** {}', ctx).format(achievement['info'], status),
             inline=False
         )
         counter += 1
@@ -138,19 +142,19 @@ async def format_achievements(ctx, p):
 
 
 async def format_war(ctx, w):
-    em = discord.Embed(description='In War' if w['state'] == 'inWar' else w['state'].title(), color=random_color())
+    em = discord.Embed(description=_('In War', ctx) if w['state'] == 'inWar' else w['state'].title(), color=random_color())
     em.set_author(name=f"{w['clan']['name']} ({w['clan']['tag']}) vs {w['opponent']['name']} ({w['opponent']['tag']})")
     em.set_image(url="attachment://war.png")
     em.add_field(name=w['clan']['name'], value='--------------')
     em.add_field(name=w['opponent']['name'], value='--------------')
-    em.add_field(name='Level', value=f"{w['clan']['clanLevel']} {emoji(ctx, 'experience')}")
-    em.add_field(name='Level', value=f"{w['opponent']['clanLevel']} {emoji(ctx, 'experience')}")
-    em.add_field(name='Attacks', value=f"{w['clan']['attacks']} {emoji(ctx, 'sword')}")
-    em.add_field(name='Attacks', value=f"{w['opponent']['attacks']} {emoji(ctx, 'sword')}")
-    em.add_field(name='Stars', value=f"{w['clan']['stars']} {emoji(ctx, 'cocstar')}")
-    em.add_field(name='Stars', value=f"{w['opponent']['stars']} {emoji(ctx, 'cocstar')}")
-    em.add_field(name='Destruction', value=f"{w['clan']['destructionPercentage']}%")
-    em.add_field(name='Destruction', value=f"{w['opponent']['destructionPercentage']}%")
+    em.add_field(name=_('Level', ctx), value=f"{w['clan']['clanLevel']} {emoji(ctx, 'experience')}")
+    em.add_field(name=_('Level', ctx), value=f"{w['opponent']['clanLevel']} {emoji(ctx, 'experience')}")
+    em.add_field(name=_('Attacks', ctx), value=f"{w['clan']['attacks']} {emoji(ctx, 'sword')}")
+    em.add_field(name=_('Attacks', ctx), value=f"{w['opponent']['attacks']} {emoji(ctx, 'sword')}")
+    em.add_field(name=_('Stars', ctx), value=f"{w['clan']['stars']} {emoji(ctx, 'cocstar')}")
+    em.add_field(name=_('Stars', ctx), value=f"{w['opponent']['stars']} {emoji(ctx, 'cocstar')}")
+    em.add_field(name=_('Destruction', ctx), value=f"{w['clan']['destructionPercentage']}%")
+    em.add_field(name=_('Destruction', ctx), value=f"{w['opponent']['destructionPercentage']}%")
     return em
 
 
@@ -180,35 +184,35 @@ async def format_profile(ctx, p):
     role = 'Elder' if p['role'] == 'admin' else p['role'].title()
 
     embed_fields = [
-        ('Trophies', trophies, True),
-        ('XP Level', f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
-        ('TH Level', f"{p['townHallLevel']} {emoji(ctx, 'townhall'+str(p['townHallLevel']))}", True),
-        ('Clan Name', f"{clan['name']} {emoji(ctx, 'clan')}" if clan else 'No Clan', True),
-        ('Clan Tag', f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else 'No Clan', True),
-        ('Clan Role', f"{role} {emoji(ctx, 'clan')}" if clan else 'No Clan', True),
-        ('War Stars', f"{war_stars} {emoji(ctx, 'cocstar')}", True),
-        ('Successful Attacks', f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
-        ('Successful Defenses', f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
-        ("Donations", f"{p['donations']}/{p['donationsReceived']} Received {emoji(ctx, 'troops')}", True)
+        (_('Trophies', ctx), trophies, True),
+        (_('XP Level', ctx), f"{p['expLevel']} {emoji(ctx, 'experience')}", True),
+        (_('TH Level', ctx), f"{p['townHallLevel']} {emoji(ctx, 'townhall'+str(p['townHallLevel']))}", True),
+        (_('Clan Name', ctx), f"{clan['name']} {emoji(ctx, 'clan')}" if clan else _('No Clan', ctx), True),
+        (_('Clan Tag', ctx), f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else _('No Clan', ctx), True),
+        (_('Clan Role', ctx), f"{role} {emoji(ctx, 'clan')}" if clan else _('No Clan', ctx), True),
+        (_('War Stars', ctx), f"{war_stars} {emoji(ctx, 'cocstar')}", True),
+        (_('Successful Attacks', ctx), f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
+        (_('Successful Defenses', ctx), f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
+        (_("Donations", ctx), _('{} Received {}', ctx).format(p['donations'] / p['donationsReceived'], emoji(ctx, 'troops')), True)
     ]
 
     try:
         embed_fields.append(
-            ('BH Level', f"{p['builderHallLevel']} {emoji(ctx, 'builderhall'+str(p['builderHallLevel']))}", True)
+            (_('BH Level', ctx), f"{p['builderHallLevel']} {emoji(ctx, 'builderhall'+str(p['builderHallLevel']))}", True)
         )
         embed_fields.append(
-            ("Builder Trophies", f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'axes')}", True)
+            (_("Builder Trophies", ctx), f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {emoji(ctx, 'axes')}", True)
         )
     except KeyError:
         pass
 
     try:
         embed_fields.append(
-            ('Current Season', f"{p['legendStatistics']['currentSeason']['trophies']} {emoji(ctx, 'trophy')}", True)
+            (_('Current Season', ctx), f"{p['legendStatistics']['currentSeason']['trophies']} {emoji(ctx, 'trophy')}", True)
         )
         embed_fields.append(
             (
-                'Best Season',
+                _('Best Season', ctx),
                 '\n'.join((
                     f"{p['legendStatistics']['bestSeason']['trophies']} {emoji(ctx, 'trophy')}",
                     f"{p['legendStatistics']['bestSeason']['rank']} {emoji(ctx, 'rank')}"
@@ -221,7 +225,7 @@ async def format_profile(ctx, p):
     try:
         embed_fields.append(
             (
-                'Last BH Season',
+                _('Last BH Season', ctx),
                 '\n'.join((
                     f"{p['legendStatistics']['previousVersusSeason']['trophies']} {emoji(ctx, 'axes')}",
                     f"{p['legendStatistics']['previousVersusSeason']['rank']} {emoji(ctx, 'rank')}",
@@ -231,7 +235,7 @@ async def format_profile(ctx, p):
         )
         embed_fields.append(
             (
-                'Best BH Season',
+                _('Best BH Season', ctx),
                 '\n'.join((
                     f"{p['legendStatistics']['bestVersusSeason']['trophies']} {emoji(ctx, 'axes')}",
                     f"{p['legendStatistics']['bestVersusSeason']['rank']} {emoji(ctx, 'rank')}"
@@ -246,13 +250,13 @@ async def format_profile(ctx, p):
         if v:
             em.add_field(name=n, value=v, inline=i)
         else:
-            if n == 'Clan Name':
-                em.add_field(name='Clan', value='No Clan')
+            if n == _('Clan Name', ctx):
+                em.add_field(name=_('Clan', ctx), value=_('No Clan', ctx))
 
-    em.set_footer(text='Statsy - Powered by the COC API')
+    em.set_footer(text=_('Statsy - Powered by the COC API', ctx))
     embeds.append(em)
     em = discord.Embed(color=random_color())
-    em.set_author(name=f"{p['name']}'s Collection ({p['tag']})", icon_url=av)
+    em.set_author(name=_('{}s Collection ({}, ctx)').format(p['name'], p['tag']), icon_url=av)
     troops = []
     builders = []
     heroes = []
@@ -266,19 +270,19 @@ async def format_profile(ctx, p):
         spells.append(f'{emoji(ctx, "coc"+spell["name"].lower().replace(" ", ""))}{spell["level"]}')
     for hero in p['heroes']:
         heroes.append(f'{emoji(ctx, "coc"+hero["name"].lower().replace(" ", ""))}{hero["level"]}')
-    em.add_field(name="Home Troops", value='  '.join(troops), inline=False)
+    em.add_field(name=_("Home Troops", ctx), value='  '.join(troops), inline=False)
     if builders:
-        em.add_field(name="Builder Troops", value='  '.join(builders), inline=False)
+        em.add_field(name=_("Builder Troops", ctx), value='  '.join(builders), inline=False)
     else:
-        em.add_field(name="Builder Troops", value='None')
+        em.add_field(name=_("Builder Troops", ctx), value='None')
     if spells:
-        em.add_field(name="Spells", value='  '.join(spells), inline=False)
+        em.add_field(name=_("Spells", ctx), value='  '.join(spells), inline=False)
     else:
-        em.add_field(name="Spells", value='None')
+        em.add_field(name=_("Spells", ctx), value='None')
     if heroes:
-        em.add_field(name="Heroes", value='  '.join(heroes), inline=False)
+        em.add_field(name=_("Heroes", ctx), value='  '.join(heroes), inline=False)
     else:
-        em.add_field(name="Heroes", value='None')
+        em.add_field(name=_("Heroes", ctx), value='None')
     embeds.append(em)
     return embeds
 
@@ -288,7 +292,7 @@ async def format_clan(ctx, c):
     embed.set_author(name=f"{c['name']} ({c['tag']})")
     embed2 = copy.deepcopy(embed)
     embed.set_thumbnail(url=c['badgeUrls']['medium'])
-    embed2.description = 'Top Players/Donators for this clan.'
+    embed2.description = _('Top Players/Donators for this clan.', ctx)
 
     pushers = []
     for i in range(3):
@@ -317,12 +321,12 @@ async def format_clan(ctx, c):
         )
 
     em_1 = [
-        ('Score Home/Builder', f'{c["clanPoints"]}/{c["clanVersusPoints"]} {emoji(ctx, "trophy")}'),
-        ('Required Trophies', f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
-        ('Type', f"{'Invite Only' if c['type'] == 'inviteOnly' else c['type'].title()} 📩"),
-        ('Location', f"{c['location']['name']} 🌎"),
-        ('Members', f"{c['members']}/50 {emoji(ctx, 'clan')}"),
-        ('War Activity', c['warFrequency'].title())
+        (_('Score Home/Builder', ctx), f'{c["clanPoints"]}/{c["clanVersusPoints"]} {emoji(ctx, "trophy")}'),
+        (_('Required Trophies', ctx), f"{c['requiredTrophies']} {emoji(ctx, 'trophy')}"),
+        (_('Type', ctx), f"{'Invite Only' if c['type'] == 'inviteOnly' else c['type'].title()} 📩"),
+        (_('Location', ctx), f"{c['location']['name']} 🌎"),
+        (_('Members', ctx), f"{c['members']}/50 {emoji(ctx, 'clan')}"),
+        (_('War Activity', ctx), c['warFrequency'].title())
     ]
 
     if c['isWarLogPublic']:
@@ -333,9 +337,9 @@ async def format_clan(ctx, c):
         embed.add_field(name=f, value=v)
 
     em_dict_2 = [
-        ("Top Home Players", '\n\n'.join(pushers)),
-        ("Top Donators", '\n\n'.join(donators)),
-        ("Top Builder Players", '\n\n'.join(builders))
+        (_('Top Home Players', ctx), '\n\n'.join(pushers)),
+        (_('Top Donators', ctx), '\n\n'.join(donators)),
+        (_('Top Builder Players', ctx), '\n\n'.join(builders))
     ]
 
     for f, v in em_dict_2:

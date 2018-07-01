@@ -2,6 +2,11 @@ import random
 
 import discord
 
+from locales.i18n import Translator
+
+
+_ = Translator('OV Embeds', __file__)
+
 
 def emoji(ctx, name):
     name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
@@ -26,27 +31,27 @@ async def format_profile(ctx, name, p, h):
         if avatar_url.startswith('http'):
             em.set_thumbnail(url=avatar_url)
 
-        em.set_author(name=f"{name} - Competitive", icon_url=ctx.author.avatar_url)
+        em.set_author(name=_('{} - Competitive', ctx).format(name), icon_url=ctx.author.avatar_url)
         tier = p["competitive"]["overall_stats"]["tier"] or "none"
 
         level = p['competitive']['overall_stats']['prestige'] * 100 + p['competitive']['overall_stats']['level']
         wld = f"{p['competitive']['overall_stats']['wins']}-{p['competitive']['overall_stats']['losses']}-{p['competitive']['overall_stats']['ties']}"
 
         embed_fields = [
-            ('Level', level, True),
-            ('Win-Loss-Draw', wld, True),
-            ('Games Played', p['competitive']['overall_stats']['games'], True),
-            ('Win Rate', int(p['competitive']['overall_stats']["win_rate"]), True),
-            ("Tier", tier.title(), True),
-            ('Kills', int(p['competitive']['game_stats']["eliminations"]), True),
-            ("Top Kills in a Game", int(p["competitive"]["game_stats"]["eliminations_most_in_game"]), True),
-            ("Solo Kills", p["competitive"]["game_stats"].get("solo_kills"), True),
-            ("Final Blows", int(p["competitive"]["game_stats"]["final_blows"]), True),
-            ("Deaths", int(p["competitive"]["game_stats"]["deaths"]), True),
-            ("K/D", p["competitive"]["game_stats"]["kpd"], True),
-            ("Gold Medals", int(p["competitive"]["game_stats"]["medals_gold"]), True),
-            ("Silver Medals", int(p["competitive"]["game_stats"]["medals_silver"]), True),
-            ("Bronze Medals", int(p["competitive"]["game_stats"]["medals_bronze"]), True)
+            (_('Level', ctx), level, True),
+            (_('Win-Loss-Draw', ctx), wld, True),
+            (_('Games Played', ctx), p['competitive']['overall_stats']['games'], True),
+            (_('Win Rate', ctx), int(p['competitive']['overall_stats']["win_rate"]), True),
+            (_("Tier", ctx), tier.title(), True),
+            (_('Kills', ctx), int(p['competitive']['game_stats']["eliminations"]), True),
+            (_("Top Kills in a Game", ctx), int(p["competitive"]["game_stats"]["eliminations_most_in_game"]), True),
+            (_("Solo Kills", ctx), p["competitive"]["game_stats"].get("solo_kills"), True),
+            (_("Final Blows", ctx), int(p["competitive"]["game_stats"]["final_blows"]), True),
+            (_("Deaths", ctx), int(p["competitive"]["game_stats"]["deaths"]), True),
+            (_("K/D", ctx), p["competitive"]["game_stats"]["kpd"], True),
+            (_("Gold Medals", ctx), int(p["competitive"]["game_stats"]["medals_gold"]), True),
+            (_("Silver Medals", ctx), int(p["competitive"]["game_stats"]["medals_silver"]), True),
+            (_("Bronze Medals", ctx), int(p["competitive"]["game_stats"]["medals_bronze"]), True)
         ]
 
         for n, v, i in embed_fields:
@@ -60,25 +65,25 @@ async def format_profile(ctx, name, p, h):
     if avatar_url.startswith('http'):
         em.set_thumbnail(url=avatar_url)
 
-    em.set_author(name=f"{name} - Quickplay", icon_url=ctx.author.avatar_url)
+    em.set_author(name=_('{} - Quickplay', ctx).format(name), icon_url=ctx.author.avatar_url)
     tier = p["quickplay"]["overall_stats"]["tier"] or "none"
 
     level = p['quickplay']['overall_stats']['prestige'] * 100 + p['quickplay']['overall_stats']['level']
 
     embed_fields = [
-        ('Level', level, True),
-        ('Wins', f"{p['quickplay']['overall_stats']['wins']}", True),
-        ('Games Played', p['quickplay']['overall_stats']['games'], True),
-        ("Tier", tier.title(), True),
-        ("Kills", int(p["quickplay"]["game_stats"]["eliminations"]), True),
-        ("Top Kills in a Game", int(p["quickplay"]["game_stats"]["eliminations_most_in_game"]), True),
-        ("Solo Kills", int(p["quickplay"]["game_stats"]["solo_kills"]), True),
-        ("Final Blows", int(p["quickplay"]["game_stats"]["final_blows"]), True),
-        ("Deaths", int(p["quickplay"]["game_stats"]["deaths"]), True),
-        ("K/D", p["quickplay"]["game_stats"]["kpd"], True),
-        ("Gold Medals", int(p["quickplay"]["game_stats"]["medals_gold"]), True),
-        ("Silver Medals", int(p["quickplay"]["game_stats"]["medals_silver"]), True),
-        ("Bronze Medals", int(p["quickplay"]["game_stats"]["medals_bronze"]), True)
+        (_('Level', ctx), level, True),
+        (_('Wins', ctx), f"{p['quickplay']['overall_stats']['wins']}", True),
+        (_('Games Played', ctx), p['quickplay']['overall_stats']['games'], True),
+        (_("Tier", ctx), tier.title(), True),
+        (_("Kills", ctx), int(p["quickplay"]["game_stats"]["eliminations"]), True),
+        (_("Top Kills in a Game", ctx), int(p["quickplay"]["game_stats"]["eliminations_most_in_game"]), True),
+        (_("Solo Kills", ctx), int(p["quickplay"]["game_stats"]["solo_kills"]), True),
+        (_("Final Blows", ctx), int(p["quickplay"]["game_stats"]["final_blows"]), True),
+        (_("Deaths", ctx), int(p["quickplay"]["game_stats"]["deaths"]), True),
+        (_("K/D", ctx), p["quickplay"]["game_stats"]["kpd"], True),
+        (_("Gold Medals", ctx), int(p["quickplay"]["game_stats"]["medals_gold"]), True),
+        (_("Silver Medals", ctx), int(p["quickplay"]["game_stats"]["medals_silver"]), True),
+        (_("Bronze Medals", ctx), int(p["quickplay"]["game_stats"]["medals_bronze"]), True)
     ]
 
     for n, v, i in embed_fields:
@@ -96,16 +101,16 @@ async def format_profile(ctx, name, p, h):
     }
 
     stats = {
-        "Time Played": "time_played",
-        "Kills": "eliminations",
-        "K/D": "eliminations_per_life",
-        "Best Kill Streak": "kill_streak_best",
-        "Total Damage": "all_damage_done",
-        "Hero Damage": "hero_damage_done",
-        "On Fire": "time_spent_on_fire",
-        "Gold Medals": "medals_gold",
-        "Silver Medals": "medals_sliver",
-        "Bronze Medals": "medals_bronze"
+        _("Time Played", ctx): "time_played",
+        _("Kills", ctx): "eliminations",
+        _("K/D", ctx): "eliminations_per_life",
+        _("Best Kill Streak", ctx): "kill_streak_best",
+        _("Total Damage", ctx): "all_damage_done",
+        _("Hero Damage", ctx): "hero_damage_done",
+        _("On Fire", ctx): "time_spent_on_fire",
+        _("Gold Medals", ctx): "medals_gold",
+        _("Silver Medals", ctx): "medals_sliver",
+        _("Bronze Medals", ctx): "medals_bronze"
     }
 
     if h["stats"]["competitive"]:
@@ -136,7 +141,7 @@ async def format_profile(ctx, name, p, h):
                         em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat], 2)} hours")
                     else:
                         em.add_field(name=stat_name, value=f"{round(gen_comp_stats[stat]*60, 2)} minutes")
-                elif stat_name == "On Fire":
+                elif stat_name == _("On Fire", ctx):
                     em.add_field(
                         name=stat_name,
                         value=f"{round(gen_comp_stats[stat]/gen_comp_stats['time_played']*100, 2)}% of the time"
@@ -168,14 +173,14 @@ async def format_profile(ctx, name, p, h):
         for stat_name, stat in stats.items():
             if not gen_quickplay_stats.get(stat):
                 em.add_field(name=stat_name, value="None")
-            elif stat_name == "K/D":
+            elif stat_name == _("K/D", ctx):
                 em.add_field(name=stat_name, value=gen_quickplay_stats[stat])
-            elif stat_name == "Time Played":
+            elif stat_name == _("Time Played", ctx):
                 if gen_quickplay_stats[stat] > 1:
                     em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat], 2)} hours")
                 else:
                     em.add_field(name=stat_name, value=f"{round(gen_quickplay_stats[stat]*60, 2)} minutes")
-            elif stat_name == "On Fire":
+            elif stat_name == _("On Fire", ctx):
                 em.add_field(
                     name=stat_name,
                     value=f"{round(gen_quickplay_stats[stat]/gen_quickplay_stats['time_played']*100, 2)}% of the time"
@@ -184,6 +189,6 @@ async def format_profile(ctx, name, p, h):
                 em.add_field(name=stat_name, value=int(gen_quickplay_stats[stat]))
         if h['stats']['quickplay'][hero]['hero_stats'] != {}:
             extra_stats = [f'**{x.replace("_", " ").title()}**: {y}' for x, y in h['stats']['quickplay'][hero]['hero_stats'].items()]
-            em.add_field(name="Extra Stats", value='\n'.join(extra_stats))
+            em.add_field(name=_("Extra Stats", ctx), value='\n'.join(extra_stats))
         embeds.append(em)
     return embeds

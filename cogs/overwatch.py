@@ -41,26 +41,30 @@ class Overwatch:
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"
         })
 
+    async def __local_check(self, ctx):
+        guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+        return guild_info.get('games', {}).get(self.__class__.__name__, True)
+
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
         self.bot.loop.create_task(self.session2.close())
         self.bot.loop.create_task(self.session3.close())
 
-    async def resolve_tag(self, ctx, tag_or_user):
+    async def resolve_tag(self, ctx, tag_or_user, *, index=0):
         if not tag_or_user:
             try:
-                tag = await ctx.get_tag('overwatch')
+                tag = await ctx.get_tag('overwatch', index=str(index))
             except KeyError:
-                await ctx.send(f'You don\'t have a saved tag. Save one using {ctx.prefix}owsave <tag>!')
-                raise NoTag()
+                await ctx.send(_("You don't have a saved tag. Save one using `{}owsave <tag>`!", ctx).format(ctx.prefix))
+                raise NoTag
             else:
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = await ctx.get_tag('overwatch', tag_or_user.id)
+                tag = await ctx.get_tag('overwatch', tag_or_user.id, index=str(index))
             except KeyError:
-                await ctx.send('That person doesnt have a saved tag!')
-                raise NoTag()
+                await ctx.send(_("That person doesn't have a saved tag!", ctx))
+                raise NoTag
             else:
                 return tag
         else:
@@ -79,7 +83,7 @@ class Overwatch:
             async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/stats") as p:
                 profile = await p.json()
                 if p.status == 404:
-                    return await ctx.send('The battletag cannot be found! Make sure to include the part after the `#`')
+                    return await ctx.send(_('The battletag cannot be found! Make sure to include the part after the `#`', ctx))
             async with self.session.get(f"https://owapi.net/api/v3/u/{tag}/heroes") as h:
                 heroes = await h.json()
                 if "error" in heroes:
@@ -105,18 +109,21 @@ class Overwatch:
                 )
                 await session.run()
             elif len(ems) == 0:
-                await ctx.send("There aren't any stats for this user!")
+                await ctx.send(_("There aren't any stats for this user!", ctx))
             else:
                 await ctx.send(embed=ems[0])
 
     @commands.command()
-    async def owsave(self, ctx, *, tag):
-        """Saves a Overwatch tag to your discord.
+    async def owsave(self, ctx, tag, index: str='0'):
+        """Saves a Overwatch tag to your discord profile."""
+        await ctx.save_tag(tag.replace("#", "-"), 'overwatch', index=index.replace('-', ''))
 
-        Ability to save multiple tags coming soon.
-        """
-        await ctx.save_tag(tag.replace("#", "-"), 'overwatch')
-        await ctx.send('Successfuly saved tag.')
+        if index == '0':
+            prompt = f'Check your stats with `{ctx.prefix}owprofile`!'
+        else:
+            prompt = f'Check your stats with `{ctx.prefix}owprofile -{index}`!'
+
+        await ctx.send('Successfully saved tag. ' + prompt)
 
 
 def setup(bot):

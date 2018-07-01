@@ -83,7 +83,7 @@ class CustomContext(commands.Context):
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
 
         if index == 'all':
-            return data['tag']
+            return data.get('tag', [])
 
         try:
             if data['tag'][index] is not None:

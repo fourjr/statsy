@@ -11,6 +11,9 @@ from PIL import Image, ImageDraw, ImageFont
 from statsbot import InvalidTag, NoTag
 from ext import embeds_cr as embeds
 from ext.paginator import PaginatorSession
+from locales.i18n import Translator
+
+_ = Translator('Core', __file__)
 
 shortcuts = {
     # stus army
@@ -102,7 +105,7 @@ class TagCheck(commands.MemberConverter):
         tag = self.resolve_tag(ctx, argument)
 
         if not tag:
-            raise InvalidTag('Invalid cr-tag passed.')
+            raise InvalidTag(_('Invalid cr-tag passed.', ctx))
         else:
             return tag
 
@@ -116,20 +119,23 @@ class Clash_Royale:
         self.cr = bot.cr
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
-        self.url = 'https://statsroyale.herokuapp.com/'
+
+    async def __local_check(self, ctx):
+        guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+        return guild_info.get('games', {}).get(self.__class__.__name__, True)
 
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
         if isinstance(error, clashroyale.NotFoundError):
-            await ctx.send('The tag cannot be found!')
+            await ctx.send(_('The tag cannot be found!', ctx))
         elif isinstance(error, clashroyale.RequestError):
             er = discord.Embed(
-                title='RoyaleAPI Server Down',
+                title=_('RoyaleAPI Server Down', ctx),
                 color=discord.Color.red(),
                 description=error.code
             )
             if ctx.bot.psa_message:
-                er.add_field(name='Please Note!', value=ctx.bot.psa_message)
+                er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
             await ctx.send(embed=er)
 
     async def request(self, method, *args):
@@ -158,18 +164,18 @@ class Clash_Royale:
             try:
                 tag = await ctx.get_tag('clashroyale', index=str(index))
             except KeyError:
-                await ctx.send(f'You don\'t have a saved tag. Save one using `{ctx.prefix}save <tag>`!')
-                raise NoTag()
+                await ctx.send(_("You don't have a saved tag. Save one using `{}save <tag>`!", ctx)).format(ctx.prefix)
+                raise NoTag
             else:
                 if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
+                    return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!", ctx))
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
                 tag = await ctx.get_tag('clashroyale', tag_or_user.id, index=str(index))
             except KeyError:
-                await ctx.send('That person doesnt have a saved tag!')
-                raise NoTag()
+                await ctx.send(_('That person doesnt have a saved tag!', ctx))
+                raise NoTag
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, 'That person does not have a clan!')
@@ -220,7 +226,7 @@ class Clash_Royale:
     async def friendlink(self, ctx):
         """Check your guild's friend link status"""
         if not ctx.guild:
-            return await ctx.send("Friend link is always disabled in DMs.")
+            return await ctx.send(_('Friend link is always disabled in DMs.', ctx))
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
 
@@ -229,9 +235,9 @@ class Clash_Royale:
         if friend_config is None and self.bot.get_user(402656158667767808) not in ctx.guild.members:
             default = friend_config = True
 
-        resp = f'Current status: {friend_config}'
+        resp = _('Current status: {}', ctx).format(friend_config)
         if default:
-            resp += ' (default)'
+            resp += _(' (default, ctx)')
         await ctx.send(resp)
 
     @friendlink.command()
@@ -239,22 +245,22 @@ class Clash_Royale:
     async def enable(self, ctx):
         """Enables friend link"""
         if not ctx.guild:
-            return await ctx.send("Configuring friend link status isn't allowed in DMs")
+            return await ctx.send(_("Configuring friend link status isn't allowed in DMs", ctx))
         await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': ctx.guild.id}, {'$set': {'friend_link': True}}, upsert=True
         )
-        await ctx.send('Successfully set friend link to be enabled.')
+        await ctx.send(_('Successfully set friend link to be enabled.', ctx))
 
     @friendlink.command()
     @commands.has_permissions(manage_guild=True)
     async def disable(self, ctx):
         """Disables friend link"""
         if not ctx.guild:
-            return await ctx.send("Configuring friend link status isn't allowed in DMs")
+            return await ctx.send(_("Configuring friend link status isn't allowed in DMs", ctx))
         await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': ctx.guild.id}, {'$set': {'friend_link': False}}, upsert=True
         )
-        await ctx.send('Successfully set friend link to be disabled.')
+        await ctx.send(_('Successfully set friend link to be disabled.', ctx))
 
     @commands.group(invoke_without_command=True, aliases=['player'])
     @embeds.has_perms(False)

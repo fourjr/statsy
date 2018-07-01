@@ -50,6 +50,10 @@ class Fortnite:
     async def __ainit__(self):
         self.session = aiohttp.ClientSession(loop=self.bot.loop)
 
+    async def __local_check(self, ctx):
+        guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+        return guild_info.get('games', {}).get(self.__class__.__name__, True)
+
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
 
@@ -57,28 +61,30 @@ class Fortnite:
         return str(datetime.timedelta(minutes=minutes))[:-3]
 
     async def resolve_username(self, ctx, username, platform):
-        if not any((username, platform)):
+        if not username:
             try:
                 return await ctx.get_tag('fortnite', f'{ctx.author.id}: {platform}')
             except KeyError:
-                await ctx.send(f'You don\'t have a saved tag. Save one using `{ctx.prefix}fnsave <tag>!`')
-                raise NoTag()
+                await ctx.send(_("You don't have a saved tag. Save one using `{}fnsave <tag>!`", ctx).format(ctx.prefix))
+                raise NoTag
         else:
             if platform not in ('pc', 'ps4', 'xb1'):
-                raise InvalidPlatform()
+                raise InvalidPlatform
             if isinstance(username, discord.Member):
                 try:
                     return await ctx.get_tag('fortnite', f'{username.id}: {platform}')
                 except KeyError:
-                    await ctx.send('That person doesnt have a saved tag!')
+                    await ctx.send(_('That person doesnt have a saved tag!', ctx))
                     raise NoTag()
             else:
+                if username.startswith('-'):
+                    return await ctx.get_tag('fortnite', f'{username.id}: {platform}', index=username.replace('-', ''))
                 return username
 
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
         if isinstance(error, FortniteServerError):
-            await ctx.send('Fortnite API is currently undergoing maintenance. Please try again later.')
+            await ctx.send(_('Fortnite API is currently undergoing maintenance. Please try again later.', ctx))
 
     async def post(self, endpoint, payload):
         headers = {
@@ -86,7 +92,8 @@ class Fortnite:
             'Content-Type': 'application/x-www-form-urlencoded'
         }
         async with self.session.post(
-            'https://fortnite-public-api.theapinetwork.com/prod09' + endpoint, data=urlencode(payload), headers=headers
+            'https://fortnite-public-api.theapinetwork.com/prod09' + endpoint,
+            data=urlencode(payload), headers=headers
         ) as resp:
             if resp.status != 200:
                 raise FortniteServerError
@@ -98,7 +105,7 @@ class Fortnite:
     async def get_player_uid(self, ctx, name):
         data = await self.post('/users/id', {'username': name})
         if data.get('code') in ('1012', '1006'):
-            await ctx.send('The username cannot be found!')
+            await ctx.send(_('The username cannot be found!', ctx))
             raise NoTag
 
         return data['uid']
@@ -107,8 +114,20 @@ class Fortnite:
     async def fnsave(self, ctx, platform: lower, *, username: str):
         """Saves a fortnite tag to your discord profile."""
         await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}')
-        await ctx.send(f'Successfully saved tag. Check your stats with `{ctx.prefix}fnprofile`!')
+        await ctx.send(_('Successfully saved tag. Check your stats with `{}fnprofile`!', ctx).format(ctx.prefix))
 
+    @commands.command()
+    async def fnsave(self, ctx, platform: lower, username: str, index: str='0'):
+        """Saves a Fortnite tag to your discord profile."""
+        await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}', index=index.replace('-', ''))
+
+        if index == '0':
+            prompt = f'Check your stats with `{ctx.prefix}fnprofile`!'
+        else:
+            prompt = f'Check your stats with `{ctx.prefix}fnprofile -{index}`!'
+
+        await ctx.send('Successfully saved tag. ' + prompt)
+        
     @commands.command()
     async def fnprofile(self, ctx, platform: lower, *, username: TagOrUser=None):
         """Gets the fortnite profile of a player with a provided platform"""
@@ -128,12 +147,12 @@ class Fortnite:
                 kdr = 0
 
             fields = [
-                (f'Kills {emoji(ctx, "fnskull")}', player['totals']['kills']),
-                (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player['totals']['wins']} ({kdr:.2f})"),
-                ('Kill Death Ratio', player['totals']['kd']),
-                ('Time Played', self.timestamp(player['totals']['minutesplayed']))
+                (_('Kills {}', ctx).format(emoji(ctx, "fnskull")), player['totals']['kills']),
+                (_('Victory Royale! {}', ctx).format(emoji(ctx, "fnvictoryroyale")), f"{player['totals']['wins']} ({kdr:.2f})"),
+                (_('Kill Death Ratio', ctx), player['totals']['kd']),
+                (_('Time Played', ctx), self.timestamp(player['totals']['minutesplayed']))
             ]
-            ems.append(discord.Embed(description=f'Overall Statistics', color=random_color()))
+            ems.append(discord.Embed(description=_('Overall Statistics', ctx), color=random_color()))
             ems[0].set_author(name=player['username'])
             for name, value in fields:
                 ems[0].add_field(name=str(name), value=str(value))
@@ -141,20 +160,20 @@ class Fortnite:
             for n, mode in enumerate(('solo', 'duo', 'squad')):
                 kdr = player[platform][f'winrate_{mode}']
                 fields = [
-                    ('Score', player[platform][f'score_{mode}']),
-                    (f'Kills {emoji(ctx, "fnskull")}', player[platform][f'kills_{mode}']),
-                    ('Total Battles', player[platform][f'matchesplayed_{mode}']),
-                    (f'Victory Royale! {emoji(ctx, "fnvictoryroyale")}', f"{player[platform][f'placetop1_{mode}']} ({kdr}%)"),
-                    (f'Top {emoji(ctx, "fnleague")}', 'Top {}: {}\nTop {}: {}'.format(
+                    (_('Score', ctx), player[platform][f'score_{mode}']),
+                    (_('Kills {}', ctx).format(emoji(ctx, "fnskull")), player[platform][f'kills_{mode}']),
+                    (_('Total Battles', ctx), player[platform][f'matchesplayed_{mode}']),
+                    (_('Victory Royale! {}', ctx).format(emoji(ctx, "fnvictoryroyale")), f"{player[platform][f'placetop1_{mode}']} ({kdr}%)"),
+                    (_('Top {}', ctx).format(emoji(ctx, "fnleague")), 'Top {}: {}\nTop {}: {}'.format(
                         top[mode][0],
                         player[platform][f'placetop{top[mode][0]}_{mode}'],
                         top[mode][1],
                         player[platform][f'placetop{top[mode][1]}_{mode}']
                     )),
-                    ('Kill Death Ratio', player[platform][f'kd_{mode}']),
-                    ('Time Played', self.timestamp(player[platform][f'minutesplayed_{mode}']))
+                    (_('Kill Death Ratio', ctx), player[platform][f'kd_{mode}']),
+                    (_('Time Played', ctx), self.timestamp(player[platform][f'minutesplayed_{mode}']))
                 ]
-                ems.append(discord.Embed(description=f'{mode.title()} Statistics', color=random_color()))
+                ems.append(discord.Embed(description=_('{} Statistics', ctx).format(mode.title()), color=random_color()))
                 ems[n + 1].set_author(name=player['username'])
 
                 for name, value in fields:
@@ -163,7 +182,7 @@ class Fortnite:
             session = PaginatorSession(
                 ctx=ctx,
                 pages=ems,
-                footer_text=f'Statsy - Powered by fortniteapi.com'
+                footer_text=_('Statsy - Powered by fortniteapi.com', ctx)
             )
         await session.run()
 

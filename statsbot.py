@@ -42,7 +42,7 @@ from dotenv import load_dotenv, find_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from ext.context import CustomContext
-
+from locales.i18n import Translator
 
 class InvalidTag(commands.BadArgument):
     """Raised when a tag is invalid."""
@@ -64,6 +64,7 @@ class NoTag(Exception):
 
 from statsbot import InvalidPlatform, NoTag, InvalidTag
 
+_ = Translator('Core', __file__)
 
 class StatsBot(commands.AutoShardedBot):
     """Custom client for statsy made by Kyber"""
@@ -91,7 +92,13 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = clashroyale.Client(os.getenv('royaleapi'), session=self.session, is_async=True, timeout=10)
+        self.cr = clashroyale.Client(
+            os.getenv('royaleapi'),
+            session=self.session,
+            url=os.getenv('royaleapiurl'),
+            is_async=True,
+            timeout=10
+        )
         self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
         self.uptime = datetime.datetime.utcnow()
         self.commands_used = defaultdict(int)
@@ -147,7 +154,7 @@ class StatsBot(commands.AutoShardedBot):
 
     def load_extensions(self, cogs=None, path='cogs.'):
         """Loads the default set of extensions or a seperate one if given"""
-        base_extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
+        base_extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py') and x != 'brawlstars.py']
         for extension in cogs or base_extensions:
             try:
                 self.load_extension(f'{path}{extension}')
@@ -188,8 +195,6 @@ class StatsBot(commands.AutoShardedBot):
         print('----------------------------')
 
         self.constants = await self.cr.get_constants()
-        with open('backup/brawlstars/constants.json') as f:
-            self.bsconstants = json.load(f)
 
     async def on_ready(self):
         """
@@ -240,6 +245,7 @@ class StatsBot(commands.AutoShardedBot):
                 await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error, description=None):
+        traceback.print_exc()
         error = getattr(error, 'original', error)
         ignored = (
             NoTag,
@@ -322,8 +328,10 @@ class StatsBot(commands.AutoShardedBot):
     @commands.command()
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
+        print('a')
+        print('a', _('Pong! Websocket Latency:', ctx))
         em = discord.Embed(
-            title='Pong! Websocket Latency:',
+            title=_('Pong! Websocket Latency:', ctx),
             description=f'{self.latency * 1000:.4f} ms',
             color=0xf9c93d
         )

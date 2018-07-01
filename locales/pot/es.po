@@ -1,0 +1,802 @@
+# Jia Rong Yee <yeejiarongg@gmail.com>, 2018. #zanata
+# Juan Boo <jbooruiz@gmail.com>, 2018. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0.0\n"
+"POT-Creation-Date: 2018-06-22 13:05+Malay Peninsula Standard Time\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2018-06-28 07:13+0000\n"
+"Last-Translator: Jia Rong Yee <yeejiarongg@gmail.com>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"X-Generator: Zanata 4.4.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: ../cogs/coc.py:46
+msgid "Invalid coc-tag passed."
+msgstr "coc-tag inválido."
+
+#: ../cogs/coc.py:82
+msgid "You don't have a saved tag. Save one using {}cocsave <tag>!"
+msgstr "No tienes un tag guardado. ¡Guarda uno usando {}cocsave <tag>!"
+
+#: ../cogs/coc.py:86 ../cogs/cr.py:167
+msgid "You don't have a clan!"
+msgstr "¡Tú no tienes un clan!"
+
+#: ../cogs/coc.py:95
+msgid "That person does not have a clan!"
+msgstr "¡Esa persona no tiene un clan!"
+
+#: ../cogs/coc.py:116 ../cogs/coc.py:136 ../cogs/coc.py:156
+msgid "Statsy | Powered by the COC API"
+msgstr "Statsy | Funciona gracias a la API de COC"
+
+#: ../cogs/coc.py:177
+msgid "/50 members"
+msgstr "/50 miembros"
+
+#: ../cogs/coc.py:195 ../cogs/coc.py:212
+msgid "Clan must have more than 4 players for statistics."
+msgstr "El clan debe tener más de 4 jugadores para mostrar estadísticas."
+
+#: ../cogs/coc.py:230
+msgid "Successfully saved tag."
+msgstr "Tag guardado satisfactoriamente."
+
+#: ../cogs/coc.py:244
+msgid "This clan's war logs aren't public."
+msgstr "Estos registros de guerras de clanes no son públicos."
+
+#: ../cogs/coc.py:246
+msgid "This clan isn't in a war right now!"
+msgstr "¡Este clan no se encuentra actualmente en una guerra!"
+
+#: ../cogs/cr.py:108
+msgid "Invalid cr-tag passed."
+msgstr "cr-tag inválido."
+
+#: ../cogs/cr.py:126
+msgid "The tag cannot be found!"
+msgstr "¡No puedo encontrar este tag!"
+
+#: ../cogs/cr.py:129
+msgid "RoyaleAPI Server Down"
+msgstr "Servidor de RoyaleAPI caído."
+
+#: ../cogs/cr.py:134
+msgid "Please Note!"
+msgstr "¡Revísa!"
+
+#: ../cogs/cr.py:163
+msgid "You don't have a saved tag. Save one using `{}save <tag>`!"
+msgstr "No tienes un tag guardado. ¡Guarda uno usando `{}save <tag>`!"
+
+#: ../cogs/cr.py:173 ../cogs/fortnite.py:73
+msgid "That person doesnt have a saved tag!"
+msgstr "¡Esa persona no tiene guardado un tag!"
+
+#: ../cogs/cr.py:225
+msgid "Friend link is always disabled in DMs."
+msgstr "Los enlaces de amistad están siempre deshabilitados en los DMs."
+
+#: ../cogs/cr.py:234
+msgid "Current status: {}"
+msgstr "Current status: {}"
+
+#: ../cogs/cr.py:236
+msgid " (default)"
+msgstr " (default)"
+
+#: ../cogs/cr.py:244 ../cogs/cr.py:255
+msgid "Configuring friend link status isn't allowed in DMs"
+msgstr "Configurar el estado del enlace de amistad no es posible en DMs"
+
+#: ../cogs/cr.py:248
+msgid "Successfully set friend link to be enabled."
+msgstr "El enlace de amistad está habilitado satisfactoriamente."
+
+#: ../cogs/cr.py:259
+msgid "Successfully set friend link to be disabled."
+msgstr "El enlace de amistad está deshabilitado satisfactoriamente."
+
+#: ../cogs/fortnite.py:64
+msgid "You don't have a saved tag. Save one using `{}fnsave <tag>!`"
+msgstr "No tienes un tag guardado. Guarda uno usando `{}fnsave <tag>!`"
+
+#: ../cogs/fortnite.py:81
+msgid ""
+"Fortnite API is currently undergoing maintenance. Please try again later."
+msgstr ""
+"La API de Fortnite está actualmente en mantenimiento. Inténtalo más tarde."
+
+#: ../cogs/fortnite.py:102
+msgid "The username cannot be found!"
+msgstr "¡Este usuario no existe!"
+
+#: ../cogs/fortnite.py:111
+msgid "Successfully saved tag. Check your stats with `{}fnprofile`!"
+msgstr ""
+"Tag guardado satisfactoriamente. ¡Revisa tus estadísticas con `{}fnprofile`!"
+
+#: ../cogs/fortnite.py:132 ../cogs/fortnite.py:146
+msgid "Kills {}"
+msgstr "Muertes {}"
+
+#: ../cogs/fortnite.py:133 ../cogs/fortnite.py:148
+msgid "Victory Royale! {}"
+msgstr "¡Victoria Royale! {}"
+
+#: ../cogs/fortnite.py:134 ../cogs/fortnite.py:155
+msgid "Kill Death Ratio"
+msgstr "Ratio de muertes"
+
+#: ../cogs/fortnite.py:135 ../cogs/fortnite.py:156 ../ext/embeds_ov.py:104
+#: ../ext/embeds_ov.py:178
+msgid "Time Played"
+msgstr "Tiempo Jugado"
+
+#: ../cogs/fortnite.py:137
+msgid "Overall Statistics"
+msgstr "Estadísticas Generales"
+
+#: ../cogs/fortnite.py:145 ../ext/embeds_cr.py:565
+msgid "Score"
+msgstr "Puntos"
+
+#: ../cogs/fortnite.py:147
+msgid "Total Battles"
+msgstr "Batallas Totales"
+
+#: ../cogs/fortnite.py:149
+msgid "Top {}"
+msgstr "Top {}"
+
+#: ../cogs/fortnite.py:158
+msgid "{} Statistics"
+msgstr "{} Estadísticas"
+
+#: ../cogs/fortnite.py:167
+msgid "Statsy - Powered by fortniteapi.com"
+msgstr "Statsy - Funciona gracias a fortniteapi.com"
+
+#: ../cogs/overwatch.py:54
+msgid "You don't have a saved tag. Save one using {}owsave <tag>!"
+msgstr "No tienes un tag guardado. ¡Guarda uno usando {}owsave <tag>!"
+
+#: ../cogs/overwatch.py:62
+msgid "That person doesn't have a saved tag!"
+msgstr "¡Esa persona no tiene un tag guardado!"
+
+#: ../cogs/overwatch.py:82
+msgid ""
+"The battletag cannot be found! Make sure to include the part after the `#`"
+msgstr ""
+"¡No se puede encontrar el tag de batalla! Asegúrate de incluir la parte de "
+"después de  `#`"
+
+#: ../cogs/overwatch.py:108
+msgid "There aren't any stats for this user!"
+msgstr "¡No hay estadísticas para este usuario!"
+
+#: ../cogs/utils.py:78
+msgid "**Invite link:** \n"
+"<{}>"
+msgstr "**Invite link:** \n"
+"<{}>"
+
+#: ../cogs/utils.py:94
+msgid "Changed the prefix to: `{}`"
+msgstr "Cambiado el prefijo a `{}`"
+
+#: ../cogs/utils.py:102 ../cogs/utils.py:106 ../cogs/utils.py:109
+msgid "Bot Information"
+msgstr "Información del Bot"
+
+#: ../cogs/utils.py:133
+msgid "Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR."
+msgstr ""
+"Statsy es un bot de estadísticas de juego creado por Kyber, Kwug y 4JR."
+
+#: ../cogs/utils.py:136
+msgid ""
+"This content is not affiliated with, endorsed, sponsored, or specifically "
+"approved by Supercell and Supercell is not responsible for it. For more "
+"information see Supercell's Fan Content Policy: www.supercell.com/fan-"
+"content-policy."
+msgstr ""
+"Este contenido no está afiliado, respaldado, patrocinado o aprobado "
+"específicamente por Supercell y Supercell no es responsable de él. Para más "
+"información consulte la Política de contenido de fans de Supercell. Vea "
+"nuestra Política de privacidad para obtener más detalles."
+
+#: ../cogs/utils.py:142
+msgid "Current Status"
+msgstr "Estado Actual"
+
+#: ../cogs/utils.py:143
+msgid "Uptime"
+msgstr "Tiempo en funcionamiento"
+
+#: ../cogs/utils.py:144
+msgid "Latency"
+msgstr "Latencia"
+
+#: ../cogs/utils.py:145
+msgid "Guilds"
+msgstr "Asociado a"
+
+#: ../cogs/utils.py:146 ../ext/embeds_coc.py:328 ../ext/embeds_cr.py:568
+#: ../ext/embeds_cr.py:739
+msgid "Members"
+msgstr "Miembros"
+
+#: ../cogs/utils.py:147
+msgid "Channels"
+msgstr "Canales"
+
+#: ../cogs/utils.py:150
+msgid "RAM Usage"
+msgstr "Uso de RAM"
+
+#: ../cogs/utils.py:151
+msgid "CPU Usage"
+msgstr "Uso de CPU"
+
+#: ../cogs/utils.py:152
+msgid "Commands Run"
+msgstr "Comandos usados"
+
+#: ../cogs/utils.py:153
+msgid "Saved Tags"
+msgstr "Tags Guardados"
+
+#: ../cogs/utils.py:154
+msgid "Library"
+msgstr "Libreria"
+
+#: ../cogs/utils.py:155
+msgid "Donate!"
+msgstr "¡Dona!"
+
+#: ../cogs/utils.py:156
+msgid "Discord"
+msgstr "Discord"
+
+#: ../cogs/utils.py:157
+msgid "Follow us on Twitter!"
+msgstr "¡Síguenos en Twitter!"
+
+#: ../cogs/utils.py:158
+msgid "Upvote This Bot!"
+msgstr "¡Vota este bot!"
+
+#: ../cogs/utils.py:159
+msgid "Bot ID: {}"
+msgstr "ID del Bot: {}"
+
+#: ../cogs/utils.py:254
+msgid "Could not find a cog or command by that name."
+msgstr "No podemos encontrar un comando con ese nombre"
+
+#: ../cogs/utils.py:267
+msgid "Type {}help command for more info on a command."
+msgstr "Escribe {}help comando para saber como usar ese comando."
+
+#: ../cogs/utils.py:371
+msgid "Suggestion submitted. Thanks for the feedback!"
+msgstr "Sugerencia enviada. ¡Gracias!"
+
+#: ../cogs/utils.py:392
+msgid "Bug Reported. Thanks for the report!"
+msgstr "Bug reportado. ¡Gracias!"
+
+#: ../ext/embeds_coc.py:36 ../ext/embeds_cr.py:81
+msgid "Here are the least valuable members of the clan currently."
+msgstr "Estos son los compañeros más valorados del clan ahora mismo."
+
+#: ../ext/embeds_coc.py:39 ../ext/embeds_coc.py:70 ../ext/embeds_coc.py:256
+msgid "Statsy - Powered by the COC API"
+msgstr "Statsy - Funciona gracias a la API de COC"
+
+#: ../ext/embeds_coc.py:67 ../ext/embeds_cr.py:109
+msgid "Here are the most valuable members of the clan currently."
+msgstr "Estos son los miembros más valiosos ahora mismo."
+
+#: ../ext/embeds_coc.py:91 ../ext/embeds_coc.py:99 ../ext/embeds_cr.py:282
+#: ../ext/embeds_cr.py:292
+msgid "A list of all members in this clan."
+msgstr "Una lista de los miembros de este clan."
+
+#: ../ext/embeds_coc.py:121 ../ext/embeds_coc.py:128
+msgid "All of {}'s achievements"
+msgstr "Todos los logros de {}"
+
+#: ../ext/embeds_coc.py:133
+msgid "N/A"
+msgstr "N/A"
+
+#: ../ext/embeds_coc.py:136
+msgid "**Requirement:** {}\n"
+"**Status:** {}"
+msgstr "**Requerido:** {}\n"
+"**Estado:** {}"
+
+#: ../ext/embeds_coc.py:145
+msgid "In War"
+msgstr "En Guerra"
+
+#: ../ext/embeds_coc.py:150 ../ext/embeds_coc.py:151 ../ext/embeds_cr.py:458
+#: ../ext/embeds_cr.py:513 ../ext/embeds_cr.py:780 ../ext/embeds_ov.py:41
+#: ../ext/embeds_ov.py:74
+msgid "Level"
+msgstr "Nivel"
+
+#: ../ext/embeds_coc.py:152 ../ext/embeds_coc.py:153
+msgid "Attacks"
+msgstr "Ataques"
+
+#: ../ext/embeds_coc.py:154 ../ext/embeds_coc.py:155
+msgid "Stars"
+msgstr "Estrellas"
+
+#: ../ext/embeds_coc.py:156 ../ext/embeds_coc.py:157
+msgid "Destruction"
+msgstr "Destrucción"
+
+#: ../ext/embeds_coc.py:187 ../ext/embeds_cr.py:457 ../ext/embeds_cr.py:512
+#: ../ext/embeds_cr.py:779
+msgid "Trophies"
+msgstr "Trofeos"
+
+#: ../ext/embeds_coc.py:188
+msgid "XP Level"
+msgstr "Nivel de experiencia"
+
+#: ../ext/embeds_coc.py:189
+msgid "TH Level"
+msgstr "Nivel de ayuntamiento"
+
+#: ../ext/embeds_coc.py:190 ../ext/embeds_coc.py:191 ../ext/embeds_coc.py:192
+#: ../ext/embeds_coc.py:254
+msgid "No Clan"
+msgstr "Sin Clan"
+
+#: ../ext/embeds_coc.py:190 ../ext/embeds_coc.py:253 ../ext/embeds_cr.py:459
+#: ../ext/embeds_cr.py:482 ../ext/embeds_cr.py:514 ../ext/embeds_cr.py:526
+msgid "Clan Name"
+msgstr "Nombre del Clan"
+
+#: ../ext/embeds_coc.py:191 ../ext/embeds_cr.py:460 ../ext/embeds_cr.py:515
+msgid "Clan Tag"
+msgstr "Tag del Clan"
+
+#: ../ext/embeds_coc.py:192 ../ext/embeds_cr.py:461 ../ext/embeds_cr.py:516
+msgid "Clan Role"
+msgstr "Rol en el Clan"
+
+#: ../ext/embeds_coc.py:193
+msgid "War Stars"
+msgstr "Estrellas de Guerra"
+
+#: ../ext/embeds_coc.py:194
+msgid "Successful Attacks"
+msgstr "Ataques Ganados"
+
+#: ../ext/embeds_coc.py:195
+msgid "Successful Defenses"
+msgstr "Defensas Ganadas"
+
+#: ../ext/embeds_coc.py:196
+msgid "Donations"
+msgstr "Donaciones"
+
+#: ../ext/embeds_coc.py:196
+msgid "{} Received {}"
+msgstr "{} Recibido {}"
+
+#: ../ext/embeds_coc.py:201
+msgid "BH Level"
+msgstr "Nivel de Choza del Constructor"
+
+#: ../ext/embeds_coc.py:204
+msgid "Builder Trophies"
+msgstr "Trofeos del Constructor"
+
+#: ../ext/embeds_coc.py:211
+msgid "Current Season"
+msgstr "Temporada Actual"
+
+#: ../ext/embeds_coc.py:215
+msgid "Best Season"
+msgstr "Mejor Temporada"
+
+#: ../ext/embeds_coc.py:228
+msgid "Last BH Season"
+msgstr "Última Temporada de la Choza del Constructor"
+
+#: ../ext/embeds_coc.py:238
+msgid "Best BH Season"
+msgstr "Mejor Temporada de la Choza del Constructor"
+
+#: ../ext/embeds_coc.py:254 ../ext/embeds_cr.py:483 ../ext/embeds_cr.py:527
+msgid "Clan"
+msgstr "Clan"
+
+#: ../ext/embeds_coc.py:259
+msgid "{}s Collection ({})"
+msgstr "{}s Collección ({})"
+
+#: ../ext/embeds_coc.py:273
+msgid "Home Troops"
+msgstr "Tropas de Casa"
+
+#: ../ext/embeds_coc.py:275 ../ext/embeds_coc.py:277
+msgid "Builder Troops"
+msgstr "Tropas del Constructor"
+
+#: ../ext/embeds_coc.py:279 ../ext/embeds_coc.py:281
+msgid "Spells"
+msgstr "Hechizos"
+
+#: ../ext/embeds_coc.py:283 ../ext/embeds_coc.py:285
+msgid "Heroes"
+msgstr "Héroes"
+
+#: ../ext/embeds_coc.py:295
+msgid "Top Players/Donators for this clan."
+msgstr "Mejores Jugadores/Donadores del clan."
+
+#: ../ext/embeds_coc.py:324
+msgid "Score Home/Builder"
+msgstr "Puntos de la aldea/del constructor."
+
+#: ../ext/embeds_coc.py:325 ../ext/embeds_cr.py:569
+msgid "Required Trophies"
+msgstr "Trofeos Requeridos"
+
+#: ../ext/embeds_coc.py:326 ../ext/embeds_cr.py:405 ../ext/embeds_cr.py:564
+#: ../ext/embeds_cr.py:737
+msgid "Type"
+msgstr "Tipo"
+
+#: ../ext/embeds_coc.py:327 ../ext/embeds_cr.py:567
+msgid "Location"
+msgstr "Localización"
+
+#: ../ext/embeds_coc.py:329
+msgid "War Activity"
+msgstr "Actividad del Clan"
+
+#: ../ext/embeds_coc.py:340
+msgid "Top Home Players"
+msgstr "Mejores Jugadores de la aldea"
+
+#: ../ext/embeds_coc.py:341 ../ext/embeds_cr.py:574
+msgid "Top Donators"
+msgstr "Mejores Donadores"
+
+#: ../ext/embeds_coc.py:342
+msgid "Top Builder Players"
+msgstr "Mejores Jugadores de la aldea del constructor"
+
+#: ../ext/embeds_cr.py:87 ../ext/embeds_cr.py:115 ../ext/embeds_cr.py:149
+#: ../ext/embeds_cr.py:222 ../ext/embeds_cr.py:249 ../ext/embeds_cr.py:407
+#: ../ext/embeds_cr.py:485 ../ext/embeds_cr.py:529 ../ext/embeds_cr.py:537
+#: ../ext/embeds_cr.py:589 ../ext/embeds_cr.py:669 ../ext/embeds_cr.py:709
+#: ../ext/embeds_cr.py:770
+msgid "Statsy - Powered by RoyaleAPI.com"
+msgstr "Statsy - Funciona gracias a RoyaleAPI.com"
+
+#: ../ext/embeds_cr.py:147 ../ext/embeds_cr.py:473
+msgid "Chests"
+msgstr "Cofres"
+
+#: ../ext/embeds_cr.py:148 ../ext/embeds_cr.py:474
+msgid "Chests Until"
+msgstr "Cofres hasta"
+
+#: ../ext/embeds_cr.py:220
+msgid "A list of cards this player has."
+msgstr "Lista de las cartas que el jugador tiene."
+
+#: ../ext/embeds_cr.py:228
+msgid "Found Cards ({})"
+msgstr "Cartas Encontradas ({})"
+
+#: ../ext/embeds_cr.py:232
+msgid "Missing Cards"
+msgstr "Cartas que faltan"
+
+#: ../ext/embeds_cr.py:277
+msgid "No battles"
+msgstr "Sin batallas"
+
+#: ../ext/embeds_cr.py:277
+msgid "Player has not played any battles yet"
+msgstr "El jugador no ha jugado ninguna batalla aún"
+
+#: ../ext/embeds_cr.py:314
+msgid "Top 200 {} clans right now."
+msgstr "Top 200 en {} de clanes ahora mismo. "
+
+#: ../ext/embeds_cr.py:328
+msgid "Top 200 global clans right now."
+msgstr "Top 200 global de clanes ahora mismo. "
+
+#: ../ext/embeds_cr.py:333
+msgid "Top Clans"
+msgstr "Top Clanes"
+
+#: ../ext/embeds_cr.py:358 ../ext/embeds_cr.py:367
+msgid "{} Season"
+msgstr "{} Temporada"
+
+#: ../ext/embeds_cr.py:369
+msgid "Season Highest"
+msgstr "Mejor Temporada"
+
+#: ../ext/embeds_cr.py:373
+msgid "Season Finish"
+msgstr "Fin de Temporada"
+
+#: ../ext/embeds_cr.py:377 ../ext/embeds_cr.py:471
+msgid "Global Rank"
+msgstr "Ranking Global"
+
+#: ../ext/embeds_cr.py:402
+msgid "{} Info"
+msgstr "{} Info"
+
+#: ../ext/embeds_cr.py:403
+msgid "Rarity"
+msgstr "Rareza"
+
+#: ../ext/embeds_cr.py:404
+msgid "Elixir Cost"
+msgstr "Coste de Elixir"
+
+#: ../ext/embeds_cr.py:406
+msgid "Arena Found"
+msgstr "Arena Encontrada"
+
+#: ../ext/embeds_cr.py:434
+msgid "Highest: {} {} \n"
+msgstr "Más alto: {}{}"
+
+#: ../ext/embeds_cr.py:435
+msgid "Finish: {} {} \n"
+msgstr "Fin: {}{}"
+
+#: ../ext/embeds_cr.py:436
+msgid "Global Rank: {} {}"
+msgstr "Ranking Global: {}{}"
+
+#: ../ext/embeds_cr.py:454 ../ext/embeds_cr.py:509
+msgid "No favourite card :("
+msgstr "Sin carta favorita :("
+
+#: ../ext/embeds_cr.py:462 ../ext/embeds_ov.py:43 ../ext/embeds_ov.py:76
+msgid "Games Played"
+msgstr "Partidas Jugadas"
+
+#: ../ext/embeds_cr.py:463
+msgid "Wins/Losses/Draws"
+msgstr "Victorias/Derrotas/Empates"
+
+#: ../ext/embeds_cr.py:464
+msgid "Three Crown Wins"
+msgstr "Victorias de 3 Coronas"
+
+#: ../ext/embeds_cr.py:465 ../ext/embeds_cr.py:517
+msgid "War Day Wins"
+msgstr "Victorias del Día de Guerra"
+
+#: ../ext/embeds_cr.py:466 ../ext/embeds_cr.py:518
+msgid "Favourite Card"
+msgstr "Carta Favorita"
+
+#: ../ext/embeds_cr.py:467
+msgid "Tournament Cards Won"
+msgstr "Cartas de Torneo Ganadas"
+
+#: ../ext/embeds_cr.py:468
+msgid "Challenge Cards Won"
+msgstr "Cartas de Desafío Ganadas"
+
+#: ../ext/embeds_cr.py:469
+msgid "Challenge Max Wins"
+msgstr "Victorias Máximas en Desafío"
+
+#: ../ext/embeds_cr.py:470
+msgid "Total Donations"
+msgstr "Donaciones Totales"
+
+#: ../ext/embeds_cr.py:472 ../ext/embeds_cr.py:519 ../ext/embeds_cr.py:781
+msgid "Battle Deck"
+msgstr "Mazo de Batallas¡"
+
+#: ../ext/embeds_cr.py:475
+msgid "Previous Season Results ({})"
+msgstr "Resultados de la Temporada Anterior ({})"
+
+#: ../ext/embeds_cr.py:483 ../ext/embeds_cr.py:527
+msgid "None {}"
+msgstr "Nada {}"
+
+#: ../ext/embeds_cr.py:539
+msgid "Top Players/Donators/Contributors for this clan."
+msgstr "Mejores Jugadores/Donadores/Contribuidores en este clan."
+
+#: ../ext/embeds_cr.py:565
+msgid " Trophies "
+msgstr "Trofeos"
+
+#: ../ext/embeds_cr.py:566
+msgid " Cards "
+msgstr "Cartas"
+
+#: ../ext/embeds_cr.py:566
+msgid "Donations/Week"
+msgstr "Donaciones por Semana"
+
+#: ../ext/embeds_cr.py:573 ../ext/embeds_cr.py:744 ../ext/embeds_cr.py:745
+#: ../ext/embeds_cr.py:746
+msgid "Top Players"
+msgstr "Mejores Jugadores"
+
+#: ../ext/embeds_cr.py:593 ../ext/embeds_cr.py:602
+msgid "Day"
+msgstr "Día"
+
+#: ../ext/embeds_cr.py:603
+msgid "War Trophies"
+msgstr "Trofeos de Guerra"
+
+#: ../ext/embeds_cr.py:604
+msgid "Participants"
+msgstr "Participantes"
+
+#: ../ext/embeds_cr.py:605
+msgid "Battles Played"
+msgstr "Batallas Jugadas"
+
+#: ../ext/embeds_cr.py:606 ../ext/embeds_ov.py:75
+msgid "Wins"
+msgstr "Victorias"
+
+#: ../ext/embeds_cr.py:622 ../ext/embeds_cr.py:641
+msgid "\n"
+"{} Batles Played {}"
+msgstr "{} Batallas Jugadas {}"
+
+#: ../ext/embeds_cr.py:623 ../ext/embeds_cr.py:642
+msgid "\n"
+"{} Wins"
+msgstr "{} Victorias"
+
+#: ../ext/embeds_cr.py:624
+msgid "\n"
+"{} Crowns {}"
+msgstr "{} Coronas {}"
+
+#: ../ext/embeds_cr.py:628
+msgid "Clans Participating"
+msgstr "Clanes participando"
+
+#: ../ext/embeds_cr.py:643
+msgid "\n"
+"{} Cards Earned {}"
+msgstr "{} Cartas Conseguidas {}"
+
+#: ../ext/embeds_cr.py:650
+msgid "Top Fighters"
+msgstr "Mejores Luchadores"
+
+#: ../ext/embeds_cr.py:663
+msgid "A list of open tournaments you can join right now!"
+msgstr "¡Lista de torneos públicos a los que te puedes unir!"
+
+#: ../ext/embeds_cr.py:664
+msgid "Open Tournaments"
+msgstr "Torneos Públicos"
+
+#: ../ext/embeds_cr.py:711
+msgid "Top players of this tournament"
+msgstr "Mejores jugadores de este torneo"
+
+#: ../ext/embeds_cr.py:738
+msgid "Status"
+msgstr "Estado"
+
+#: ../ext/embeds_cr.py:740
+msgid "Time since creation"
+msgstr "Tiempo desde creación"
+
+#: ../ext/embeds_cr.py:768
+msgid "Run `{}friendlink disable` to disable this feature"
+msgstr "Escribe `{}friendlink disable` para deshabilitar esta característica"
+
+#: ../ext/embeds_ov.py:34
+msgid "{} - Competitive"
+msgstr "{} - Competitivo"
+
+#: ../ext/embeds_ov.py:42
+msgid "Win-Loss-Draw"
+msgstr "Victoria-Derrota-Empate"
+
+#: ../ext/embeds_ov.py:44
+msgid "Win Rate"
+msgstr "Win Rate"
+
+#: ../ext/embeds_ov.py:45 ../ext/embeds_ov.py:77
+msgid "Tier"
+msgstr "TIpo"
+
+#: ../ext/embeds_ov.py:46 ../ext/embeds_ov.py:78 ../ext/embeds_ov.py:105
+msgid "Kills"
+msgstr "Muertes"
+
+#: ../ext/embeds_ov.py:47 ../ext/embeds_ov.py:79
+msgid "Top Kills in a Game"
+msgstr "Top Muertes en una partida"
+
+#: ../ext/embeds_ov.py:48 ../ext/embeds_ov.py:80
+msgid "Solo Kills"
+msgstr "Solo Muertes"
+
+#: ../ext/embeds_ov.py:49 ../ext/embeds_ov.py:81
+msgid "Final Blows"
+msgstr "Finales explosivos"
+
+#: ../ext/embeds_ov.py:50 ../ext/embeds_ov.py:82
+msgid "Deaths"
+msgstr "Muertes"
+
+#: ../ext/embeds_ov.py:51 ../ext/embeds_ov.py:83 ../ext/embeds_ov.py:106
+#: ../ext/embeds_ov.py:176
+msgid "K/D"
+msgstr "K/D"
+
+#: ../ext/embeds_ov.py:52 ../ext/embeds_ov.py:84 ../ext/embeds_ov.py:111
+msgid "Gold Medals"
+msgstr "Medallas de Oro"
+
+#: ../ext/embeds_ov.py:53 ../ext/embeds_ov.py:85 ../ext/embeds_ov.py:112
+msgid "Silver Medals"
+msgstr "Medallas de Plata"
+
+#: ../ext/embeds_ov.py:54 ../ext/embeds_ov.py:86 ../ext/embeds_ov.py:113
+msgid "Bronze Medals"
+msgstr "Medallas de Bronce"
+
+#: ../ext/embeds_ov.py:68
+msgid "{} - Quickplay"
+msgstr "{} - Juego rapido"
+
+#: ../ext/embeds_ov.py:107
+msgid "Best Kill Streak"
+msgstr "Mejor racha de muertes"
+
+#: ../ext/embeds_ov.py:108
+msgid "Total Damage"
+msgstr "Daño Total"
+
+#: ../ext/embeds_ov.py:109
+msgid "Hero Damage"
+msgstr "Daño de Héroes"
+
+#: ../ext/embeds_ov.py:110 ../ext/embeds_ov.py:144 ../ext/embeds_ov.py:183
+msgid "On Fire"
+msgstr "A tope"
+
+#: ../ext/embeds_ov.py:192
+msgid "Extra Stats"
+msgstr "Estadísticas extra"
+
+#: ../statsbot.py:325
+msgid "Pong! Websocket Latency:"
+msgstr "Pong! Latencia:"
+

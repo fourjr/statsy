@@ -9,6 +9,10 @@ from PIL import Image
 from __main__ import InvalidTag, NoTag
 from ext import embeds_coc
 from ext.paginator import PaginatorSession
+from locales.i18n import Translator
+
+
+_ = Translator('COC Embeds', __file__)
 
 shortcuts = {}
 
@@ -18,6 +22,13 @@ class TagCheck(commands.MemberConverter):
     check = 'PYLQGRJCUV0289'
 
     def resolve_tag(self, tag):
+        if tag.startswith('-'):
+            try:
+                index = int(tag.replace('-', ''))
+            except ValueError:
+                pass
+            else:
+                return (ctx.author, index)
         tag = tag.strip('#').upper().replace('O', '0')
         if tag in shortcuts:
             tag = shortcuts[tag]
@@ -39,7 +50,7 @@ class TagCheck(commands.MemberConverter):
         tag = self.resolve_tag(argument)
 
         if not tag:
-            raise InvalidTag('Invalid coc-tag passed.')
+            raise InvalidTag(_('Invalid coc-tag passed.', ctx))
         else:
             return tag
 
@@ -70,25 +81,25 @@ class Clash_of_Clans:
         else:
             return clan_tag.replace("#", "")
 
-    async def resolve_tag(self, ctx, tag_or_user, clan=False):
+    async def resolve_tag(self, ctx, tag_or_user, *, clan=False, index=0):
         if not tag_or_user:
             try:
-                tag = await ctx.get_tag('clashofclans')
+                tag = await ctx.get_tag('clashofclans', index=str(index))
             except KeyError:
-                await ctx.send(f'You don\'t have a saved tag. Save one using {ctx.prefix}cocsave <tag>!')
-                raise NoTag()
+                await ctx.send(_("You don\'t have a saved tag. Save one using `{}cocsave <tag>`!", ctx).format(ctx.prefix))
+                raise NoTag
             else:
                 if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, 'You don\'t have a clan!')
+                    return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!", ctx))
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
-                tag = await ctx.get_tag('clashofclans', tag_or_user.id)
+                tag = await ctx.get_tag('clashofclans', tag_or_user.id, index=str(index))
             except KeyError:
-                raise NoTag()
+                raise NoTag
             else:
                 if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, 'That person does not have a clan!')
+                    return await self.get_clan_from_profile(ctx, tag, _('That person does not have a clan!', ctx))
                 return tag
         else:
             return tag_or_user
@@ -109,7 +120,7 @@ class Clash_of_Clans:
             session = PaginatorSession(
                 ctx=ctx,
                 pages=ems,
-                footer_text='Statsy | Powered by the COC API'
+                footer_text=_('Statsy | Powered by the COC API', ctx)
             )
             await session.run()
 
@@ -129,7 +140,7 @@ class Clash_of_Clans:
             session = PaginatorSession(
                 ctx=ctx,
                 pages=ems,
-                footer_text='Statsy | Powered by the COC API'
+                footer_text=_('Statsy | Powered by the COC API', ctx)
             )
             await session.run()
 
@@ -149,7 +160,7 @@ class Clash_of_Clans:
             session = PaginatorSession(
                 ctx=ctx,
                 pages=ems,
-                footer_text='Statsy | Powered by the COC API'
+                footer_text=_('Statsy | Powered by the COC API', ctx)
             )
             await session.run()
 
@@ -170,7 +181,7 @@ class Clash_of_Clans:
                 session = PaginatorSession(
                     ctx=ctx,
                     pages=ems,
-                    footer_text=f'{clan["members"]}/50 members'
+                    footer_text=str(clan["members"]) + _('/50 members', ctx)
                 )
                 await session.run()
             else:
@@ -188,7 +199,7 @@ class Clash_of_Clans:
                 return await ctx.send(f'`{e}`')
             else:
                 if clan['members'] < 4:
-                    return await ctx.send('Clan must have more than 4 players for heuristics.')
+                    return await ctx.send(_('Clan must have more than 4 players for statistics.', ctx))
                 else:
                     em = await embeds_coc.format_most_valuable(ctx, clan)
                     await ctx.send(embed=em)
@@ -205,25 +216,27 @@ class Clash_of_Clans:
                 return await ctx.send(f'`{e}`')
             else:
                 if clan['members'] < 4:
-                    return await ctx.send('Clan must have more than 4 players for heuristics.')
+                    return await ctx.send(_('Clan must have more than 4 players for statistics.', ctx))
                 else:
                     em = await embeds_coc.format_least_valuable(ctx, clan)
                     await ctx.send(embed=em)
 
     @commands.command()
-    async def cocsave(self, ctx, *, tag):
-        '''Saves a Clash of Clans tag to your discord.
-
-        Ability to save multiple tags coming soon.
-        '''
-        tag = self.conv.resolve_tag(tag)
+    async def cocsave(self, ctx, tag, index: str='0'):
+        """Saves a Clash of Clans tag to your discord profile."""
+        tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
-            raise InvalidTag('Invalid tag')
+            raise InvalidTag('Invalid cr-tag passed')
 
-        await ctx.save_tag(tag, 'clashofclans')
+        await ctx.save_tag(tag[0], 'clashofclans', index=index.replace('-', ''))
 
-        await ctx.send('Successfully saved tag.')
+        if index == '0':
+            prompt = f'Check your stats with `{ctx.prefix}cocprofile`!'
+        else:
+            prompt = f'Check your stats with `{ctx.prefix}cocprofile -{index}`!'
+
+        await ctx.send('Successfully saved tag. ' + prompt)
 
     @commands.command()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
@@ -237,9 +250,9 @@ class Clash_of_Clans:
                 return await ctx.send(f'`{e}`')
             else:
                 if "reason" in war:
-                    return await ctx.send("This clan's war logs aren't public.")
+                    return await ctx.send(_("This clan's war logs aren't public.", ctx))
                 if war['state'] == 'notInWar':
-                    return await ctx.send("This clan isn't in a war right now!")
+                    return await ctx.send(_("This clan isn't in a war right now!", ctx))
                 async with ctx.session.get(war['clan']['badgeUrls']['large']) as resp:
                     clan_img = Image.open(io.BytesIO(await resp.read()))
                 async with ctx.session.get(war['opponent']['badgeUrls']['large']) as resp:
