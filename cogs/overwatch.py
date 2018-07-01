@@ -6,6 +6,9 @@ from ext import embeds_ov
 from ext.paginator import PaginatorSession
 from statsbot import NoTag
 
+from locales.i18n import Translator
+
+_ = Translator('Overwatch', __file__)
 
 class TagCheck(commands.MemberConverter):
 

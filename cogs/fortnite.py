@@ -11,6 +11,9 @@ from discord.ext import commands
 from statsbot import NoTag, InvalidPlatform
 from ext.paginator import PaginatorSession
 
+from locales.i18n import Translator
+
+_ = Translator('Fortnite', __file__)
 
 class FortniteServerError(Exception):
     """Raised when the Fortnite API is down"""
