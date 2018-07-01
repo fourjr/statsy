@@ -471,9 +471,9 @@ Total                   :  {len(self.bot.guilds)}```"""))
         }
         if cog_name in shortcuts:
             cog_name = shortcuts[cog_name]
-        cog = bot.get_cog(cog_name.title().replace(' ', '_'))
+        cog = self.bot.get_cog(cog_name.title().replace(' ', '_'))
 
-        if cog in (self, bot.get_cog('Moderation'), None):
+        if cog in (self, self.bot.get_cog('Moderation'), None):
             await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
@@ -490,9 +490,9 @@ Total                   :  {len(self.bot.guilds)}```"""))
         }
         if cog_name in shortcuts:
             cog_name = shortcuts[cog_name]
-        cog = bot.get_cog(cog_name.title().replace(' ', '_'))
+        cog = self.bot.get_cog(cog_name.title().replace(' ', '_'))
 
-        if cog in (self, bot.get_cog('Moderation'), None):
+        if cog in (self, self.bot.get_cog('Moderation'), None):
             await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
