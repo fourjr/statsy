@@ -164,7 +164,7 @@ class Clash_Royale:
             try:
                 tag = await ctx.get_tag('clashroyale', index=str(index))
             except KeyError:
-                await ctx.send(_("You don't have a saved tag. Save one using `{}save <tag>`!", ctx)).format(ctx.prefix)
+                await ctx.send(_("You don't have a saved tag. Save one using `{}save <tag>`!", ctx).format(ctx.prefix))
                 raise NoTag
             else:
                 if clan is True:
