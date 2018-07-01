@@ -21,7 +21,7 @@ class TagCheck(commands.MemberConverter):
 
     check = 'PYLQGRJCUV0289'
 
-    def resolve_tag(self, tag):
+    def resolve_tag(self, ctx, tag):
         if tag.startswith('-'):
             try:
                 index = int(tag.replace('-', ''))
@@ -47,7 +47,7 @@ class TagCheck(commands.MemberConverter):
             return user
 
         # Not a user so its a tag.
-        tag = self.resolve_tag(argument)
+        tag = self.resolve_tag(ctx, argument)
 
         if not tag:
             raise InvalidTag(_('Invalid coc-tag passed.', ctx))
@@ -237,6 +237,17 @@ class Clash_of_Clans:
             prompt = f'Check your stats with `{ctx.prefix}cocprofile -{index}`!'
 
         await ctx.send('Successfully saved tag. ' + prompt)
+
+    @commands.command()
+    async def cocusertag(self, ctx, *, member: discord.Member=None):
+        """Checks the saved tag(s) of a member"""
+        member = member or ctx.author
+        tag = await ctx.get_tag('clashofclans', index='all')
+        em = discord.Embed(description='Tags saved', color=embeds_coc.random_color())
+        em.set_author(name=member.name, icon_url=member.avatar_url)
+        for i in tag:
+            em.add_field(name=f'Tag index: {i}', value=tag[i])
+        await ctx.send(embed=em)
 
     @commands.command()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):

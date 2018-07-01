@@ -451,6 +451,9 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     @commands.command(name='language')
     async def language_(self, ctx, language=None):
+        """Changes your language!
+        Want to help translate? Join our support server: https://discord.gg/cBqsdPt
+        """
         languages = {
             'spanish': 'es',
             'english': 'messages'
@@ -463,6 +466,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     @commands.command()
     async def enable(self, ctx, *, cog_name: str):
+        """Enables certain games"""
         shortcuts = {
             'coc': 'Clash_Of_Clans',
             'cr': 'Clash_Royale',
@@ -482,6 +486,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     @commands.command()
     async def disable(self, ctx, *, cog_name: str):
+        """Disables certain games"""
         shortcuts = {
             'coc': 'Clash_Of_Clans',
             'cr': 'Clash_Royale',

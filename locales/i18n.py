@@ -179,11 +179,14 @@ class Translator:
         with respect to the current locale.
         """
         normalized_untranslated = _normalize(untranslated, True)
-        try:
-            language = self.cache[str(ctx.guild.id)]
-        except KeyError:
-            language = (client.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
-            self.cache[str(ctx.guild.id)] = language
+        if ctx.guild:
+            try:
+                language = self.cache[str(ctx.guild.id)]
+            except KeyError:
+                language = (client.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+                self.cache[str(ctx.guild.id)] = language
+        else:
+            language = 'messages'
 
         try:
             return self.translations[language][normalized_untranslated]

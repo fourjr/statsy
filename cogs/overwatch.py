@@ -128,6 +128,16 @@ class Overwatch:
 
         await ctx.send('Successfully saved tag. ' + prompt)
 
+    @commands.command()
+    async def owusertag(self, ctx, *, member: discord.Member=None):
+        """Checks the saved tag(s) of a member"""
+        member = member or ctx.author
+        tag = await ctx.get_tag('overwatch', index='all')
+        em = discord.Embed(description='Tags saved', color=embeds_ov.random_color())
+        em.set_author(name=member.name, icon_url=member.avatar_url)
+        for i in tag:
+            em.add_field(name=f'Tag index: {i}', value=tag[i])
+        await ctx.send(embed=em)
 
 def setup(bot):
     cog = Overwatch(bot)
