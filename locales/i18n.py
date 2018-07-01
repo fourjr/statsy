@@ -165,7 +165,7 @@ class Translator:
         self.cog_folder = Path(file_location).resolve().parent
         self.cog_name = name
         self.lang = None
-        self.cache = TTLCache(500, 30)
+        self.cache = TTLCache(500, 10)
         self.translations = {}
 
         _translators.append(self)

@@ -409,8 +409,6 @@ class Bot_Related:
 
     @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
-        if ctx.author.id not in self.bot.developers:
-            return
         nano = 0
         tiny = 0
         small = 0
