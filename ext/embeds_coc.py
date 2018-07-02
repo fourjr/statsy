@@ -256,7 +256,7 @@ async def format_profile(ctx, p):
     em.set_footer(text=_('Statsy - Powered by the COC API', ctx))
     embeds.append(em)
     em = discord.Embed(color=random_color())
-    em.set_author(name=_('{}s Collection ({}, ctx)').format(p['name'], p['tag']), icon_url=av)
+    em.set_author(name=_('{}s Collection ({})', ctx).format(p['name'], p['tag']), icon_url=av)
     troops = []
     builders = []
     heroes = []

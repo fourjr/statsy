@@ -143,6 +143,8 @@ class Clash_Royale:
             data = self.cache[f'{method}{args}']
         except KeyError:
             data = await getattr(self.cr, method)(*args)
+            if method in ('get_player', 'get_clan', 'get_player_chests') and isinstance(data, list):
+                data = data[0]
             if isinstance(data, list):
                 self.cache[f'{method}{args}'] = data
             else:
@@ -226,7 +228,7 @@ class Clash_Royale:
     async def friendlink(self, ctx):
         """Check your guild's friend link status"""
         if not ctx.guild:
-            return await ctx.send(_('Friend link is always disabled in DMs.', ctx))
+            return await ctx.send(_('Friend link is always disabled in DMs.'), ctx)
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
         friend_config = guild_config.get('friend_link')
 

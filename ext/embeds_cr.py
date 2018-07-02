@@ -618,13 +618,13 @@ async def format_clan_war(ctx, w):
         standings = []
 
         for i in w.standings:
-            standings.append(
+            standings.append(''.join((
                 f"**{i.name}**",
                 _('\n{} Batles Played {}', ctx).format(i.battles_played, emoji(ctx, 'battle')),
                 _('\n{} Wins', ctx).format(i.wins, emoji(ctx, 'crownblue')),
                 _('\n{} Crowns {}', ctx).format(i.crowns, emoji(ctx, '3crown')),
                 f"\n#{i.tag}"
-            )
+            )))
 
         page3.add_field(name=_('Clans Participating', ctx), value='\n\n'.join(standings))
         return_vals.append(page3)
@@ -637,13 +637,13 @@ async def format_clan_war(ctx, w):
     for i in range(3):
         if len(w.participants) < i + 1:
             break
-        members.append(
+        members.append(''.join((
             f"**{w.participants[i].name}**",
             _('\n{} Batles Played {}', ctx).format(w.participants[i].battles_played, emoji(ctx, 'battle')),
             _('\n{} Wins', ctx).format(w.participants[i].wins, emoji(ctx, 'crownblue')),
             _('\n{} Cards Earned {}', ctx).format(w.participants[i].cards_earned, emoji(ctx, 'cards')),
             f"\n#{w.participants[i].tag}"
-        )
+        )))
 
     for f, v in fields1:
         page1.add_field(name=f, value=v)
