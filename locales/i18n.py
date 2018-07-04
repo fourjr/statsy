@@ -204,7 +204,11 @@ class Translator:
 
     def _parse(self, translation_file):
         for translation in _parse(translation_file):
-            self._add_translation(translation_file.name.split('\\').split('/')[-1].replace('.pot', '').replace('.po', ''), *translation)
+            if os.name == 'nt':
+                file_char = '\\'
+            else:
+                file_char = '/'
+            self._add_translation(translation_file.name.split(file_char)[-1].replace('.pot', '').replace('.po', ''), *translation)
 
     def _add_translation(self, lang, untranslated, translated):
         untranslated = _normalize(untranslated, True)
