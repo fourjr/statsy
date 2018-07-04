@@ -180,8 +180,11 @@ class Bot_Related:
         """Formats the text for a cog help"""
         sigs = []
 
-        if not cog.__local_check:
-            return
+        try:
+            if not cog.__local_check:
+                return
+        except AttributeError:
+            pass
 
         for cmd in self.bot.commands:
             if cmd.hidden:
