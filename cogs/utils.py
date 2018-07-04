@@ -448,6 +448,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         await ctx.send('```json\n' + json.dumps(sorted_commands, indent=4) + '\n```')
 
     @commands.command(name='language')
+    @commands.has_permissions(manage_guild=True)
     async def language_(self, ctx, language=None):
         """Changes your language!
         Want to help translate? Join our support server: https://discord.gg/cBqsdPt
@@ -463,6 +464,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Language set. This might take up to a minute to update.', ctx))
 
     @commands.command()
+    @commands.has_permissions(manage_guild=True)
     async def enable(self, ctx, *, cog_name: str):
         """Enables certain games"""
         if not ctx.guild:
@@ -485,6 +487,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send('Successfully enabled {}'.format(cog_name))
 
     @commands.command()
+    @commands.has_permissions(manage_guild=True)
     async def disable(self, ctx, *, cog_name: str):
         """Disables certain games"""
         if not ctx.guild:

@@ -226,7 +226,7 @@ async def format_cards(ctx, p):
 
     for i, r in found_cards_pages:
         if i:
-            em.add_field(name=_('Found Cards ({}, ctx)').format(r), value=i, inline=False)
+            em.add_field(name=_('Found Cards ({})', ctx).format(r), value=i, inline=False)
 
     for item in notfound_cards_pages:
         if item:

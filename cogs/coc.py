@@ -71,7 +71,7 @@ class Clash_of_Clans:
         self.bot.loop.create_task(self.session.close())
 
     async def get_clan_from_profile(self, ctx, tag, message):
-        async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
+        async with self.session.get(f"https://api.clashofclans.com/v1/players/{tag}") as p:
             profile = await p.json()
         try:
             clan_tag = profile['clan']['tag']
@@ -111,7 +111,7 @@ class Clash_of_Clans:
 
         await ctx.trigger_typing()
         try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
+            async with self.session.get(f"https://api.clashofclans.com/v1/players/{tag}") as p:
                 profile = await p.json()
         except Exception as e:
             return await ctx.send(f'`{e}`')
@@ -131,7 +131,7 @@ class Clash_of_Clans:
 
         await ctx.trigger_typing()
         try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/players/%23{tag}") as p:
+            async with self.session.get(f"https://api.clashofclans.com/v1/players/{tag}") as p:
                 profile = await p.json()
         except Exception as e:
             return await ctx.send(f'`{e}`')
@@ -151,7 +151,7 @@ class Clash_of_Clans:
 
         await ctx.trigger_typing()
         try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+            async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
                 clan = await c.json()
         except Exception as e:
             return await ctx.send(f'`{e}`')
@@ -171,7 +171,7 @@ class Clash_of_Clans:
 
         await ctx.trigger_typing()
         try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+            async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
                 clan = await c.json()
         except Exception as e:
             return await ctx.send(f'`{e}`')
@@ -193,7 +193,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
                     clan = await c.json()
             except Exception as e:
                 return await ctx.send(f'`{e}`')
@@ -210,7 +210,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}") as c:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
                     clan = await c.json()
             except Exception as e:
                 return await ctx.send(f'`{e}`')
@@ -255,7 +255,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/%23{tag}/currentwar") as c:
+                async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}/currentwar") as c:
                     war = await c.json()
             except Exception as e:
                 return await ctx.send(f'`{e}`')

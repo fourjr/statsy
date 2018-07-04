@@ -102,7 +102,7 @@ class Fortnite:
                 raise FortniteServerError
             try:
                 return await resp.json()
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, aiohttp.client_exceptions.ContentTypeError):
                 raise FortniteServerError
 
     async def get_player_uid(self, ctx, name):

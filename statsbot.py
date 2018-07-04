@@ -235,9 +235,13 @@ class StatsBot(commands.AutoShardedBot):
         """Utilises the CustomContext subclass of discord.Context"""
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
-        if ctx.command is None:
-            return
+
+        if ctx.guild:
+            ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
         else:
+            ctx.language = 'messages'
+
+        if ctx.command:
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')

@@ -2,17 +2,14 @@ import re
 import os
 from pathlib import Path
 
-from cachetools import TTLCache
 from discord.ext import commands
 from dotenv import find_dotenv, load_dotenv
-from pymongo import MongoClient
 
 """Modified version of https://github.com/Cog-Creators/Red-DiscordBot/blob/V3/develop/redbot/core/i18n.py"""
 
 __all__ = ["get_locale", "reload_locales", "cog_i18n", "Translator"]
 
 load_dotenv(find_dotenv())
-client = MongoClient(os.getenv('mongo'))
 
 WAITING_FOR_MSGID = 1
 IN_MSGID = 2
@@ -165,7 +162,6 @@ class Translator:
         self.cog_folder = Path(file_location).resolve().parent
         self.cog_name = name
         self.lang = None
-        self.cache = TTLCache(500, 10)
         self.translations = {}
 
         _translators.append(self)
@@ -179,17 +175,8 @@ class Translator:
         with respect to the current locale.
         """
         normalized_untranslated = _normalize(untranslated, True)
-        if ctx.guild:
-            try:
-                language = self.cache[str(ctx.guild.id)]
-            except KeyError:
-                language = (client.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
-                self.cache[str(ctx.guild.id)] = language
-        else:
-            language = 'messages'
-
         try:
-            return self.translations[language][normalized_untranslated]
+            return self.translations[ctx.language][normalized_untranslated]
         except KeyError:
             return untranslated
 
