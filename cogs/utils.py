@@ -465,7 +465,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Available languages: {}', ctx).format(', '.join([i.title() for i in languages.keys()])))
         else:
             await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {'language': languages[language]}}, upsert=True)
-            await ctx.send(_('Language set. This might take up to a minute to update.', ctx))
+            await ctx.send(_('Language set.', ctx))
 
     @commands.command()
     @commands.has_permissions(manage_guild=True)
