@@ -95,9 +95,9 @@ class StatsBot(commands.AutoShardedBot):
         self.cr = clashroyale.Client(
             os.getenv('royaleapi'),
             session=self.session,
-            url=os.getenv('royaleapiurl'),
+            url=os.getenv('royaleapiurl', 'https://api.royaleapi.com'),
             is_async=True,
-            timeout=10
+            timeout=20
         )
         self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
         self.uptime = datetime.datetime.utcnow()
