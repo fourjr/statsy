@@ -239,7 +239,7 @@ class Bot_Related:
         name = command.replace(' ', '_')
         cog = self.bot.cogs.get(name)
         if cog is not None:
-            return self.format_cog_help(name, ctx, cog, prefix)
+            return self.format_cog_help(ctx, name, cog, prefix)
         cmd = self.bot.get_command(command)
         if cmd is not None and not cmd.hidden:
             return discord.Embed(
@@ -269,7 +269,7 @@ class Bot_Related:
             if name == 'Moderation':
                 # hidden cog :p
                 continue
-            em = self.format_cog_help(name, ctx, cog, prefix)
+            em = self.format_cog_help(ctx, name, cog, prefix)
             if em:
                 pages.append(em)
 
