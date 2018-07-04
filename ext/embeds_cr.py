@@ -73,7 +73,7 @@ def camel_case(text: str):
 
 async def format_least_valuable(ctx, clan, cache=False):
     for m in clan.members:
-        m.score = ((m.donations / 5) + ((m.clan_chest_crowns or 0) * 10) + (m.trophies / 7)) / 3
+        m.score = ((m.donations / 5) + (m.trophies / 7)) / 3
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
 
     em = discord.Embed(
@@ -90,7 +90,6 @@ async def format_least_valuable(ctx, clan, cache=False):
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"#{m.tag}\n{m.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}"
         )
@@ -100,7 +99,7 @@ async def format_least_valuable(ctx, clan, cache=False):
 async def format_most_valuable(ctx, clan):
     # TODO CLAN_CHEST_CROWNS
     for m in clan.members:
-        m.score = ((m.donations / 5) + ((m.clan_chest_crowns or 0) * 10) + (m.trophies / 7)) / 3
+        m.score = ((m.donations / 5) + (m.trophies / 7)) / 3
 
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
@@ -118,7 +117,6 @@ async def format_most_valuable(ctx, clan):
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"#{m.tag}\n{m.trophies} "
-            f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
             f"{emoji(ctx, 'cards')}"
         )
@@ -298,7 +296,6 @@ async def format_members(ctx, c):
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"#{m.tag}\n{m.trophies} "
-                  f"{emoji(ctx, 'trophy')}\n{m.clan_chest_crowns or 0} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}"
         )

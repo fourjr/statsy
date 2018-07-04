@@ -202,6 +202,11 @@ class Clash_Royale:
 
         if friend_config:
             ctx = await self.bot.get_context(m)
+            if ctx.guild:
+                ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+            else:
+                ctx.language = 'messages'
+
             tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
             token = m.content[m.content.find('&token=') + 7:m.content.find('&token=') + 7 + 8]
             link = f'https://link.clashroyale.com?tag={tag}&token={token}/'
