@@ -666,13 +666,13 @@ async def format_tournaments(ctx, t):
         em.description = ctx.bot.psa_message
     em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
 
-    tournaments = sorted(t, key=lambda x: int(x.max_capacity))
+    tournaments = sorted(t, key=lambda x: int(x.max_players))
     i = 0
     for t in tournaments:
-        if t.player_count == t.max_capacity:
+        if t.current_players == t.max_players:
             continue
 
-        members = '/'.join((str(t.player_count), str(t.max_capacity)))
+        members = '/'.join((str(t.player_count), str(t.max_players)))
 
         timeleft = ''
         date = datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(t.create_time)
@@ -688,8 +688,8 @@ async def format_tournaments(ctx, t):
         if seconds > 0:
             timeleft += f' {seconds}s'
 
-        gold = rewards[t.max_capacity][1]
-        cards = rewards[t.max_capacity][0]
+        gold = rewards[t.max_players][1]
+        cards = rewards[t.max_players][0]
 
         join_link = 'https://fourjr-webserver.herokuapp.com/redirect?url=https://link.clashroyale.com/?joinTournament?id=' + t.tag
         value = f'Time since creation: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n[Join now]({join_link})'
@@ -732,9 +732,9 @@ async def format_tournament(ctx, t):
             timeleft += f' {seconds}s'
 
     fields1 = [
-        (_('Type', ctx), camel_case(t.type) + ' 📩'),
+        (_('Open', ctx), str(t.open) + ' 📩'),
         (_('Status', ctx), camel_case(t.status)),
-        (_('Members', ctx), f"{t.player_count}/{t.max_capacity} {emoji(ctx, 'clan')}"),
+        (_('Members', ctx), f"{t.max_players}/{t.current_players} {emoji(ctx, 'clan')}"),
         (_('Time since creation', ctx), timeleft)
     ]
 
