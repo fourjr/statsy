@@ -382,19 +382,8 @@ async def format_seasons(ctx, p):
 
 
 async def format_card(ctx, c):
-    arenas = {
-        0: 'Training Camp',
-        1: 'Goblin Stadium',
-        2: 'Bone Pit',
-        3: 'Barbarian Bowl',
-        4: "P.E.K.K.A's Playhouse",
-        5: 'Spell Valley',
-        6: "Builder's Workshop",
-        7: 'Royal Arena',
-        8: 'Frozen Peak',
-        9: 'Jungle Arena',
-        10: 'Hog Mountain'
-    }
+    arenas = {i.arena: i.title for i in ctx.bot.constants.arenas}
+
     em = discord.Embed(description=c.description, color=random_color())
     em.set_thumbnail(url='attachment://ingame.png')
     em.set_author(name=_('{} Info', ctx).format(c.name), icon_url='attachment://card.png')
