@@ -2,6 +2,7 @@ import io
 import os
 
 import aiohttp
+from cachetools import TTLCache
 import discord
 from discord.ext import commands
 from PIL import Image
@@ -62,22 +63,30 @@ class Clash_of_Clans:
     def __init__(self, bot):
         self.bot = bot
         self.conv = TagCheck()
-        bot.loop.create_task(self.__ainit__())
-
-    async def __ainit__(self):
-        self.session = aiohttp.ClientSession(headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"})
+        self.cache = TTLCache(500, 180)
 
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
 
+    async def request(self, endpoint):
+        try:
+            self.cache[endpoint]
+        except KeyError:
+            async with self.bot.session.get(
+                f"https://api.clashofclans.com/v1/{endpoint}",
+                headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"}
+            ) as resp:
+                self.cache[endpoint] = await resp.json()
+
+        return self.cache[endpoint]
+
     async def get_clan_from_profile(self, ctx, tag, message):
-        async with self.session.get(f"https://api.clashofclans.com/v1/players/{tag}") as p:
-            profile = await p.json()
+        profile = await self.request(f'players/%23{tag}')
         try:
             clan_tag = profile['clan']['tag']
         except KeyError:
             await ctx.send(message)
-            raise ValueError(message)
+            raise NoTag
         else:
             return clan_tag.replace("#", "")
 
@@ -109,117 +118,99 @@ class Clash_of_Clans:
         '''Gets the Clash of Clans profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
-        await ctx.trigger_typing()
-        try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/players/{tag}") as p:
-                profile = await p.json()
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
-        else:
+        async with ctx.typing():
+            profile = await self.request(f'players/%23{tag}')
+
             ems = await embeds_coc.format_profile(ctx, profile)
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems,
-                footer_text=_('Statsy | Powered by the COC API', ctx)
-            )
-            await session.run()
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems,
+            footer_text=_('Statsy | Powered by the COC API', ctx)
+        )
+        await session.run()
 
     @commands.group(invoke_without_command=True)
     async def cocachieve(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans achievements of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
-        await ctx.trigger_typing()
-        try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/players/{tag}") as p:
-                profile = await p.json()
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
-        else:
+        async with ctx.typing():
+            profile = await self.request(f'players/%23{tag}')
+
             ems = await embeds_coc.format_achievements(ctx, profile)
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems,
-                footer_text=_('Statsy | Powered by the COC API', ctx)
-            )
-            await session.run()
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems,
+            footer_text=_('Statsy | Powered by the COC API', ctx)
+        )
+        await session.run()
 
     @commands.group(invoke_without_command=True)
     async def cocclan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
-        await ctx.trigger_typing()
-        try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
-                clan = await c.json()
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
-        else:
+        async with ctx.typing():
+            clan = await self.request(f'clans/%23{tag}')
+
             ems = await embeds_coc.format_clan(ctx, clan)
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems,
-                footer_text=_('Statsy | Powered by the COC API', ctx)
-            )
-            await session.run()
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems,
+            footer_text=_('Statsy | Powered by the COC API', ctx)
+        )
+        await session.run()
 
     @commands.group(invoke_without_command=True)
     async def cocmembers(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
-        await ctx.trigger_typing()
-        try:
-            async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
-                clan = await c.json()
-        except Exception as e:
-            return await ctx.send(f'`{e}`')
-        else:
+        async with ctx.typing():
+            clan = await self.request(f'clans/%23{tag}')
+
             ems = await embeds_coc.format_members(ctx, clan)
-            if len(ems) > 1:
-                session = PaginatorSession(
-                    ctx=ctx,
-                    pages=ems,
-                    footer_text=str(clan["members"]) + _('/50 members', ctx)
-                )
-                await session.run()
-            else:
-                await ctx.send(embed=ems[0])
+
+        if len(ems) > 1:
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems,
+                footer_text=str(clan["members"]) + _('/50 members', ctx)
+            )
+            await session.run()
+        else:
+            await ctx.send(embed=ems[0])
 
     @cocmembers.command()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+
         async with ctx.typing():
-            try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
-                    clan = await c.json()
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            clan = await self.request(f'clans/%23{tag}')
+
+            if clan['members'] < 4:
+                return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
             else:
-                if clan['members'] < 4:
-                    return await ctx.send(_('Clan must have more than 4 players for statistics.', ctx))
-                else:
-                    em = await embeds_coc.format_most_valuable(ctx, clan)
-                    await ctx.send(embed=em)
+                em = await embeds_coc.format_most_valuable(ctx, clan)
+                await ctx.send(embed=em)
 
     @cocmembers.command()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
+
         async with ctx.typing():
-            try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}") as c:
-                    clan = await c.json()
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
+            clan = await self.request(f'clans/%23{tag}')
+
+            if clan['members'] < 4:
+                return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
             else:
-                if clan['members'] < 4:
-                    return await ctx.send(_('Clan must have more than 4 players for statistics.', ctx))
-                else:
-                    em = await embeds_coc.format_least_valuable(ctx, clan)
-                    await ctx.send(embed=em)
+                em = await embeds_coc.format_least_valuable(ctx, clan)
+                await ctx.send(embed=em)
 
     @commands.command()
     async def cocsave(self, ctx, tag, index: str='0'):
@@ -254,23 +245,20 @@ class Clash_of_Clans:
         '''Check your current war status.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
-            try:
-                async with self.session.get(f"https://api.clashofclans.com/v1/clans/{tag}/currentwar") as c:
-                    war = await c.json()
-            except Exception as e:
-                return await ctx.send(f'`{e}`')
-            else:
-                if "reason" in war:
-                    return await ctx.send(_("This clan's war logs aren't public.", ctx))
-                if war['state'] == 'notInWar':
-                    return await ctx.send(_("This clan isn't in a war right now!", ctx))
-                async with ctx.session.get(war['clan']['badgeUrls']['large']) as resp:
-                    clan_img = Image.open(io.BytesIO(await resp.read()))
-                async with ctx.session.get(war['opponent']['badgeUrls']['large']) as resp:
-                    opp_img = Image.open(io.BytesIO(await resp.read()))
-                image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, clan_img, opp_img)
-                em = await embeds_coc.format_war(ctx, war)
-                await ctx.send(file=discord.File(image, 'war.png'), embed=em)
+            war = await self.request(f'clans/%23{tag}/currentwar')
+            if "reason" in war:
+                return await ctx.send(_("This clan's war logs aren't public.", ctx))
+            if war['state'] == 'notInWar':
+                return await ctx.send(_("This clan isn't in a war right now!", ctx))
+
+            async with ctx.session.get(war['clan']['badgeUrls']['large']) as resp:
+                clan_img = Image.open(io.BytesIO(await resp.read()))
+            async with ctx.session.get(war['opponent']['badgeUrls']['large']) as resp:
+                opp_img = Image.open(io.BytesIO(await resp.read()))
+
+            image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, clan_img, opp_img)
+            em = await embeds_coc.format_war(ctx, war)
+            await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
     def war_image(self, ctx, clan_img, opp_img):
 

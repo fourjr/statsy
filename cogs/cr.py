@@ -434,7 +434,7 @@ class Clash_Royale:
             war = await self.request('get_clan_war_log', tag)
 
             if len(clan.members) < 4:
-                await ctx.send('Clan must have more than 4 players for these statistics.')
+                await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
                 em = await embeds.format_most_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
@@ -450,7 +450,7 @@ class Clash_Royale:
             war = await self.request('get_clan_war_log', tag)
 
             if len(clan.members) < 4:
-                return await ctx.send('Clan must have more than 4 players for these statistics.')
+                return await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
                 em = await embeds.format_least_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
@@ -473,6 +473,7 @@ class Clash_Royale:
         await ctx.send('Successfully saved tag. ' + prompt)
 
     @commands.command()
+    @embeds.has_perms(False)
     async def usertag(self, ctx, member: discord.Member = None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
@@ -498,8 +499,8 @@ class Clash_Royale:
     async def _card(self, ctx, *, card):
         """Get information about a Clash Royale card."""
         aliases = {
-            "log": "the log",
-            "pump": 'elixir collector',
+            'log': 'the log',
+            'pump': 'elixir collector',
             'skarmy': 'skeleton army',
             'pekka': 'p.e.k.k.a',
             'mini pekka': 'mini p.e.k.k.a',
@@ -524,7 +525,6 @@ class Clash_Royale:
                 with open(f"data/cards_ingame/{card.replace(' ', '-').replace('.','')}.png", 'rb') as i:
                     await ctx.send(embed=em, files=[discord.File(c, 'card.png'), discord.File(i, 'ingame.png')])
         except FileNotFoundError:
-            await ctx.send(f'Images not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
             await ctx.send(embed=em)
 
     @commands.command(aliases=['tourney'])

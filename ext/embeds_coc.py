@@ -172,16 +172,20 @@ async def format_profile(ctx, p):
         em.set_thumbnail(url="https://i.imgur.com/JsVQPza.png")
 
     trophies = f"{p['trophies']}/{p['bestTrophies']} PB {emoji(ctx, 'trophy')}"
+
     try:
         clan = p['clan']
+        war_stars = p['warStars']
+        role = 'Elder' if p['role'] == 'admin' else p['role'].title()
     except KeyError:
         clan = None
-    try:
-        war_stars = p['warStars']
-    except KeyError:
         war_stars = None
+        role = None
 
-    role = 'Elder' if p['role'] == 'admin' else p['role'].title()
+    try:
+        donations = p['donations'] / p['donationsReceived']
+    except ZeroDivisionError:
+        donations = 0
 
     embed_fields = [
         (_('Trophies', ctx), trophies, True),
@@ -190,10 +194,10 @@ async def format_profile(ctx, p):
         (_('Clan Name', ctx), f"{clan['name']} {emoji(ctx, 'clan')}" if clan else _('No Clan', ctx), True),
         (_('Clan Tag', ctx), f"{clan['tag']} {emoji(ctx, 'clan')}" if clan else _('No Clan', ctx), True),
         (_('Clan Role', ctx), f"{role} {emoji(ctx, 'clan')}" if clan else _('No Clan', ctx), True),
-        (_('War Stars', ctx), f"{war_stars} {emoji(ctx, 'cocstar')}", True),
+        (_('War Stars', ctx), f"{war_stars} {emoji(ctx, 'cocstar')}" if clan else _('No Clan', ctx), True),
         (_('Successful Attacks', ctx), f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
         (_('Successful Defenses', ctx), f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
-        (_("Donations", ctx), _('{} Received {}', ctx).format(p['donations'] / p['donationsReceived'], emoji(ctx, 'troops')), True)
+        (_("Donations", ctx), _('{} Received {}', ctx).format(donations, emoji(ctx, 'troops')), True)
     ]
 
     try:
