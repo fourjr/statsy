@@ -71,9 +71,19 @@ def camel_case(text: str):
     return ' '.join(m.group(0) for m in matches).title()
 
 
-async def format_least_valuable(ctx, clan, cache=False):
+async def format_least_valuable(ctx, clan, wars):
+    def war_score(tag):
+        score = 0
+        for w in wars:
+            if tag in [i.tag for i in w.participants]:
+                score += 1
+
+        return score
+
     for m in clan.members:
-        m.score = ((m.donations / 5) + (m.trophies / 7)) / 3
+        m.war_score = war_score(m.tag)
+        m.score = ((m.donations / 5) + (m.war_score / 3) + (m.trophies / 7)) / 3
+
     to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
 
     em = discord.Embed(
@@ -91,15 +101,24 @@ async def format_least_valuable(ctx, clan, cache=False):
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
-                  f"{emoji(ctx, 'cards')}"
+                  f"{emoji(ctx, 'cards')}\n"
+                  f"{m.war_score} {emoji(ctx, 'clanwar')}"
         )
     return em
 
 
-async def format_most_valuable(ctx, clan):
-    # TODO CLAN_CHEST_CROWNS
+async def format_most_valuable(ctx, clan, wars):
+    def war_score(tag):
+        score = 0
+        for w in wars:
+            if tag in [i.tag for i in w.participants]:
+                score += 1
+
+        return score
+
     for m in clan.members:
-        m.score = ((m.donations / 5) + (m.trophies / 7)) / 3
+        m.war_score = war_score(m.tag)
+        m.score = ((m.donations / 5) + (m.war_score / 3) + (m.trophies / 7)) / 3
 
     best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
 
@@ -118,7 +137,8 @@ async def format_most_valuable(ctx, clan):
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"#{m.tag}\n{m.trophies} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
-            f"{emoji(ctx, 'cards')}"
+            f"{emoji(ctx, 'cards')}\n"
+            f"{m.war_score} {emoji(ctx, 'clanwar')}"
         )
 
     return em
@@ -232,7 +252,7 @@ async def format_cards(ctx, p):
     return em
 
 
-async def format_battles(ctx, battles, cache=False):
+async def format_battles(ctx, battles):
 
     em = discord.Embed(description='A list of battles played recently', color=random_color())
 
@@ -277,7 +297,7 @@ async def format_battles(ctx, battles, cache=False):
     return em
 
 
-async def format_members(ctx, c):
+async def format_members(ctx, c, ws):
     em = discord.Embed(description=_('A list of all members in this clan.', ctx), color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
@@ -285,6 +305,15 @@ async def format_members(ctx, c):
     em.set_thumbnail(url=c.badge.image)
     embeds = []
     counter = 0
+
+    def war_score(tag):
+        score = 0
+        for w in ws:
+            if tag in [i.tag for i in w.participants]:
+                score += 1
+
+        return score
+
     for m in c.members:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
@@ -297,7 +326,8 @@ async def format_members(ctx, c):
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"#{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
-                  f"{emoji(ctx, 'cards')}"
+                  f"{emoji(ctx, 'cards')}\n"
+                  f"{war_score(m.tag)} {emoji(ctx, 'clanwar')}"
         )
         counter += 1
     embeds.append(em)
@@ -429,7 +459,7 @@ async def format_profile(ctx, p, c):
         season = None
 
     if p.clan:
-        clan_role = p.clan.role.title()
+        clan_role = camel_case(p.clan.role)
     else:
         clan_role = None
 
@@ -474,7 +504,7 @@ async def format_profile(ctx, p, c):
     return em
 
 
-async def format_stats(ctx, p, cache=False):
+async def format_stats(ctx, p):
     av = get_clan_image(p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
@@ -486,7 +516,7 @@ async def format_stats(ctx, p, cache=False):
     deck = get_deck(ctx, p)
 
     if p.clan:
-        clan_role = p.clan.role.title()
+        clan_role = camel_case(p.clan.role)
     else:
         clan_role = None
 
@@ -518,7 +548,7 @@ async def format_stats(ctx, p, cache=False):
     return em
 
 
-async def format_clan(ctx, c, cache=False):
+async def format_clan(ctx, c):
     page1 = discord.Embed(description=c.description, color=random_color())
     page1.set_author(name=f"{c.name} (#{c.tag})")
     page1.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))

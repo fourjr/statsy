@@ -412,7 +412,9 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.request('get_clan', tag)
-            ems = await embeds.format_members(ctx, clan)
+            war = await self.request('get_clan_war_log', tag)
+
+            ems = await embeds.format_members(ctx, clan, war)
 
         session = PaginatorSession(
             ctx=ctx,
@@ -429,11 +431,12 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.request('get_clan', tag)
+            war = await self.request('get_clan_war_log', tag)
 
             if len(clan.members) < 4:
                 await ctx.send('Clan must have more than 4 players for these statistics.')
             else:
-                em = await embeds.format_most_valuable(ctx, clan)
+                em = await embeds.format_most_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
 
     @members.command()
@@ -444,11 +447,12 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.request('get_clan', tag)
+            war = await self.request('get_clan_war_log', tag)
 
             if len(clan.members) < 4:
                 return await ctx.send('Clan must have more than 4 players for these statistics.')
             else:
-                em = await embeds.format_least_valuable(ctx, clan)
+                em = await embeds.format_least_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
 
     @commands.command()
