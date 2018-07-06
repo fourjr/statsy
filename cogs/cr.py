@@ -384,7 +384,7 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
-    async def topclans(self, ctx, region: str = ''):
+    async def topclans(self, ctx, *, region: str = ''):
         """Returns the global top 50 clans."""
         async with ctx.typing():
             if region:
