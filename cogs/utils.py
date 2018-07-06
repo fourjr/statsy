@@ -412,7 +412,10 @@ class Bot_Related:
         if not command:
             return await ctx.send('Invalid command')
         args = {j.split(':')[0]: j.split(':')[1] for j in args.split(' ')} if args else {}
-        await new_ctx.invoke(command, **args)
+        try:
+            await new_ctx.invoke(command, **args)
+        except Exception as e:
+            await ctx.send(e)
 
     @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
@@ -515,6 +518,10 @@ Total                   :  {len(self.bot.guilds)}```"""))
             cog_name = cog.__class__.__name__
             await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {f'games.{cog_name}': False}}, upsert=True)
             await ctx.send('Successfully disabled {}'.format(cog_name))
+
+    @commands.command()
+    async def discord(self, ctx):
+        await ctx.send('<:statsy:464784655569387540> https://discord.gg/cBqsdPt')
 
 def setup(bot):
     c = Bot_Related(bot)
