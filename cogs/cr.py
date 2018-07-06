@@ -395,7 +395,10 @@ class Clash_Royale:
             else:
                 name = 'Global'
 
-            clans = await self.request('get_top_clans', region)
+            try:
+                clans = await self.request('get_top_clans', region)
+            except clashroyale.NotFoundError:
+                await ctx.send('Invalid region')
             ems = await embeds.format_top_clans(ctx, clans, name)
 
         session = PaginatorSession(
