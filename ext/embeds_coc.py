@@ -197,7 +197,7 @@ async def format_profile(ctx, p):
         (_('War Stars', ctx), f"{war_stars} {emoji(ctx, 'cocstar')}" if clan else _('No Clan', ctx), True),
         (_('Successful Attacks', ctx), f'{p["attackWins"]} {emoji(ctx, "sword")}', True),
         (_('Successful Defenses', ctx), f'{p["defenseWins"]} {emoji(ctx, "cocshield")}', True),
-        (_("Donations", ctx), _('{} Received {}', ctx).format(donations, emoji(ctx, 'troops')), True)
+        (_("Donate:Give Ratio", ctx), _('{:.2f} {}', ctx).format(donations, emoji(ctx, 'troops')), True)
     ]
 
     try:

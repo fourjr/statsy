@@ -68,7 +68,7 @@ class Clash_of_Clans:
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
 
-    async def request(self, endpoint):
+    async def request(self, ctx, endpoint):
         try:
             self.cache[endpoint]
         except KeyError:
@@ -78,10 +78,14 @@ class Clash_of_Clans:
             ) as resp:
                 self.cache[endpoint] = await resp.json()
 
+        if self.cache[endpoint] == {"reason":"notFound"}:
+            await ctx.send(_('The tag cannot be found!', ctx))
+            raise NoTag
+
         return self.cache[endpoint]
 
     async def get_clan_from_profile(self, ctx, tag, message):
-        profile = await self.request(f'players/%23{tag}')
+        profile = await self.request(ctx, f'players/%23{tag}')
         try:
             clan_tag = profile['clan']['tag']
         except KeyError:
@@ -119,7 +123,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
-            profile = await self.request(f'players/%23{tag}')
+            profile = await self.request(ctx, f'players/%23{tag}')
 
             ems = await embeds_coc.format_profile(ctx, profile)
 
@@ -136,7 +140,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
-            profile = await self.request(f'players/%23{tag}')
+            profile = await self.request(ctx, f'players/%23{tag}')
 
             ems = await embeds_coc.format_achievements(ctx, profile)
 
@@ -153,7 +157,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
-            clan = await self.request(f'clans/%23{tag}')
+            clan = await self.request(ctx, f'clans/%23{tag}')
 
             ems = await embeds_coc.format_clan(ctx, clan)
 
@@ -170,7 +174,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
-            clan = await self.request(f'clans/%23{tag}')
+            clan = await self.request(ctx, f'clans/%23{tag}')
 
             ems = await embeds_coc.format_members(ctx, clan)
 
@@ -190,7 +194,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
-            clan = await self.request(f'clans/%23{tag}')
+            clan = await self.request(ctx, f'clans/%23{tag}')
 
             if clan['members'] < 4:
                 return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
@@ -204,7 +208,7 @@ class Clash_of_Clans:
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
-            clan = await self.request(f'clans/%23{tag}')
+            clan = await self.request(ctx, f'clans/%23{tag}')
 
             if clan['members'] < 4:
                 return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
@@ -220,7 +224,7 @@ class Clash_of_Clans:
         if not tag:
             raise InvalidTag('Invalid cr-tag passed')
 
-        await ctx.save_tag(tag[0], 'clashofclans', index=index.replace('-', ''))
+        await ctx.save_tag(tag, 'clashofclans', index=index.replace('-', ''))
 
         if index == '0':
             prompt = f'Check your stats with `{ctx.prefix}cocprofile`!'
@@ -233,7 +237,7 @@ class Clash_of_Clans:
     async def cocusertag(self, ctx, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
-        tag = await ctx.get_tag('clashofclans', index='all')
+        tag = await ctx.get_tag('clashofclans', id=member.id, index='all')
         em = discord.Embed(description='Tags saved', color=embeds_coc.random_color())
         em.set_author(name=member.name, icon_url=member.avatar_url)
         for i in tag:
@@ -245,7 +249,7 @@ class Clash_of_Clans:
         '''Check your current war status.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
-            war = await self.request(f'clans/%23{tag}/currentwar')
+            war = await self.request(ctx, f'clans/%23{tag}/currentwar')
             if "reason" in war:
                 return await ctx.send(_("This clan's war logs aren't public.", ctx))
             if war['state'] == 'notInWar':
