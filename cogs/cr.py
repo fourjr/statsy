@@ -203,7 +203,7 @@ class Clash_Royale:
         if friend_config:
             ctx = await self.bot.get_context(m)
             if ctx.guild:
-                ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+                ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
             else:
                 ctx.language = 'messages'
 
@@ -214,8 +214,8 @@ class Clash_Royale:
 
             if m.content.find('android') != -1:
                 platform = m.content.find('platform=android') + len('platform=android')
-            elif m.content.find('ios') != -1:
-                platform = m.content.find('platform=ios') + len('platform=ios')
+            elif m.content.find('iOS') != -1:
+                platform = m.content.find('platform=iOS') + len('platform=ios')
             else:
                 platform = m.content.find('&token=') + 7 + 8
 
