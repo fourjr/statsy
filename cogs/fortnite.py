@@ -193,7 +193,7 @@ class Fortnite:
     async def fnusertag(self, ctx, platform: lower, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
-        tag = await ctx.get_tag('fortnite', f'{member.id}:{platform}', index='all')
+        tag = await ctx.get_tag('fortnite', f'{member.id}: {platform}', index='all')
         em = discord.Embed(description='Tags saved', color=random_color())
         em.set_author(name=member.name, icon_url=member.avatar_url)
         for i in tag:
