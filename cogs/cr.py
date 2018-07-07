@@ -244,7 +244,7 @@ class Clash_Royale:
 
         resp = _('Current status: {}', ctx).format(friend_config)
         if default:
-            resp += _(' (default, ctx)')
+            resp += _(' (default)', ctx)
         await ctx.send(resp)
 
     @friendlink.command()
