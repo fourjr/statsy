@@ -691,7 +691,7 @@ async def format_tournaments(ctx, t):
         if t.current_players == t.max_players:
             continue
 
-        members = '/'.join((str(t.player_count), str(t.max_players)))
+        members = '/'.join((str(t.current_players), str(t.max_players)))
 
         timeleft = ''
         date = datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(t.create_time)
