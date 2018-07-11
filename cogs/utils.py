@@ -526,7 +526,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     async def on_guild_join(self, g):
         em = discord.Embed(
-            title=f'Added to {g.name}',
+            title=f'Added to {g.name} ({g.id})',
             description=f'{len(g.members)} members',
             timestamp=datetime.datetime.utcnow(),
             color=0x0cc243
@@ -535,7 +535,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     async def on_guild_remove(self, g):
         em = discord.Embed(
-            title=f'Removed from {g.name}',
+            title=f'Removed from {g.name} ({g.id})',
             description=f'{len(g.members)} members',
             timestamp=datetime.datetime.utcnow(),
             color=0xd1202e
