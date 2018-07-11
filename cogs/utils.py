@@ -176,15 +176,15 @@ class Bot_Related:
         await ctx.send(embed=em)
         await self.bot.logout()
 
-    def format_cog_help(self, ctx, name, cog, prefix):
+    async def format_cog_help(self, ctx, name, cog, prefix):
         """Formats the text for a cog help"""
         sigs = []
 
-        try:
-            if not cog.__local_check:
-                return
-        except AttributeError:
-            pass
+        async def blank(*args):
+            return True
+
+        if not await getattr(cog, f'_{name}__local_check', blank)(ctx):
+            return
 
         for cmd in self.bot.commands:
             if cmd.hidden:
@@ -234,12 +234,12 @@ class Bot_Related:
 
         return em
 
-    def format_command_help(self, ctx, command, prefix):
+    async def format_command_help(self, ctx, command, prefix):
         """Formats command help."""
         name = command.replace(' ', '_')
         cog = self.bot.cogs.get(name)
         if cog is not None:
-            return self.format_cog_help(ctx, name, cog, prefix)
+            return await self.format_cog_help(ctx, name, cog, prefix)
         cmd = self.bot.get_command(command)
         if cmd is not None and not cmd.hidden:
             return discord.Embed(
@@ -257,7 +257,7 @@ class Bot_Related:
             prefix = await self.bot.get_prefix(ctx.message)
 
         if command:
-            em = self.format_command_help(ctx, command, prefix)
+            em = await self.format_command_help(ctx, command, prefix)
             if em:
                 return await ctx.send(embed=em)
             else:
@@ -269,7 +269,7 @@ class Bot_Related:
             if name == 'Moderation':
                 # hidden cog :p
                 continue
-            em = self.format_cog_help(ctx, name, cog, prefix)
+            em = await self.format_cog_help(ctx, name, cog, prefix)
             if em:
                 pages.append(em)
 
@@ -521,6 +521,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     @commands.command()
     async def discord(self, ctx):
+        """Statsy support server invite link"""
         await ctx.send('<:statsy:464784655569387540> https://discord.gg/cBqsdPt')
 
 def setup(bot):
