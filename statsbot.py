@@ -121,6 +121,10 @@ class StatsBot(commands.AutoShardedBot):
             os.getenv('log_hook'),
             adapter=discord.AsyncWebhookAdapter(self.session)
         )
+        self.guild_hook = discord.Webhook.from_url(
+            os.getenv('guild_hook'),
+            adapter=discord.AsyncWebhookAdapter(self.session)
+        )
 
         try:
             self.loop.run_until_complete(self.start(os.getenv('token')))

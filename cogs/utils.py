@@ -524,6 +524,24 @@ Total                   :  {len(self.bot.guilds)}```"""))
         """Statsy support server invite link"""
         await ctx.send('<:statsy:464784655569387540> https://discord.gg/cBqsdPt')
 
+    async def on_guild_join(self, g):
+        em = discord.Embed(
+            title=f'Added to {g.name}',
+            description=f'{len(g.members)} members',
+            timestamp=datetime.datetime.utcnow(),
+            color=0x0cc243
+        )
+        await self.bot.guild_hook.send(embed=em)
+
+    async def on_guild_remove(self, g):
+        em = discord.Embed(
+            title=f'Removed from {g.name}',
+            description=f'{len(g.members)} members',
+            timestamp=datetime.datetime.utcnow(),
+            color=0xd1202e
+        )
+        await self.bot.guild_hook.send(embed=em)
+
 def setup(bot):
     c = Bot_Related(bot)
     bot.add_cog(c)
