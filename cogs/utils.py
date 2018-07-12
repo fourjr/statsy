@@ -480,7 +480,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         if not ctx.guild:
             return await ctx.send(_('All games are enabled in DMs.'), ctx)
         shortcuts = {
-            'coc': 'Clash_Of_Clans',
+            'coc': 'Clash_of_Clans',
             'cr': 'Clash_Royale',
             'ow': 'Overwatch',
             'fn': 'Fortnite'
@@ -503,7 +503,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         if not ctx.guild:
             return await ctx.send(_('All games cannot be disabled in DMs.'), ctx)
         shortcuts = {
-            'coc': 'Clash_Of_Clans',
+            'coc': 'Clash_of_Clans',
             'cr': 'Clash_Royale',
             'ow': 'Overwatch',
             'fn': 'Fortnite'
