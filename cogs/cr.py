@@ -121,8 +121,11 @@ class Clash_Royale:
         self.cache = TTLCache(500, 180)
 
     async def __local_check(self, ctx):
-        guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
-        return guild_info.get('games', {}).get(self.__class__.__name__, True)
+        if ctx.guild:
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+            return guild_info.get('games', {}).get(self.__class__.__name__, True)
+        else:
+            return True
 
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
@@ -130,28 +133,27 @@ class Clash_Royale:
             await ctx.send(_('The tag cannot be found!', ctx))
         elif isinstance(error, clashroyale.RequestError):
             er = discord.Embed(
-                title=_('RoyaleAPI Server Down', ctx),
+                title=_('Clash Royale Server Down', ctx),
                 color=discord.Color.red(),
-                description=error.code
+                description='This could be caused by a maintainence break.'
             )
             if ctx.bot.psa_message:
                 er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
             await ctx.send(embed=er)
 
-    async def request(self, method, *args):
+    async def request(self, method, *args, **kwargs):
+        client = kwargs.get('client', self.cr)
         try:
             data = self.cache[f'{method}{args}']
         except KeyError:
-            data = await getattr(self.cr, method)(*args)
-            if method in ('get_player', 'get_clan', 'get_player_chests') and isinstance(data, list):
-                data = data[0]
+            data = await getattr(client, method)(*args)
             if isinstance(data, list):
                 self.cache[f'{method}{args}'] = data
             else:
                 self.cache[f'{method}{args}'] = data.raw_data
         else:
             if not isinstance(data, list):
-                data = clashroyale.BaseAttrDict(self.cr, data, None)
+                data = clashroyale.official_api.BaseAttrDict(self.cr, data, None)
         return data
 
     async def get_clan_from_profile(self, ctx, tag, message):
@@ -278,7 +280,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.request('get_player', tag)
             cycle = await self.request('get_player_chests', tag)
-            em = await embeds.format_profile(ctx, profile, cycle)
+            em = await embeds.format_profile(ctx, profile, cycle.get('items'))
 
         await ctx.send(embed=em)
 
@@ -322,7 +324,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.request('get_player', tag)
             cycle = await self.request('get_player_chests', tag)
-            em = await embeds.format_chests(ctx, profile, cycle)
+            em = await embeds.format_chests(ctx, profile, cycle.get('items'))
 
         await ctx.send(embed=em)
 
@@ -384,22 +386,21 @@ class Clash_Royale:
 
     @commands.group(invoke_without_command=True)
     @embeds.has_perms()
-    async def topclans(self, ctx, *, region: str = ''):
+    async def topclans(self, ctx, *, region: str = None):
         """Returns the global top 50 clans."""
         async with ctx.typing():
+            region = name = 'global'
             if region:
                 for i in self.bot.constants.regions:
                     if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
                         region = i.key
                         name = i.name
-            else:
-                name = 'Global'
 
             try:
                 clans = await self.request('get_top_clans', region)
             except clashroyale.NotFoundError:
-                await ctx.send('Invalid region')
-            ems = await embeds.format_top_clans(ctx, clans, name)
+                return await ctx.send('Invalid region')
+            ems = await embeds.format_top_clans(ctx, clans.get('items'), name)
 
         session = PaginatorSession(
             ctx=ctx,
@@ -417,7 +418,7 @@ class Clash_Royale:
             clan = await self.request('get_clan', tag)
             war = await self.request('get_clan_war_log', tag)
 
-            ems = await embeds.format_members(ctx, clan, war)
+            ems = await embeds.format_members(ctx, clan, war.get('items'))
 
         session = PaginatorSession(
             ctx=ctx,
@@ -439,7 +440,7 @@ class Clash_Royale:
             if len(clan.members) < 4:
                 await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
-                em = await embeds.format_most_valuable(ctx, clan, war)
+                em = await embeds.format_most_valuable(ctx, clan, war.get('items'))
                 await ctx.send(embed=em)
 
     @members.command()
@@ -450,7 +451,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.request('get_clan', tag)
-            war = await self.request('get_clan_war_log', tag)
+            war = await self.request('get_clan_war_log', tag.get('items'))
 
             if len(clan.members) < 4:
                 return await ctx.send('Clan must have at least 4 players for these statistics.')
@@ -549,7 +550,7 @@ class Clash_Royale:
     async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
-            t = await self.request('get_open_tournaments')
+            t = await self.request('get_open_tournaments', client=self.bot.royaleapi)
             em = await embeds.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)
@@ -570,7 +571,7 @@ class Clash_Royale:
         )
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
-        em.set_author(name=f'{profile.name} (#{profile.tag})', icon_url=embeds.get_clan_image(profile))
+        em.set_author(name=f'{profile.name} ({profile.tag})', icon_url=embeds.get_clan_image(ctx, profile))
         em.set_image(url='attachment://deck.png')
         em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
 
@@ -612,9 +613,7 @@ class Clash_Royale:
             try:
                 card_image = Image.open(card_image_file).convert("RGBA")
             except FileNotFoundError:
-                self.bot.loop.create_task(
-                    ctx.send(f'Card not supported yet! Notify us by doing `{ctx.prefix}bug {card} not supported!`')
-                )
+                pass
             else:
                 # size = (card_w, card_h)
                 # card_image.thumbnail(size)
@@ -627,7 +626,12 @@ class Clash_Royale:
                 image.paste(card_image, box, card_image)
 
         # elixir
-        total_elixir = sum(c.elixir for c in deck)
+        def get_elixir(card):
+            for i in self.bot.constants.cards:
+                if i.name == card:
+                    return i.elixir
+
+        total_elixir = sum(get_elixir(c.name) for c in deck)
         card_count = len(deck)
 
         average_elixir = "{:.3f}".format(total_elixir / card_count)

@@ -54,8 +54,11 @@ class Fortnite:
         self.session = aiohttp.ClientSession(loop=self.bot.loop)
 
     async def __local_check(self, ctx):
-        guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
-        return guild_info.get('games', {}).get(self.__class__.__name__, True)
+        if ctx.guild:
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+            return guild_info.get('games', {}).get(self.__class__.__name__, True)
+        else:
+            return True
 
     def __unload(self):
         self.bot.loop.create_task(self.session.close())

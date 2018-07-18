@@ -11,7 +11,7 @@ from locales.i18n import Translator
 
 _ = Translator('CR Embeds', __file__)
 
-images = 'https://RoyaleAPI.github.io/RoyaleAPI-assets/'
+images = 'https://royaleapi.github.io/cr-api-assets/'
 
 
 def has_perms(add_reactions=True, external_emojis=True):
@@ -33,6 +33,8 @@ def emoji(ctx, name, should_format=True):
         name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
         if name == 'chestmagic':
             name = 'chestmagical'
+        elif name == 'chestgolden':
+            name = 'chestgold'
     e = discord.utils.get(ctx.bot.game_emojis, name=name)
     return e or name
 
@@ -58,15 +60,33 @@ def timestamp(datatime: int):
     ) + ' minutes ago'
 
 
-def get_clan_image(p):
+def get_clan_image(ctx, p):
     try:
-        return p.clan.badge.image
-    except:
+        badge_id = p.clan.badge_id
+    except AttributeError:
+        try:
+            badge_id = p.badge_id
+        except AttributeError:
+            return 'https://i.imgur.com/Y3uXsgj.png'
+
+    if badge_id is None:
         return 'https://i.imgur.com/Y3uXsgj.png'
 
+    for i in ctx.bot.constants.alliance_badges:
+        if i.id == badge_id:
+            return images + 'badges/' + i.name + '.png'
 
-def camel_case(text: str):
+
+def get_arena_image(ctx, p):
+    badge_id = p.arena.id
+    for i in ctx.bot.constants.arenas:
+        if i.id == badge_id:
+            return images + 'arenas/arena/' + str(i.arena_id) + '.png'
+
+def camel_case(text):
     # from stackoverflow :p
+    if text is None:
+        return text
     matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
     return ' '.join(m.group(0) for m in matches).title()
 
@@ -80,11 +100,11 @@ async def format_least_valuable(ctx, clan, wars):
 
         return score
 
-    for m in clan.members:
+    for m in clan.member_list:
         m.war_score = war_score(m.tag)
         m.score = ((m.donations / 5) + (m.war_score / 3) + (m.trophies / 7)) / 3
 
-    to_kick = sorted(clan.members, key=lambda m: m.score)[:4]
+    to_kick = sorted(clan.member_list, key=lambda m: m.score)[:4]
 
     em = discord.Embed(
         color=random_color(),
@@ -92,14 +112,14 @@ async def format_least_valuable(ctx, clan, wars):
     )
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{clan.name} (#{clan.tag})')
+    em.set_author(name=f'{clan.name} ({clan.tag})')
     em.set_thumbnail(url=clan.badge.image)
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     for m in reversed(to_kick):
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
-            value=f"#{m.tag}\n{m.trophies} "
+            value=f"{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}\n"
                   f"{m.war_score} {emoji(ctx, 'clanwar')}"
@@ -116,11 +136,11 @@ async def format_most_valuable(ctx, clan, wars):
 
         return score
 
-    for m in clan.members:
+    for m in clan.member_list:
         m.war_score = war_score(m.tag)
         m.score = ((m.donations / 5) + (m.war_score / 3) + (m.trophies / 7)) / 3
 
-    best = sorted(clan.members, key=lambda m: m.score, reverse=True)[:4]
+    best = sorted(clan.member_list, key=lambda m: m.score, reverse=True)[:4]
 
     em = discord.Embed(
         color=random_color(),
@@ -128,14 +148,14 @@ async def format_most_valuable(ctx, clan, wars):
     )
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{clan.name} (#{clan.tag})')
+    em.set_author(name=f'{clan.name} ({clan.tag})')
     em.set_thumbnail(url=clan.badge.image)
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     for m in reversed(best):
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
-            value=f"#{m.tag}\n{m.trophies} "
+            value=f"{m.tag}\n{m.trophies} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
             f"{emoji(ctx, 'cards')}\n"
             f"{m.war_score} {emoji(ctx, 'clanwar')}"
@@ -145,26 +165,31 @@ async def format_most_valuable(ctx, clan, wars):
 
 
 def get_chests(ctx, cycle):
-    chests = '| ' + str(emoji(ctx, 'chest' + cycle.upcoming[0].lower())) + ' | '
-    chests += ''.join([str(emoji(ctx, 'chest' + cycle.upcoming[x].lower())) for x in range(1, 8)])
+    chests = '| ' + str(emoji(ctx, 'chest' + cycle[0].name.replace(' Chest', '').lower())) + ' | '
+    chests += ''.join([str(emoji(ctx, 'chest' + cycle[x].name.replace(' Chest', '').lower())) for x in range(1, 8)])
     special = ''
-    special_chests = ['superMagical', 'magical', 'legendary', 'epic', 'giant']
-    for i in special_chests:
-        e = emoji(ctx, 'chest' + i.lower())
-        special += f"{e}+{cycle[i] + 1} "
+
+    for i in range(9, 15):
+        try:
+            e = emoji(ctx, 'chest' + cycle[i].name.replace(' Chest', '').lower())
+            special += f"{e}+{cycle[i].index + 1} "
+        except IndexError:
+            break
+
     return (chests, special)
 
 
 async def format_chests(ctx, p, c):
-    av = get_clan_image(p)
+    av = get_clan_image(ctx, p)
     em = discord.Embed(color=random_color())
-    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
+    em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_thumbnail(url=emoji(ctx, 'chest' + c.upcoming[0].lower()).url)
-    em.add_field(name=_('Chests', ctx), value=get_chests(ctx, c)[0])
-    em.add_field(name=_('Chests Until', ctx), value=get_chests(ctx, c)[1])
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    chests = get_chests(ctx, c)
+    em.set_thumbnail(url=emoji(ctx, 'chest' + c[0].name.replace(' Chest', '').lower()).url)
+    em.add_field(name=_('Chests', ctx), value=chests[0])
+    em.add_field(name=_('Chests Until', ctx), value=chests[1])
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     return em
 
 
@@ -182,17 +207,15 @@ async def format_cards(ctx, p):
     }
 
     found_cards = p.cards
-    found_cards_id = [getattr(i, 'id', None) for i in found_cards if getattr(i, 'id', None)] #cr-api#375
-    notfound_cards = [i for i in constants.cards if i.id not in found_cards_id]
-
-    found_cards = sorted(found_cards, key=lambda x: rarity[x.rarity.title()])
-    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[x.rarity.title()])
+    notfound_cards = [i for i in constants.cards if i.name not in [k.name for k in found_cards]]
 
     def get_rarity(card):
-        for a in constants.cards:
-            if a.key.replace('-', '') == card:
-                return a.rarity
-        return 10495
+        for i in constants.cards:
+            if i.name == card or i.key.replace('-', '') == card:
+                return i.rarity
+
+    found_cards = sorted(found_cards, key=lambda x: rarity[get_rarity(x.name)])
+    notfound_cards = sorted(notfound_cards, key=lambda x: rarity[get_rarity(x.name)])
 
     fmt = ''
     found_cards_pages = []
@@ -200,8 +223,9 @@ async def format_cards(ctx, p):
     for card in found_cards:
         if not card:
             continue
+        card.rarity = get_rarity(card.name)
 
-        if oldcard and oldcard.rarity.title() != card.rarity.title():
+        if oldcard and oldcard.rarity != card.rarity:
             try:
                 found_cards_pages.append((fmt, get_rarity(fmt.split(':')[1])))
             except IndexError:
@@ -237,8 +261,8 @@ async def format_cards(ctx, p):
     notfound_cards_pages.append(fmt)
 
     em = discord.Embed(description=_('A list of cards this player has.', ctx), color=random_color())
-    em.set_author(name=f"{name} (#{tag})")
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_author(name=f"{name} ({tag})")
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
@@ -260,17 +284,18 @@ async def format_battles(ctx, battles):
         if b.type == 'PvP':
             name = b.team[0].name
             tag = b.team[0].tag
-            em.set_author(name=f"{name} (#{tag})")
+            em.set_author(name=f"{name} ({tag})")
             break
 
     crapi = 'https://royaleapi.com/profile/'
 
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
     for b in battles:
+        b.winner = b.team[0].crowns - b.opponent[0].crowns
         if b.winner < 0:
             # OP Lost
             winner = 'crownred'
@@ -287,7 +312,7 @@ async def format_battles(ctx, battles):
         except IndexError:
             value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].tag})**'
 
-        em.add_field(name=f'{b.type} {emoji(ctx, winner)} {score}', value=value, inline=False)
+        em.add_field(name=f'{camel_case(b.type)} {emoji(ctx, winner)} {score}', value=value, inline=False)
 
         i += 1
         if i > 5:
@@ -301,8 +326,8 @@ async def format_members(ctx, c, ws):
     em = discord.Embed(description=_('A list of all members in this clan.', ctx), color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f"{c.name} (#{c.tag})")
-    em.set_thumbnail(url=c.badge.image)
+    em.set_author(name=f"{c.name} ({c.tag})")
+    em.set_thumbnail(url=get_clan_image(ctx, c))
     embeds = []
     counter = 0
 
@@ -314,17 +339,17 @@ async def format_members(ctx, c, ws):
 
         return score
 
-    for m in c.members:
+    for m in c.member_list:
         if counter % 6 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(description=_('A list of all members in this clan.', ctx), color=random_color())
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
-            em.set_author(name=f"{c.name} (#{c.tag})")
-            em.set_thumbnail(url=c.badge.image)
+            em.set_author(name=f"{c.name} ({c.tag})")
+            em.set_thumbnail(url=get_clan_image(c))
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
-            value=f"#{m.tag}\n{m.trophies} "
+            value=f"{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}\n"
                   f"{war_score(m.tag)} {emoji(ctx, 'clanwar')}"
@@ -340,9 +365,7 @@ async def format_top_clans(ctx, clans, region):
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = _('Top 200 {} clans right now.', ctx).format(region)
-    badge_image = clans[0].badge.image
-    if not badge_image.startswith('http'):
-        badge_image = None
+    badge_image = get_clan_image(ctx, clans[0])
     em.set_author(name='Top Clans', icon_url=badge_image)
     embeds = []
     counter = 0
@@ -355,16 +378,21 @@ async def format_top_clans(ctx, clans, region):
             else:
                 em.description = _('Top 200 global clans right now.', ctx)
 
-            badge_image = c.badge.image
-            if not badge_image.startswith('http'):
-                badge_image = None
+            badge_image = get_clan_image(ctx, clans[0])
             em.set_author(name=_('Top Clans', ctx), icon_url=badge_image)
+
+        badge_name = c.badge_id
+        for i in ctx.bot.constants.alliance_badges:
+            if i.id == c.badge_id:
+                badge_name = i.name
+                break
+
         em.add_field(
-            name=f'{emoji(ctx, c.badge.name, should_format=False)} {c.name}',
-            value=f"#{c.tag}"
-                  f"{emoji(ctx, 'trophy')} {c.score}"
+            name=f'{emoji(ctx, badge_name, should_format=False)} {c.name}',
+            value=f"{c.tag}"
+                  f"\n{emoji(ctx, 'trophy')}{c.clan_score}"
                   f"\n{emoji(ctx, 'rank')} Rank: {c.rank} "
-                  f"\n{emoji(ctx, 'clan')} {c.member_count}/50 "
+                  f"\n{emoji(ctx, 'clan')} {c.members}/50 "
         )
         counter += 1
     embeds.append(em)
@@ -372,7 +400,7 @@ async def format_top_clans(ctx, clans, region):
 
 
 async def format_seasons(ctx, p):
-    av = get_clan_image(p)
+    av = get_clan_image(ctx, p)
     embeds = []
     if p.league_statistics:
         for season in p.league_statistics.to_dict().keys():
@@ -380,7 +408,7 @@ async def format_seasons(ctx, p):
             em = discord.Embed(color=random_color())
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
-            em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
+            em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
             em.set_thumbnail(url=emoji(ctx, 'legendarytrophy').url)
             try:
                 em.add_field(name=_('{} Season', ctx).format(season.strip('Season').title()), value=s.id)
@@ -421,25 +449,24 @@ async def format_card(ctx, c):
     em.add_field(name=_('Elixir Cost', ctx), value=f"{c.elixir} {emoji(ctx, 'elixirdrop')}")
     em.add_field(name=_('Type', ctx), value=f"{c.type} {emoji(ctx, 'challengedraft')}")
     em.add_field(name=_('Arena Found', ctx), value=f"{arenas[c.arena]} {emoji(ctx, 'arena'+str(c.arena))}")
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     return em
 
 
 async def format_profile(ctx, p, c):
 
-    av = get_clan_image(p)
+    av = get_clan_image(ctx, p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
-    em.set_thumbnail(url=images + 'arenas/arena' + str(p.arena.arena_id) + '.png')
+    em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
+    em.set_thumbnail(url=get_arena_image(ctx, p))
 
     deck = get_deck(ctx, p)
 
     chests = get_chests(ctx, c)[0]
 
-    special = ''
-    trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
+    trophies = f"{p.trophies}/{p.best_trophies} PB {emoji(ctx, 'trophy')}"
 
     s = None
     if p.league_statistics:
@@ -458,33 +485,35 @@ async def format_profile(ctx, p, c):
         current_rank = None
         season = None
 
-    if p.clan:
-        clan_role = camel_case(p.clan.role)
-    else:
-        clan_role = None
+    try:
+        clan_name = p.clan.name
+        clan_tag = p.clan.tag
+        clan_role = camel_case(p.role)
+    except AttributeError:
+        clan_name = clan_tag = clan_role = None
 
     special = get_chests(ctx, c)[1]
 
     try:
-        favourite_card = f"{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace('-', ''))}"
+        favourite_card = f"{p.current_favourite_card.name} {emoji(ctx, p.current_favourite_card.name)}"
     except AttributeError:
         favourite_card = _('No favourite card :(', ctx)
 
     embed_fields = [
         (_('Trophies', ctx), trophies, True),
-        (_('Level', ctx), f"{p.stats.level} {emoji(ctx, 'experience')}", True),
-        (_('Clan Name', ctx), f"{p.clan.name} {emoji(ctx, 'clan')}" if p.clan else None, True),
-        (_('Clan Tag', ctx), f"#{p.clan.tag} {emoji(ctx, 'clan')}" if p.clan else None, True),
+        (_('Level', ctx), f"{p.exp_level} {emoji(ctx, 'experience')}", True),
+        (_('Clan Name', ctx), f"{clan_name} {emoji(ctx, 'clan')}" if clan_name else None, True),
+        (_('Clan Tag', ctx), f"{clan_tag} {emoji(ctx, 'clan')}" if clan_tag else None, True),
         (_('Clan Role', ctx), f"{clan_role} {emoji(ctx, 'clan')}" if clan_role else None, True),
-        (_('Games Played', ctx), f"{p.games.total} {emoji(ctx, 'battle')}", True),
-        (_('Wins/Losses/Draws', ctx), f"{p.games.wins}/{p.games.losses}/{p.games.draws} {emoji(ctx, 'battle')}", True),
-        (_('Three Crown Wins', ctx), f"{p.stats.three_crown_wins} {emoji(ctx, '3crown')}", True),
-        (_('War Day Wins', ctx), f"{p.games.war_day_wins} {emoji(ctx, 'clanwar')}", True),
+        (_('Games Played', ctx), f"{p.battle_count} {emoji(ctx, 'battle')}", True),
+        (_('Wins/Losses', ctx), f"{p.wins}/{p.losses} {emoji(ctx, 'battle')}", True),
+        (_('Three Crown Wins', ctx), f"{p.three_crown_wins} {emoji(ctx, '3crown')}", True),
+        (_('War Day Wins', ctx), f"{p.war_day_wins} {emoji(ctx, 'clanwar')}", True),
         (_('Favourite Card', ctx), favourite_card, True),
-        (_('Tournament Cards Won', ctx), f"{p.stats.tournament_cards_won} {emoji(ctx, 'cards')}", True),
-        (_('Challenge Cards Won', ctx), f"{p.stats.challenge_cards_won} {emoji(ctx, 'cards')}", True),
-        (_('Challenge Max Wins', ctx), f"{p.stats.challenge_max_wins} {emoji(ctx, 'tournament')}", True),
-        (_('Total Donations', ctx), f"{p.stats.total_donations} {emoji(ctx, 'cards')}", True),
+        (_('Tournament Cards Won', ctx), f"{p.tournament_cards_won} {emoji(ctx, 'cards')}", True),
+        (_('Challenge Cards Won', ctx), f"{p.challenge_cards_won} {emoji(ctx, 'cards')}", True),
+        (_('Challenge Max Wins', ctx), f"{p.challenge_max_wins} {emoji(ctx, 'tournament')}", True),
+        (_('Total Donations', ctx), f"{p.total_donations} {emoji(ctx, 'cards')}", True),
         (_('Global Rank', ctx), f"{current_rank} {emoji(ctx, 'crownred')}" if current_rank else None, True),
         (_('Battle Deck', ctx), deck, True),
         (_('Chests', ctx), chests, False),
@@ -499,39 +528,41 @@ async def format_profile(ctx, p, c):
             if n == _('Clan Name', ctx):
                 em.add_field(name=_('Clan', ctx), value=_('None {}', ctx).format(emoji(ctx, 'noclan')))
 
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     return em
 
 
 async def format_stats(ctx, p):
-    av = get_clan_image(p)
+    av = get_clan_image(ctx, p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
-    em.set_thumbnail(url=images + 'arenas/arena' + str(p.arena.arena_id) + '.png')
+    em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
+    em.set_thumbnail(url=get_arena_image(ctx, p))
 
-    trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
+    trophies = f"{p.trophies}/{p.best_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
 
-    if p.clan:
-        clan_role = camel_case(p.clan.role)
-    else:
-        clan_role = None
+    try:
+        clan_name = p.clan.name
+        clan_tag = p.clan.tag
+        clan_role = camel_case(p.role)
+    except AttributeError:
+        clan_name = clan_tag = clan_role = None
 
     try:
-        favourite_card = f"{p.stats.favorite_card.name} {emoji(ctx, p.stats.favorite_card.key.replace('-', ''))}"
+        favourite_card = f"{p.current_favourite_card.name} {emoji(ctx, p.current_favourite_card.name)}"
     except AttributeError:
         favourite_card = _('No favourite card :(', ctx)
 
     embed_fields = [
         (_('Trophies', ctx), trophies, True),
-        (_('Level', ctx), f"{p.stats.level} {emoji(ctx, 'experience')}", True),
-        (_('Clan Name', ctx), f"{p.clan.name} {emoji(ctx, 'clan')}" if p.clan else None, True),
-        (_('Clan Tag', ctx), f"#{p.clan.tag} {emoji(ctx, 'clan')}" if p.clan else None, True),
+        (_('Level', ctx), f"{p.exp_level} {emoji(ctx, 'experience')}", True),
+        (_('Clan Name', ctx), f"{clan_name} {emoji(ctx, 'clan')}" if clan_name else None, True),
+        (_('Clan Tag', ctx), f"{clan_tag} {emoji(ctx, 'clan')}" if clan_tag else None, True),
         (_('Clan Role', ctx), f"{clan_role} {emoji(ctx, 'clan')}" if clan_role else None, True),
-        (_('War Day Wins', ctx), f"{p.games.war_day_wins} {emoji(ctx, 'clanwar')}", True),
+        (_('War Day Wins', ctx), f"{p.war_day_wins} {emoji(ctx, 'clanwar')}", True),
         (_('Favourite Card', ctx), favourite_card, True),
         (_('Battle Deck', ctx), deck, True)
     ]
@@ -543,47 +574,47 @@ async def format_stats(ctx, p):
             if n == _('Clan Name', ctx):
                 em.add_field(name=_('Clan', ctx), value=_('None {}', ctx).format(emoji(ctx, 'noclan')))
 
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     return em
 
 
 async def format_clan(ctx, c):
     page1 = discord.Embed(description=c.description, color=random_color())
-    page1.set_author(name=f"{c.name} (#{c.tag})")
-    page1.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    page1.set_author(name=f"{c.name} ({c.tag})")
+    page1.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     page2 = copy.deepcopy(page1)
     page2.description = _('Top Players/Donators/Contributors for this clan.', ctx)
-    page1.set_thumbnail(url=c.badge.image)
+    page1.set_thumbnail(url=get_clan_image(ctx, c))
 
-    _donators = list(reversed(sorted(c.members, key=lambda m: m.donations)))
+    _donators = list(reversed(sorted(c.member_list, key=lambda m: m.donations)))
 
     pushers = []
     donators = []
 
     for i in range(3):
-        if len(c.members) < i + 1:
+        if len(c.member_list) < i + 1:
             break
         pushers.append(
-            f"**{c.members[i].name}**"
-            f"\n{c.members[i].trophies} "
+            f"**{c.member_list[i].name}**"
+            f"\n{c.member_list[i].trophies} "
             f"{emoji(ctx, 'trophy')}\n"
-            f"#{c.members[i].tag}"
+            f"{c.member_list[i].tag}"
         )
         donators.append(
             f"**{_donators[i].name}**"
             f"\n{_donators[i].donations} "
             f"{emoji(ctx, 'cards')}\n"
-            f"#{_donators[i].tag}"
+            f"{_donators[i].tag}"
         )
 
     fields1 = [
-        (_('Type', ctx), c.type.title() + ' 📩'),
-        (_('Score', ctx), str(c.score) + _(' Trophies ', ctx) + str(emoji(ctx, 'trophy'))),
-        (_('Donations/Week', ctx), str(c.donations) + _(' Cards ', ctx) + str(emoji(ctx, 'cards'))),
+        (_('Type', ctx), camel_case(c.type) + ' 📩'),
+        (_('Score', ctx), str(c.clan_score) + _(' Trophies ', ctx) + str(emoji(ctx, 'trophy'))),
+        (_('Donations/Week', ctx), str(c.donations_per_week) + _(' Cards ', ctx) + str(emoji(ctx, 'cards'))),
         (_('Location', ctx), c.location.name + ' 🌎'),
-        (_('Members', ctx), str(len(c.members)) + f"/50 {emoji(ctx, 'clan')}"),
-        (_('Required Trophies', ctx), f"{c.required_score} {emoji(ctx, 'trophy')}"),
+        (_('Members', ctx), f"{len(c.member_list)}/50 {emoji(ctx, 'clan')}"),
+        (_('Required Trophies', ctx), f"{c.required_trophies} {emoji(ctx, 'trophy')}"),
     ]
 
     fields2 = [
@@ -603,21 +634,21 @@ async def format_clan(ctx, c):
 
 async def format_clan_war(ctx, w):
     page1 = discord.Embed(color=random_color())
-    page1.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    page1.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     if ctx.bot.psa_message:
         page1.description = ctx.bot.psa_message
     if w.state == 'notInWar':
         page1.add_field(name=_('Day', ctx), value=f'{camel_case(w.state)} {emoji(ctx, "clanwar")}')
         return [page1]
 
-    page1.set_author(name=f"{w.clan.name} (#{w.clan.tag})", icon_url=w.clan.badge.image)
+    page1.set_author(name=f"{w.clan.name} ({w.clan.tag})", icon_url=get_clan_image(ctx, w))
 
     page2 = copy.deepcopy(page1)
     return_vals = [page1, page2]
 
     fields1 = [
         (_('Day', ctx), f'{camel_case(w.state)} {emoji(ctx, "clanwar")}'),
-        (_('War Trophies', ctx), f"{w.clan.war_trophies} Trophies {emoji(ctx, 'wartrophy')}"),
+        (_('War Trophies', ctx), f"{w.clan.clan_score} Trophies {emoji(ctx, 'wartrophy')}"),
         (_('Participants', ctx), f"{w.clan.participants} {emoji(ctx, 'clan')}"),
         (_('Battles Played', ctx), f"{w.clan.battles_played} {emoji(ctx, 'battle')}"),
         (_('Wins', ctx), f"{w.clan.wins} {emoji(ctx, 'crownblue')}")
@@ -639,7 +670,7 @@ async def format_clan_war(ctx, w):
                 _('\n{} Batles Played {}', ctx).format(i.battles_played, emoji(ctx, 'battle')),
                 _('\n{} Wins', ctx).format(i.wins, emoji(ctx, 'crownblue')),
                 _('\n{} Crowns {}', ctx).format(i.crowns, emoji(ctx, '3crown')),
-                f"\n#{i.tag}"
+                f"\n{i.tag}"
             )))
 
         page3.add_field(name=_('Clans Participating', ctx), value='\n\n'.join(standings))
@@ -658,7 +689,7 @@ async def format_clan_war(ctx, w):
             _('\n{} Batles Played {}', ctx).format(w.participants[i].battles_played, emoji(ctx, 'battle')),
             _('\n{} Wins', ctx).format(w.participants[i].wins, emoji(ctx, 'crownblue')),
             _('\n{} Cards Earned {}', ctx).format(w.participants[i].cards_earned, emoji(ctx, 'cards')),
-            f"\n#{w.participants[i].tag}"
+            f"\n{w.participants[i].tag}"
         )))
 
     for f, v in fields1:
@@ -683,7 +714,7 @@ async def format_tournaments(ctx, t):
 
     if ctx.bot.psa_message:
         em.description = ctx.bot.psa_message
-    em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    em.set_footer(text=_('Statsy | Powered by RoyaleAPI', ctx))
 
     tournaments = sorted(t, key=lambda x: int(x.max_players))
     i = 0
@@ -712,7 +743,7 @@ async def format_tournaments(ctx, t):
 
         join_link = 'https://fourjr-webserver.herokuapp.com/redirect?url=https://link.clashroyale.com/?joinTournament?id=' + t.tag
         value = f'Time since creation: {timeleft}\n{members} {emoji(ctx, "clan")}\n{gold} {emoji(ctx, "gold")}\n{cards} {emoji(ctx, "cards")}\n[Join now]({join_link})'
-        em.add_field(name=f'{t.name} (#{t.tag})', value=value)
+        em.add_field(name=f'{t.name} ({t.tag})', value=value)
         i += 1
         if i > 6:
             break
@@ -722,38 +753,40 @@ async def format_tournaments(ctx, t):
 
 async def format_tournament(ctx, t):
     page1 = discord.Embed(description=t.description, color=random_color())
-    page1.set_author(name=f"{t.name} (#{t.tag})")
-    page1.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+    page1.set_author(name=f"{t.name} ({t.tag})")
+    page1.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     page2 = copy.deepcopy(page1)
     page2.description = _('Top players of this tournament', ctx)
 
     pushers = []
     for i in range(9):
+        if i < len(t.members_list):
+            break
         pushers.append(
-            f"**{t.members[i].name}**"
-            f"\n{t.members[i].score} "
+            f"**{t.members_list[i].name}**"
+            f"\n{t.members_list[i].score} "
             f"{emoji(ctx, 'trophy')}\n"
-            f"#{t.members[i].tag}"
+            f"{t.members_list[i].tag}"
         )
 
-        timeleft = ''
-        date = datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(t.create_time)
-        seconds = math.floor(date.total_seconds())
-        minutes = max(math.floor(seconds / 60), 0)
-        seconds -= minutes * 60
-        hours = max(math.floor(minutes / 60), 0)
-        minutes -= hours * 60
-        if hours > 0:
-            timeleft += f'{hours}h'
-        if minutes > 0:
-            timeleft += f' {minutes}m'
-        if seconds > 0:
-            timeleft += f' {seconds}s'
+    timeleft = ''
+    date = datetime.datetime.utcnow() - datetime.datetime.strptime(t.created_time, '%Y%m%dT%H%M%S.%fZ')
+    seconds = math.floor(date.total_seconds())
+    minutes = max(math.floor(seconds / 60), 0)
+    seconds -= minutes * 60
+    hours = max(math.floor(minutes / 60), 0)
+    minutes -= hours * 60
+    if hours > 0:
+        timeleft += f'{hours}h'
+    if minutes > 0:
+        timeleft += f' {minutes}m'
+    if seconds > 0:
+        timeleft += f' {seconds}s'
 
     fields1 = [
-        (_('Open', ctx), str(t.open) + ' 📩'),
+        (_('Type', ctx), camel_case(t.type) + ' 📩'),
         (_('Status', ctx), camel_case(t.status)),
-        (_('Members', ctx), f"{t.max_players}/{t.current_players} {emoji(ctx, 'clan')}"),
+        (_('Members', ctx), f"{len(t.members_list)}/{t.max_capacity} {emoji(ctx, 'clan')}"),
         (_('Time since creation', ctx), timeleft)
     ]
 
@@ -774,7 +807,7 @@ async def format_tournament(ctx, t):
 
 
 async def format_friend_link(ctx, p, link, default):
-    av = get_clan_image(p)
+    av = get_clan_image(ctx, p)
     em = discord.Embed(color=random_color())
     if not link.startswith('http'):
         link = 'https://' + link
@@ -784,17 +817,17 @@ async def format_friend_link(ctx, p, link, default):
         prefix = (await ctx.bot.get_prefix(ctx.message))[2]
         em.set_footer(text=_('Run `{}friendlink disable` to disable this feature', ctx).format(prefix))
     else:
-        em.set_footer(text=_('Statsy - Powered by RoyaleAPI.com', ctx))
+        em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
-    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=av)
-    em.set_thumbnail(url=images + 'arenas/arena' + str(p.arena.arena_id) + '.png')
+    em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
+    em.set_thumbnail(url=get_arena_image(ctx, p))
 
-    trophies = f"{p.trophies}/{p.stats.max_trophies} PB {emoji(ctx, 'trophy')}"
+    trophies = f"{p.trophies}/{p.best_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
 
     embed_fields = [
         (_('Trophies', ctx), trophies, True),
-        (_('Level', ctx), f"{p.stats.level} {emoji(ctx, 'experience')}", True),
+        (_('Level', ctx), f"{p.exp_level} {emoji(ctx, 'experience')}", True),
         (_('Battle Deck', ctx), deck, False)
     ]
 

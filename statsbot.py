@@ -92,10 +92,15 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = clashroyale.Client(
+        self.cr = clashroyale.OfficialAPI(
+            os.getenv('clashroyale'),
+            session=self.session,
+            is_async=True,
+            timeout=20
+        )
+        self.royaleapi = clashroyale.RoyaleAPI(
             os.getenv('royaleapi'),
             session=self.session,
-            url=os.getenv('royaleapiurl', 'https://api.royaleapi.com'),
             is_async=True,
             timeout=20
         )
@@ -198,7 +203,7 @@ class StatsBot(commands.AutoShardedBot):
         print('StatsBot connected!')
         print('----------------------------')
 
-        self.constants = await self.cr.get_constants()
+        self.constants = await self.royaleapi.get_constants()
 
     async def on_ready(self):
         """

@@ -68,6 +68,13 @@ class Clash_of_Clans:
     def __unload(self):
         self.bot.loop.create_task(self.session.close())
 
+    async def __local_check(self, ctx):
+        if ctx.guild:
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+            return guild_info.get('games', {}).get(self.__class__.__name__, True)
+        else:
+            return True
+
     async def request(self, ctx, endpoint):
         try:
             self.cache[endpoint]

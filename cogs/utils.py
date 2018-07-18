@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import datetime
 import inspect
@@ -518,6 +519,15 @@ Total                   :  {len(self.bot.guilds)}```"""))
             cog_name = cog.__class__.__name__
             await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {f'games.{cog_name}': False}}, upsert=True)
             await ctx.send('Successfully disabled {}'.format(cog_name))
+
+    @commands.command(name='reload', hidden=True)
+    async def reload_(self, ctx, *, cog_name):
+        if ctx.author.id not in self.bot.developers:
+            return
+        self.bot.unload_extension(cog_name)
+        await asyncio.sleep(0.2)
+        self.bot.load_extension(cog_name)
+        await ctx.send('done')
 
     @commands.command()
     async def discord(self, ctx):
