@@ -98,7 +98,7 @@ class PaginatorSession:
 
     async def run(self):
         if not self.ctx.channel.permissions_for(self.ctx.guild.me).add_reactions:
-            await self.ctx.send('Add reactions permission needed to view other pages')
+            await self.ctx.send('Bot requires Add Reactions permission(s) to run command')
             return await self.show_page(0)
         if not self.running:
             await self.show_page(0)

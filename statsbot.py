@@ -266,6 +266,11 @@ class StatsBot(commands.AutoShardedBot):
             clashroyale.RequestError
         )
 
+        if isinstance(error, commands.errors.BotMissingPermissions):
+            try:
+                await ctx.send(error)
+            except discord.Forbidden:
+                pass
         if isinstance(error, (InvalidTag, InvalidPlatform)):
             await ctx.send(error.message)
         elif isinstance(error, ignored):
@@ -303,7 +308,7 @@ class StatsBot(commands.AutoShardedBot):
             if not self.dev_mode:
                 await self.error_hook.send(content=description, embed=em)
             else:
-                print(error_message)
+                traceback.print_exception(type(error), error, error.__traceback__)
 
     async def on_message(self, message):
         """Called when a message is sent/recieved."""
