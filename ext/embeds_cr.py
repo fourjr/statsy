@@ -22,6 +22,7 @@ def has_perms(external_emojis=True):
 
     if external_emojis:
         perms['external_emojis'] = True
+
     return commands.bot_has_permissions(**perms)
 
 
