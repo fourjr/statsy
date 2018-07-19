@@ -99,7 +99,7 @@ class Bot_Related:
         await ctx.send(_('Changed the prefix to: `{}`', ctx).format(prefix))
 
     @commands.command(name='bot', aliases=['about', 'info', 'botto'])
-    async def _bot(self, ctx):
+    async def bot_(self, ctx):
         """Shows information and stats about the bot."""
         em = discord.Embed(timestamp=datetime.datetime.utcnow())
         status = str(getattr(ctx.guild, 'me', self.bot.guilds[0].me).status)
@@ -142,8 +142,6 @@ class Bot_Related:
 
         cbot = '<:certifiedbot:427089403060551700>'
 
-        royaleapi_donate = '[Paypal](https://paypal.me/royaleapi) | [Patreon](https://www.patreon.com/RoyaleAPI)'
-
         em.add_field(name=_('Current Status', ctx), value=str(status).title())
         em.add_field(name=_('Uptime', ctx), value=uptime)
         em.add_field(name=_('Latency', ctx), value=f'{self.bot.latency*1000:.2f} ms')
@@ -157,7 +155,6 @@ class Bot_Related:
         em.add_field(name=_('Commands Run', ctx), value=sum(self.bot.commands_used.values()))
         em.add_field(name=_('Saved Tags', ctx), value=saved_tags)
         em.add_field(name=_('Library', ctx), value='discord.py rewrite')
-        em.add_field(name=_('Donate!', ctx), value=f'Support RoyaleAPI: {royaleapi_donate}')
         em.add_field(name=_('Discord', ctx), value='[Click Here](https://discord.gg/cBqsdPt)')
         em.add_field(name=_('Follow us on Twitter!', ctx), value='https://twitter.com/StatsyBot', inline=False)
         em.add_field(name=_('Upvote This Bot!', ctx), value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
@@ -465,14 +462,15 @@ Total                   :  {len(self.bot.guilds)}```"""))
         Want to help translate? Join our support server: https://discord.gg/cBqsdPt
         """
         langauge = language.lower()
+
         languages = {
             'spanish': 'es',
             'english': 'messages'
         }
-        if not language or language not in languages:
+        if not language or language.lower() not in languages:
             await ctx.send(_('Available languages: {}', ctx).format(', '.join([i.title() for i in languages.keys()])))
         else:
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {'language': languages[language]}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {'language': languages[language.lower()]}}, upsert=True)
             await ctx.send(_('Language set.', ctx))
 
     @commands.command()

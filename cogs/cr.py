@@ -272,7 +272,7 @@ class Clash_Royale:
         await ctx.send(_('Successfully set friend link to be disabled.', ctx))
 
     @commands.group(invoke_without_command=True, aliases=['player'])
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def profile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
@@ -285,7 +285,7 @@ class Clash_Royale:
         await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, alises=['statistics'])
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def stats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
@@ -316,7 +316,7 @@ class Clash_Royale:
             await ctx.send(f"**{profile.name}** doesn't have any season results.")
 
     @commands.group(invoke_without_command=True)
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def chests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the next chests of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
@@ -329,7 +329,7 @@ class Clash_Royale:
         await ctx.send(embed=em)
 
     @commands.command()
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def cards(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Get a list of cards the user has and does not have"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
@@ -341,7 +341,7 @@ class Clash_Royale:
         await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, aliases=['matches'])
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def battles(self, ctx, tag_or_user: TagCheck=(None, 0)):
         """Get the latest 5 battles by the player!"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
@@ -428,7 +428,7 @@ class Clash_Royale:
         await session.run()
 
     @members.command()
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def best(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Finds the best members of the clan currently."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
@@ -444,7 +444,7 @@ class Clash_Royale:
                 await ctx.send(embed=em)
 
     @members.command()
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def worst(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Finds the worst members of the clan currently."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
@@ -477,7 +477,7 @@ class Clash_Royale:
         await ctx.send('Successfully saved tag. ' + prompt)
 
     @commands.command()
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def usertag(self, ctx, member: discord.Member = None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
@@ -499,7 +499,7 @@ class Clash_Royale:
             await self.format_deck_and_send(ctx, profile)
 
     @commands.command(name='card')
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def _card(self, ctx, *, card):
         """Get information about a Clash Royale card."""
         aliases = {
@@ -532,7 +532,7 @@ class Clash_Royale:
             await ctx.send(embed=em)
 
     @commands.command(aliases=['tourney'])
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def tournament(self, ctx, tag: TagOnly):
         """View statistics about a tournament"""
         async with ctx.typing():
@@ -546,7 +546,7 @@ class Clash_Royale:
         await session.run()
 
     @commands.command(aliases=['tourneys'])
-    @embeds.has_perms(False)
+    @embeds.has_perms()
     async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():

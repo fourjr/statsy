@@ -101,6 +101,9 @@ class PaginatorSession:
             await self.show_page(0)
         if len(self.pages) == 1:
             return await self.show_page(0)
+        if self.ctx.channel.permissions_for(guild.me).add_reactions:
+            await self.ctx.send('Add reactions permission needed to view other pages')
+            return await self.show_page(0)
         while self.running:
             try:
                 reaction, user = await self.ctx.bot.wait_for(
