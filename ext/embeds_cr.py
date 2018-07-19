@@ -14,14 +14,11 @@ _ = Translator('CR Embeds', __file__)
 images = 'https://royaleapi.github.io/cr-api-assets/'
 
 
-def has_perms(add_reactions=True, external_emojis=True):
+def has_perms(external_emojis=True):
     perms = {
         'send_messages': True,
         'embed_links': True
     }
-
-    if add_reactions:
-        perms['add_reactions'] = True
 
     if external_emojis:
         perms['external_emojis'] = True
