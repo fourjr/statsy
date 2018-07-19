@@ -464,6 +464,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         """Changes your language!
         Want to help translate? Join our support server: https://discord.gg/cBqsdPt
         """
+        langauge = language.lower()
         languages = {
             'spanish': 'es',
             'english': 'messages'

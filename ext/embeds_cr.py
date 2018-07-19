@@ -113,7 +113,7 @@ async def format_least_valuable(ctx, clan, wars):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{clan.name} ({clan.tag})')
-    em.set_thumbnail(url=clan.badge.image)
+    em.set_thumbnail(url=get_clan_image(ctx, clan))
     em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     for m in reversed(to_kick):
@@ -149,7 +149,7 @@ async def format_most_valuable(ctx, clan, wars):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{clan.name} ({clan.tag})')
-    em.set_thumbnail(url=clan.badge.image)
+    em.set_thumbnail(url=get_clan_image(ctx, clan))
     em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     for m in reversed(best):
@@ -346,7 +346,7 @@ async def format_members(ctx, c, ws):
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             em.set_author(name=f"{c.name} ({c.tag})")
-            em.set_thumbnail(url=get_clan_image(c))
+            em.set_thumbnail(url=get_clan_image(ctx, c))
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"{m.tag}\n{m.trophies} "
@@ -635,8 +635,10 @@ async def format_clan(ctx, c):
 async def format_clan_war(ctx, w):
     page1 = discord.Embed(color=random_color())
     page1.set_footer(text=_('Statsy | Powered by the CR API', ctx))
+
     if ctx.bot.psa_message:
         page1.description = ctx.bot.psa_message
+
     if w.state == 'notInWar':
         page1.add_field(name=_('Day', ctx), value=f'{camel_case(w.state)} {emoji(ctx, "clanwar")}')
         return [page1]
@@ -654,9 +656,7 @@ async def format_clan_war(ctx, w):
         (_('Wins', ctx), f"{w.clan.wins} {emoji(ctx, 'crownblue')}")
     ]
 
-    if w.state == 'matchmaking':
-        pass
-    elif w.state == 'collectionDay':
+    if w.state in ('matchmaking', 'collectionDay'):
         pass
     elif w.state == 'warDay':
         fields1.append(('Crowns', f'{w.clan.crowns} {emoji(ctx, "3crown")}'))
@@ -664,7 +664,7 @@ async def format_clan_war(ctx, w):
 
         standings = []
 
-        for i in w.standings:
+        for i in w.clans:
             standings.append(''.join((
                 f"**{i.name}**",
                 _('\n{} Batles Played {}', ctx).format(i.battles_played, emoji(ctx, 'battle')),

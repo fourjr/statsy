@@ -81,7 +81,7 @@ class TagCheck(commands.MemberConverter):
         if tag in shortcuts:
             tag = shortcuts[tag]
         tag = tag.replace('O', '0')
-        if any(i not in self.check for i in tag):
+        if any(i not in self.check for i in tag) or len(tag) < 3:
             return False
         else:
             return (tag, 0)
@@ -437,7 +437,7 @@ class Clash_Royale:
             clan = await self.request('get_clan', tag)
             war = await self.request('get_clan_war_log', tag)
 
-            if len(clan.members) < 4:
+            if len(clan.member_list) < 4:
                 await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
                 em = await embeds.format_most_valuable(ctx, clan, war.get('items'))
@@ -451,12 +451,12 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.request('get_clan', tag)
-            war = await self.request('get_clan_war_log', tag.get('items'))
+            war = await self.request('get_clan_war_log', tag)
 
-            if len(clan.members) < 4:
+            if len(clan.member_list) < 4:
                 return await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
-                em = await embeds.format_least_valuable(ctx, clan, war)
+                em = await embeds.format_least_valuable(ctx, clan, war.get('items'))
                 await ctx.send(embed=em)
 
     @commands.command()
