@@ -457,7 +457,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
     @commands.command(name='language')
     @commands.has_permissions(manage_guild=True)
-    async def language_(self, ctx, language=None):
+    async def language_(self, ctx, language=''):
         """Changes your language!
         Want to help translate? Join our support server: https://discord.gg/cBqsdPt
         """
