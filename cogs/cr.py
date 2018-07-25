@@ -243,14 +243,17 @@ class Clash_Royale:
         else:
             ctx.language = 'messages'
 
-        tag = await self.resolve_tag(ctx, user)
-
-        player = await self.request('get_player', tag)
-        await self.request('get_player_chests', tag)
         try:
-            await self.request('get_clan', player.clan.tag)
-            await self.request('get_clan_war', player.clan.tag)
-        except AttributeError:
+            tag = await self.resolve_tag(ctx, user)
+
+            player = await self.request('get_player', tag)
+            await self.request('get_player_chests', tag)
+            try:
+                await self.request('get_clan', player.clan.tag)
+                await self.request('get_clan_war', player.clan.tag)
+            except AttributeError:
+                pass
+        except (NoTag, clashroyale.RequestError):
             pass
 
     @commands.group(invoke_without_command=True)
