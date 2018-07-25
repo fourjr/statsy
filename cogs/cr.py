@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from statsbot import InvalidTag, NoTag
 from ext import embeds_cr as embeds
+from ext.context import NoContext
 from ext.paginator import PaginatorSession
 from locales.i18n import Translator
 
@@ -120,9 +121,10 @@ class Clash_Royale:
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
 
-    async def __local_check(self, ctx):
-        if ctx.guild:
-            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+    async def __local_check(self, ctx=None, channel=None):
+        guild = getattr(ctx or channel, 'guild', None)
+        if guild:
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': guild.id}) or {}
             return guild_info.get('games', {}).get(self.__class__.__name__, True)
         else:
             return True
@@ -230,6 +232,26 @@ class Clash_Royale:
                 pass
 
             await m.channel.send(text, embed=em)
+
+    async def on_typing(self, channel, user, when):
+        if not await self.__local_check(channel=channel) or user.bot:
+            return
+
+        ctx = NoContext(self.bot, user)
+        if ctx.guild:
+            ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+        else:
+            ctx.language = 'messages'
+
+        tag = await self.resolve_tag(ctx, user)
+
+        player = await self.request('get_player', tag)
+        await self.request('get_player_chests', tag)
+        try:
+            await self.request('get_clan', player.clan.tag)
+            await self.request('get_clan_war', player.clan.tag)
+        except AttributeError:
+            pass
 
     @commands.group(invoke_without_command=True)
     async def friendlink(self, ctx):

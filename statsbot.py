@@ -263,7 +263,7 @@ class StatsBot(commands.AutoShardedBot):
             NoTag,
             discord.Forbidden,
             commands.CheckFailure,
-            clashroyale.RequestError
+            clashroyale.official_api.errors.RequestError
         )
 
         if isinstance(error, commands.errors.BotMissingPermissions):

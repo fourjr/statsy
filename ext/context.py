@@ -105,3 +105,15 @@ class CustomContext(commands.Context):
         if appd_index != len(text) - 1:
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
+
+class NoContext(CustomContext):
+    """Designed to create a Context with only an author
+    and no message. Some methods might fail
+    """
+    def __init__(self, bot, user):
+        self.bot = bot
+        self.author = user
+        self.guild = user.guild
+
+    async def send(self, *args, **kwargs):
+        pass
