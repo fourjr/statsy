@@ -671,8 +671,8 @@ class Clash_Royale:
         font_regular = ImageFont.truetype(font_file_regular, size=font_size)
         font_bold = ImageFont.truetype(font_file_bold, size=font_size)
 
-        d = ImageDraw.Draw(txt)
-        d_name = ImageDraw.Draw(txt_name)
+        # d = ImageDraw.Draw(txt)
+        # d_name = ImageDraw.Draw(txt_name)
 
         line1 = profile.arena.name
         line2 = f'{profile.trophies} Trophies'
@@ -681,24 +681,24 @@ class Clash_Royale:
 
         deck_author_name = deck_author
 
-        d_name.text(
-            (txt_x_name, txt_y_line1), deck_name, font=font_bold,
-            fill=(0xff, 0xff, 0xff, 255))
-        d_name.text(
-            (txt_x_name, txt_y_line2), deck_author_name, font=font_regular,
-            fill=(0xff, 0xff, 0xff, 255))
-        d.text(
-            (txt_x_cards, txt_y_line1), line1, font=font_regular,
-            fill=(0xff, 0xff, 0xff, 255))
-        d.text(
-            (txt_x_cards, txt_y_line2), line2, font=font_regular,
-            fill=(0xff, 0xff, 0xff, 255))
-        d.text(
-            (txt_x_elixir, txt_y_line1), "Avg elixir", font=font_bold,
-            fill=(0xff, 0xff, 0xff, 200))
-        d.text(
-            (txt_x_elixir, txt_y_line2), average_elixir, font=font_bold,
-            fill=(0xff, 0xff, 0xff, 255))
+        # d_name.text(
+        #     (txt_x_name, txt_y_line1), deck_name, font=font_bold,
+        #     fill=(0xff, 0xff, 0xff, 255))
+        # d_name.text(
+        #     (txt_x_name, txt_y_line2), deck_author_name, font=font_regular,
+        #     fill=(0xff, 0xff, 0xff, 255))
+        # d.text(
+        #     (txt_x_cards, txt_y_line1), line1, font=font_regular,
+        #     fill=(0xff, 0xff, 0xff, 255))
+        # d.text(
+        #     (txt_x_cards, txt_y_line2), line2, font=font_regular,
+        #     fill=(0xff, 0xff, 0xff, 255))
+        # d.text(
+        #     (txt_x_elixir, txt_y_line1), "Avg elixir", font=font_bold,
+        #     fill=(0xff, 0xff, 0xff, 200))
+        # d.text(
+        #     (txt_x_elixir, txt_y_line2), average_elixir, font=font_bold,
+        #     fill=(0xff, 0xff, 0xff, 255))
 
         image.paste(txt, (0, 0), txt)
         image.paste(txt_name, (0, 0), txt_name)
@@ -712,7 +712,7 @@ class Clash_Royale:
 
         file = io.BytesIO()
 
-        image.save(file, optimize=False, quality=10, format='PNG')
+        image.save(file, quality=10, format='PNG')
         image.close()
 
         file.seek(0)
