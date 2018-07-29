@@ -666,10 +666,10 @@ class Clash_Royale:
         # text
         # Take out hyphnens and capitlize the name of each card
 
-        txt = Image.new("RGBA", size)
-        txt_name = Image.new("RGBA", (txt_x_cards - 30, size[1]))
-        font_regular = ImageFont.truetype(font_file_regular, size=font_size)
-        font_bold = ImageFont.truetype(font_file_bold, size=font_size)
+        # txt = Image.new("RGBA", size)
+        # txt_name = Image.new("RGBA", (txt_x_cards - 30, size[1]))
+        # font_regular = ImageFont.truetype(font_file_regular, size=font_size)
+        # font_bold = ImageFont.truetype(font_file_bold, size=font_size)
 
         # d = ImageDraw.Draw(txt)
         # d_name = ImageDraw.Draw(txt_name)
