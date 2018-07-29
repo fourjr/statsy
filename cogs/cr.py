@@ -601,9 +601,8 @@ class Clash_Royale:
         em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
 
         await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)
-        del deck_image
-
         deck_image.close()
+        del deck_image
 
     def get_deck_image(self, ctx, profile, deck_author=None):
         """Construct the deck with Pillow and return image."""
