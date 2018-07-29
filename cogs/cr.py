@@ -628,6 +628,7 @@ class Clash_Royale:
 
         image = Image.new("RGBA", size)
         image.paste(bg_image)
+        bg_image.close()
 
         deck_name = 'Deck'
         cards = [c.name.replace(' ', '-').replace('.', '').lower() for c in deck]
@@ -649,6 +650,7 @@ class Clash_Royale:
                     card_h + card_y
                 )
                 image.paste(card_image, box, card_image)
+                card_image.close()
 
         # elixir
         def get_elixir(card):
