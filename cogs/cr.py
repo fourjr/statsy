@@ -244,7 +244,11 @@ class Clash_Royale:
         try:
             tag = await self.resolve_tag(ctx, user)
 
-            player = await self.request('get_player', tag)
+            try:
+                player = await self.request('get_player', tag)
+            except ValueError:
+                return
+
             await self.request('get_player_chests', tag)
             try:
                 await self.request('get_clan', player.clan.tag)
