@@ -602,7 +602,7 @@ class Clash_Royale:
 
         await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)
         deck_image.close()
-        del deck_image
+        deck_image = None
 
     def get_deck_image(self, ctx, profile, deck_author=None):
         """Construct the deck with Pillow and return image."""
