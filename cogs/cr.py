@@ -448,7 +448,7 @@ class Clash_Royale:
         session = PaginatorSession(
             ctx=ctx,
             pages=ems,
-            footer_text=f'{len(clan.members)}/50 members'
+            footer_text=f'{clan.members}/50 members'
         )
         await session.run()
 
@@ -601,6 +601,7 @@ class Clash_Royale:
         em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
 
         await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)
+        del deck_image
 
         deck_image.close()
 

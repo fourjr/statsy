@@ -203,7 +203,8 @@ class StatsBot(commands.AutoShardedBot):
         print('StatsBot connected!')
         print('----------------------------')
 
-        self.constants = await self.royaleapi.get_constants()
+        async with self.session.get('https://fourjr-webserver.herokuapp.com/cr/constants') as resp:
+            self.constants = clashroyale.royaleapi.models.Constants(self.cr, await resp.json(), None)
 
     async def on_ready(self):
         """
