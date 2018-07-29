@@ -700,10 +700,10 @@ class Clash_Royale:
         #     (txt_x_elixir, txt_y_line2), average_elixir, font=font_bold,
         #     fill=(0xff, 0xff, 0xff, 255))
 
-        image.paste(txt, (0, 0), txt)
-        image.paste(txt_name, (0, 0), txt_name)
-        txt.close()
-        txt_name.close()
+        # image.paste(txt, (0, 0), txt)
+        # image.paste(txt_name, (0, 0), txt_name)
+        # txt.close()
+        # txt_name.close()
 
         # scale down and return
         scale = 0.5
