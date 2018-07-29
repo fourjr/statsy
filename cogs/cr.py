@@ -1,12 +1,7 @@
-import asyncio
-import io
-import re
-
 from cachetools import TTLCache
 import clashroyale
 import discord
 from discord.ext import commands
-from PIL import Image, ImageDraw, ImageFont
 
 from statsbot import InvalidTag, NoTag
 from ext import embeds_cr as embeds
@@ -521,7 +516,9 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.request('get_player', tag)
-            await self.format_deck_and_send(ctx, profile)
+            em = await embeds.format_deck(ctx, profile)
+
+            await ctx.send(embed=em)
 
     @commands.command(name='card')
     @embeds.has_perms()
@@ -579,145 +576,6 @@ class Clash_Royale:
             em = await embeds.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)
-
-    async def format_deck_and_send(self, ctx, profile):
-        author = profile.name
-
-        deck_image = await self.bot.loop.run_in_executor(
-            None,
-            self.get_deck_image,
-            ctx, profile, author
-        )
-
-        copydeck = '<:copydeck:376367880289124366>'
-
-        em = discord.Embed(
-            description=f'[Copy this deck! {copydeck}]({profile.deck_link})', color=embeds.random_color()
-        )
-        if self.bot.psa_message:
-            em.description = f'*{self.bot.psa_message}*'
-        em.set_author(name=f'{profile.name} ({profile.tag})', icon_url=embeds.get_clan_image(ctx, profile))
-        em.set_image(url='attachment://deck.png')
-        em.set_footer(text='Statsy - Powered by RoyaleAPI.com')
-
-        await ctx.send(file=discord.File(deck_image, 'deck.png'), embed=em)
-        deck_image.close()
-        deck_image = None
-
-    def get_deck_image(self, ctx, profile, deck_author=None):
-        """Construct the deck with Pillow and return image."""
-
-        deck = profile.current_deck
-
-        card_w = 302
-        card_h = 363
-        card_x = 30
-        card_y = 30
-        font_size = 50
-        txt_y_line1 = 430
-        txt_y_line2 = 500
-        txt_x_name = 50
-        txt_x_cards = 700
-        txt_x_elixir = 1872
-
-        bg_image = Image.open("data/deck-bg.png").convert("RGBA")
-        size = bg_image.size
-
-        font_file_regular = "data/fonts/OpenSans-Regular.ttf"
-        font_file_bold = "data/fonts/OpenSans-Bold.ttf"
-
-        image = Image.new("RGBA", size)
-        image.paste(bg_image)
-        bg_image.close()
-
-        deck_name = 'Deck'
-        cards = [c.name.replace(' ', '-').replace('.', '').lower() for c in deck]
-
-        # cards
-        for i, card in enumerate(cards):
-            card_image_file = "data/cards/{}.png".format(card)
-            try:
-                card_image = Image.open(card_image_file).convert("RGBA")
-            except FileNotFoundError:
-                pass
-            else:
-                # size = (card_w, card_h)
-                # card_image.thumbnail(size)
-                box = (
-                    card_x + card_w * i,
-                    card_y,
-                    card_x + card_w * (i + 1),
-                    card_h + card_y
-                )
-                image.paste(card_image, box, card_image)
-                card_image.close()
-
-        # elixir
-        def get_elixir(card):
-            for i in self.bot.constants.cards:
-                if i.name == card:
-                    return i.elixir
-
-        total_elixir = sum(get_elixir(c.name) for c in deck)
-        card_count = len(deck)
-
-        average_elixir = "{:.3f}".format(total_elixir / card_count)
-
-        # text
-        # Take out hyphnens and capitlize the name of each card
-
-        # txt = Image.new("RGBA", size)
-        # txt_name = Image.new("RGBA", (txt_x_cards - 30, size[1]))
-        # font_regular = ImageFont.truetype(font_file_regular, size=font_size)
-        # font_bold = ImageFont.truetype(font_file_bold, size=font_size)
-
-        # d = ImageDraw.Draw(txt)
-        # d_name = ImageDraw.Draw(txt_name)
-
-        line1 = profile.arena.name
-        line2 = f'{profile.trophies} Trophies'
-
-        # card_text = '\n'.join([line0, line1])
-
-        deck_author_name = deck_author
-
-        # d_name.text(
-        #     (txt_x_name, txt_y_line1), deck_name, font=font_bold,
-        #     fill=(0xff, 0xff, 0xff, 255))
-        # d_name.text(
-        #     (txt_x_name, txt_y_line2), deck_author_name, font=font_regular,
-        #     fill=(0xff, 0xff, 0xff, 255))
-        # d.text(
-        #     (txt_x_cards, txt_y_line1), line1, font=font_regular,
-        #     fill=(0xff, 0xff, 0xff, 255))
-        # d.text(
-        #     (txt_x_cards, txt_y_line2), line2, font=font_regular,
-        #     fill=(0xff, 0xff, 0xff, 255))
-        # d.text(
-        #     (txt_x_elixir, txt_y_line1), "Avg elixir", font=font_bold,
-        #     fill=(0xff, 0xff, 0xff, 200))
-        # d.text(
-        #     (txt_x_elixir, txt_y_line2), average_elixir, font=font_bold,
-        #     fill=(0xff, 0xff, 0xff, 255))
-
-        # image.paste(txt, (0, 0), txt)
-        # image.paste(txt_name, (0, 0), txt_name)
-        # txt.close()
-        # txt_name.close()
-
-        # scale down and return
-        scale = 0.5
-        scaled_size = tuple([x * scale for x in image.size])
-        image.thumbnail(scaled_size)
-
-        file = io.BytesIO()
-
-        image.save(file, quality=10, format='PNG')
-        image.close()
-
-        file.seek(0)
-
-        return file
 
 
 def setup(bot):

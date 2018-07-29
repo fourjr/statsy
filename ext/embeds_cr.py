@@ -81,6 +81,7 @@ def get_arena_image(ctx, p):
         if i.id == badge_id:
             return images + 'arenas/arena/' + str(i.arena_id) + '.png'
 
+
 def camel_case(text):
     # from stackoverflow :p
     if text is None:
@@ -435,6 +436,32 @@ async def format_seasons(ctx, p):
             embeds.append(em)
 
     return embeds
+
+
+async def format_deck(ctx, p):
+    copydeck = '<:copydeck:376367880289124366>'
+
+    deck_link = 'https://link.clashroyale.com/deck/en?deck='
+    elixir = 0
+
+    for i in p.current_deck:
+        for c in ctx.bot.constants.cards:
+            if i.name == c.name:
+                deck_link += f'{c.id};'
+                elixir += c.elixir
+
+    elixir = elixir / len(p.current_deck)
+
+    deck = f'{get_deck(ctx, p)}\n{elixir:.1f}{emoji(ctx, "elixirdrop")}'
+
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    em.set_author(name=f'{p.name} ({p.tag})', icon_url=get_clan_image(ctx, p))
+    em.add_field(name='Current Deck', value=f'{deck}[Copy this deck! {copydeck}]({deck_link})')
+    em.set_footer(text='Statsy - Powered by the CR API')
+
+    return em
 
 
 async def format_card(ctx, c):

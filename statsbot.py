@@ -25,7 +25,7 @@ SOFTWARE.
 import asyncio
 import datetime
 import inspect
-import json
+import logging
 import os
 import platform
 import random
@@ -38,11 +38,12 @@ import clashroyale
 import discord
 import psutil
 from discord.ext import commands
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from ext.context import CustomContext
 from locales.i18n import Translator
+
 
 class InvalidTag(commands.BadArgument):
     """Raised when a tag is invalid."""
@@ -61,10 +62,10 @@ class InvalidPlatform(commands.BadArgument):
 class NoTag(Exception):
     pass
 
-
-from statsbot import InvalidPlatform, NoTag, InvalidTag
+from statsbot import InvalidPlatform, InvalidTag, NoTag
 
 _ = Translator('Core', __file__)
+
 
 class StatsBot(commands.AutoShardedBot):
     """Custom client for statsy made by Kyber"""
@@ -359,4 +360,9 @@ class StatsBot(commands.AutoShardedBot):
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
+    logger = logging.getLogger('discord')
+    logger.setLevel(logging.INFO)
+    handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
     StatsBot()
