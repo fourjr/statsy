@@ -702,6 +702,8 @@ class Clash_Royale:
 
         image.paste(txt, (0, 0), txt)
         image.paste(txt_name, (0, 0), txt_name)
+        txt.close()
+        txt_name.close()
 
         # scale down and return
         scale = 0.5
@@ -711,6 +713,7 @@ class Clash_Royale:
         file = io.BytesIO()
 
         image.save(file, optimize=False, quality=10, format='PNG')
+        image.close()
 
         file.seek(0)
 
