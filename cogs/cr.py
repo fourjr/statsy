@@ -209,7 +209,10 @@ class Clash_Royale:
             tag = m.content[m.content.find('?tag=') + 5:m.content.find('&token=')]
             token = m.content[m.content.find('&token=') + 7:m.content.find('&token=') + 7 + 8]
             link = f'https://link.clashroyale.com?tag={tag}&token={token}/'
-            profile = await self.request('get_player', tag)
+            try:
+                profile = await self.request('get_player', tag)
+            except ValueError:
+                return
 
             if m.content.find('android') != -1:
                 platform = m.content.find('platform=android') + len('platform=android')
