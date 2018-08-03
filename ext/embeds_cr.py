@@ -304,7 +304,7 @@ async def format_battles(ctx, battles):
         elif b.winner == 0:
             # Draw
             winner = 'crowngray'
-        score = f'{b.team_crowns}-{b.opponent_crowns}'
+        score = f'{b.team[0].crowns}-{b.opponent[0].crowns}'
 
         try:
             value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].tag}) \n[{b.team[1].name}]({crapi}{b.team[1].tag}) {emoji(ctx, "battle")} [{b.opponent[1].name}]({crapi}{b.opponent[1].tag})**'
