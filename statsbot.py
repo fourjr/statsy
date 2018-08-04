@@ -131,6 +131,7 @@ class StatsBot(commands.AutoShardedBot):
             os.getenv('guild_hook'),
             adapter=discord.AsyncWebhookAdapter(self.session)
         )
+        self.command_logger = logging.getLogger('commands')
 
         try:
             self.loop.run_until_complete(self.start(os.getenv('token')))
@@ -241,6 +242,7 @@ class StatsBot(commands.AutoShardedBot):
                 {'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True
             )
         self.commands_used[cmd] += 1
+        self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
 
     async def process_commands(self, message):
         """Utilises the CustomContext subclass of discord.Context"""
@@ -360,8 +362,16 @@ class StatsBot(commands.AutoShardedBot):
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
+
     logger = logging.getLogger('discord')
     handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
+
+    logger = logging.getLogger('commands')
+    logger.setLevel(logging.INFO)
+    handler = logging.FileHandler(filename='bot.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
+
     StatsBot()
