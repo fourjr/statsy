@@ -5,7 +5,7 @@
 # Minimally patched to make it even more xgettext compatible
 # by Peter Funk <pf@artcom-gmbh.de>
 #
-# 2002-11-22 Jürgen Hermann <jh@web.de>
+# 2002-11-22 J�rgen Hermann <jh@web.de>
 # Added checks that _() only contains string literals, and
 # command line args are resolved to module lists, i.e. you
 # can now pass a filename, a module or package name, or a
@@ -13,10 +13,9 @@
 # Made docstring fit in 80 chars wide displays using pydoc.
 #
 
+"""Modified version by fourjr of http://svn.python.org/projects/python/tags/r32b1/Tools/i18n/pygettext.py"""
+
 # for selftesting
-
-"""Modified version of http://svn.python.org/projects/python/tags/r32b1/Tools/i18n/pygettext.py"""
-
 try:
     import fintl
     _ = fintl.gettext
@@ -209,7 +208,7 @@ def make_escapes(pass_iso8859):
     global escapes
     if pass_iso8859:
         # Allow iso-8859 characters to pass through so that e.g. 'msgid
-        # "Höhe"' would result not result in 'msgid "H\366he"'.  Otherwise we
+        # "H�he"' would result not result in 'msgid "H\366he"'.  Otherwise we
         # escape any character outside the 32..126 range.
         mod = 128
     else:
@@ -576,7 +575,7 @@ def main():
         elif opt in ('-x', '--exclude-file'):
             options.excludefilename = arg
         elif opt in ('-X', '--no-docstrings'):
-            fp = open(arg, encoding='utf-8')
+            fp = open(arg, encoding='utf8')
             try:
                 while 1:
                     line = fp.readline()
@@ -595,7 +594,7 @@ def main():
     # initialize list of strings to exclude
     if options.excludefilename:
         try:
-            fp = open(options.excludefilename, encoding='utf-8')
+            fp = open(options.excludefilename, encoding='utf8')
             options.toexclude = fp.readlines()
             fp.close()
         except IOError:
@@ -625,12 +624,12 @@ def main():
         else:
             if options.verbose:
                 print(_('Working on %s') % filename)
-            fp = open(filename, encoding='utf-8')
+            fp = open(filename, encoding='utf8')
             closep = 1
         try:
             eater.set_filename(filename)
             try:
-                tokens = tokenize.generate_tokens(lambda: fp.readline().split(', ')[0] + ')')
+                tokens = tokenize.generate_tokens(fp.readline)
                 for _token in tokens:
                     eater(*_token)
             except tokenize.TokenError as e:
@@ -648,7 +647,7 @@ def main():
     else:
         if options.outpath:
             options.outfile = os.path.join(options.outpath, options.outfile)
-        fp = open(options.outfile, 'w', encoding='utf-8')
+        fp = open(options.outfile, 'w')
         closep = 1
     try:
         eater.write(fp)
