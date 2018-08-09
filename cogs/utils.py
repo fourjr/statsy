@@ -551,7 +551,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             color=0xd1202e
         )
         await self.bot.guild_hook.send(embed=em)
-        datadog.statsd.decrement('statsy.joined', 1)
+        datadog.statsd.increment('statsy.left', 1)
 
 
 def setup(bot):
