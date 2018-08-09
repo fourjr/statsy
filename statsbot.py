@@ -207,6 +207,7 @@ class StatsBot(commands.AutoShardedBot):
 
         async with self.session.get('https://fourjr-webserver.herokuapp.com/cr/constants') as resp:
             self.constants = clashroyale.royaleapi.models.Constants(self.cr, await resp.json(), None)
+        datadog.statsd.increment('statsy.connect')
 
     async def on_ready(self):
         """
