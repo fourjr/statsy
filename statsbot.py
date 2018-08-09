@@ -115,6 +115,7 @@ class StatsBot(commands.AutoShardedBot):
         self.dev_mode = platform.system() != 'Linux'
         if not self.dev_mode:
             self.backup_task_loop = self.loop.create_task(self.backup_task())
+            self.datadog_loop = self.loop.create_task(self.datadog())
         self.load_extensions()
         self._add_commands()
 
@@ -241,7 +242,6 @@ class StatsBot(commands.AutoShardedBot):
             )
         if not ctx.command.hidden:
             datadog.statsd.increment('statsy.commands', 1, [f'command:{ctx.command.name}'])
-        datadog.statsd.set('statsy.latency', self.latency * 1000)
         self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
 
     async def process_commands(self, message):
@@ -345,6 +345,12 @@ class StatsBot(commands.AutoShardedBot):
                 }
             )
             await asyncio.sleep(3600)
+
+    async def datadog(self):
+        await self.wait_until_ready()
+        while not self.is_closed():
+            datadog.statsd.set('statsy.latency', self.latency * 1000)
+            await asyncio.sleep(120)
 
     @commands.command()
     async def ping(self, ctx):
