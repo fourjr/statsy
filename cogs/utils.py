@@ -152,7 +152,6 @@ class Bot_Related:
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
         em.add_field(name=_('RAM Usage', ctx), value=f'{memory_usage:.2f} MiB')
         em.add_field(name=_('CPU Usage', ctx), value=f'{cpu_usage:.2f}% CPU')
-        em.add_field(name=_('Commands Run', ctx), value=sum(self.bot.commands_used.values()))
         em.add_field(name=_('Saved Tags', ctx), value=saved_tags)
         em.add_field(name=_('Library', ctx), value='discord.py rewrite')
         em.add_field(name=_('Discord', ctx), value='[Click Here](https://discord.gg/cBqsdPt)')

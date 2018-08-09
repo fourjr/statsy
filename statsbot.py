@@ -31,10 +31,10 @@ import platform
 import random
 import sys
 import traceback
-from collections import defaultdict
 
 import aiohttp
 import clashroyale
+import datadog
 import discord
 import psutil
 from discord.ext import commands
@@ -107,7 +107,6 @@ class StatsBot(commands.AutoShardedBot):
         )
         self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
         self.uptime = datetime.datetime.utcnow()
-        self.commands_used = defaultdict(int)
         self.process = psutil.Process()
         self.remove_command('help')
         self.messages_sent = 0
@@ -236,12 +235,11 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_command(self, ctx):
         """Called when a command is invoked."""
-        cmd = ctx.command.qualified_name.replace(' ', '_')
         if not self.dev_mode:
             await self.mongo.config.admin.find_one_and_update(
                 {'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True
             )
-        self.commands_used[cmd] += 1
+        datadog.statsd.increment(f'statsy.commands.{ctx.command.name}')
         self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
 
     async def process_commands(self, message):
@@ -374,4 +372,5 @@ if __name__ == '__main__':
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
 
+    datadog.initialize(api_key=os.getenv('api_key'), app_key=os.getenv('app_key'))
     StatsBot()
