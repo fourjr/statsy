@@ -347,9 +347,10 @@ class StatsBot(commands.AutoShardedBot):
             await asyncio.sleep(3600)
 
     async def datadog(self):
+        """Push to datadog"""
         await self.wait_until_ready()
         while not self.is_closed():
-            datadog.statsd.set('statsy.latency', self.latency * 1000)
+            datadog.statsd.gauge('statsy.latency', self.latency * 1000)
             await asyncio.sleep(120)
 
     @commands.command()
