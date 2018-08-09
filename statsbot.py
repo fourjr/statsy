@@ -241,7 +241,7 @@ class StatsBot(commands.AutoShardedBot):
             )
         if not ctx.command.hidden:
             datadog.statsd.increment('statsy.commands', 1, [f'command:{ctx.command.name}'])
-        datadog.statsd.set('statsy.latency', self.latency)
+        datadog.statsd.set('statsy.latency', self.latency * 1000)
         self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
 
     async def process_commands(self, message):
