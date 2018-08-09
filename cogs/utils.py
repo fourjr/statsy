@@ -541,7 +541,6 @@ Total                   :  {len(self.bot.guilds)}```"""))
             color=0x0cc243
         )
         await self.bot.guild_hook.send(embed=em)
-        datadog.statsd.gauge('statsy.guilds', len(self.bot.guilds))
 
     async def on_guild_remove(self, g):
         em = discord.Embed(
@@ -551,7 +550,6 @@ Total                   :  {len(self.bot.guilds)}```"""))
             color=0xd1202e
         )
         await self.bot.guild_hook.send(embed=em)
-        datadog.statsd.gauge('statsy.guilds', len(self.bot.guilds))
 
 
 def setup(bot):
