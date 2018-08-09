@@ -352,7 +352,7 @@ class StatsBot(commands.AutoShardedBot):
         await self.wait_until_ready()
         while not self.is_closed():
             datadog.statsd.gauge('statsy.latency', self.latency * 1000)
-            datadog.statsd.gauge('statsy.guilds', len(self.bot.guilds))
+            datadog.statsd.gauge('statsy.guilds', len(self.guilds))
             await asyncio.sleep(120)
 
     @commands.command()
