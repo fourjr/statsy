@@ -239,7 +239,8 @@ class StatsBot(commands.AutoShardedBot):
             await self.mongo.config.admin.find_one_and_update(
                 {'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True
             )
-        datadog.statsd.increment('statsy.commands', 1, [f'command:{ctx.command.name}'])
+        if not ctx.command.hidden:
+            datadog.statsd.increment('statsy.commands', 1, [f'command:{ctx.command.name}'])
         self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
 
     async def process_commands(self, message):
