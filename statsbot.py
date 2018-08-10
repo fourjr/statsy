@@ -341,6 +341,16 @@ class StatsBot(commands.AutoShardedBot):
         await self.wait_until_ready()
         games = await self.mongo.player_tags.list_collection_names()
         while not self.is_closed():
+            delta = datetime.datetime.utcnow() - self.uptime
+            hours, remainder = divmod(int(delta.total_seconds()), 3600)
+            minutes, seconds = divmod(remainder, 60)
+            days, hours = divmod(hours, 24)
+
+            fmt = '{h}h {m}m {s}s'
+            if days:
+                fmt = '{d}d ' + fmt
+            uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
+
             metrics = [
                 ('statsy.latency', self.latency * 1000),
                 ('statsy.guilds', len(self.guilds)),
@@ -348,7 +358,8 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.channels', len(self.users)),
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
                 ('statsy.tags_saved', sum([await self.mongo.player_tags[i].find().count() for i in games])),
-                ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale'])
+                ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
+                ('statsy.uptime', uptime)
             ]
             for i in metrics:
                 try:

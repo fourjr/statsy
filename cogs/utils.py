@@ -119,8 +119,7 @@ class Bot_Related:
         total_unique = len(self.bot.users)
         channels = sum(1 for g in self.bot.guilds for _ in g.channels)
 
-        now = datetime.datetime.utcnow()
-        delta = now - self.bot.uptime
+        delta = datetime.datetime.utcnow() - self.bot.uptime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
