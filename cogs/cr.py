@@ -1,4 +1,5 @@
 import asyncio
+import datadog
 from datetime import datetime
 
 from cachetools import TTLCache
@@ -6,10 +7,10 @@ import clashroyale
 import discord
 from discord.ext import commands
 
-from statsbot import InvalidTag, NoTag
 from ext import embeds_cr as embeds
 from ext.context import NoContext
 from ext.paginator import PaginatorSession
+from ext.errors import InvalidTag, NoTag
 from locales.i18n import Translator
 
 _ = Translator('Core', __file__)
@@ -119,7 +120,7 @@ class Clash_Royale:
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
         if not self.bot.dev_mode:
-            self.clan_update = self.bot.loop.create_task(self.clan_update_loop())
+            self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
     async def __local_check(self, ctx=None, channel=None):
         guild = getattr(ctx or channel, 'guild', None)
@@ -153,6 +154,7 @@ class Clash_Royale:
                 self.cache[f'{method}{args}'] = data
             else:
                 self.cache[f'{method}{args}'] = data.raw_data
+            datadog.statsd.increment('statsy.requests', 1, ['game:clashroyale', f'code:{data.response.status}'])
         else:
             if not isinstance(data, list):
                 data = clashroyale.official_api.BaseAttrDict(self.cr, data, None)
@@ -237,6 +239,8 @@ class Clash_Royale:
             await m.channel.send(text, embed=em)
 
     async def on_typing(self, channel, user, when):
+        if self.bot.is_closed():
+            return
         if not await self.__local_check(channel=channel) or user.bot:
             return
 
@@ -590,28 +594,38 @@ class Clash_Royale:
         await ctx.send(embed=em)
 
     async def get_clans(self, *tags):
-        clans = wars = []
+        clans = []
+        wars = []
         for t in tags:
-            clans.append(await self.bot.royaleapi.get_clan(t))
-            wars.append(await self.bot.royaleapi.get_clan_war(t))
+            clans.append(await self.request('get_clan', t))
+            wars.append(await self.request('get_clan_war', t))
             await asyncio.sleep(0.5)
         return clans, wars
 
-    async def clanupdate(self, clan):
-        guilds = await self.bot.mongo.config.guilds.find({'claninfo': {'$exists': True}}).to_list(None)
-        async for g in guilds:
+    async def clanupdate(self, clan=None):
+        if not clan:
+            guilds = await self.bot.mongo.config.guilds.find({'claninfo': {'$exists': True}}).to_list(None)
+        else:
+            guilds = [clan]
+
+        for g in guilds:
             for m in g['claninfo']:
                 clans, wars = await self.get_clans(*m['clans'])
 
                 embed = discord.Embed(title="Clan Statistics!", color=0xf1c40f, timestamp=datetime.utcnow())
                 total_members = 0
-                for i in len(clans):
+
+                for i in range(len(clans)):
                     embed.add_field(name=clans[i].name, value=embeds.format_clan_stats(clans[i], wars[i]))
-                    total_members += clans[i].member_count
+                    total_members += len(clans[i].member_list)
 
                 embed.add_field(name='More Info', value=f"<:clan:376373812012384267> {total_members}/{50*len(clans)}", inline=False)
+                try:
+                    channel = self.bot.get_channel(m['channel'].to_decimal())
+                    message = await channel.get_message(m['message'].to_decimal())
+                except AttributeError:
+                    message = None
 
-                message = await self.bot.get_channel(m['channel']).get_message(m['message'])
                 if not message:
                     try:
                         message = await self.bot.get_channel(m['channel']).send('Clan Stats')
@@ -622,7 +636,7 @@ class Clash_Royale:
 
     async def clan_update_loop(self):
         await self.bot.wait_until_ready()
-        while not self.bot.is_closed:
+        while not self.bot.is_closed():
             await self.clanupdate()
             await asyncio.sleep(14400)
 
@@ -643,4 +657,3 @@ class Clash_Royale:
 def setup(bot):
     cog = Clash_Royale(bot)
     bot.add_cog(cog)
-

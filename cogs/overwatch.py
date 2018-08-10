@@ -4,11 +4,12 @@ from discord.ext import commands
 
 from ext import embeds_ov
 from ext.paginator import PaginatorSession
-from statsbot import NoTag
+from ext.errors import NoTag
 
 from locales.i18n import Translator
 
 _ = Translator('Overwatch', __file__)
+
 
 class TagCheck(commands.MemberConverter):
 
@@ -143,6 +144,7 @@ class Overwatch:
         for i in tag:
             em.add_field(name=f'Tag index: {i}', value=tag[i])
         await ctx.send(embed=em)
+
 
 def setup(bot):
     cog = Overwatch(bot)

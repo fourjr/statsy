@@ -8,12 +8,13 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from statsbot import NoTag, InvalidPlatform
+from ext.errors import NoTag, InvalidPlatform
 from ext.paginator import PaginatorSession
 
 from locales.i18n import Translator
 
 _ = Translator('Fortnite', __file__)
+
 
 class FortniteServerError(Exception):
     """Raised when the Fortnite API is down"""
@@ -117,12 +118,6 @@ class Fortnite:
         return data['uid']
 
     @commands.command()
-    async def fnsave(self, ctx, platform: lower, *, username: str):
-        """Saves a fortnite tag to your discord profile."""
-        await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}')
-        await ctx.send(_('Successfully saved tag. Check your stats with `{}fnprofile`!', ctx).format(ctx.prefix))
-
-    @commands.command()
     async def fnsave(self, ctx, platform: lower, username: str, index: str='0'):
         """Saves a Fortnite tag to your discord profile."""
         await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}', index=index.replace('-', ''))
@@ -133,7 +128,7 @@ class Fortnite:
             prompt = f'Check your stats with `{ctx.prefix}fnprofile -{index}`!'
 
         await ctx.send('Successfully saved tag. ' + prompt)
-        
+
     @commands.command()
     async def fnprofile(self, ctx, platform: lower, *, username: TagOrUser=None):
         """Gets the fortnite profile of a player with a provided platform"""

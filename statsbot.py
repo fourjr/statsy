@@ -43,26 +43,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from ext.context import CustomContext
 from locales.i18n import Translator
-
-
-class InvalidTag(commands.BadArgument):
-    """Raised when a tag is invalid."""
-
-    message = 'Player tags should only contain these characters:\n' \
-              '**Numbers:** 0, 2, 8, 9\n' \
-              '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
-
-
-class InvalidPlatform(commands.BadArgument):
-    """Raised when a tag is invalid."""
-    message = 'Platforms should only be one of the following:\n' \
-              'pc, ps4, xb1'
-
-
-class NoTag(Exception):
-    pass
-
-from statsbot import InvalidPlatform, InvalidTag, NoTag
+from ext.errors import InvalidPlatform, InvalidTag, NoTag
 
 _ = Translator('Core', __file__)
 
@@ -145,6 +126,8 @@ class StatsBot(commands.AutoShardedBot):
         finally:
             if not self.dev_mode:
                 self.backup_task_loop.cancel()
+                self.clan_update.cancel()
+                self.datadog_loop.cancel()
             self.loop.run_until_complete(self.logout())
             self.loop.run_until_complete(self.session.close())
             self.loop.close()
@@ -202,7 +185,7 @@ class StatsBot(commands.AutoShardedBot):
         gateway connection with discord
         """
         print('----------------------------')
-        print('StatsBot connected!')
+        print('Statsy connected!')
         print('----------------------------')
 
         async with self.session.get('https://fourjr-webserver.herokuapp.com/cr/constants') as resp:
@@ -214,7 +197,7 @@ class StatsBot(commands.AutoShardedBot):
         Called when guild streaming is complete
         and the client's internal cache is ready.
         """
-        fmt = 'StatsBot is ready!\n' \
+        fmt = 'Statsy is ready!\n' \
               '----------------------------\n' \
               f'Logged in as: {self.user}\n' \
               f'Client ID: {self.user.id}\n' \
@@ -255,7 +238,7 @@ class StatsBot(commands.AutoShardedBot):
         """Utilises the CustomContext subclass of discord.Context"""
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
-
+        return
         if ctx.guild:
             ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
         else:

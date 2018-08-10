@@ -862,12 +862,17 @@ async def format_friend_link(ctx, p, link, default):
     return em
 
 
-def format_clan_stats(self, clan, war):
+def format_clan_stats(clan, war):
+    try:
+        war_trophies = war.clan.clan_score
+    except AttributeError:
+        war_trophies = 'Not in war at the moment'
+
     return '\n'.join(
         (
-            f'<:clan:376373812012384267> {clan.members}/50',
+            f'<:clan:376373812012384267> {len(clan.member_list)}/50',
             f'<:trophy:376367869551706112> {clan.clan_score}',
-            f'<:wartrophy:448423299668770816> {war.clan.war_trophies}',
+            f'<:wartrophy:448423299668770816> {war_trophies}',
             f'<:trophy:376367869551706112> {clan.required_trophies} required',
             f'<:cards:376367863935664130> {clan.donations_per_week}/week'
         )
