@@ -355,7 +355,7 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.latency', self.latency * 1000),
                 ('statsy.guilds', len(self.guilds)),
                 ('statsy.users', len(self.users)),
-                ('statsy.channels', len(self.channels)),
+                ('statsy.channels', len([i.id for g in self.guilds for i in g.channels])),
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
                 ('statsy.tags_saved', sum([await self.mongo.player_tags[i].find().count() for i in games])),
                 ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
