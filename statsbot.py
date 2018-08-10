@@ -355,7 +355,7 @@ class StatsBot(commands.AutoShardedBot):
                     tags = i[2]
                 except IndexError:
                     tags = None
-                datadog.statsd.gague(i[0], i[1], tags)
+                datadog.statsd.gauge(i[0], i[1], tags)
 
             # Languages
             for i in _.translations.keys():
