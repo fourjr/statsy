@@ -7,7 +7,7 @@ from dotenv import find_dotenv, load_dotenv
 
 """Modified version of https://github.com/Cog-Creators/Red-DiscordBot/blob/V3/develop/redbot/core/i18n.py"""
 
-__all__ = ["get_locale", "reload_locales", "cog_i18n", "Translator"]
+__all__ = ["reload_locales", "cog_i18n", "Translator"]
 
 load_dotenv(find_dotenv())
 
@@ -141,7 +141,6 @@ def get_locale_path(locale: str) -> Path:
     """
     return Path("locales/pot/{}".format(locale))
 
-language = None
 
 class Translator:
     """Function to get translated strings at runtime."""
@@ -161,7 +160,6 @@ class Translator:
         """
         self.cog_folder = Path(file_location).resolve().parent
         self.cog_name = name
-        self.lang = None
         self.translations = {}
 
         _translators.append(self)

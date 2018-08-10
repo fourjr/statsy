@@ -470,7 +470,9 @@ Total                   :  {len(self.bot.guilds)}```"""))
         if not language or language.lower() not in languages:
             await ctx.send(_('Available languages: {}', ctx).format(', '.join([i.title() for i in languages.keys()])))
         else:
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {'language': languages[language.lower()]}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update(
+                {'guild_id': ctx.guild.id}, {'$set': {'language': languages[language.lower()]}}, upsert=True
+            )
             await ctx.send(_('Language set.', ctx))
 
     @commands.command()
@@ -534,9 +536,34 @@ Total                   :  {len(self.bot.guilds)}```"""))
         await ctx.send('<:statsy:464784655569387540> https://discord.gg/cBqsdPt')
 
     async def on_guild_join(self, g):
+        texts = ''
+        for c in g.text_channels:
+            try:
+                async for m in c.history(limit=5):
+                    texts += '\n' + m.content
+            except discord.Forbidden:
+                pass
+
+        async with self.bot.session.post(
+            'https://ws.detectlanguage.com/0.2/detect',
+            headers={'Authorization': f"Bearer {os.getenv('detectlanguage')}"},
+            json={'q': texts}
+        ) as resp:
+            data = await resp.json()
+
+        for d in data['data']['detections']:
+            if not d:
+                continue
+            if d['isReliable']:
+                language = d['language']
+                break
+
+        if language in _.translations.keys():
+            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': g.id}, {'$set': {'language': language}}, upsert=True)
+
         em = discord.Embed(
             title=f'Added to {g.name} ({g.id})',
-            description=f'{len(g.members)} members',
+            description=f'{len(g.members)} members\nLanguage: {language}',
             timestamp=datetime.datetime.utcnow(),
             color=0x0cc243
         )
