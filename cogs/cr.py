@@ -152,10 +152,12 @@ class Clash_Royale:
             data = await getattr(client, method)(*args)
             if isinstance(data, list):
                 self.cache[f'{method}{args}'] = data
+                status_code = 'list'
             else:
                 self.cache[f'{method}{args}'] = data.raw_data
+                status_code = data.response.status
             datadog.statsd.increment('statsy.requests', 1, [
-                'game:clashroyale', f'code:{data.response.status}', f'method:{method}'
+                'game:clashroyale', f'code:{status_code}', f'method:{method}'
             ])
         else:
             if not isinstance(data, list):
