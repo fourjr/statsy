@@ -543,22 +543,25 @@ Total                   :  {len(self.bot.guilds)}```"""))
             except discord.Forbidden:
                 pass
 
-        async with self.bot.session.post(
-            'https://ws.detectlanguage.com/0.2/detect',
-            headers={'Authorization': f"Bearer {os.getenv('detectlanguage')}"},
-            json={'q': texts}
-        ) as resp:
-            data = await resp.json()
+        if texts:
+            async with self.bot.session.post(
+                'https://ws.detectlanguage.com/0.2/detect',
+                headers={'Authorization': f"Bearer {os.getenv('detectlanguage')}"},
+                json={'q': texts}
+            ) as resp:
+                data = await resp.json()
 
-        for d in data['data']['detections']:
-            if not d:
-                continue
-            if d['isReliable']:
-                language = d['language']
-                break
+            for d in data['data']['detections']:
+                if not d:
+                    continue
+                if d['isReliable']:
+                    language = d['language']
+                    break
 
-        if language in _.translations.keys():
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': g.id}, {'$set': {'language': language}}, upsert=True)
+            if language in _.translations.keys():
+                await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': g.id}, {'$set': {'language': language}}, upsert=True)
+        else:
+            language = 'en'
 
         em = discord.Embed(
             title=f'Added to {g.name} ({g.id})',
