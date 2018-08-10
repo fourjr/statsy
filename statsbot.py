@@ -339,9 +339,23 @@ class StatsBot(commands.AutoShardedBot):
     async def datadog(self):
         """Push to datadog"""
         await self.wait_until_ready()
+        games = await self.mongo.player_tags.list_collection_names()
         while not self.is_closed():
-            datadog.statsd.gauge('statsy.latency', self.latency * 1000)
-            datadog.statsd.gauge('statsy.guilds', len(self.guilds))
+            metrics = [
+                ('statsy.latency', self.latency * 1000),
+                ('statsy.guilds', len(self.guilds)),
+                ('statsy.users', len(self.users)),
+                ('statsy.channels', len(self.users)),
+                ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
+                ('statsy.tags_saved', sum([await self.mongo.player_tags[i].find().count() for i in games])),
+                ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale'])
+            ]
+            for i in metrics:
+                try:
+                    tags = i[2]
+                except IndexError:
+                    tags = None
+                datadog.statsd.gague(i[0], i[1], tags)
 
             # Languages
             for i in _.translations.keys():
@@ -350,7 +364,7 @@ class StatsBot(commands.AutoShardedBot):
                 num = await self.mongo.config.guilds.find({'language': i}).count()
                 datadog.statsd.gauge('statsy.language', num, [f'language: {i}'])
 
-            await asyncio.sleep(120)
+            await asyncio.sleep(60)
 
     @commands.command()
     async def ping(self, ctx):
