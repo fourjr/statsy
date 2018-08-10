@@ -241,9 +241,7 @@ class Clash_Royale:
             await m.channel.send(text, embed=em)
 
     async def on_typing(self, channel, user, when):
-        if self.bot.is_closed():
-            return
-        if not await self.__local_check(channel=channel) or user.bot:
+        if self.bot.is_closed() or not await self.__local_check(channel=channel) or user.bot:
             return
 
         ctx = NoContext(self.bot, user)
@@ -253,12 +251,15 @@ class Clash_Royale:
             ctx.language = 'messages'
 
         try:
+            datadog.statsd.increment('statsy.magic_caching.check', 1, [f'user:{user.id}', f'guild:{ctx.guild.id}'])
             tag = await self.resolve_tag(ctx, user)
 
             try:
                 player = await self.request('get_player', tag)
             except ValueError:
                 return
+
+            datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{ctx.guild.id}'])
 
             await self.request('get_player_chests', tag)
             try:
