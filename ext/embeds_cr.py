@@ -860,3 +860,15 @@ async def format_friend_link(ctx, p, link, default):
         em.add_field(name=n, value=v, inline=i)
 
     return em
+
+
+def format_clan_stats(self, clan, war):
+    return '\n'.join(
+        (
+            f'<:clan:376373812012384267> {clan.members}/50',
+            f'<:trophy:376367869551706112> {clan.clan_score}',
+            f'<:wartrophy:448423299668770816> {war.clan.war_trophies}',
+            f'<:trophy:376367869551706112> {clan.required_trophies} required',
+            f'<:cards:376367863935664130> {clan.donations_per_week}/week'
+        )
+    )
