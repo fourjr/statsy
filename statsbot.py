@@ -229,7 +229,7 @@ class StatsBot(commands.AutoShardedBot):
                 f'command:{ctx.command.name}',
                 f'user:{ctx.author.id}',
                 f'guild:{ctx.guild.id}',
-                f'prefix:{ord(ctx.prefix)}',
+                f'prefix:{"|".join([ord(i) for i in ctx.prefix])}',
                 f'channel_type:{type(ctx.channel).__name__}'
             ])
         self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
