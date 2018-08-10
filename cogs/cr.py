@@ -635,6 +635,7 @@ class Clash_Royale:
                         await self.bot.mongo.find_one_and_delete({'guild_id': g['guild_id']})
                         break
                 await message.edit(content='', embed=embed)
+                return message
 
     async def clan_update_loop(self):
         await self.bot.wait_until_ready()
@@ -650,8 +651,7 @@ class Clash_Royale:
             if member == self.bot.user:
                 return
 
-            message = await self.bot.get_channel(payload.channel_id).get_message(payload.message_id)
-            await self.clanupdate(data)
+            message = await self.clanupdate(data)
             await message.clear_reactions()
             await message.add_reaction(':refresh:477405504512065536')
 
