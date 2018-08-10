@@ -154,7 +154,9 @@ class Clash_Royale:
                 self.cache[f'{method}{args}'] = data
             else:
                 self.cache[f'{method}{args}'] = data.raw_data
-            datadog.statsd.increment('statsy.requests', 1, ['game:clashroyale', f'code:{data.response.status}'])
+            datadog.statsd.increment('statsy.requests', 1, [
+                'game:clashroyale', f'code:{data.response.status}', f'method:{method}'
+            ])
         else:
             if not isinstance(data, list):
                 data = clashroyale.official_api.BaseAttrDict(self.cr, data, None)
