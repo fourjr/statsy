@@ -238,7 +238,7 @@ class StatsBot(commands.AutoShardedBot):
         """Utilises the CustomContext subclass of discord.Context"""
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
-        return
+
         if ctx.guild:
             ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
         else:
