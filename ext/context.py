@@ -82,8 +82,6 @@ class CustomContext(commands.Context):
         id = id or self.author.id
         data = await self.bot.mongo.player_tags[game].find_one({'user_id': str(id)})
 
-        if not data:
-            data = await self.bot.mongo.player_tags[game].find_one({'user_id': int(id)})
         if index == 'all':
             return (data or {}).get('tag', [])
 
