@@ -2,8 +2,8 @@ import copy
 import datetime
 import math
 import random
+import re
 
-from clashroyale.official_api.utils import to_snake_case
 import discord
 from discord.ext import commands
 
@@ -24,6 +24,14 @@ def has_perms(external_emojis=True):
         perms['external_emojis'] = True
 
     return commands.bot_has_permissions(**perms)
+
+
+def camel_case(text):
+    # from stackoverflow :p
+    if text is None:
+        return text
+    matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
+    return ' '.join(m.group(0) for m in matches).title()
 
 
 def emoji(ctx, name, should_format=True):
@@ -85,7 +93,7 @@ async def format_least_valuable(ctx, clan, wars):
 
     for m in reversed(to_kick):
         em.add_field(
-            name=f'{m.name} ({to_snake_case(m.role)})',
+            name=f'{m.name} ({camel_case(m.role)})',
             value=f"{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}\n"
@@ -121,7 +129,7 @@ async def format_most_valuable(ctx, clan, wars):
 
     for m in reversed(best):
         em.add_field(
-            name=f'{m.name} ({to_snake_case(m.role)})',
+            name=f'{m.name} ({camel_case(m.role)})',
             value=f"{m.tag}\n{m.trophies} "
             f"{emoji(ctx, 'crownblue')}\n{m.donations} "
             f"{emoji(ctx, 'cards')}\n"
@@ -279,7 +287,7 @@ async def format_battles(ctx, battles):
         except IndexError:
             value = f'**[{b.team[0].name}]({crapi}{b.team[0].tag}) {emoji(ctx, "battle")} [{b.opponent[0].name}]({crapi}{b.opponent[0].tag})**'
 
-        em.add_field(name=f'{to_snake_case(b.type)} {emoji(ctx, winner)} {score}', value=value, inline=False)
+        em.add_field(name=f'{camel_case(b.type)} {emoji(ctx, winner)} {score}', value=value, inline=False)
 
         i += 1
         if i > 5:
@@ -315,7 +323,7 @@ async def format_members(ctx, c, ws):
             em.set_author(name=f"{c.name} ({c.tag})")
             em.set_thumbnail(url=ctx.bot.cr.get_clan_image(c))
         em.add_field(
-            name=f'{m.name} ({to_snake_case(m.role)})',
+            name=f'{m.name} ({camel_case(m.role)})',
             value=f"{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}\n"
@@ -480,7 +488,7 @@ async def format_profile(ctx, p, c):
     try:
         clan_name = p.clan.name
         clan_tag = p.clan.tag
-        clan_role = to_snake_case(p.role)
+        clan_role = camel_case(p.role)
     except AttributeError:
         clan_name = clan_tag = clan_role = None
 
@@ -539,7 +547,7 @@ async def format_stats(ctx, p):
     try:
         clan_name = p.clan.name
         clan_tag = p.clan.tag
-        clan_role = to_snake_case(p.role)
+        clan_role = camel_case(p.role)
     except AttributeError:
         clan_name = clan_tag = clan_role = None
 
@@ -601,7 +609,7 @@ async def format_clan(ctx, c):
         )
 
     fields1 = [
-        (_('Type', ctx), to_snake_case(c.type) + ' 📩'),
+        (_('Type', ctx), camel_case(c.type) + ' 📩'),
         (_('Score', ctx), str(c.clan_score) + _(' Trophies ', ctx) + str(emoji(ctx, 'trophy'))),
         (_('Donations/Week', ctx), str(c.donations_per_week) + _(' Cards ', ctx) + str(emoji(ctx, 'cards'))),
         (_('Location', ctx), c.location.name + ' 🌎'),
@@ -632,7 +640,7 @@ async def format_clan_war(ctx, w):
         page1.description = ctx.bot.psa_message
 
     if w.state == 'notInWar':
-        page1.add_field(name=_('Day', ctx), value=f'{to_snake_case(w.state)} {emoji(ctx, "clanwar")}')
+        page1.add_field(name=_('Day', ctx), value=f'{camel_case(w.state)} {emoji(ctx, "clanwar")}')
         return [page1]
 
     page1.set_author(name=f"{w.clan.name} ({w.clan.tag})", icon_url=ctx.bot.cr.get_clan_image(w))
@@ -641,7 +649,7 @@ async def format_clan_war(ctx, w):
     return_vals = [page1, page2]
 
     fields1 = [
-        (_('Day', ctx), f'{to_snake_case(w.state)} {emoji(ctx, "clanwar")}'),
+        (_('Day', ctx), f'{camel_case(w.state)} {emoji(ctx, "clanwar")}'),
         (_('War Trophies', ctx), f"{w.clan.clan_score} Trophies {emoji(ctx, 'wartrophy')}"),
         (_('Participants', ctx), f"{w.clan.participants} {emoji(ctx, 'clan')}"),
         (_('Battles Played', ctx), f"{w.clan.battles_played} {emoji(ctx, 'battle')}"),
@@ -776,8 +784,8 @@ async def format_tournament(ctx, t):
         timeleft += f' {seconds}s'
 
     fields1 = [
-        (_('Type', ctx), to_snake_case(t.type) + ' 📩'),
-        (_('Status', ctx), to_snake_case(t.status)),
+        (_('Type', ctx), camel_case(t.type) + ' 📩'),
+        (_('Status', ctx), camel_case(t.status)),
         (_('Members', ctx), f"{len(t.members_list)}/{t.max_capacity} {emoji(ctx, 'clan')}"),
         (_('Time since creation', ctx), timeleft)
     ]
