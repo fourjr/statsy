@@ -125,7 +125,7 @@ class Clash_Royale:
     async def __local_check(self, ctx=None, channel=None):
         guild = getattr(ctx or channel, 'guild', None)
         if guild:
-            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': guild.id}) or {}
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(guild.id)}) or {}
             return guild_info.get('games', {}).get(self.__class__.__name__, True)
         else:
             return True
@@ -202,7 +202,7 @@ class Clash_Royale:
         if not ('http://link.clashroyale.com' in m.content or 'https://link.clashroyale.com' in m.content):
             return
 
-        guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': m.guild.id}) or {}
+        guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(m.guild.id)}) or {}
         friend_config = guild_config.get('friend_link')
 
         default = False
@@ -213,7 +213,7 @@ class Clash_Royale:
         if friend_config:
             ctx = await self.bot.get_context(m)
             if ctx.guild:
-                ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+                ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:
                 ctx.language = 'messages'
 
@@ -248,7 +248,7 @@ class Clash_Royale:
 
         ctx = NoContext(self.bot, user)
         if ctx.guild:
-            ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+            ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
         else:
             ctx.language = 'messages'
 
@@ -277,7 +277,7 @@ class Clash_Royale:
         """Check your guild's friend link status"""
         if not ctx.guild:
             return await ctx.send(_('Friend link is always disabled in DMs.'), ctx)
-        guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}
+        guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
         friend_config = guild_config.get('friend_link')
 
         default = False
@@ -297,7 +297,7 @@ class Clash_Royale:
         if not ctx.guild:
             return await ctx.send(_("Configuring friend link status isn't allowed in DMs", ctx))
         await self.bot.mongo.config.guilds.find_one_and_update(
-            {'guild_id': ctx.guild.id}, {'$set': {'friend_link': True}}, upsert=True
+            {'guild_id': str(ctx.guild.id)}, {'$set': {'friend_link': True}}, upsert=True
         )
         await ctx.send(_('Successfully set friend link to be enabled.', ctx))
 
@@ -308,7 +308,7 @@ class Clash_Royale:
         if not ctx.guild:
             return await ctx.send(_("Configuring friend link status isn't allowed in DMs", ctx))
         await self.bot.mongo.config.guilds.find_one_and_update(
-            {'guild_id': ctx.guild.id}, {'$set': {'friend_link': False}}, upsert=True
+            {'guild_id': str(ctx.guild.id)}, {'$set': {'friend_link': False}}, upsert=True
         )
         await ctx.send(_('Successfully set friend link to be disabled.', ctx))
 
@@ -626,8 +626,8 @@ class Clash_Royale:
 
                 embed.add_field(name='More Info', value=f"<:clan:376373812012384267> {total_members}/{50*len(clans)}", inline=False)
                 try:
-                    channel = self.bot.get_channel(m['channel'].to_decimal())
-                    message = await channel.get_message(m['message'].to_decimal())
+                    channel = self.bot.get_channel(int(m['channel']))
+                    message = await channel.get_message(int(m['message']))
                 except AttributeError:
                     message = None
 
@@ -635,7 +635,7 @@ class Clash_Royale:
                     try:
                         message = await self.bot.get_channel(m['channel']).send('Clan Stats')
                     except AttributeError:
-                        await self.bot.mongo.find_one_and_delete({'guild_id': g['guild_id']})
+                        await self.bot.mongo.find_one_and_delete({'guild_id': str(g['guild_id'])})
                         break
                 await message.edit(content='', embed=embed)
                 return message
@@ -647,7 +647,7 @@ class Clash_Royale:
             await asyncio.sleep(14400)
 
     async def on_raw_reaction_add(self, payload):
-        data = await self.bot.mongo.config.guilds.find_one({'guild_id': payload.guild_id, 'claninfo.message': payload.message_id})
+        data = await self.bot.mongo.config.guilds.find_one({'guild_id': str(payload.guild_id), 'claninfo.message': str(payload.message_id)})
         if data:
             member = self.bot.get_guild(payload.guild_id).get_member(payload.user_id)
 

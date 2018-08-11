@@ -169,7 +169,7 @@ class StatsBot(commands.AutoShardedBot):
 
         id = getattr(message.guild, 'id', None)
 
-        cfg = await self.mongo.config.guilds.find_one({'guild_id': id}) or {}
+        cfg = await self.mongo.config.guilds.find_one({'guild_id': str(id)}) or {}
 
         prefixes = [
             f'<@{self.user.id}> ',
@@ -229,7 +229,7 @@ class StatsBot(commands.AutoShardedBot):
                 f'command:{ctx.command.name}',
                 f'user:{ctx.author.id}',
                 f'guild:{ctx.guild.id}',
-                f'prefix:{"|".join([ord(i) for i in ctx.prefix])}',
+                f'prefix:{"|".join([str(ord(i)) for i in ctx.prefix])}',
                 f'channel_type:{type(ctx.channel).__name__}'
             ])
         self.command_logger.info(f'{ctx.message.content} - {ctx.author}')
@@ -240,7 +240,7 @@ class StatsBot(commands.AutoShardedBot):
         ctx = await self.get_context(message, cls=CustomContext)
 
         if ctx.guild:
-            ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': ctx.guild.id}) or {}).get('language', 'messages')
+            ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
         else:
             ctx.language = 'messages'
 

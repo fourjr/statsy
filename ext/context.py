@@ -65,7 +65,7 @@ class CustomContext(commands.Context):
 
         await self.bot.mongo.player_tags[game].find_one_and_update(
             {
-                'user_id': id
+                'user_id': str(id)
             },
             {
                 '$set': {f'tag.{index}': tag}
@@ -80,8 +80,10 @@ class CustomContext(commands.Context):
 
     async def get_tag(self, game, id=None, *, index='0'):
         id = id or self.author.id
-        data = await self.bot.mongo.player_tags[game].find_one({'user_id': id})
+        data = await self.bot.mongo.player_tags[game].find_one({'user_id': str(id)})
 
+        if not data:
+            data = await self.bot.mongo.player_tags[game].find_one({'user_id': int(id)})
         if index == 'all':
             return (data or {}).get('tag', [])
 

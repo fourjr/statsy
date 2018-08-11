@@ -91,11 +91,11 @@ class Bot_Related:
             return await ctx.send("Changing prefix isn't allowed in DMs")
         if prefix == '!':
             await self.bot.mongo.config.guilds.find_one_and_delete(
-                {'guild_id': ctx.guild.id}
+                {'guild_id': str(ctx.guild.id)}
             )
         else:
             await self.bot.mongo.config.guilds.find_one_and_update(
-                {'guild_id': ctx.guild.id}, {'$set': {'prefix': prefix}}, upsert=True
+                {'guild_id': str(ctx.guild.id)}, {'$set': {'prefix': str(prefix)}}, upsert=True
             )
         await ctx.send(_('Changed the prefix to: `{}`', ctx).format(prefix))
 
@@ -470,7 +470,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Available languages: {}', ctx).format(', '.join([i.title() for i in languages.keys()])))
         else:
             await self.bot.mongo.config.guilds.find_one_and_update(
-                {'guild_id': ctx.guild.id}, {'$set': {'language': languages[language.lower()]}}, upsert=True
+                {'guild_id': str(ctx.guild.id)}, {'$set': {'language': languages[language.lower()]}}, upsert=True
             )
             await ctx.send(_('Language set.', ctx))
 
@@ -494,7 +494,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {f'games.{cog_name}': True}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': True}}, upsert=True)
             await ctx.send('Successfully enabled {}'.format(cog_name))
 
     @commands.command()
@@ -517,7 +517,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': ctx.guild.id}, {'$set': {f'games.{cog_name}': False}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': False}}, upsert=True)
             await ctx.send('Successfully disabled {}'.format(cog_name))
 
     @commands.command(name='reload', hidden=True)
@@ -559,7 +559,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
                     break
 
             if language in _.translations.keys():
-                await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': g.id}, {'$set': {'language': language}}, upsert=True)
+                await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(g.id)}, {'$set': {'language': language}}, upsert=True)
         else:
             language = 'en'
 
