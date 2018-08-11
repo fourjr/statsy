@@ -25,6 +25,7 @@ SOFTWARE.
 import asyncio
 import datetime
 import inspect
+import json
 import logging
 import os
 import platform
@@ -36,6 +37,7 @@ import aiohttp
 import clashroyale
 import datadog
 import discord
+import requests
 import psutil
 from discord.ext import commands
 from dotenv import find_dotenv, load_dotenv
@@ -74,11 +76,13 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
+        self.constants = json.loads(requests.get('https://fourjr-webserver.herokuapp.com/cr/constants').text)
         self.cr = clashroyale.OfficialAPI(
             os.getenv('clashroyale'),
             session=self.session,
             is_async=True,
-            timeout=20
+            timeout=20,
+            constants=self.constants
         )
         self.royaleapi = clashroyale.RoyaleAPI(
             os.getenv('royaleapi'),
@@ -187,9 +191,6 @@ class StatsBot(commands.AutoShardedBot):
         print('----------------------------')
         print('Statsy connected!')
         print('----------------------------')
-
-        async with self.session.get('https://fourjr-webserver.herokuapp.com/cr/constants') as resp:
-            self.constants = clashroyale.royaleapi.models.Constants(self.cr, await resp.json(), None)
         datadog.statsd.increment('statsy.connect')
 
     async def on_ready(self):
