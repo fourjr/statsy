@@ -556,7 +556,7 @@ class Clash_Royale:
         card = card.lower()
         if card in aliases:
             card = aliases[card]
-        constants = self.bot.constants
+        constants = self.bot.cr.constants
 
         found_card = None
         for c in constants.cards:

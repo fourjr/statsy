@@ -169,7 +169,7 @@ async def format_chests(ctx, p, c):
 
 
 async def format_cards(ctx, p):
-    constants = ctx.bot.constants
+    constants = ctx.bot.cr.constants
 
     name = p.name
     tag = p.tag
@@ -357,7 +357,7 @@ async def format_top_clans(ctx, clans, region):
             em.set_author(name=_('Top Clans', ctx), icon_url=badge_image)
 
         badge_name = c.badge_id
-        for i in ctx.bot.constants.alliance_badges:
+        for i in ctx.bot.cr.constants.alliance_badges:
             if i.id == c.badge_id:
                 badge_name = i.name
                 break
@@ -440,7 +440,7 @@ async def format_deck(ctx, p):
 
 
 async def format_card(ctx, c):
-    arenas = {i.arena: i.title for i in ctx.bot.constants.arenas}
+    arenas = {i.arena: i.title for i in ctx.bot.cr.constants.arenas}
 
     em = discord.Embed(description=c.description, color=random_color())
     em.set_thumbnail(url='attachment://ingame.png')
