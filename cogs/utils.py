@@ -184,7 +184,7 @@ class Bot_Related:
             return
 
         for cmd in self.bot.commands:
-            if cmd.hidden:
+            if cmd.hidden or not cmd.enabled:
                 continue
             if cmd.instance is cog:
                 sigs.append(len(cmd.qualified_name) + len(prefix))
@@ -201,7 +201,7 @@ class Bot_Related:
         index = 0
         for cmd in self.bot.commands:
             if cmd.instance is cog:
-                if cmd.hidden:
+                if cmd.hidden or not cmd.enabled:
                     continue
                 if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
                     index += 1
@@ -238,7 +238,7 @@ class Bot_Related:
         if cog is not None:
             return await self.format_cog_help(ctx, name, cog, prefix)
         cmd = self.bot.get_command(command)
-        if cmd is not None and not cmd.hidden:
+        if cmd is not None and not cmd.hidden and cmd.enabled:
             return discord.Embed(
                 color=embeds.random_color(),
                 title=f'`{prefix}{cmd.signature}`',
@@ -484,6 +484,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             'coc': 'Clash_of_Clans',
             'cr': 'Clash_Royale',
             'ow': 'Overwatch',
+            'bs': 'Brawl_Stars',
             'fn': 'Fortnite'
         }
         if cog_name in shortcuts:
@@ -507,6 +508,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             'coc': 'Clash_of_Clans',
             'cr': 'Clash_Royale',
             'ow': 'Overwatch',
+            'bs': 'Brawl_Stars',
             'fn': 'Fortnite'
         }
         if cog_name in shortcuts:

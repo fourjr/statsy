@@ -1,9 +1,12 @@
+import json
+import time
+
 import abrawlpy
 import discord
 from discord.ext import commands
 
 import box
-from ext import embeds_cr  as embeds
+from ext import embeds_cr as embeds
 from ext import embeds_bs
 from ext.paginator import PaginatorSession
 from statsbot import InvalidTag, NoTag
@@ -92,7 +95,7 @@ class Brawl_Stars:
         else:
             return tag_or_user
 
-    @commands.command()
+    @commands.command(enabled=False)
     async def bssave(self, ctx, *, tag):
         '''Saves a Brawl Stars tag to your discord profile.
 
@@ -107,7 +110,7 @@ class Brawl_Stars:
 
         await ctx.send('Successfully saved tag.')
 
-    @commands.command()
+    @commands.command(enabled=False)
     @embeds.has_perms(False)
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
         '''Get general Brawl Stars player information.'''
@@ -125,7 +128,7 @@ class Brawl_Stars:
                 em = await embeds_bs.format_profile(ctx, profile)
                 await ctx.send(embed=em)
 
-    @commands.command()
+    @commands.command(enabled=False)
     @embeds.has_perms()
     async def bsband(self, ctx, tag_or_user: TagCheck=None):
         '''Get Brawl Stars band information.'''
@@ -147,7 +150,7 @@ class Brawl_Stars:
         )
         await session.run()
 
-    @commands.command(enabled=False, hidden=True)
+    @commands.command(enabled=False)
     @embeds.has_perms()
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''
@@ -155,6 +158,21 @@ class Brawl_Stars:
             async with ctx.session.get(self.url + 'events') as resp:
                 events = await resp.json()
             ems = await embeds_bs.format_events(ctx, events)
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems
+        )
+        await session.run()
+
+    @commands.command(aliases=['bsrobo'])
+    @embeds.has_perms()
+    async def bsroborumble(self, ctx):
+        """Shows the robo rumble leaderboard"""
+        async with ctx.channel.typing():
+            async with ctx.session.get(f'https://leaderboard.brawlstars.com/rumbleboard.jsonp?_={int(time.time())}') as resp:
+                leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
+            ems = embeds_bs.format_robo(ctx, leaderboard)
 
         session = PaginatorSession(
             ctx=ctx,

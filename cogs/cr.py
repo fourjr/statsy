@@ -432,7 +432,7 @@ class Clash_Royale:
         async with ctx.typing():
             region = name = 'global'
             if region:
-                for i in self.bot.constants.regions:
+                for i in self.bot.cr.constants.regions:
                     if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
                         region = i.key
                         name = i.name

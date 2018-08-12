@@ -1,12 +1,15 @@
 import copy
-import datetime
+from datetime import datetime
 import math
 import random
 from time import time
 
+import box
 import discord
 
-import box
+from locales.i18n import Translator
+
+_ = Translator('BS Embeds', __file__)
 
 
 def random_color():
@@ -175,7 +178,7 @@ async def format_events(ctx, events):
     coin_emoji = str(emoji(ctx, 'icon_coin'))
 
     for event in ongoing:
-        date = (datetime.datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.datetime.utcnow()
+        date = (datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.utcnow()
         seconds = math.floor(date.total_seconds())
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
@@ -206,7 +209,7 @@ async def format_events(ctx, events):
         )
 
     for event in upcoming:
-        date = (datetime.datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.datetime.utcnow()
+        date = (datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.utcnow()
         seconds = math.floor(date.total_seconds())
         timeleft = format_timestamp(seconds)
 
@@ -226,3 +229,40 @@ async def format_events(ctx, events):
     em1.set_footer(text='Powered by brawlstars-api')
     em2.set_footer(text='Powered by brawlstars-api')
     return [em1, em2]
+
+
+def format_robo(ctx, leaderboard):
+    delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %I:%M:%S')
+    hours, remainder = divmod(int(delta.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    days, hours = divmod(hours, 24)
+
+    fmt = '{s}s'
+    if minutes:
+        fmt = '{m}m ' + fmt
+    if hours:
+        fmt = '{h}h ' + fmt
+    if days:
+        fmt = '{d}d ' + fmt
+    fmt = fmt.format(d=days, h=hours, m=minutes, s=seconds)
+
+    embeds = []
+
+    for rnd in range(math.ceil(len(leaderboard['bestTeams']) / 5)):
+        em = discord.Embed(
+            title='Top Teams in Robo Rumble',
+            description=_('Top {} teams!\nLast updated: {} ago', ctx).format(len(leaderboard['bestTeams']), fmt),
+            color=random_color()
+        )
+        em.set_footer(text='Statsy')
+
+        for i in range(rnd, 5 + rnd):
+            minutes, seconds = divmod(leaderboard['bestTeams'][i]['duration'], 60)
+            rankings = ''
+            for num in range(1, 4):
+                rankings += str(emoji(ctx, leaderboard['bestTeams'][i][f'brawler{num}'])) + ' ' + leaderboard['bestTeams'][i][f'player{num}'] + '\n'
+            em.add_field(name=f'{minutes}m {seconds}s', value=rankings)
+
+        embeds.append(em)
+
+    return embeds

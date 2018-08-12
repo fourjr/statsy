@@ -152,7 +152,7 @@ class StatsBot(commands.AutoShardedBot):
 
     def load_extensions(self, cogs=None, path='cogs.'):
         """Loads the default set of extensions or a seperate one if given"""
-        base_extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py') and x != 'brawlstars.py']
+        base_extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         for extension in cogs or base_extensions:
             try:
                 self.load_extension(f'{path}{extension}')
