@@ -232,7 +232,7 @@ async def format_events(ctx, events):
 
 
 def format_robo(ctx, leaderboard):
-    delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %I:%M:%S')
+    delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %H:%M:%S')
     hours, remainder = divmod(int(delta.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
     days, hours = divmod(hours, 24)

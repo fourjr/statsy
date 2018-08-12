@@ -258,6 +258,7 @@ class StatsBot(commands.AutoShardedBot):
             NoTag,
             discord.Forbidden,
             commands.CheckFailure,
+            commands.DisabledCommand,
             clashroyale.RequestError
         )
 
