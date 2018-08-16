@@ -245,7 +245,7 @@ class StatsBot(commands.AutoShardedBot):
         else:
             ctx.language = 'messages'
 
-        if ctx.command:
+        if ctx.command and ctx.author.id != 317125210123796482:
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')
