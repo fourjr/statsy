@@ -243,7 +243,7 @@ class StatsBot(commands.AutoShardedBot):
         blacklist = [
             str(ctx.author.id) in self.blacklist['users'],
             str(ctx.channel.id) in self.blacklist['channels'],
-            str(ctx.guild.id) in self.blacklist['guilds']
+            str(getattr(ctx.guild, 'id', None)) in self.blacklist['guilds']
         ]
         if any(blacklist):
             return
@@ -275,10 +275,12 @@ class StatsBot(commands.AutoShardedBot):
                 await ctx.send(error)
             except discord.Forbidden:
                 pass
-        if isinstance(error, (InvalidTag, InvalidPlatform)):
-            await ctx.send(error.message)
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.send('This command can only be used in servers.')
         elif isinstance(error, ignored):
             pass
+        elif isinstance(error, (InvalidTag, InvalidPlatform)):
+            await ctx.send(error.message)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(error)
         elif isinstance(error, commands.BadArgument) and ctx.command.name.endswith('save'):
@@ -297,7 +299,7 @@ class StatsBot(commands.AutoShardedBot):
             )
         else:
             if not description:
-                await ctx.send('Something went wrong and we are investigating the issue now :(')
+                await ctx.send(_('Something went wrong and we are investigating the issue now.', ctx))
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
             error_message = f"```py\n{error_message}\n```"

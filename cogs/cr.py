@@ -329,8 +329,9 @@ class Clash_Royale:
         else:
             ctx.language = 'messages'
 
+        guild_id = getattr(ctx.guild, 'id', 'DM')
         try:
-            datadog.statsd.increment('statsy.magic_caching.check', 1, [f'user:{user.id}', f'guild:{ctx.guild.id}'])
+            datadog.statsd.increment('statsy.magic_caching.check', 1, [f'user:{user.id}', f'guild:{guild_id}'])
             tag = await self.resolve_tag(ctx, user)
 
             try:
@@ -338,7 +339,7 @@ class Clash_Royale:
             except ValueError:
                 return
 
-            datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{ctx.guild.id}'])
+            datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{guild_id}'])
 
             await self.request('get_player_chests', tag)
             try:
