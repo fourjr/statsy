@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0.0\n"
-"POT-Creation-Date: 2018-08-18 16:52+Malay Peninsula Standard Time\n"
+"POT-Creation-Date: 2018-08-18 17:50+Malay Peninsula Standard Time\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
@@ -67,87 +67,83 @@ msgstr ""
 msgid "You don't have a saved tag. Save one using `{}save <tag>`!"
 msgstr ""
 
-#: ../cogs/cr.py:192 ../cogs/fortnite.py:67
+#: ../cogs/cr.py:193 ../cogs/fortnite.py:67
 msgid "That person doesnt have a saved tag!"
 msgstr ""
 
-#: ../cogs/cr.py:217
+#: ../cogs/cr.py:218
 msgid "{}, new tournament found!"
 msgstr ""
 
-#: ../cogs/cr.py:219
+#: ../cogs/cr.py:220
 msgid "New tournament found!"
 msgstr ""
 
-#: ../cogs/cr.py:356
-msgid "Link beautifier is always disabled in DMs."
-msgstr ""
-
-#: ../cogs/cr.py:365
+#: ../cogs/cr.py:369
 msgid "Current status: {}"
 msgstr ""
 
-#: ../cogs/cr.py:367
+#: ../cogs/cr.py:371
 msgid " (default)"
 msgstr ""
 
-#: ../cogs/cr.py:375 ../cogs/cr.py:386
-msgid "Configuring link beautifier status isn't allowed in DMs"
-msgstr ""
-
-#: ../cogs/cr.py:379
+#: ../cogs/cr.py:382
 msgid "Successfully set link beautifier to be enabled."
 msgstr ""
 
-#: ../cogs/cr.py:390
+#: ../cogs/cr.py:392
 msgid "Successfully set link beautifier to be disabled."
 msgstr ""
 
-#: ../cogs/cr.py:402
+#: ../cogs/cr.py:406
 msgid "What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space."
 msgstr ""
 
-#: ../cogs/cr.py:407
+#: ../cogs/cr.py:411
 msgid "Invalid type(s)."
 msgstr ""
 
-#: ../cogs/cr.py:409
+#: ../cogs/cr.py:413
 msgid "Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`."
 msgstr ""
 
-#: ../cogs/cr.py:419
+#: ../cogs/cr.py:423
 msgid "Invalid role."
 msgstr ""
 
-#: ../cogs/cr.py:421
-msgid "Which channel do you want the alers to be sent to?"
+#: ../cogs/cr.py:425
+msgid "Which channel do you want the alerts to be sent to?"
 msgstr ""
 
-#: ../cogs/cr.py:426
+#: ../cogs/cr.py:430
 msgid "Invalid channel."
 msgstr ""
 
-#: ../cogs/cr.py:441
+#: ../cogs/cr.py:444
 msgid "Log set!"
 msgstr ""
 
-#: ../cogs/cr.py:464
+#: ../cogs/cr.py:467
 msgid "{} is an invalid tag. Please use the clan tags seperated by spaces."
 msgstr ""
 
-#: ../cogs/cr.py:490
+#: ../cogs/cr.py:497
 msgid "Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}"
 msgstr ""
 
-#: ../cogs/cr.py:694
+#: ../cogs/cr.py:508
+msgid "Configuration complete."
+msgstr ""
+
+#: ../cogs/cr.py:704
 msgid "Invalid cr-tag passed"
 msgstr ""
 
-#: ../cogs/cr.py:699
+#: ../cogs/cr.py:709
 msgid "Check your stats with `{}profile`!"
 msgstr ""
 
-#: ../cogs/cr.py:701
+#: ../cogs/cr.py:711
 msgid "Check your stats with `{}profile -{index}`!"
 msgstr ""
 
@@ -878,7 +874,11 @@ msgstr ""
 msgid "Extra Stats"
 msgstr ""
 
-#: ../statsbot.py:394
+#: ../statsbot.py:302
+msgid "Something went wrong and we are investigating the issue now."
+msgstr ""
+
+#: ../statsbot.py:396
 msgid "Pong! Websocket Latency:"
 msgstr ""
 

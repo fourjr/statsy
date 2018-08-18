@@ -406,12 +406,12 @@ class Clash_Royale:
             await ctx.send(_('What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space.', ctx).format(
                 ', '.join(allowed_types)
             ))
-            types = (await self.bot.wait_for('message', check=predicate, timeout=5)).content.split(' ')
+            types = (await self.bot.wait_for('message', check=predicate, timeout=60)).content.split(' ')
             if not all([i in allowed_types for i in types]):
                 return await ctx.send(_('Invalid type(s).', ctx))
 
             await ctx.send(_('Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`.', ctx))
-            role = (await self.bot.wait_for('message', check=predicate, timeout=5)).content
+            role = (await self.bot.wait_for('message', check=predicate, timeout=60)).content
             try:
                 role = str((await commands.RoleConverter().convert(ctx, role)).id)
             except commands.BadArgument:
@@ -422,26 +422,25 @@ class Clash_Royale:
                 else:
                     return await ctx.send(_('Invalid role.', ctx))
 
-            await ctx.send(_('Which channel do you want the alers to be sent to?', ctx))
-            channel = (await self.bot.wait_for('message', check=predicate, timeout=5)).content
+            await ctx.send(_('Which channel do you want the alerts to be sent to?', ctx))
+            channel = (await self.bot.wait_for('message', check=predicate, timeout=60)).content
             try:
                 channel = (await commands.TextChannelConverter().convert(ctx, channel)).id
             except commands.BadArgument:
                 return await ctx.send(_('Invalid channel.', ctx))
 
         except asyncio.TimeoutError:
-            await ctx.send('Command timeout. Do the command again to restart the process.')
+            return await ctx.send('Command timeout. Do the command again to restart the process.')
 
-        data = await self.bot.mongo.config.guilds.find_one_and_update(
+        await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': str(ctx.guild.id)}, {'$set': {
                 'tournament': {
                     'channel_id': str(channel),
                     'mention': role,
                     'types': types
                 }
-            }}, upsert=True, return_document=ReturnDocument.AFTER
+            }}, upsert=True
         )
-        await self.clanupdate(data)
         await ctx.send(_('Log set!', ctx))
 
     @utils.statsy_guild()
@@ -450,58 +449,63 @@ class Clash_Royale:
     async def setclanstats(self, ctx, channel: discord.TextChannel, *clans):
         """Sets a clan log channel"""
         tag = await self.resolve_tag(ctx, ctx.author)
+
         async with ctx.typing():
             profile = await self.request('get_player', tag)
 
-        if not profile.clan or (profile.clan and profile.clan.tag not in clans):
-            return await ctx.send('You must be at least one of those clans to set a claninfo page')
+            if not 2 <= len(clans) <= 25:
+                return await ctx.send('There must be a minimum of 2 and maximum of 25 clans to use this feature.')
 
-        if 2 <= len(clans) <= 25:
-            await ctx.send('There can only be a minimum of 2 and maximum of 25 clans.')
+            cleaned_tags = []
 
-        cleaned_tags = []
+            for tag in clans:
+                tag = tag.strip('#').upper()
+                if tag in shortcuts:
+                    tag = shortcuts[tag]
+                tag = tag.replace('O', '0')
+                if any(i not in 'PYLQGRJCUV0289' for i in tag):
+                    return await ctx.send(_('{} is an invalid tag. Please use the clan tags seperated by spaces.', ctx).format(tag))
+                else:
+                    cleaned_tags.append(tag)
 
-        for tag in clans:
-            tag = tag.strip('#').upper()
-            if tag in shortcuts:
-                tag = shortcuts[tag]
-            tag = tag.replace('O', '0')
-            if any(i not in self.check for i in tag):
-                return await ctx.send(_('{} is an invalid tag. Please use the clan tags seperated by spaces.', ctx).format(tag))
-            else:
-                cleaned_tags.append(tag)
+            if not profile.clan or (profile.clan and profile.clan.tag.replace('#', '') not in cleaned_tags):
+                return await ctx.send('You must be at least one of those clans to set a claninfo page')
 
-        try:
-            # Update existing config
-            config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)})
-            message_id = config.get('claninfo', {}).get('message')
-            if message_id:
-                message = await channel.get_message(message_id)
-                if not message:
-                    # Delete old message in another channel
-                    try:
-                        await (await self.bot.get_channel(config['claninfo']).get_message(message)).delete()
-                    except AttributeError:
-                        pass
-
-            # Send a new message
-            if not message:
-                message = await channel.send('Clan Info')
-                await message.add_reaction(':refresh:477405504512065536')
-        except (discord.Forbidden, discord.HTTPException):
             try:
-                await message.delete()
-            except NameError:
-                pass
-            return await ctx.send(_('Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}', ctx).format(channel.name))
+                # Update existing config
+                config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)})
+                message = None
+                message_id = config.get('claninfo', {}).get('message')
+                if message_id:
+                    message = await channel.get_message(message_id)
+                    if not message:
+                        # Delete old message in another channel
+                        try:
+                            await (await self.bot.get_channel(config['claninfo']).get_message(message)).delete()
+                        except AttributeError:
+                            pass
 
-        await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {
-            'claninfo': {
-                'channel': str(channel.id),
-                'message': str(message.id),
-                'clans': clans
-            }
-        }})
+                # Send a new message
+                if not message:
+                    message = await channel.send('Clan Info')
+                    await message.add_reaction(':refresh:477405504512065536')
+            except (discord.Forbidden, discord.HTTPException):
+                try:
+                    await message.delete()
+                except NameError:
+                    pass
+                return await ctx.send(_('Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}', ctx).format(channel.name))
+
+            data = await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {
+                'claninfo': {
+                    'channel': str(channel.id),
+                    'message': str(message.id),
+                    'clans': clans
+                }
+            }}, upsert=True, return_document=ReturnDocument.AFTER)
+
+            await self.clanupdate(data)
+            await ctx.send(_('Configuration complete.', ctx))
 
     @commands.command(aliases=['player'])
     @utils.has_perms()
@@ -807,37 +811,37 @@ class Clash_Royale:
             guilds = [clan]
 
         for g in guilds:
-            for m in g['claninfo']:
-                clans, wars = await self.get_clans(*m['clans'])
+            m = g['claninfo']
+            clans, wars = await self.get_clans(*m['clans'])
 
-                embed = discord.Embed(title="Clan Statistics!", color=0xf1c40f, timestamp=datetime.utcnow())
-                total_members = 0
+            embed = discord.Embed(title="Clan Statistics!", color=0xf1c40f, timestamp=datetime.utcnow())
+            total_members = 0
 
-                for i in range(len(clans)):
-                    embed.add_field(name=clans[i].name, value=embeds_cr.format_clan_stats(clans[i], wars[i]))
-                    total_members += len(clans[i].member_list)
+            for i in range(len(clans)):
+                embed.add_field(name=clans[i].name, value=embeds_cr.format_clan_stats(clans[i], wars[i]))
+                total_members += len(clans[i].member_list)
 
-                embed.add_field(name='More Info', value=f"<:clan:376373812012384267> {total_members}/{50*len(clans)}", inline=False)
+            embed.add_field(name='More Info', value=f"<:clan:376373812012384267> {total_members}/{50*len(clans)}", inline=False)
+            try:
+                channel = self.bot.get_channel(int(m['channel']))
+                message = await channel.get_message(int(m['message']))
+            except AttributeError:
+                message = None
+
+            if not message:
                 try:
-                    channel = self.bot.get_channel(int(m['channel']))
-                    message = await channel.get_message(int(m['message']))
+                    message = await self.bot.get_channel(m['channel']).send('Clan Stats')
                 except AttributeError:
-                    message = None
-
-                if not message:
-                    try:
-                        message = await self.bot.get_channel(m['channel']).send('Clan Stats')
-                    except AttributeError:
-                        await self.bot.mongo.find_one_and_delete({'guild_id': str(g['guild_id'])})
-                        break
-                await message.edit(content='', embed=embed)
-                return message
+                    await self.bot.mongo.find_one_and_delete({'guild_id': str(g['guild_id'])})
+                    break
+            await message.edit(content='', embed=embed)
+            return message
 
     async def clan_update_loop(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             await self.clanupdate()
-            await asyncio.sleep(14400)
+            await asyncio.sleep(600)
 
     async def on_raw_reaction_add(self, payload):
         data = await self.bot.mongo.config.guilds.find_one({'guild_id': str(payload.guild_id), 'claninfo.message': str(payload.message_id)})
