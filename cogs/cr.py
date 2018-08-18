@@ -185,7 +185,8 @@ class Clash_Royale:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!", ctx))
                 return tag
-        if isinstance(tag_or_user, discord.Member):
+
+        if isinstance(tag_or_user, discord.abc.User):
             try:
                 tag = await ctx.get_tag('clashroyale', tag_or_user.id, index=str(index))
             except KeyError:
