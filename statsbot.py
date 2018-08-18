@@ -229,7 +229,7 @@ class StatsBot(commands.AutoShardedBot):
             datadog.statsd.increment('statsy.commands', 1, [
                 f'command:{ctx.command.name}',
                 f'user:{ctx.author.id}',
-                f'guild:{ctx.guild.id}',
+                f'guild:{getattr(ctx.guild, "id", "DM")}',
                 f'prefix:{"|".join([str(ord(i)) for i in ctx.prefix])}',
                 f'channel_type:{type(ctx.channel).__name__}'
             ])
