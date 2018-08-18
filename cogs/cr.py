@@ -224,10 +224,12 @@ class Clash_Royale:
             )
 
     async def on_message(self, m):
-        # if self.bot.dev_mode or not m.guild or not self.bot.is_ready():
-        #     return
+        await self.bot.wait_until_ready()
+        if self.bot.dev_mode or not m.guild:
+            return
 
         if m.channel.id == 480017443314597899 and m.author.bot:
+            await self.bot.wait_until_ready()
             ctx = await self.bot.get_context(m, cls=CustomContext)
             if ctx.guild:
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
@@ -253,6 +255,7 @@ class Clash_Royale:
             return
 
         # LINK
+        await self.bot.wait_until_ready()
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(m.guild.id)}) or {}
         friend_config = guild_config.get('friend_link')
 
