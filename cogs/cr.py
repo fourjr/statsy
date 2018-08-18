@@ -230,7 +230,7 @@ class Clash_Royale:
 
         if m.channel.id == 480017443314597899 and m.author.bot:
             await self.bot.wait_until_ready()
-            ctx = await self.bot.get_context(m, cls=CustomContext)
+            ctx = await self.bot.get_context(m)
             if ctx.guild:
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:
@@ -265,7 +265,7 @@ class Clash_Royale:
             default = friend_config = True
 
         if friend_config:
-            ctx = await self.bot.get_context(m, cls=CustomContext)
+            ctx = await self.bot.get_context(m)
             if ctx.guild:
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:

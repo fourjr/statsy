@@ -44,6 +44,7 @@ from dotenv import find_dotenv, load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from ext.context import CustomContext
+from ext.view import CustomView
 from locales.i18n import Translator
 from ext.utils import InvalidPlatform, InvalidTag, NoTag
 
@@ -238,7 +239,7 @@ class StatsBot(commands.AutoShardedBot):
     async def process_commands(self, message):
         """Utilises the CustomContext subclass of discord.Context"""
         await self.wait_until_ready()
-        ctx = await self.get_context(message, cls=CustomContext)
+        ctx = await self.get_context(message)
 
         blacklist = [
             str(ctx.author.id) in self.blacklist['users'],
@@ -259,6 +260,52 @@ class StatsBot(commands.AutoShardedBot):
                     return await ctx.send('The bot is under maintenance at the moment!')
             else:
                 await self.invoke(ctx)
+
+    async def get_context(self, message, *, cls=CustomContext):
+        """Overwrites the default StringView for space insensitivity
+        Original: https://github.com/Rapptz/discord.py/blob/rewrite/discord/ext/commands/bot.py#L810-L879
+        """
+
+        view = CustomView(message.content)
+        ctx = cls(prefix=None, view=view, bot=self, message=message)
+
+        if self._skip_check(message.author.id, self.user.id):
+            return ctx
+
+        prefix = await self.get_prefix(message)
+        invoked_prefix = prefix
+
+        if isinstance(prefix, str):
+            if not view.skip_string(prefix):
+                return ctx
+        else:
+            try:
+                # if the context class' __init__ consumes something from the view this
+                # will be wrong.  That seems unreasonable though.
+                if message.content.startswith(tuple(prefix)):
+                    invoked_prefix = discord.utils.find(view.skip_string, prefix)
+                else:
+                    return ctx
+
+            except TypeError:
+                if not isinstance(prefix, list):
+                    raise TypeError("get_prefix must return either a string or a list of string, "
+                                    "not {}".format(prefix.__class__.__name__))
+
+                # It's possible a bad command_prefix got us here.
+                for value in prefix:
+                    if not isinstance(value, str):
+                        raise TypeError("Iterable command_prefix or list returned from get_prefix must "
+                                        "contain only strings, not {}".format(value.__class__.__name__))
+
+                # Getting here shouldn't happen
+                raise
+
+        invoker = view.get_word()
+        ctx.invoked_with = invoker
+        ctx.prefix = invoked_prefix
+        ctx.command = self.all_commands.get(invoker)
+        return ctx
 
     async def on_command_error(self, ctx, error, description=None):
         error = getattr(error, 'original', error)
