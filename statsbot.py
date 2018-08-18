@@ -45,7 +45,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from ext.context import CustomContext
 from locales.i18n import Translator
-from ext.errors import InvalidPlatform, InvalidTag, NoTag
+from ext.utils import InvalidPlatform, InvalidTag, NoTag
 
 _ = Translator('Core', __file__)
 
@@ -69,12 +69,11 @@ class StatsBot(commands.AutoShardedBot):
     developers = [
         325012556940836864,
         180314310298304512,
-        273381165229146112,
-        168143064517443584
+        273381165229146112
     ]
 
     def __init__(self):
-        super().__init__(command_prefix=None)
+        super().__init__(case_insensitive=True, command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
         constants = json.loads(requests.get('https://fourjr-webserver.herokuapp.com/cr/constants').text)
         self.cr = clashroyale.OfficialAPI(
@@ -192,6 +191,7 @@ class StatsBot(commands.AutoShardedBot):
         print('Statsy connected!')
         print('----------------------------')
         datadog.statsd.increment('statsy.connect')
+        self.blacklist = await self.mongo.config.admin.find_one({'_id': 'blacklist'})
 
     async def on_ready(self):
         """
@@ -240,12 +240,20 @@ class StatsBot(commands.AutoShardedBot):
         await self.wait_until_ready()
         ctx = await self.get_context(message, cls=CustomContext)
 
+        blacklist = [
+            str(ctx.author.id) in self.blacklist['users'],
+            str(ctx.channel.id) in self.blacklist['channels'],
+            str(ctx.guild.id) in self.blacklist['guilds']
+        ]
+        if any(blacklist):
+            return
+
         if ctx.guild:
             ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
         else:
             ctx.language = 'messages'
 
-        if ctx.command and ctx.author.id != 317125210123796482:
+        if ctx.command:
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')
@@ -361,7 +369,6 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
                 ('statsy.tags_saved', sum([await self.mongo.player_tags[i].find().count() for i in games])),
                 ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
-                ('statsy.uptime', uptime)
             ]
             for i in metrics:
                 try:
@@ -369,6 +376,7 @@ class StatsBot(commands.AutoShardedBot):
                 except IndexError:
                     tags = None
                 datadog.statsd.gauge(i[0], i[1], tags)
+            datadog.statsd.set('uptime', uptime)
 
             # Languages
             for i in _.translations.keys():

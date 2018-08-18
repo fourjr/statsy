@@ -1,9 +1,10 @@
 import datetime
-import random
 
 import asyncio
 import discord
 from discord.ext import commands
+
+from ext import utils
 
 
 def listget(l: list, index: int, default=None):
@@ -35,7 +36,7 @@ class Moderation:
                 f'Days: {listget(ctx.args, 3, "N.A.")}'
             )),
             timestamp=datetime.datetime.utcnow(),
-            color=random.randint(0, 0xffffff)
+            color=utils.random_color()
         )
         await channel.send(embed=em)
 

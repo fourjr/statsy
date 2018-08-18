@@ -1,17 +1,14 @@
 import io
 import os
 
-import aiohttp
 from cachetools import TTLCache
 import discord
 from discord.ext import commands
 from PIL import Image
 
-from __main__ import InvalidTag, NoTag
-from ext import embeds_coc
+from ext import embeds_coc, utils
 from ext.paginator import PaginatorSession
 from locales.i18n import Translator
-
 
 _ = Translator('COC Embeds', __file__)
 
@@ -51,7 +48,7 @@ class TagCheck(commands.MemberConverter):
         tag = self.resolve_tag(ctx, argument)
 
         if not tag:
-            raise InvalidTag(_('Invalid coc-tag passed.', ctx))
+            raise utils.InvalidTag(_('Invalid coc-tag passed.', ctx))
         else:
             return tag
 
@@ -85,9 +82,9 @@ class Clash_of_Clans:
             ) as resp:
                 self.cache[endpoint] = await resp.json()
 
-        if self.cache[endpoint] == {"reason":"notFound"}:
+        if self.cache[endpoint] == {"reason": "notFound"}:
             await ctx.send(_('The tag cannot be found!', ctx))
-            raise NoTag
+            raise utils.NoTag
 
         return self.cache[endpoint]
 
@@ -97,7 +94,7 @@ class Clash_of_Clans:
             clan_tag = profile['clan']['tag']
         except KeyError:
             await ctx.send(message)
-            raise NoTag
+            raise utils.NoTag
         else:
             return clan_tag.replace("#", "")
 
@@ -107,7 +104,7 @@ class Clash_of_Clans:
                 tag = await ctx.get_tag('clashofclans', index=str(index))
             except KeyError:
                 await ctx.send(_("You don\'t have a saved tag. Save one using `{}cocsave <tag>`!", ctx).format(ctx.prefix))
-                raise NoTag
+                raise utils.NoTag
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!", ctx))
@@ -116,7 +113,7 @@ class Clash_of_Clans:
             try:
                 tag = await ctx.get_tag('clashofclans', tag_or_user.id, index=str(index))
             except KeyError:
-                raise NoTag
+                raise utils.NoTag
             else:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, _('That person does not have a clan!', ctx))
@@ -124,7 +121,8 @@ class Clash_of_Clans:
         else:
             return tag_or_user
 
-    @commands.group(invoke_without_command=True)
+    @commands.command()
+    @utils.has_perms()
     async def cocprofile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -141,7 +139,8 @@ class Clash_of_Clans:
         )
         await session.run()
 
-    @commands.group(invoke_without_command=True)
+    @commands.command()
+    @utils.has_perms()
     async def cocachieve(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans achievements of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -158,7 +157,8 @@ class Clash_of_Clans:
         )
         await session.run()
 
-    @commands.group(invoke_without_command=True)
+    @commands.command()
+    @utils.has_perms()
     async def cocclan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -175,7 +175,8 @@ class Clash_of_Clans:
         )
         await session.run()
 
-    @commands.group(invoke_without_command=True)
+    @commands.group()
+    @utils.has_perms()
     async def cocmembers(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -196,6 +197,7 @@ class Clash_of_Clans:
             await ctx.send(embed=ems[0])
 
     @cocmembers.command()
+    @utils.has_perms()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -210,6 +212,7 @@ class Clash_of_Clans:
                 await ctx.send(embed=em)
 
     @cocmembers.command()
+    @utils.has_perms()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
@@ -229,7 +232,7 @@ class Clash_of_Clans:
         tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
-            raise InvalidTag('Invalid cr-tag passed')
+            raise utils.InvalidTag('Invalid cr-tag passed')
 
         await ctx.save_tag(tag, 'clashofclans', index=index.replace('-', ''))
 
@@ -241,17 +244,19 @@ class Clash_of_Clans:
         await ctx.send('Successfully saved tag. ' + prompt)
 
     @commands.command()
+    @utils.has_perms()
     async def cocusertag(self, ctx, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await ctx.get_tag('clashofclans', id=member.id, index='all')
-        em = discord.Embed(description='Tags saved', color=embeds_coc.random_color())
+        em = discord.Embed(description='Tags saved', color=utils.random_color())
         em.set_author(name=member.name, icon_url=member.avatar_url)
         for i in tag:
             em.add_field(name=f'Tag index: {i}', value=tag[i])
         await ctx.send(embed=em)
 
     @commands.command()
+    @utils.has_perms()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
         '''Check your current war status.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)

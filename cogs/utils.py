@@ -2,6 +2,7 @@ import asyncio
 import copy
 import datetime
 import inspect
+import importlib
 import io
 import json
 import os
@@ -14,7 +15,7 @@ import discord
 import psutil
 from discord.ext import commands
 
-from ext import embeds_cr as embeds
+from ext import utils
 from ext.paginator import PaginatorSession
 
 from locales.i18n import Translator
@@ -27,11 +28,9 @@ class Bot_Related:
     def __init__(self, bot):
         self.bot = bot
 
+    @utils.developer()
     @commands.command(hidden=True)
     async def psa(self, ctx, *, message):
-        if ctx.author.id not in self.bot.developers:
-            return
-
         em = discord.Embed(color=0xf9c93d)
         em.title = 'Created Announcement'
         em.description = message
@@ -45,11 +44,9 @@ class Bot_Related:
 
         await ctx.send(embed=em)
 
+    @utils.developer()
     @commands.command(hidden=True)
     async def maintenance(self, ctx):
-        if ctx.author.id not in self.bot.developers:
-            return
-
         if self.bot.maintenance_mode is True:
             await self.bot.change_presence(
                 status=discord.Status.online,
@@ -73,14 +70,16 @@ class Bot_Related:
     @commands.command()
     async def invite(self, ctx):
         """Returns the invite url for the bot."""
-        perms = discord.Permissions.none()
-        perms.read_messages = True
-        perms.external_emojis = True
-        perms.send_messages = True
-        perms.embed_links = True
-        perms.attach_files = True
-        perms.add_reactions = True
-        perms.manage_messages = True
+        perms = discord.Permissions()
+        perms.update(
+            read_messages=True,
+            external_emojis=True,
+            send_messages=True,
+            embed_links=True,
+            attach_files=True,
+            add_reactions=True,
+            manage_messages=True
+        )
         await ctx.send(_('**Invite link:** \n<{}>', ctx).format(discord.utils.oauth_url(self.bot.user.id, perms)))
 
     @commands.command()
@@ -161,12 +160,10 @@ class Bot_Related:
 
         await ctx.send(embed=em)
 
+    @utils.developer()
     @commands.command(hidden=True)
     async def restart(self, ctx):
         """Restarts the bot."""
-        if ctx.author.id not in self.bot.developers:
-            return
-
         em = discord.Embed(color=0xf9c93d)
         em.title = 'Restarting Bot'
         em.description = 'Restarting `Statsy`.'
@@ -201,7 +198,17 @@ class Bot_Related:
         index = 0
         for cmd in self.bot.commands:
             if cmd.instance is cog:
-                if cmd.hidden or not cmd.enabled:
+
+                predicates = cmd.checks
+                if not predicates:
+                    can_run = True
+
+                try:
+                    can_run = (await discord.utils.async_all(predicate(ctx) for predicate in predicates))
+                except commands.CheckFailure:
+                    can_run = False
+
+                if cmd.hidden or not cmd.enabled and not can_run:
                     continue
                 if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
                     index += 1
@@ -220,7 +227,7 @@ class Bot_Related:
         em = discord.Embed(
             title=name.replace('_', ' '),
             description='*' + (self.bot.psa_message or inspect.getdoc(cog)) + '*',
-            color=embeds.random_color()
+            color=utils.random_color()
         )
         for n, i in enumerate(fmt):
             if n == 0:
@@ -238,9 +245,18 @@ class Bot_Related:
         if cog is not None:
             return await self.format_cog_help(ctx, name, cog, prefix)
         cmd = self.bot.get_command(command)
-        if cmd is not None and not cmd.hidden and cmd.enabled:
+
+        predicates = cmd.checks
+        if not predicates:
+            can_run = True
+        try:
+            can_run = (await discord.utils.async_all(predicate(ctx) for predicate in predicates))
+        except commands.CheckFailure:
+            can_run = False
+
+        if cmd is not None and not cmd.hidden and cmd.enabled and can_run:
             return discord.Embed(
-                color=embeds.random_color(),
+                color=utils.random_color(),
                 title=f'`{prefix}{cmd.signature}`',
                 description=cmd.help
             )
@@ -278,13 +294,10 @@ class Bot_Related:
 
         await p_session.run()
 
+    @utils.developer()
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
-
-        if ctx.author.id not in self.bot.developers:
-            return
-
         env = {
             'bot': self.bot,
             'ctx': ctx,
@@ -399,10 +412,9 @@ class Bot_Related:
 
         await ctx.send(_('Bug Reported. Thanks for the report!', ctx))
 
+    @utils.developer()
     @commands.command(hidden=True)
     async def sudo(self, ctx, user: discord.Member, command, *, args=None):
-        if ctx.author.id not in self.bot.developers:
-            return
         new_ctx = copy.copy(ctx)
         new_ctx.author = user
         command = self.bot.get_command(command)
@@ -444,11 +456,10 @@ Large Servers   [ 1000+]:  {large}
 Massive Servers [ 5000+]:  {massive}
 Total                   :  {len(self.bot.guilds)}```"""))
 
+    @utils.developer()
     @commands.command(name='commands', aliases=['cmd'], hidden=True)
     async def commands_(self, ctx):
         """Displays command usage"""
-        if ctx.author.id not in self.bot.developers:
-            return
         command_usage = (await self.bot.mongo.config.admin.find_one({'_id': 'master'}))['commands']
         sorted_usage = sorted(command_usage, key=lambda x: command_usage[x], reverse=True)
         sorted_commands = {i: command_usage[i] for i in sorted_usage}
@@ -495,7 +506,9 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': True}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update(
+                {'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': True}}, upsert=True
+            )
             await ctx.send('Successfully enabled {}'.format(cog_name))
 
     @commands.command()
@@ -519,13 +532,15 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
-            await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': False}}, upsert=True)
+            await self.bot.mongo.config.guilds.find_one_and_update(
+                {'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': False}}, upsert=True
+            )
             await ctx.send('Successfully disabled {}'.format(cog_name))
 
+    @utils.developer()
     @commands.command(name='reload', hidden=True)
     async def reload_(self, ctx, *, cog_name):
-        if ctx.author.id not in self.bot.developers:
-            return
+        importlib.reload(importlib.import_module(cog_name))
         self.bot.unload_extension(cog_name)
         await asyncio.sleep(0.2)
         self.bot.load_extension(cog_name)
@@ -553,6 +568,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             ) as resp:
                 data = await resp.json()
 
+            language = None
             for d in data['data']['detections']:
                 if not d:
                     continue
@@ -561,7 +577,9 @@ Total                   :  {len(self.bot.guilds)}```"""))
                     break
 
             if language in _.translations.keys():
-                await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(g.id)}, {'$set': {'language': language}}, upsert=True)
+                await self.bot.mongo.config.guilds.find_one_and_update(
+                    {'guild_id': str(g.id)}, {'$set': {'language': language}}, upsert=True
+                )
         else:
             language = 'en'
 

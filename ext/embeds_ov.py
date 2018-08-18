@@ -1,25 +1,9 @@
-import random
-
 import discord
 
+from ext.utils import emoji, random_color
 from locales.i18n import Translator
 
-
 _ = Translator('OV Embeds', __file__)
-
-
-def emoji(ctx, name):
-    name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
-    e = discord.utils.get(ctx.bot.game_emojis, name=name)
-    return e
-
-
-def cdir(obj):
-    return [x for x in dir(obj) if not x.startswith('_')]
-
-
-def random_color():
-    return random.randint(0, 0xFFFFFF)
 
 
 async def format_profile(ctx, name, p, h):

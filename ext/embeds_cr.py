@@ -1,29 +1,16 @@
 import copy
 import datetime
 import math
-import random
 import re
 
 import discord
-from discord.ext import commands
 
+from ext.utils import emoji, random_color
 from locales.i18n import Translator
 
 _ = Translator('CR Embeds', __file__)
 
 images = 'https://royaleapi.github.io/cr-api-assets/'
-
-
-def has_perms(external_emojis=True):
-    perms = {
-        'send_messages': True,
-        'embed_links': True
-    }
-
-    if external_emojis:
-        perms['external_emojis'] = True
-
-    return commands.bot_has_permissions(**perms)
 
 
 def camel_case(text):
@@ -32,25 +19,6 @@ def camel_case(text):
         return text
     matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
     return ' '.join(m.group(0) for m in matches).title()
-
-
-def emoji(ctx, name, should_format=True):
-    if should_format:
-        name = name.replace('.', '').lower().replace(' ', '').replace('_', '').replace('-', '')
-        if name == 'chestmagic':
-            name = 'chestmagical'
-        elif name == 'chestgolden':
-            name = 'chestgold'
-    e = discord.utils.get(ctx.bot.game_emojis, name=name)
-    return e or name
-
-
-def cdir(obj):
-    return [x for x in dir(obj) if not x.startswith('_')]
-
-
-def random_color():
-    return random.randint(0, 0xFFFFFF)
 
 
 def get_deck(ctx, p):
@@ -140,8 +108,8 @@ async def format_most_valuable(ctx, clan, wars):
 
 
 def get_chests(ctx, cycle):
-    chests = '| ' + str(emoji(ctx, 'chest' + cycle[0].name.replace(' Chest', '').lower())) + ' | '
-    chests += ''.join([str(emoji(ctx, 'chest' + cycle[x].name.replace(' Chest', '').lower())) for x in range(1, 8)])
+    chests = '| ' + str(emoji(ctx, 'chest' + cycle[0].name.replace(' Chest', ''))) + ' | '
+    chests += ''.join([str(emoji(ctx, 'chest' + cycle[x].name.replace(' Chest', ''))) for x in range(1, 8)])
     special = ''
 
     for i in range(9, 15):
@@ -415,8 +383,6 @@ async def format_seasons(ctx, p):
 
 
 async def format_deck(ctx, p):
-    copydeck = '<:copydeck:376367880289124366>'
-
     deck_link = 'https://link.clashroyale.com/deck/en?deck='
     elixir = 0
 
@@ -433,7 +399,7 @@ async def format_deck(ctx, p):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{p.name} ({p.tag})', icon_url=ctx.bot.cr.get_clan_image(p))
-    em.add_field(name='Current Deck', value=f'{deck}[Copy this deck! {copydeck}]({deck_link})')
+    em.add_field(name='Current Deck', value=f'{deck}[Copy this deck!]({deck_link}) {emoji(ctx, "copydeck")}')
     em.set_footer(text='Statsy - Powered by the CR API')
 
     return em
@@ -443,7 +409,6 @@ async def format_card(ctx, c):
     arenas = {i.arena: i.title for i in ctx.bot.cr.constants.arenas}
 
     em = discord.Embed(description=c.description, color=random_color())
-    em.set_thumbnail(url='attachment://ingame.png')
     em.set_author(name=_('{} Info', ctx).format(c.name), icon_url='attachment://card.png')
     em.add_field(name=_('Rarity', ctx), value=f"{c.rarity} {emoji(ctx, 'cards')}")
     em.add_field(name=_('Elixir Cost', ctx), value=f"{c.elixir} {emoji(ctx, 'elixirdrop')}")
@@ -505,11 +470,14 @@ async def format_profile(ctx, p, c):
         (_('Clan Name', ctx), f"{clan_name} {emoji(ctx, 'clan')}" if clan_name else None, True),
         (_('Clan Tag', ctx), f"{clan_tag} {emoji(ctx, 'clan')}" if clan_tag else None, True),
         (_('Clan Role', ctx), f"{clan_role} {emoji(ctx, 'clan')}" if clan_role else None, True),
+        (_('Clans Joined', ctx), f"{p.achievements[0].value} {emoji(ctx, 'clan')}", True),
         (_('Games Played', ctx), f"{p.battle_count} {emoji(ctx, 'battle')}", True),
+        (_('Friendly Battles Won', ctx), f"{p.achievements[9].value} {emoji(ctx, 'battle')}", True),
         (_('Wins/Losses', ctx), f"{p.wins}/{p.losses} {emoji(ctx, 'battle')}", True),
         (_('Three Crown Wins', ctx), f"{p.three_crown_wins} {emoji(ctx, '3crown')}", True),
         (_('War Day Wins', ctx), f"{p.war_day_wins} {emoji(ctx, 'clanwar')}", True),
         (_('Favourite Card', ctx), favourite_card, True),
+        (_('Tournaments Played', ctx), f"{p.achievements[7].value} {emoji(ctx, 'tournament')}", True),
         (_('Tournament Cards Won', ctx), f"{p.tournament_cards_won} {emoji(ctx, 'cards')}", True),
         (_('Challenge Cards Won', ctx), f"{p.challenge_cards_won} {emoji(ctx, 'cards')}", True),
         (_('Challenge Max Wins', ctx), f"{p.challenge_max_wins} {emoji(ctx, 'tournament')}", True),
@@ -783,11 +751,14 @@ async def format_tournament(ctx, t):
     if seconds > 0:
         timeleft += f' {seconds}s'
 
+    join_link = 'https://fourjr-webserver.herokuapp.com/redirect?url=https://link.clashroyale.com/?joinTournament?id=' + t.tag
+
     fields1 = [
         (_('Type', ctx), camel_case(t.type) + ' 📩'),
         (_('Status', ctx), camel_case(t.status)),
         (_('Members', ctx), f"{len(t.members_list)}/{t.max_capacity} {emoji(ctx, 'clan')}"),
-        (_('Time since creation', ctx), timeleft)
+        (_('Time since creation', ctx), timeleft),
+        (_('Join now', ctx), _('[Click here]({})', ctx).format(join_link))
     ]
 
     fields2 = [
@@ -808,14 +779,17 @@ async def format_tournament(ctx, t):
 
 async def format_friend_link(ctx, p, link, default):
     av = ctx.bot.cr.get_clan_image(p)
-    em = discord.Embed(color=random_color())
     if not link.startswith('http'):
         link = 'https://' + link
 
-    em.description = f'[Add {ctx.author.mention} as friend {emoji(ctx, "clan")}]({link})'
+    em = discord.Embed(
+        description=f'[Add]({link}) {ctx.author.mention} [as friend {emoji(ctx, "clan")}]({link})',
+        color=random_color()
+    )
+
     if default:
         prefix = (await ctx.bot.get_prefix(ctx.message))[2]
-        em.set_footer(text=_('Run `{}friendlink disable` to disable this feature', ctx).format(prefix))
+        em.set_footer(text=_('Run `{}link disable` to disable this feature', ctx).format(prefix))
     else:
         em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
@@ -833,6 +807,71 @@ async def format_friend_link(ctx, p, link, default):
 
     for n, v, i in embed_fields:
         em.add_field(name=n, value=v, inline=i)
+
+    return em
+
+
+async def format_clan_link(ctx, c, link, default):
+    av = ctx.bot.cr.get_clan_image(c)
+    if not link.startswith('http'):
+        link = 'https://' + link
+
+    em = discord.Embed(
+        description=f"[Join]({link}) {ctx.author.mention}['s clan! {emoji(ctx, 'clan')}]({link})",
+        color=random_color()
+    )
+
+    if default:
+        prefix = (await ctx.bot.get_prefix(ctx.message))[2]
+        em.set_footer(text=_('Run `{}link disable` to disable this feature', ctx).format(prefix))
+    else:
+        em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
+
+    em.set_author(name=f'{c.name} ({c.tag})')
+    em.set_thumbnail(url=ctx.bot.cr.get_arena_image(av))
+
+    embed_fields = [
+        (_('Type', ctx), camel_case(c.type) + ' 📩'),
+        (_('Score', ctx), str(c.clan_score) + _(' Trophies ', ctx) + str(emoji(ctx, 'trophy'))),
+        (_('Donations/Week', ctx), str(c.donations_per_week) + _(' Cards ', ctx) + str(emoji(ctx, 'cards'))),
+        (_('Location', ctx), c.location.name + ' 🌎'),
+        (_('Members', ctx), f"{len(c.member_list)}/50 {emoji(ctx, 'clan')}"),
+        (_('Required Trophies', ctx), f"{c.required_trophies} {emoji(ctx, 'trophy')}"),
+    ]
+
+    for n, v, i in embed_fields:
+        em.add_field(name=n, value=v, inline=i)
+
+    return em
+
+
+async def format_deck_link(ctx, d, link, default):
+    deck = ''
+    elixir = 0
+    for n, i in enumerate(d):
+        for c in ctx.bot.cr.constants.cards:
+            if str(c.id) == i:
+                deck += str(emoji(ctx, c.name))
+                elixir += c.elixir
+                if n == 3:
+                    deck += '\n'
+                break
+
+    elixir = elixir / len(d)
+    deck += f'\n{elixir:.1f}{emoji(ctx, "elixirdrop")} [Copy this deck!]({link}) {emoji(ctx, "copydeck")}'
+    em = discord.Embed(
+        title=f'Deck shared by {ctx.author.name}',
+        description=deck,
+        color=random_color()
+    )
+    if not link.startswith('http'):
+        link = 'https://' + link
+
+    if default:
+        prefix = (await ctx.bot.get_prefix(ctx.message))[2]
+        em.set_footer(text=_('Run `{}link disable` to disable this feature', ctx).format(prefix))
+    else:
+        em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     return em
 

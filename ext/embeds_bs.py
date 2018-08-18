@@ -1,19 +1,15 @@
 import copy
 from datetime import datetime
 import math
-import random
 from time import time
 
 import box
 import discord
 
+from ext.utils import random_color
 from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
-
-
-def random_color():
-    return random.randint(0, 0xFFFFFF)
 
 
 def emoji(ctx, name):

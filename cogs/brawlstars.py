@@ -6,10 +6,8 @@ import discord
 from discord.ext import commands
 
 import box
-from ext import embeds_cr as embeds
-from ext import embeds_bs
+from ext import embeds_bs, utils
 from ext.paginator import PaginatorSession
-from statsbot import InvalidTag, NoTag
 
 shortcuts = {
     'juice': '2PP00',
@@ -43,7 +41,7 @@ class TagCheck(commands.MemberConverter):
         tag = self.resolve_tag(argument)
 
         if not tag:
-            raise InvalidTag('Invalid bs-tag passed.')
+            raise utils.InvalidTag('Invalid bs-tag passed.')
         else:
             return tag
 
@@ -77,7 +75,7 @@ class Brawl_Stars:
                 tag = await ctx.get_tag('brawlstars')
             except KeyError:
                 await ctx.send('You don\'t have a saved tag.')
-                raise NoTag()
+                raise utils.NoTag
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, 'You don\'t have a band!')
@@ -87,7 +85,7 @@ class Brawl_Stars:
                 tag = await ctx.get_tag('brawlstars', tag_or_user.id)
             except KeyError:
                 await ctx.send('That person doesnt have a saved tag!')
-                raise NoTag()
+                raise utils.NoTag
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, 'That person does not have a band!')
@@ -104,14 +102,13 @@ class Brawl_Stars:
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            raise InvalidTag('Invalid tag')
+            raise utils.InvalidTag('Invalid tag')
 
         await ctx.save_tag(tag, 'brawlstars')
 
         await ctx.send('Successfully saved tag.')
 
     @commands.command(enabled=False)
-    @embeds.has_perms(False)
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
@@ -129,7 +126,7 @@ class Brawl_Stars:
                 await ctx.send(embed=em)
 
     @commands.command(enabled=False)
-    @embeds.has_perms()
+    @utils.has_perms()
     async def bsband(self, ctx, tag_or_user: TagCheck=None):
         '''Get Brawl Stars band information.'''
         async with ctx.channel.typing():
@@ -151,7 +148,7 @@ class Brawl_Stars:
         await session.run()
 
     @commands.command(enabled=False)
-    @embeds.has_perms()
+    @utils.has_perms()
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''
         async with ctx.channel.typing():
@@ -166,7 +163,7 @@ class Brawl_Stars:
         await session.run()
 
     @commands.command(aliases=['bsrobo'])
-    @embeds.has_perms()
+    @utils.has_perms()
     async def bsroborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
         async with ctx.channel.typing():

@@ -2,9 +2,8 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from ext import embeds_ov
+from ext import embeds_ov, utils
 from ext.paginator import PaginatorSession
-from ext.errors import NoTag
 
 from locales.i18n import Translator
 
@@ -63,7 +62,7 @@ class Overwatch:
                 tag = await ctx.get_tag('overwatch', index=str(index))
             except KeyError:
                 await ctx.send(_("You don't have a saved tag. Save one using `{}owsave <tag>`!", ctx).format(ctx.prefix))
-                raise NoTag
+                raise utils.NoTag
             else:
                 return tag
         if isinstance(tag_or_user, discord.Member):
@@ -71,13 +70,14 @@ class Overwatch:
                 tag = await ctx.get_tag('overwatch', tag_or_user.id, index=str(index))
             except KeyError:
                 await ctx.send(_("That person doesn't have a saved tag!", ctx))
-                raise NoTag
+                raise utils.NoTag
             else:
                 return tag
         else:
             return tag_or_user
 
-    @commands.group(invoke_without_command=True)
+    @commands.command()
+    @utils.has_perms()
     async def owprofile(self, ctx, *, tag_or_user: TagCheck=None):
         """Gets the Overwatch profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user)
@@ -135,6 +135,7 @@ class Overwatch:
         await ctx.send('Successfully saved tag. ' + prompt)
 
     @commands.command()
+    @utils.has_perms()
     async def owusertag(self, ctx, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
