@@ -9,14 +9,16 @@ TO_TRANSLATE = ['../cogs/' + i for i in os.listdir('../cogs') if i.endswith('.py
 old_text = {}
 
 for file in TO_TRANSLATE:
-    with open(file, 'r+') as f:
+    with open(file, 'r+', encoding='utf8') as f:
         old_text[file] = f.read()
-        f.write(f.read().replace(', ctx', ''))
+        f.seek(0)
+        f.write(old_text[file].replace(', ctx', ''))
+        f.truncate()
 
 code = f'"{sys.executable}" pygettext.py {" ".join(TO_TRANSLATE)} -p pot'
 
 subprocess.run(code)
 
 for file in TO_TRANSLATE:
-    with open(file, 'w') as f:
+    with open(file, 'w', encoding='utf8') as f:
         f.write(old_text[file])
