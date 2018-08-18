@@ -339,7 +339,7 @@ class Clash_Royale:
             tag = await self.resolve_tag(ctx, user)
 
             try:
-                player = await self.request('get_player', tag)
+                player = await self.request('get_player', tag, reason='magic caching')
             except ValueError:
                 return
 
