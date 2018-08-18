@@ -701,7 +701,7 @@ class Clash_Royale:
         tag = self.conv.resolve_tag(ctx, tag)
 
         if not tag:
-            raise utils.InvalidTag(_('Invalid cr-tag passed'))
+            raise utils.InvalidTag(_('Invalid cr-tag passed', ctx))
 
         await ctx.save_tag(tag[0], 'clashroyale', index=index.replace('-', ''))
 
@@ -710,7 +710,7 @@ class Clash_Royale:
         else:
             prompt = _('Check your stats with `{}profile -{index}`!', ctx).format(ctx.prefix)
 
-        await ctx.send('Successfully saved tag. ' + prompt)
+        await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
 
     @commands.command()
     @utils.has_perms()
