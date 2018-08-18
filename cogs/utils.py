@@ -208,7 +208,7 @@ class Bot_Related:
                 except commands.CheckFailure:
                     can_run = False
 
-                if cmd.hidden or not cmd.enabled and not can_run:
+                if cmd.hidden or not cmd.enabled or not can_run:
                     continue
                 if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
                     index += 1

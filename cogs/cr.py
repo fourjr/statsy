@@ -349,11 +349,10 @@ class Clash_Royale:
         except (utils.NoTag, clashroyale.RequestError):
             pass
 
+    @commands.guild_only()
     @commands.group()
     async def link(self, ctx):
         """Check your guild's link beautifier status"""
-        if not ctx.guild:
-            return await ctx.send(_('Link beautifier is always disabled in DMs.'), ctx)
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
         friend_config = guild_config.get('friend_link')
 
@@ -367,29 +366,29 @@ class Clash_Royale:
             resp += _(' (default)', ctx)
         await ctx.send(resp)
 
-    @link.command()
+    @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
+    @link.command()
     async def enable(self, ctx):
         """Enables link beautifier"""
-        if not ctx.guild:
-            return await ctx.send(_("Configuring link beautifier status isn't allowed in DMs", ctx))
         await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': str(ctx.guild.id)}, {'$set': {'friend_link': True}}, upsert=True
         )
         await ctx.send(_('Successfully set link beautifier to be enabled.', ctx))
 
-    @link.command()
+    @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
+    @link.command()
     async def disable(self, ctx):
         """Disables link beautifier"""
-        if not ctx.guild:
-            return await ctx.send(_("Configuring link beautifier status isn't allowed in DMs", ctx))
         await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': str(ctx.guild.id)}, {'$set': {'friend_link': False}}, upsert=True
         )
         await ctx.send(_('Successfully set link beautifier to be disabled.', ctx))
 
     @utils.statsy_guild()
+    @commands.guild_only()
+    @commands.has_permissions(manage_guild=True)
     @commands.command(aliases=['settourneylog'])
     async def settournamentlog(self, ctx):
         """Sets the filters and channels for the tournament log"""
@@ -441,8 +440,10 @@ class Clash_Royale:
         await ctx.send(_('Log set!', ctx))
 
     @utils.statsy_guild()
+    @commands.has_permissions(manage_guild=True)
     @commands.command()
     async def setclanstats(self, ctx, channel: discord.TextChannel, *clans):
+        """Sets a clan log channel"""
         tag = await self.resolve_tag(ctx, ctx.author)
         async with ctx.typing():
             profile = await self.request('get_player', tag)

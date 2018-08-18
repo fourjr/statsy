@@ -1,9 +1,6 @@
 import io
-import json
-import time
 from urllib.parse import urlparse
 
-import clashroyale
 import discord
 import pymongo
 from colorthief import ColorThief
@@ -105,6 +102,7 @@ class CustomContext(commands.Context):
         if appd_index != len(text) - 1:
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
+
 
 class NoContext(CustomContext):
     """Designed to create a Context with only an author
