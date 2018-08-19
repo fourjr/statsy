@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0.0\n"
-"POT-Creation-Date: 2018-08-18 17:50+Malay Peninsula Standard Time\n"
+"POT-Creation-Date: 2018-08-19 12:26+Malay Peninsula Standard Time\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
@@ -71,80 +71,84 @@ msgstr ""
 msgid "That person doesnt have a saved tag!"
 msgstr ""
 
-#: ../cogs/cr.py:218
+#: ../cogs/cr.py:225
 msgid "{}, new tournament found!"
 msgstr ""
 
-#: ../cogs/cr.py:220
+#: ../cogs/cr.py:227
 msgid "New tournament found!"
 msgstr ""
 
-#: ../cogs/cr.py:369
+#: ../cogs/cr.py:376
 msgid "Current status: {}"
 msgstr ""
 
-#: ../cogs/cr.py:371
+#: ../cogs/cr.py:378
 msgid " (default)"
 msgstr ""
 
-#: ../cogs/cr.py:382
+#: ../cogs/cr.py:389
 msgid "Successfully set link beautifier to be enabled."
 msgstr ""
 
-#: ../cogs/cr.py:392
+#: ../cogs/cr.py:399
 msgid "Successfully set link beautifier to be disabled."
 msgstr ""
 
-#: ../cogs/cr.py:406
+#: ../cogs/cr.py:413
 msgid "What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space."
 msgstr ""
 
-#: ../cogs/cr.py:411
+#: ../cogs/cr.py:418
 msgid "Invalid type(s)."
 msgstr ""
 
-#: ../cogs/cr.py:413
+#: ../cogs/cr.py:420
 msgid "Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`."
 msgstr ""
 
-#: ../cogs/cr.py:423
+#: ../cogs/cr.py:430
 msgid "Invalid role."
 msgstr ""
 
-#: ../cogs/cr.py:425
+#: ../cogs/cr.py:432
 msgid "Which channel do you want the alerts to be sent to?"
 msgstr ""
 
-#: ../cogs/cr.py:430
+#: ../cogs/cr.py:437
 msgid "Invalid channel."
 msgstr ""
 
-#: ../cogs/cr.py:444
+#: ../cogs/cr.py:451
 msgid "Log set!"
 msgstr ""
 
-#: ../cogs/cr.py:467
+#: ../cogs/cr.py:474
 msgid "{} is an invalid tag. Please use the clan tags seperated by spaces."
 msgstr ""
 
-#: ../cogs/cr.py:497
+#: ../cogs/cr.py:504
 msgid "Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}"
 msgstr ""
 
-#: ../cogs/cr.py:508
+#: ../cogs/cr.py:515
 msgid "Configuration complete."
 msgstr ""
 
-#: ../cogs/cr.py:704
+#: ../cogs/cr.py:759
 msgid "Invalid cr-tag passed"
 msgstr ""
 
-#: ../cogs/cr.py:709
+#: ../cogs/cr.py:764
 msgid "Check your stats with `{}profile`!"
 msgstr ""
 
-#: ../cogs/cr.py:711
+#: ../cogs/cr.py:766
 msgid "Check your stats with `{}profile -{index}`!"
+msgstr ""
+
+#: ../cogs/cr.py:768
+msgid "Successfully saved tag."
 msgstr ""
 
 #: ../cogs/fortnite.py:58
@@ -221,8 +225,8 @@ msgstr ""
 msgid "Guilds"
 msgstr ""
 
-#: ../cogs/utils.py:148 ../ext/embeds_coc.py:316 ../ext/embeds_cr.py:584
-#: ../ext/embeds_cr.py:759 ../ext/embeds_cr.py:838
+#: ../cogs/utils.py:148 ../ext/embeds_coc.py:316 ../ext/embeds_cr.py:654
+#: ../ext/embeds_cr.py:829 ../ext/embeds_cr.py:908
 msgid "Members"
 msgstr ""
 
@@ -339,8 +343,8 @@ msgstr ""
 msgid "In War"
 msgstr ""
 
-#: ../ext/embeds_coc.py:134 ../ext/embeds_coc.py:135 ../ext/embeds_cr.py:469
-#: ../ext/embeds_cr.py:529 ../ext/embeds_cr.py:804 ../ext/embeds_ov.py:25
+#: ../ext/embeds_coc.py:134 ../ext/embeds_coc.py:135 ../ext/embeds_cr.py:539
+#: ../ext/embeds_cr.py:599 ../ext/embeds_cr.py:874 ../ext/embeds_ov.py:25
 #: ../ext/embeds_ov.py:58
 msgid "Level"
 msgstr ""
@@ -357,8 +361,8 @@ msgstr ""
 msgid "Destruction"
 msgstr ""
 
-#: ../ext/embeds_coc.py:175 ../ext/embeds_cr.py:468 ../ext/embeds_cr.py:528
-#: ../ext/embeds_cr.py:803
+#: ../ext/embeds_coc.py:175 ../ext/embeds_cr.py:538 ../ext/embeds_cr.py:598
+#: ../ext/embeds_cr.py:873
 msgid "Trophies"
 msgstr ""
 
@@ -375,16 +379,16 @@ msgstr ""
 msgid "No Clan"
 msgstr ""
 
-#: ../ext/embeds_coc.py:178 ../ext/embeds_coc.py:241 ../ext/embeds_cr.py:470
-#: ../ext/embeds_cr.py:496 ../ext/embeds_cr.py:530 ../ext/embeds_cr.py:542
+#: ../ext/embeds_coc.py:178 ../ext/embeds_coc.py:241 ../ext/embeds_cr.py:540
+#: ../ext/embeds_cr.py:566 ../ext/embeds_cr.py:600 ../ext/embeds_cr.py:612
 msgid "Clan Name"
 msgstr ""
 
-#: ../ext/embeds_coc.py:179 ../ext/embeds_cr.py:471 ../ext/embeds_cr.py:531
+#: ../ext/embeds_coc.py:179 ../ext/embeds_cr.py:541 ../ext/embeds_cr.py:601
 msgid "Clan Tag"
 msgstr ""
 
-#: ../ext/embeds_coc.py:180 ../ext/embeds_cr.py:472 ../ext/embeds_cr.py:532
+#: ../ext/embeds_coc.py:180 ../ext/embeds_cr.py:542 ../ext/embeds_cr.py:602
 msgid "Clan Role"
 msgstr ""
 
@@ -432,7 +436,7 @@ msgstr ""
 msgid "Best BH Season"
 msgstr ""
 
-#: ../ext/embeds_coc.py:242 ../ext/embeds_cr.py:497 ../ext/embeds_cr.py:543
+#: ../ext/embeds_coc.py:242 ../ext/embeds_cr.py:567 ../ext/embeds_cr.py:613
 msgid "Clan"
 msgstr ""
 
@@ -464,16 +468,16 @@ msgstr ""
 msgid "Score Home/Builder"
 msgstr ""
 
-#: ../ext/embeds_coc.py:313 ../ext/embeds_cr.py:585 ../ext/embeds_cr.py:839
+#: ../ext/embeds_coc.py:313 ../ext/embeds_cr.py:655 ../ext/embeds_cr.py:909
 msgid "Required Trophies"
 msgstr ""
 
-#: ../ext/embeds_coc.py:314 ../ext/embeds_cr.py:415 ../ext/embeds_cr.py:580
-#: ../ext/embeds_cr.py:757 ../ext/embeds_cr.py:834
+#: ../ext/embeds_coc.py:314 ../ext/embeds_cr.py:485 ../ext/embeds_cr.py:650
+#: ../ext/embeds_cr.py:827 ../ext/embeds_cr.py:904
 msgid "Type"
 msgstr ""
 
-#: ../ext/embeds_coc.py:315 ../ext/embeds_cr.py:583 ../ext/embeds_cr.py:837
+#: ../ext/embeds_coc.py:315 ../ext/embeds_cr.py:653 ../ext/embeds_cr.py:907
 msgid "Location"
 msgstr ""
 
@@ -485,7 +489,7 @@ msgstr ""
 msgid "Top Home Players"
 msgstr ""
 
-#: ../ext/embeds_coc.py:329 ../ext/embeds_cr.py:590
+#: ../ext/embeds_coc.py:329 ../ext/embeds_cr.py:660
 msgid "Top Donators"
 msgstr ""
 
@@ -494,18 +498,18 @@ msgid "Top Builder Players"
 msgstr ""
 
 #: ../ext/embeds_cr.py:60 ../ext/embeds_cr.py:96 ../ext/embeds_cr.py:135
-#: ../ext/embeds_cr.py:208 ../ext/embeds_cr.py:235 ../ext/embeds_cr.py:417
-#: ../ext/embeds_cr.py:499 ../ext/embeds_cr.py:545 ../ext/embeds_cr.py:553
-#: ../ext/embeds_cr.py:605 ../ext/embeds_cr.py:725 ../ext/embeds_cr.py:794
-#: ../ext/embeds_cr.py:828 ../ext/embeds_cr.py:874
+#: ../ext/embeds_cr.py:208 ../ext/embeds_cr.py:235 ../ext/embeds_cr.py:487
+#: ../ext/embeds_cr.py:569 ../ext/embeds_cr.py:615 ../ext/embeds_cr.py:623
+#: ../ext/embeds_cr.py:675 ../ext/embeds_cr.py:795 ../ext/embeds_cr.py:864
+#: ../ext/embeds_cr.py:898 ../ext/embeds_cr.py:944
 msgid "Statsy | Powered by the CR API"
 msgstr ""
 
-#: ../ext/embeds_cr.py:133 ../ext/embeds_cr.py:487
+#: ../ext/embeds_cr.py:133 ../ext/embeds_cr.py:557
 msgid "Chests"
 msgstr ""
 
-#: ../ext/embeds_cr.py:134 ../ext/embeds_cr.py:488
+#: ../ext/embeds_cr.py:134 ../ext/embeds_cr.py:558
 msgid "Chests Until"
 msgstr ""
 
@@ -529,238 +533,242 @@ msgstr ""
 msgid "Player has not played any battles yet"
 msgstr ""
 
-#: ../ext/embeds_cr.py:310
+#: ../ext/embeds_cr.py:310 ../ext/embeds_cr.py:322
+msgid "Top 200 {} players right now."
+msgstr ""
+
+#: ../ext/embeds_cr.py:325 ../ext/embeds_cr.py:659 ../ext/embeds_cr.py:835
+#: ../ext/embeds_cr.py:836 ../ext/embeds_cr.py:837
+msgid "Top Players"
+msgstr ""
+
+#: ../ext/embeds_cr.py:350 ../ext/embeds_cr.py:362
 msgid "Top 200 {} clans right now."
 msgstr ""
 
-#: ../ext/embeds_cr.py:322
-msgid "Top 200 global clans right now."
-msgstr ""
-
-#: ../ext/embeds_cr.py:325
+#: ../ext/embeds_cr.py:365 ../ext/embeds_cr.py:400
 msgid "Top Clans"
 msgstr ""
 
-#: ../ext/embeds_cr.py:357 ../ext/embeds_cr.py:366
+#: ../ext/embeds_cr.py:385 ../ext/embeds_cr.py:397
+msgid "Top 200 {} clans by clan wars right now."
+msgstr ""
+
+#: ../ext/embeds_cr.py:427 ../ext/embeds_cr.py:436
 msgid "{} Season"
 msgstr ""
 
-#: ../ext/embeds_cr.py:368
+#: ../ext/embeds_cr.py:438
 msgid "Season Highest"
 msgstr ""
 
-#: ../ext/embeds_cr.py:372
+#: ../ext/embeds_cr.py:442
 msgid "Season Finish"
 msgstr ""
 
-#: ../ext/embeds_cr.py:376 ../ext/embeds_cr.py:485
+#: ../ext/embeds_cr.py:446 ../ext/embeds_cr.py:555
 msgid "Global Rank"
 msgstr ""
 
-#: ../ext/embeds_cr.py:412
+#: ../ext/embeds_cr.py:482
 msgid "{} Info"
 msgstr ""
 
-#: ../ext/embeds_cr.py:413
+#: ../ext/embeds_cr.py:483
 msgid "Rarity"
 msgstr ""
 
-#: ../ext/embeds_cr.py:414
+#: ../ext/embeds_cr.py:484
 msgid "Elixir Cost"
 msgstr ""
 
-#: ../ext/embeds_cr.py:416
+#: ../ext/embeds_cr.py:486
 msgid "Arena Found"
 msgstr ""
 
-#: ../ext/embeds_cr.py:443
+#: ../ext/embeds_cr.py:513
 msgid ""
 "Highest: {} {} \n"
 msgstr ""
 
-#: ../ext/embeds_cr.py:444
+#: ../ext/embeds_cr.py:514
 msgid ""
 "Finish: {} {} \n"
 msgstr ""
 
-#: ../ext/embeds_cr.py:445
+#: ../ext/embeds_cr.py:515
 msgid "Global Rank: {} {}"
 msgstr ""
 
-#: ../ext/embeds_cr.py:465 ../ext/embeds_cr.py:525
+#: ../ext/embeds_cr.py:535 ../ext/embeds_cr.py:595
 msgid "No favourite card :("
 msgstr ""
 
-#: ../ext/embeds_cr.py:473
+#: ../ext/embeds_cr.py:543
 msgid "Clans Joined"
 msgstr ""
 
-#: ../ext/embeds_cr.py:474 ../ext/embeds_ov.py:27 ../ext/embeds_ov.py:60
+#: ../ext/embeds_cr.py:544 ../ext/embeds_ov.py:27 ../ext/embeds_ov.py:60
 msgid "Games Played"
 msgstr ""
 
-#: ../ext/embeds_cr.py:475
+#: ../ext/embeds_cr.py:545
 msgid "Friendly Battles Won"
 msgstr ""
 
-#: ../ext/embeds_cr.py:476
+#: ../ext/embeds_cr.py:546
 msgid "Wins/Losses"
 msgstr ""
 
-#: ../ext/embeds_cr.py:477
+#: ../ext/embeds_cr.py:547
 msgid "Three Crown Wins"
 msgstr ""
 
-#: ../ext/embeds_cr.py:478 ../ext/embeds_cr.py:533
+#: ../ext/embeds_cr.py:548 ../ext/embeds_cr.py:603
 msgid "War Day Wins"
 msgstr ""
 
-#: ../ext/embeds_cr.py:479 ../ext/embeds_cr.py:534
+#: ../ext/embeds_cr.py:549 ../ext/embeds_cr.py:604
 msgid "Favourite Card"
 msgstr ""
 
-#: ../ext/embeds_cr.py:480
+#: ../ext/embeds_cr.py:550
 msgid "Tournaments Played"
 msgstr ""
 
-#: ../ext/embeds_cr.py:481
+#: ../ext/embeds_cr.py:551
 msgid "Tournament Cards Won"
 msgstr ""
 
-#: ../ext/embeds_cr.py:482
+#: ../ext/embeds_cr.py:552
 msgid "Challenge Cards Won"
 msgstr ""
 
-#: ../ext/embeds_cr.py:483
+#: ../ext/embeds_cr.py:553
 msgid "Challenge Max Wins"
 msgstr ""
 
-#: ../ext/embeds_cr.py:484
+#: ../ext/embeds_cr.py:554
 msgid "Total Donations"
 msgstr ""
 
-#: ../ext/embeds_cr.py:486 ../ext/embeds_cr.py:535 ../ext/embeds_cr.py:805
+#: ../ext/embeds_cr.py:556 ../ext/embeds_cr.py:605 ../ext/embeds_cr.py:875
 msgid "Battle Deck"
 msgstr ""
 
-#: ../ext/embeds_cr.py:489
+#: ../ext/embeds_cr.py:559
 msgid "Previous Season Results ({})"
 msgstr ""
 
-#: ../ext/embeds_cr.py:497 ../ext/embeds_cr.py:543
+#: ../ext/embeds_cr.py:567 ../ext/embeds_cr.py:613
 msgid "None {}"
 msgstr ""
 
-#: ../ext/embeds_cr.py:555
+#: ../ext/embeds_cr.py:625
 msgid "Top Players/Donators/Contributors for this clan."
 msgstr ""
 
-#: ../ext/embeds_cr.py:581 ../ext/embeds_cr.py:835
+#: ../ext/embeds_cr.py:651 ../ext/embeds_cr.py:905
 msgid " Trophies "
 msgstr ""
 
-#: ../ext/embeds_cr.py:581 ../ext/embeds_cr.py:835 ../ext/embeds_fn.py:39
+#: ../ext/embeds_cr.py:651 ../ext/embeds_cr.py:905 ../ext/embeds_fn.py:39
 msgid "Score"
 msgstr ""
 
-#: ../ext/embeds_cr.py:582 ../ext/embeds_cr.py:836
+#: ../ext/embeds_cr.py:652 ../ext/embeds_cr.py:906
 msgid " Cards "
 msgstr ""
 
-#: ../ext/embeds_cr.py:582 ../ext/embeds_cr.py:836
+#: ../ext/embeds_cr.py:652 ../ext/embeds_cr.py:906
 msgid "Donations/Week"
 msgstr ""
 
-#: ../ext/embeds_cr.py:589 ../ext/embeds_cr.py:765 ../ext/embeds_cr.py:766
-#: ../ext/embeds_cr.py:767
-msgid "Top Players"
-msgstr ""
-
-#: ../ext/embeds_cr.py:611 ../ext/embeds_cr.py:620
+#: ../ext/embeds_cr.py:681 ../ext/embeds_cr.py:690
 msgid "Day"
 msgstr ""
 
-#: ../ext/embeds_cr.py:621
+#: ../ext/embeds_cr.py:691
 msgid "War Trophies"
 msgstr ""
 
-#: ../ext/embeds_cr.py:622
+#: ../ext/embeds_cr.py:692
 msgid "Participants"
 msgstr ""
 
-#: ../ext/embeds_cr.py:623
+#: ../ext/embeds_cr.py:693
 msgid "Battles Played"
 msgstr ""
 
-#: ../ext/embeds_cr.py:624 ../ext/embeds_ov.py:59
+#: ../ext/embeds_cr.py:694 ../ext/embeds_ov.py:59
 msgid "Wins"
 msgstr ""
 
-#: ../ext/embeds_cr.py:638 ../ext/embeds_cr.py:657
+#: ../ext/embeds_cr.py:708 ../ext/embeds_cr.py:727
 msgid ""
 "\n"
 "{} Batles Played {}"
 msgstr ""
 
-#: ../ext/embeds_cr.py:639 ../ext/embeds_cr.py:658
+#: ../ext/embeds_cr.py:709 ../ext/embeds_cr.py:728
 msgid ""
 "\n"
 "{} Wins"
 msgstr ""
 
-#: ../ext/embeds_cr.py:640
+#: ../ext/embeds_cr.py:710
 msgid ""
 "\n"
 "{} Crowns {}"
 msgstr ""
 
-#: ../ext/embeds_cr.py:644
+#: ../ext/embeds_cr.py:714
 msgid "Clans Participating"
 msgstr ""
 
-#: ../ext/embeds_cr.py:659
+#: ../ext/embeds_cr.py:729
 msgid ""
 "\n"
 "{} Cards Earned {}"
 msgstr ""
 
-#: ../ext/embeds_cr.py:666
+#: ../ext/embeds_cr.py:736
 msgid "Top Fighters"
 msgstr ""
 
-#: ../ext/embeds_cr.py:679
+#: ../ext/embeds_cr.py:749
 msgid "A list of open tournaments you can join right now!"
 msgstr ""
 
-#: ../ext/embeds_cr.py:680
+#: ../ext/embeds_cr.py:750
 msgid "Open Tournaments"
 msgstr ""
 
-#: ../ext/embeds_cr.py:685
+#: ../ext/embeds_cr.py:755
 msgid "Statsy | Powered by RoyaleAPI"
 msgstr ""
 
-#: ../ext/embeds_cr.py:727
+#: ../ext/embeds_cr.py:797
 msgid "Top players of this tournament"
 msgstr ""
 
-#: ../ext/embeds_cr.py:758
+#: ../ext/embeds_cr.py:828
 msgid "Status"
 msgstr ""
 
-#: ../ext/embeds_cr.py:760
+#: ../ext/embeds_cr.py:830
 msgid "Time since creation"
 msgstr ""
 
-#: ../ext/embeds_cr.py:761
+#: ../ext/embeds_cr.py:831
 msgid "Join now"
 msgstr ""
 
-#: ../ext/embeds_cr.py:761
+#: ../ext/embeds_cr.py:831
 msgid "[Click here]({})"
 msgstr ""
 
-#: ../ext/embeds_cr.py:792 ../ext/embeds_cr.py:826 ../ext/embeds_cr.py:872
+#: ../ext/embeds_cr.py:862 ../ext/embeds_cr.py:896 ../ext/embeds_cr.py:942
 msgid "Run `{}link disable` to disable this feature"
 msgstr ""
 
@@ -874,11 +882,11 @@ msgstr ""
 msgid "Extra Stats"
 msgstr ""
 
-#: ../statsbot.py:302
+#: ../statsbot.py:349
 msgid "Something went wrong and we are investigating the issue now."
 msgstr ""
 
-#: ../statsbot.py:396
+#: ../statsbot.py:443
 msgid "Pong! Websocket Latency:"
 msgstr ""
 

@@ -234,8 +234,8 @@ class Clash_Royale:
 
     async def on_message(self, m):
         await self.bot.wait_until_ready()
-        if self.bot.dev_mode or not m.guild:
-            return
+        # if self.bot.dev_mode or not m.guild:
+        #     return
 
         if m.channel.id == 480017443314597899 and m.author.bot:
             ctx = await self.bot.get_context(m)
@@ -289,7 +289,17 @@ class Clash_Royale:
                 except (discord.NotFound, discord.Forbidden):
                     pass
 
-                text = m.content[0:m.content.find('http')] + ' ' + m.content[m.content.find('?deck=') + 8 * 8 + 7 + 6:]
+                if m.content.find('&id=') != -1:
+                    id_section = m.content.find('&id=') + len('&id=')
+                    for n, i in enumerate(m.content[id_section:]):
+                        if i == ' ':
+                            last_part = id_section + n + 1
+                            break
+                    last_part = id_section + n + 1
+                else:
+                    last_part = m.content.find('?deck=') + 8 * 8 + 7 + len('?deck=')
+
+                text = m.content[0:m.content.find('http')] + ' ' + m.content[last_part:]
                 await m.channel.send(text, embed=em)
             else:
                 # Friend or Clan
