@@ -207,21 +207,22 @@ class Clash_Royale:
             change_permissions = False
 
             try:
-                role = discord.utils.get(guild.roles, id=int(mention)).mention
+                role = discord.utils.get(guild.roles, id=int(mention))
             except ValueError:
                 # mention is @here or @everyone
-                role = mention
+                role_mention = mention
             except TypeError:
                 # mention is None
-                role = None
+                role_mention = None
             else:
                 # since role is an actual role, check permissions
                 if not role.mentionable:
                     await role.edit(mentionable=True)
                     change_permissions = True
+                role_mention = role.mention
 
-            if role:
-                fmt = _('{}, new tournament found!', ctx).format(role)
+            if role_mention:
+                fmt = _('{}, new tournament found!', ctx).format(role_mention)
             else:
                 fmt = _('New tournament found!', ctx)
             await guild.get_channel(int(g['tournament']['channel_id'])).send(
