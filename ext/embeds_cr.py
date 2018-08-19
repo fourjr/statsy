@@ -302,6 +302,46 @@ async def format_members(ctx, c, ws):
     return embeds
 
 
+async def format_top_players(ctx, players, region):
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    else:
+        em.description = _('Top 200 {} players right now.', ctx).format(region)
+    badge_image = ctx.bot.cr.get_clan_image(players[0])
+    em.set_author(name='Top Players', icon_url=badge_image)
+    embeds = []
+    counter = 0
+    for c in players:
+        if counter % 12 == 0 and counter != 0:
+            embeds.append(em)
+            em = discord.Embed(color=random_color())
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
+            else:
+                em.description = _('Top 200 {} players right now.', ctx).format(region)
+
+            badge_image = ctx.bot.cr.get_clan_image(players[0])
+            em.set_author(name=_('Top Players', ctx), icon_url=badge_image)
+
+        try:
+            clan_name = c.clan.name
+        except AttributeError:
+            clan_name = 'No Clan'
+
+        em.add_field(
+            name=f'{emoji(ctx, c.arena.id)} {c.name}',
+            value=f"{c.tag}"
+                  f"\n{emoji(ctx, 'trophy')}{c.trophies}"
+                  f"\n{emoji(ctx, 'rank')} Rank: {c.rank} "
+                  f"\n{emoji(ctx, 'rank')} Previous Rank: {c.previous_rank}"
+                  f"\n{emoji(ctx, 'clan')} {clan_name}"
+        )
+        counter += 1
+    embeds.append(em)
+    return embeds
+
+
 async def format_top_clans(ctx, clans, region):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
@@ -319,22 +359,52 @@ async def format_top_clans(ctx, clans, region):
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
-                em.description = _('Top 200 global clans right now.', ctx)
+                em.description = _('Top 200 {} clans right now.', ctx).format(region)
 
             badge_image = ctx.bot.cr.get_clan_image(clans[0])
             em.set_author(name=_('Top Clans', ctx), icon_url=badge_image)
 
-        badge_name = c.badge_id
-        for i in ctx.bot.cr.constants.alliance_badges:
-            if i.id == c.badge_id:
-                badge_name = i.name
-                break
-
         em.add_field(
-            name=f'{emoji(ctx, badge_name, should_format=False)} {c.name}',
+            name=f'{emoji(ctx, c.badge_id, should_format=False)} {c.name}',
             value=f"{c.tag}"
                   f"\n{emoji(ctx, 'trophy')}{c.clan_score}"
                   f"\n{emoji(ctx, 'rank')} Rank: {c.rank} "
+                  f"\n{emoji(ctx, 'rank')} Previous Rank: {c.previous_rank}"
+                  f"\n{emoji(ctx, 'clan')} {c.members}/50 "
+        )
+        counter += 1
+    embeds.append(em)
+    return embeds
+
+
+async def format_top_clan_wars(ctx, clans, region):
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    else:
+        em.description = _('Top 200 {} clans by clan wars right now.', ctx).format(region)
+    badge_image = ctx.bot.cr.get_clan_image(clans[0])
+    em.set_author(name='Top Clans By Clan Wars', icon_url=badge_image)
+    embeds = []
+    counter = 0
+    for c in clans:
+        if counter % 12 == 0 and counter != 0:
+            embeds.append(em)
+            em = discord.Embed(color=random_color())
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
+            else:
+                em.description = _('Top 200 {} clans by clan wars right now.', ctx).format(region)
+
+            badge_image = ctx.bot.cr.get_clan_image(clans[0])
+            em.set_author(name=_('Top Clans', ctx), icon_url=badge_image)
+
+        em.add_field(
+            name=f'{emoji(ctx, c.badge_id, should_format=False)} {c.name}',
+            value=f"{c.tag}"
+                  f"\n{emoji(ctx, 'wartrophy')}{c.clan_score}"
+                  f"\n{emoji(ctx, 'rank')} Rank: {c.rank} "
+                  f"\n{emoji(ctx, 'rank')} Previous Rank: {c.previous_rank}"
                   f"\n{emoji(ctx, 'clan')} {c.members}/50 "
         )
         counter += 1

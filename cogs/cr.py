@@ -11,7 +11,7 @@ from discord.ext import commands
 from pymongo import ReturnDocument
 
 from ext import embeds_cr, utils
-from ext.context import NoContext, CustomContext
+from ext.context import NoContext
 from ext.paginator import PaginatorSession
 from locales.i18n import Translator
 
@@ -629,8 +629,56 @@ class Clash_Royale:
 
     @commands.command()
     @utils.has_perms()
+    async def topplayers(self, ctx, *, region: str = None):
+        """Returns the global top 200 players."""
+        async with ctx.typing():
+            region = name = 'global'
+            if region:
+                for i in self.bot.cr.constants.regions:
+                    if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
+                        region = i.key
+                        name = i.name
+
+            try:
+                clans = await self.request('get_top_players', region)
+            except clashroyale.NotFoundError:
+                return await ctx.send('Invalid region')
+            ems = await embeds_cr.format_top_players(ctx, clans.get('items'), name)
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems
+        )
+        await session.run()
+
+    @commands.command()
+    @utils.has_perms()
+    async def topclanwars(self, ctx, *, region: str = None):
+        """Returns the global top 200 clans by clan wars."""
+        async with ctx.typing():
+            region = name = 'global'
+            if region:
+                for i in self.bot.cr.constants.regions:
+                    if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
+                        region = i.key
+                        name = i.name
+
+            try:
+                clans = await self.request('get_top_clanwar_clans', region)
+            except clashroyale.NotFoundError:
+                return await ctx.send('Invalid region')
+            ems = await embeds_cr.format_top_clan_wars(ctx, clans.get('items'), name)
+
+        session = PaginatorSession(
+            ctx=ctx,
+            pages=ems
+        )
+        await session.run()
+
+    @commands.command()
+    @utils.has_perms()
     async def topclans(self, ctx, *, region: str = None):
-        """Returns the global top 50 clans."""
+        """Returns the global top 200 clans."""
         async with ctx.typing():
             region = name = 'global'
             if region:

@@ -49,6 +49,7 @@ def random_color():
 
 
 def emoji(ctx, name, should_format=True):
+    name = str(name)
     if should_format:
         name = name.lower()
         replace = {
