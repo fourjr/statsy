@@ -204,6 +204,7 @@ class Clash_Royale:
         async for g in guilds:
             guild = self.bot.get_guild(int(g['guild_id']))
             mention = g['tournament']['mention']
+            change_permissions = False
 
             try:
                 role = discord.utils.get(guild.roles, id=int(mention)).mention
@@ -213,6 +214,11 @@ class Clash_Royale:
             except TypeError:
                 # mention is None
                 role = None
+            else:
+                # since role is an actual role, check permissions
+                if not role.mentionable:
+                    await role.edit(mentionable=True)
+                    change_permissions = True
 
             if role:
                 fmt = _('{}, new tournament found!', ctx).format(role)
@@ -222,6 +228,8 @@ class Clash_Royale:
                 content=fmt,
                 embed=em
             )
+            if change_permissions:
+                await role.edit(mentionable=False)
 
     async def on_message(self, m):
         await self.bot.wait_until_ready()
@@ -229,7 +237,6 @@ class Clash_Royale:
             return
 
         if m.channel.id == 480017443314597899 and m.author.bot:
-            await self.bot.wait_until_ready()
             ctx = await self.bot.get_context(m)
             if ctx.guild:
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
@@ -255,7 +262,6 @@ class Clash_Royale:
             return
 
         # LINK
-        await self.bot.wait_until_ready()
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(m.guild.id)}) or {}
         friend_config = guild_config.get('friend_link')
 
