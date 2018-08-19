@@ -408,7 +408,6 @@ class Clash_Royale:
         )
         await ctx.send(_('Successfully set link beautifier to be disabled.', ctx))
 
-    @utils.statsy_guild()
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     @commands.command(aliases=['settourneylog'])
@@ -460,7 +459,6 @@ class Clash_Royale:
         )
         await ctx.send(_('Log set!', ctx))
 
-    @utils.statsy_guild()
     @commands.has_permissions(manage_guild=True)
     @commands.command()
     async def setclanstats(self, ctx, channel: discord.TextChannel, *clans):
