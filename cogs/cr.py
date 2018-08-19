@@ -244,11 +244,11 @@ class Clash_Royale:
             else:
                 ctx.language = 'messages'
             try:
-                tournament = await self.request('get_tournament', m.content.split(' ')[0])
+                tournament = await self.request('get_tournament', m.content.split(' ')[0], reason='tournament_log')
             except clashroyale.RequestError:
                 await asyncio.sleep(0.5)
                 try:
-                    tournament = await self.request('get_tournament', m.content.split(' ')[0])
+                    tournament = await self.request('get_tournament', m.content.split(' ')[0], reason='tournament_log')
                 except clashroyale.RequestError:
                     return
 
@@ -309,13 +309,13 @@ class Clash_Royale:
                 if 'link.clashroyale.com/invite/clan/' in m.content:
                     link = f'https://link.clashroyale.com/invite/clan/?tag={tag}&token={token}/'
                     try:
-                        clan = await self.request('get_clan', tag)
+                        clan = await self.request('get_clan', tag, reason='link')
                     except ValueError:
                         return
                 else:
                     link = f'https://link.clashroyale.com?tag={tag}&token={token}/'
                     try:
-                        profile = await self.request('get_player', tag)
+                        profile = await self.request('get_player', reason='link')
                     except ValueError:
                         return
 
@@ -364,8 +364,8 @@ class Clash_Royale:
 
             await self.request('get_player_chests', tag)
             try:
-                await self.request('get_clan', player.clan.tag)
-                await self.request('get_clan_war', player.clan.tag)
+                await self.request('get_clan', player.clan.tag, reason='magic caching')
+                await self.request('get_clan_war', player.clan.tag, reason='magic caching')
             except AttributeError:
                 pass
         except (utils.NoTag, clashroyale.RequestError):
