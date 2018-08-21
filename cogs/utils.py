@@ -198,31 +198,31 @@ class Bot_Related:
         index = 0
         for cmd in self.bot.commands:
             if cmd.instance is cog:
+                if cmd is not None:
+                    predicates = cmd.checks
+                    if not predicates:
+                        can_run = True
 
-                predicates = cmd.checks
-                if not predicates:
-                    can_run = True
+                    try:
+                        can_run = (await discord.utils.async_all(predicate(ctx) for predicate in predicates))
+                    except commands.CheckFailure:
+                        can_run = False
 
-                try:
-                    can_run = (await discord.utils.async_all(predicate(ctx) for predicate in predicates))
-                except commands.CheckFailure:
-                    can_run = False
-
-                if cmd.hidden or not cmd.enabled or not can_run:
-                    continue
-                if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
-                    index += 1
-                    fmt.append('')
-                fmt[index] += f'`{prefix+cmd.qualified_name:<{maxlen}} '
-                fmt[index] += f'{cmd.short_doc:<{maxlen}}`\n'
-                if hasattr(cmd, 'commands'):
-                    for c in cmd.commands:
-                        branch = '\u200b  └─ ' + c.name
-                        if len(fmt[index] + f"`{branch:<{maxlen+1}} " + f"{c.short_doc:<{maxlen}}`\n") > 1024:
-                            index += 1
-                            fmt.append('')
-                        fmt[index] += f"`{branch:<{maxlen+1}} "
-                        fmt[index] += f"{c.short_doc:<{maxlen}}`\n"
+                    if cmd.hidden or not cmd.enabled or not can_run:
+                        continue
+                    if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
+                        index += 1
+                        fmt.append('')
+                    fmt[index] += f'`{prefix+cmd.qualified_name:<{maxlen}} '
+                    fmt[index] += f'{cmd.short_doc:<{maxlen}}`\n'
+                    if hasattr(cmd, 'commands'):
+                        for c in cmd.commands:
+                            branch = '\u200b  └─ ' + c.name
+                            if len(fmt[index] + f"`{branch:<{maxlen+1}} " + f"{c.short_doc:<{maxlen}}`\n") > 1024:
+                                index += 1
+                                fmt.append('')
+                            fmt[index] += f"`{branch:<{maxlen+1}} "
+                            fmt[index] += f"{c.short_doc:<{maxlen}}`\n"
 
         em = discord.Embed(
             title=name.replace('_', ' '),
@@ -246,20 +246,44 @@ class Bot_Related:
             return await self.format_cog_help(ctx, name, cog, prefix)
         cmd = self.bot.get_command(command)
 
-        predicates = cmd.checks
-        if not predicates:
-            can_run = True
-        try:
-            can_run = (await discord.utils.async_all(predicate(ctx) for predicate in predicates))
-        except commands.CheckFailure:
-            can_run = False
+        if cmd is not None:
+            predicates = cmd.checks
+            if not predicates:
+                can_run = True
+            try:
+                can_run = (await discord.utils.async_all(predicate(ctx) for predicate in predicates))
+            except commands.CheckFailure:
+                can_run = False
 
-        if cmd is not None and not cmd.hidden and cmd.enabled and can_run:
-            return discord.Embed(
-                color=utils.random_color(),
-                title=f'`{prefix}{cmd.signature}`',
-                description=cmd.help
-            )
+            if not cmd.hidden and cmd.enabled and can_run:
+                em = discord.Embed(
+                    description=cmd.help,
+                    color=utils.random_color()
+                )
+
+                if hasattr(cmd, 'invoke_without_command') and cmd.invoke_without_command:
+                    em.title = f'Usage: {prefix}{cmd.signature}'
+                else:
+                    em.title = f'{prefix}{cmd.signature}'
+
+                if not hasattr(cmd, 'commands'):
+                    return em
+
+                maxlen = max(len(prefix + str(c)) for c in cmd.commands)
+                fmt = ''
+
+                for i, c in enumerate(cmd.commands):
+                    if len(cmd.commands) == i + 1:  # last
+                        branch = '└─ ' + c.name
+                    else:
+                        branch = '├─ ' + c.name
+                    fmt += f"`{branch:<{maxlen+1}} "
+                    fmt += f"{c.short_doc:<{maxlen}}`\n"
+
+                em.add_field(name='Subcommands', value=fmt)
+                em.set_footer(text=f'Type {prefix}help {cmd} command for more info on a command.')
+
+                return em
 
     @commands.command(name='help')
     async def _help(self, ctx, *, command=None):
@@ -420,11 +444,14 @@ class Bot_Related:
         command = self.bot.get_command(command)
         if not command:
             return await ctx.send('Invalid command')
-        args = {j.split(':')[0]: j.split(':')[1] for j in args.split(' ')} if args else {}
+        try:
+            args = {j.split(':')[0]: j.split(':')[1] for j in args.split(' ')} if args else {}
+        except IndexError:
+            print('Invalid args')
         try:
             await new_ctx.invoke(command, **args)
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(traceback.format_exc())
 
     @commands.command(name='guilds', hidden=True)
     async def _guilds(self, ctx):

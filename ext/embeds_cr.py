@@ -302,6 +302,83 @@ async def format_members(ctx, c, ws):
     return embeds
 
 
+async def format_lb(ctx, players, tag, emoji_name, *statistics, **kwargs):
+    color = random_color()
+    embeds = [discord.Embed(
+        title=_('{} Leaderboard', ctx).format(kwargs.get('name', ctx.command.name.title())),
+        description='',
+        color=color
+    )]
+
+    n = 0
+    found_user = [False, 0]
+    previous_page = False
+    for p in players:
+        user = ctx.guild.get_member(int(p.split('-')[0]))
+
+        stat = players[p]
+        for i in statistics:
+            stat = stat[i]
+
+        if user:
+            str_n = f'0{n + 1}' if n + 1 < 10 else n + 1
+            embeds[-1].description += f'`{str_n}.` {emoji(ctx, emoji_name)} `{stat}`: {players[p]["name"]} (#{players[p]["tag"]}) - {user}\n'
+            n += 1
+
+            if found_user[0]:
+                cur_line = len(embeds[-1].description.splitlines()) - 1
+                try:
+                    users[found_user[1] + 3] = embeds[-1].description.splitlines()[cur_line]
+                except IndexError:
+                    cur_line = 9
+                    users[found_user[1] + 3] = embeds[len(embeds) - 2].description.splitlines()[cur_line]
+                cur_line -= 1
+
+                found_user[1] += 1
+                if found_user[1] >= 2:
+                    found_user[0] = False
+
+            if p == f'{ctx.author.id}-{tag}':
+                cur_line = len(embeds[-1].description.splitlines()) - 1
+                users = ['', '', f'**{embeds[-1].description.splitlines()[cur_line]}**', '', '']
+                found_user[0] = True
+                cur_line -= 2
+                for i in range(2):
+                    try:
+                        users[i] = embeds[-1].description.splitlines()[cur_line]
+                    except IndexError:
+                        if not previous_page:
+                            cur_line = 8
+                            previous_page = True
+                        try:
+                            users[i] = embeds[-2].description.splitlines()[cur_line]
+                        except IndexError:
+                            break
+                    cur_line += 1
+
+            if (n % 10) == 0:
+                embeds.append(discord.Embed(
+                    title=_('{} Leaderboard', ctx).format(kwargs.get('name', ctx.command.name.title())),
+                    description='',
+                    color=color
+                ))
+
+    try:
+        list(players.keys()).index(f'{ctx.author.id}-{tag}')
+    except ValueError:
+        value = _("Your data has not been recieved yet. Either your tag isn't saved or you have to wait a while", ctx)
+    else:
+        value = '\n'.join(users)
+
+    for x in embeds:
+        if x.description:
+            x.add_field(name=_('Your position', ctx), value=value)
+        else:
+            embeds.remove(x)
+
+    return embeds
+
+
 async def format_top_players(ctx, players, region):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:

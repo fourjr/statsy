@@ -241,13 +241,16 @@ class StatsBot(commands.AutoShardedBot):
         await self.wait_until_ready()
         ctx = await self.get_context(message)
 
-        blacklist = [
-            str(ctx.author.id) in self.blacklist['users'],
-            str(ctx.channel.id) in self.blacklist['channels'],
-            str(getattr(ctx.guild, 'id', None)) in self.blacklist['guilds']
-        ]
-        if any(blacklist):
-            return
+        try:
+            blacklist = [
+                str(ctx.author.id) in self.blacklist['users'],
+                str(ctx.channel.id) in self.blacklist['channels'],
+                str(getattr(ctx.guild, 'id', None)) in self.blacklist['guilds']
+            ]
+            if any(blacklist):
+                return
+        except AttributeError:
+            pass
 
         if ctx.guild:
             ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
@@ -400,16 +403,6 @@ class StatsBot(commands.AutoShardedBot):
         await self.wait_until_ready()
         games = await self.mongo.player_tags.list_collection_names()
         while not self.is_closed():
-            delta = datetime.datetime.utcnow() - self.uptime
-            hours, remainder = divmod(int(delta.total_seconds()), 3600)
-            minutes, seconds = divmod(remainder, 60)
-            days, hours = divmod(hours, 24)
-
-            fmt = '{h}h {m}m {s}s'
-            if days:
-                fmt = '{d}d ' + fmt
-            uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-
             metrics = [
                 ('statsy.latency', self.latency * 1000),
                 ('statsy.guilds', len(self.guilds)),
@@ -418,6 +411,8 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
                 ('statsy.tags_saved', sum([await self.mongo.player_tags[i].find().count() for i in games])),
                 ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
+                ('statsy.claninfo', await self.mongo.config.guilds.find({'claninfo': {'$exists': True}}).count())
+                ('statsy.tournament', await self.mongo.config.guilds.find({'tournament': {'$exists': True}}).count())
             ]
             for i in metrics:
                 try:
@@ -425,7 +420,6 @@ class StatsBot(commands.AutoShardedBot):
                 except IndexError:
                     tags = None
                 datadog.statsd.gauge(i[0], i[1], tags)
-            datadog.statsd.set('uptime', uptime)
 
             # Languages
             for i in _.translations.keys():
