@@ -656,6 +656,7 @@ class Clash_Royale:
         )
         await session.run()
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @commands.group(aliases=['lb'], usage='<option>', invoke_without_command=True)
     async def leaderboard(self, ctx, option=None):
@@ -685,42 +686,49 @@ class Clash_Royale:
         )
         await session.run()
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def clansjoined(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'clan', 'achievements', 0, 'value', name='Clans Joined')
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command(aliases=['donation'])
     async def donations(self, ctx):
         """Gets the leaderboard of total donations"""
         await self.parse_leaderboard(ctx, 'cards', 'stats', 'totalDonations')
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def trophies(self, ctx):
         """Gets the leaderboard of total trophies"""
         await self.parse_leaderboard(ctx, 'trophy', 'trophies')
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def level(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'experience', 'stats', 'level')
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def cardswon(self, ctx):
         """Gets the leaderboard of challenge cards won"""
         await self.parse_leaderboard(ctx, 'tournament', 'stats', 'challengeCardsWon', name='Challenge Cards Won')
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def challengewins(self, ctx):
         """Gets the leaderboard of challenge max wins"""
         await self.parse_leaderboard(ctx, 'tournament', 'stats', 'challengeMaxWins', name='Challenge Max Wins')
 
+    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def clancards(self, ctx):
@@ -799,7 +807,7 @@ class Clash_Royale:
         )
         await session.run()
 
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     @utils.has_perms()
     async def members(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets all the members of a clan."""
