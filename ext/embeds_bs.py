@@ -262,3 +262,37 @@ def format_robo(ctx, leaderboard):
         embeds.append(em)
 
     return embeds
+
+def format_boss(ctx, leaderboard):
+    delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %H:%M:%S')
+    hours, remainder = divmod(int(delta.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    days, hours = divmod(hours, 24)
+
+    fmt = '{s}s'
+    if minutes:
+        fmt = '{m}m ' + fmt
+    if hours:
+        fmt = '{h}h ' + fmt
+    if days:
+        fmt = '{d}d ' + fmt
+    fmt = fmt.format(d=days, h=hours, m=minutes, s=seconds)
+
+    embeds = []
+
+    for rnd in range(math.ceil(len(leaderboard['bestPlayers']) / 10)):
+        em = discord.Embed(
+            title='Top Bosses in Boss Fight ',
+            description=_('Top {} bosses!\n\nLast updated: {} ago\nMap: {}', ctx).format(len(leaderboard['bestPlayers']), fmt, leaderboard['activeLevel']),
+            color=random_color()
+        )
+        em.set_footer(text='Statsy')
+
+        for i in range(rnd, 10 + rnd):
+            minutes, seconds = divmod(leaderboard['bestPlayers'][i]['duration'], 60)
+            rankings = str(emoji(ctx, leaderboard['bestPlayers'][i]['brawler'])) + ' ' + leaderboard['bestPlayers'][i]['player'] + '\n'
+            em.add_field(name=f'{minutes}m {seconds}s', value=rankings)
+
+        embeds.append(em)
+
+    return embeds

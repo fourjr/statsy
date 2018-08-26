@@ -34,7 +34,9 @@ def has_perms():
 
 def statsy_guild():
     def predicate(ctx):
-        return ctx.guild.id == 444482551139008522
+        if ctx.guild:
+            return ctx.guild.id == 444482551139008522
+        return False
     return commands.check(predicate)
 
 

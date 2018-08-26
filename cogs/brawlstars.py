@@ -177,6 +177,24 @@ class Brawl_Stars:
         )
         await session.run()
 
+    @commands.command(aliases=['bsboss'])
+    @utils.has_perms()
+    async def bsbossfight(self, ctx):
+        """Shows the boss fight leaderboard"""
+        async with ctx.channel.typing():
+            async with ctx.session.get(f'https://leaderboard.brawlstars.com/bossboard.jsonp?_={int(time.time())}') as resp:
+                leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
+            ems = embeds_bs.format_boss(ctx, leaderboard)
+
+        if len(ems) > 1:
+            session = PaginatorSession(
+                ctx=ctx,
+                pages=ems
+            )
+            await session.run()
+        else:
+            await ctx.send(embed=ems[0])
+
 
 def setup(bot):
     cog = Brawl_Stars(bot)
