@@ -656,7 +656,6 @@ class Clash_Royale:
         )
         await session.run()
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @commands.group(aliases=['lb'], usage='<option>', invoke_without_command=True)
     async def leaderboard(self, ctx, option=None):
