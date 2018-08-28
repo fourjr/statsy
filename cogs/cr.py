@@ -680,55 +680,55 @@ class Clash_Royale:
             tag = await self.resolve_tag(ctx, ctx.author)
             ems = await embeds_cr.format_lb(ctx, sorted_result, tag, emoji_name, *statistics, **kwargs)
 
+            del db_result
+            del data
+            del sorted_result
+
         session = PaginatorSession(
             ctx=ctx,
             pages=ems
         )
         await session.run()
 
-    @utils.statsy_guild()
+        del session
+        del ems
+
     @utils.has_perms()
     @leaderboard.command()
     async def clansjoined(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'clan', 'achievements', 0, 'value', name='Clans Joined')
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command(aliases=['donation'])
     async def donations(self, ctx):
         """Gets the leaderboard of total donations"""
         await self.parse_leaderboard(ctx, 'cards', 'stats', 'totalDonations')
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def trophies(self, ctx):
         """Gets the leaderboard of total trophies"""
         await self.parse_leaderboard(ctx, 'trophy', 'trophies')
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def level(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'experience', 'stats', 'level')
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def cardswon(self, ctx):
         """Gets the leaderboard of challenge cards won"""
         await self.parse_leaderboard(ctx, 'tournament', 'stats', 'challengeCardsWon', name='Challenge Cards Won')
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def challengewins(self, ctx):
         """Gets the leaderboard of challenge max wins"""
         await self.parse_leaderboard(ctx, 'tournament', 'stats', 'challengeMaxWins', name='Challenge Max Wins')
 
-    @utils.statsy_guild()
     @utils.has_perms()
     @leaderboard.command()
     async def clancards(self, ctx):
