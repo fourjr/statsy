@@ -336,7 +336,7 @@ class Clash_Royale:
                 else:
                     link = f'https://link.clashroyale.com?tag={tag}&token={token}/'
                     try:
-                        profile = await self.request(ctx, 'get_player', reason='link')
+                        profile = await self.request(ctx, 'get_player', tag, reason='link')
                     except ValueError:
                         return
 
