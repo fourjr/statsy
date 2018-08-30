@@ -301,7 +301,7 @@ class Clash_Royale:
 
             deck = m.content[m.content.find('?deck=') + 6:m.content.find('?deck=') + 8 * 8 + 7 + 6].split(';')
 
-            if deck:
+            if m.content.find('?deck=') != -1:
                 # Deck
                 link = 'https://link.clashroyale.com/deck/en?deck=' + ';'.join(deck)
                 em = await embeds_cr.format_deck_link(ctx, deck, link, default)
@@ -711,7 +711,7 @@ class Clash_Royale:
         await self.parse_leaderboard(ctx, 'trophy', 'trophies')
 
     @utils.has_perms()
-    @leaderboard.command()
+    @leaderboard.command(aliases=['xp'])
     async def level(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'experience', 'stats', 'level')
