@@ -21,10 +21,23 @@ def camel_case(text):
     return ' '.join(m.group(0) for m in matches).title()
 
 
+def get_card_level(level, max_level):
+    rarity_mapping = {
+        13: 0,  # common
+        11: 3,  # rare
+        8: 6,   # epic
+        5: 9,   # legendary
+    }
+    try:
+        return level + rarity_mapping[max_level]
+    except KeyError as e:
+        raise NotImplementedError(f'get_card_level({level}, {max_level}) - {max_level} not implemented') from e
+
+
 def get_deck(ctx, p):
     deck = ''
     for card in p.current_deck:
-        deck += str(emoji(ctx, card.name)) + str(card.level) + ' '
+        deck += str(emoji(ctx, card.name)) + str(get_card_level(card.level, card.max_level)) + ' '
     return deck
 
 
