@@ -582,6 +582,14 @@ Total                   :  {len(self.bot.guilds)}```"""))
         await ctx.send('<:statsy:464784655569387540> https://discord.gg/cBqsdPt')
 
     async def on_guild_join(self, g):
+        info = ''
+        try:
+            if str(g.id) in self.blacklist['guilds']:
+                await g.leave()
+                info = 'Guild blacklisted!'
+        except AttributeError:
+            pass
+
         texts = ''
         for c in g.text_channels:
             try:
@@ -615,7 +623,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
         em = discord.Embed(
             title=f'Added to {g.name} ({g.id})',
-            description=f'{len(g.members)} members\nLanguage: {language}',
+            description=f'{len(g.members)} members\nLanguage: {language}\n{info}',
             timestamp=datetime.datetime.utcnow(),
             color=0x0cc243
         )
