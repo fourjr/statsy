@@ -505,6 +505,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
 
         languages = {
             'spanish': 'es',
+            'french': 'fr',
             'english': 'messages'
         }
         if not language or language.lower() not in languages:
