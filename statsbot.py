@@ -76,7 +76,10 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(case_insensitive=True, command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        constants = json.loads(requests.get('https://fourjr-webserver.herokuapp.com/cr/constants').text)
+        try:
+            constants = json.loads(requests.get('https://fourjr-webserver.herokuapp.com/cr/constants').text)
+        except json.JSONDecodeError:
+            constants = None
         self.cr = clashroyale.OfficialAPI(
             os.getenv('clashroyale'),
             session=self.session,
