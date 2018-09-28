@@ -9,6 +9,7 @@ from discord.ext import commands
 from ext import embeds_fn, utils
 from ext.paginator import PaginatorSession
 
+from ext.command import command
 from locales.i18n import Translator
 
 _ = Translator('Fortnite', __file__)
@@ -100,7 +101,7 @@ class Fortnite:
 
         return data['uid']
 
-    @commands.command()
+    @command()
     async def fnsave(self, ctx, platform: lower, username: str, index: str='0'):
         """Saves a Fortnite tag to your discord profile."""
         await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}', index=index.replace('-', ''))
@@ -112,7 +113,7 @@ class Fortnite:
 
         await ctx.send('Successfully saved tag. ' + prompt)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def fnprofile(self, ctx, platform: lower, *, username: TagOrUser=None):
         """Gets the fortnite profile of a player with a provided platform"""
@@ -132,7 +133,7 @@ class Fortnite:
         )
         await session.run()
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def fnusertag(self, ctx, platform: lower, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""

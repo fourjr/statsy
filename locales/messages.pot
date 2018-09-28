@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0.0\n"
-"POT-Creation-Date: 2018-09-28 15:26+Malay Peninsula Standard Time\n"
+"POT-Creation-Date: 2018-09-28 15:57+Malay Peninsula Standard Time\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
@@ -321,38 +321,23 @@ msgid "These commands only work on the official Statsy support server: https://d
 msgstr ""
 
 #: ../cogs/mod.py:45
-msgid ""
-"Warns a user\n"
-"        Only works on the official Statsy support server: https://discord.gg/cBqsdPt\n"
-"        "
+msgid "Warns a user"
 msgstr ""
 
-#: ../cogs/mod.py:52
-msgid ""
-"Kicks a user\n"
-"        Only works on the official Statsy support server: https://discord.gg/cBqsdPt\n"
-"        "
+#: ../cogs/mod.py:53
+msgid "Kicks a user"
 msgstr ""
 
-#: ../cogs/mod.py:59
-msgid ""
-"Bans a user\n"
-"        Only works on the official Statsy support server: https://discord.gg/cBqsdPt\n"
-"        "
+#: ../cogs/mod.py:61
+msgid "Bans a user"
 msgstr ""
 
-#: ../cogs/mod.py:66
-msgid ""
-"Unbans a user\n"
-"        Only works on the official Statsy support server: https://discord.gg/cBqsdPt\n"
-"        "
+#: ../cogs/mod.py:69
+msgid "Unbans a user"
 msgstr ""
 
-#: ../cogs/mod.py:73
-msgid ""
-"Softbans a user\n"
-"        Only works on the official Statsy support server: https://discord.gg/cBqsdPt\n"
-"        "
+#: ../cogs/mod.py:77
+msgid "Softbans a user"
 msgstr ""
 
 #: ../cogs/overwatch.py:29
@@ -534,41 +519,38 @@ msgid "Displays command usage"
 msgstr ""
 
 #: ../cogs/utils.py:501
-msgid ""
-"Changes your language!\n"
-"        Want to help translate? Join our support server: https://discord.gg/cBqsdPt\n"
-"        "
+msgid "Changes your language!"
 msgstr ""
 
-#: ../cogs/utils.py:512
+#: ../cogs/utils.py:513
 msgid "Available languages: {}"
 msgstr ""
 
-#: ../cogs/utils.py:517
+#: ../cogs/utils.py:518
 msgid "Language set."
 msgstr ""
 
-#: ../cogs/utils.py:522
+#: ../cogs/utils.py:523
 msgid "Enables certain games"
 msgstr ""
 
-#: ../cogs/utils.py:524
+#: ../cogs/utils.py:525
 msgid "All games are enabled in DMs."
 msgstr ""
 
-#: ../cogs/utils.py:537 ../cogs/utils.py:563
+#: ../cogs/utils.py:538 ../cogs/utils.py:564
 msgid "Invalid game. Pick from: {}"
 msgstr ""
 
-#: ../cogs/utils.py:548
+#: ../cogs/utils.py:549
 msgid "Disables certain games"
 msgstr ""
 
-#: ../cogs/utils.py:550
+#: ../cogs/utils.py:551
 msgid "All games cannot be disabled in DMs."
 msgstr ""
 
-#: ../cogs/utils.py:582
+#: ../cogs/utils.py:583
 msgid "Statsy support server invite link"
 msgstr ""
 
@@ -593,62 +575,50 @@ msgid "Returns the prefix."
 msgstr ""
 
 #: ../statsbot.py:166
-msgid ""
-"Called when the bot has established a\n"
-"        gateway connection with discord\n"
-"        "
+msgid "Called when the bot has established a"
 msgstr ""
 
-#: ../statsbot.py:176
-msgid ""
-"Called when guild streaming is complete\n"
-"        and the client's internal cache is ready.\n"
-"        "
+#: ../statsbot.py:177
+msgid "Called when guild streaming is complete"
 msgstr ""
 
-#: ../statsbot.py:193
-msgid ""
-"Called when a shard has successfuly\n"
-"        connected to the gateway.\n"
-"        "
+#: ../statsbot.py:195
+msgid "Called when a shard has successfuly"
 msgstr ""
 
-#: ../statsbot.py:200
+#: ../statsbot.py:203
 msgid "Called when a command is invoked."
 msgstr ""
 
-#: ../statsbot.py:216
+#: ../statsbot.py:219
 msgid "Utilises the CustomContext subclass of discord.Context"
 msgstr ""
 
-#: ../statsbot.py:244
-msgid ""
-"Overwrites the default StringView for space insensitivity\n"
-"        Original: https://github.com/Rapptz/discord.py/blob/rewrite/discord/ext/commands/bot.py#L810-L879\n"
-"        "
+#: ../statsbot.py:247
+msgid "Overwrites the default StringView for space insensitivity"
 msgstr ""
 
-#: ../statsbot.py:328
+#: ../statsbot.py:332
 msgid "Something went wrong and we are investigating the issue now."
 msgstr ""
 
-#: ../statsbot.py:346
+#: ../statsbot.py:350
 msgid "Called when a message is sent/recieved."
 msgstr ""
 
-#: ../statsbot.py:352
+#: ../statsbot.py:356
 msgid "Publish to botlists."
 msgstr ""
 
-#: ../statsbot.py:378
+#: ../statsbot.py:382
 msgid "Push to datadog"
 msgstr ""
 
-#: ../statsbot.py:411
+#: ../statsbot.py:415
 msgid "Pong! Returns average shard latency."
 msgstr ""
 
-#: ../statsbot.py:413
+#: ../statsbot.py:417
 msgid "Pong! Websocket Latency:"
 msgstr ""
 

@@ -17,6 +17,7 @@ from pymongo import ReturnDocument
 
 from ext import embeds_cr, utils
 from ext.context import NoContext
+from ext.command import command, group
 from ext.paginator import PaginatorSession
 from locales.i18n import Translator
 
@@ -393,7 +394,7 @@ class Clash_Royale:
             pass
 
     @commands.guild_only()
-    @commands.group()
+    @group()
     async def link(self, ctx):
         """Check your guild's link beautifier status"""
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
@@ -431,7 +432,7 @@ class Clash_Royale:
 
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
-    @commands.command(aliases=['settourneylog'])
+    @command(aliases=['settourneylog'])
     async def settournamentlog(self, ctx):
         """Sets the filters and channels for the tournament log"""
         allowed_types = ['all', '50', '100', '200', '1000', 'open:all', 'open:50', 'open:100', 'open:200', 'open:1000']
@@ -481,7 +482,7 @@ class Clash_Royale:
         await ctx.send(_('Log set!', ctx))
 
     @commands.has_permissions(manage_guild=True)
-    @commands.command()
+    @command()
     async def setclanstats(self, ctx, channel: discord.TextChannel, *clans):
         """Sets a clan log channel"""
         tag = await self.resolve_tag(ctx, ctx.author)
@@ -543,7 +544,7 @@ class Clash_Royale:
             await self.clanupdate(data)
             await ctx.send(_('Configuration complete.', ctx))
 
-    @commands.command(aliases=['player'])
+    @command(aliases=['player'])
     @utils.has_perms()
     async def profile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
@@ -556,7 +557,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @commands.command(alises=['statistics'])
+    @command(alises=['statistics'])
     @utils.has_perms()
     async def stats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
@@ -568,7 +569,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @commands.command(aliases=['season'])
+    @command(aliases=['season'])
     @utils.has_perms()
     async def seasons(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the season results a player."""
@@ -587,7 +588,7 @@ class Clash_Royale:
         else:
             await ctx.send(f"**{profile.name}** doesn't have any season results.")
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def chests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the next chests of a player."""
@@ -600,7 +601,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def cards(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Get a list of cards the user has and does not have"""
@@ -612,7 +613,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @commands.command(aliases=['matches'])
+    @command(aliases=['matches'])
     @utils.has_perms()
     async def battles(self, ctx, tag_or_user: TagCheck=(None, 0)):
         """Get the latest 5 battles by the player!"""
@@ -624,7 +625,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def clan(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets a clan by tag or by profile. (tagging the user)"""
@@ -641,7 +642,7 @@ class Clash_Royale:
         await session.run()
 
     @utils.has_perms()
-    @commands.command(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
+    @command(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
     async def clanwar(self, ctx, tag_or_user: TagCheck=(None, 0)):
         """Shows your clan clan war statistics"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
@@ -657,7 +658,7 @@ class Clash_Royale:
         await session.run()
 
     @utils.has_perms()
-    @commands.group(aliases=['lb'], usage='<option>', invoke_without_command=True)
+    @group(aliases=['lb'], usage='<option>', invoke_without_command=True)
     async def leaderboard(self, ctx, option=None):
         await ctx.invoke(self.bot.get_command('help'), command=str(ctx.command))
 
@@ -735,7 +736,7 @@ class Clash_Royale:
         await self.parse_leaderboard(ctx, 'cards', 'stats', 'clanCardsCollected', name='Clan Cards Collected')
 
     @utils.has_perms()
-    @commands.command()
+    @command()
     async def topplayers(self, ctx, *, region: str = None):
         """Returns the global top 200 players."""
         async with ctx.typing():
@@ -758,7 +759,7 @@ class Clash_Royale:
         )
         await session.run()
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def topclanwars(self, ctx, *, region: str = None):
         """Returns the global top 200 clans by clan wars."""
@@ -782,7 +783,7 @@ class Clash_Royale:
         )
         await session.run()
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def topclans(self, ctx, *, region: str = None):
         """Returns the global top 200 clans."""
@@ -806,7 +807,7 @@ class Clash_Royale:
         )
         await session.run()
 
-    @commands.group(invoke_without_command=True)
+    @group(invoke_without_command=True)
     @utils.has_perms()
     async def members(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets all the members of a clan."""
@@ -857,7 +858,7 @@ class Clash_Royale:
                 em = await embeds_cr.format_least_valuable(ctx, clan, war.get('items'))
                 await ctx.send(embed=em)
 
-    @commands.command()
+    @command()
     async def save(self, ctx, tag, index: str='0'):
         """Saves a Clash Royale tag to your discord profile."""
         async with ctx.typing():
@@ -877,7 +878,7 @@ class Clash_Royale:
 
             await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def usertag(self, ctx, member: discord.Member = None):
         """Checks the saved tag(s) of a member"""
@@ -889,7 +890,7 @@ class Clash_Royale:
             em.add_field(name=f'Tag index: {i}', value=tag[i])
         await ctx.send(embed=em)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def deck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the current deck of a player."""
@@ -901,7 +902,7 @@ class Clash_Royale:
 
             await ctx.send(embed=em)
 
-    @commands.command(name='card')
+    @command(name='card')
     @utils.has_perms()
     async def _card(self, ctx, *, card):
         """Get information about a Clash Royale card."""
@@ -936,7 +937,7 @@ class Clash_Royale:
         else:
             await ctx.send(embed=em, files=[discord.File(c, 'card.png')])
 
-    @commands.command(aliases=['tourney'])
+    @command(aliases=['tourney'])
     @utils.has_perms()
     async def tournament(self, ctx, tag: TagOnly):
         """View statistics about a tournament"""
@@ -950,7 +951,7 @@ class Clash_Royale:
         )
         await session.run()
 
-    @commands.command(aliases=['tourneys'])
+    @command(aliases=['tourneys'])
     @utils.has_perms()
     async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""

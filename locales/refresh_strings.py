@@ -29,17 +29,14 @@ for file in TO_TRANSLATE:
             # docstrings translation
             for n, i in enumerate(new_content_sl):
                 if i.strip() == '"""':
-                    new_content_sl[n] = new_content_sl[n].replace('"""', '""")')
-
+                    pass  # new_content_sl[n] += ')'
                 elif i.strip().startswith('"""'):
                     # if it is a docstring line
-                    if i.endswith('"""'):
-                        # inline docstring, replace second iter
-                        new_content_sl[n] = nth_repl(i, '"""', '""")', 2)
                     new_content_sl[n] = new_content_sl[n].replace('"""', '_("""', 1)
-
-                elif i.endswith('"""'):
-                    new_content_sl[n] = new_content_sl[n].replace('"""', '""")')
+                    if not i.endswith('"""'):
+                        new_content_sl[n] += '""")\n        """'
+                    else:
+                        new_content_sl[n] += ')'
 
         f.write('\n'.join(new_content_sl) + '\n')
 

@@ -7,6 +7,7 @@ from discord.ext import commands
 from PIL import Image
 
 from ext import embeds_coc, utils
+from ext.command import command, group
 from ext.paginator import PaginatorSession
 from locales.i18n import Translator
 
@@ -121,7 +122,7 @@ class Clash_of_Clans:
         else:
             return tag_or_user
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def cocprofile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans profile of a player.'''
@@ -139,7 +140,7 @@ class Clash_of_Clans:
         )
         await session.run()
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def cocachieve(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans achievements of a player.'''
@@ -157,7 +158,7 @@ class Clash_of_Clans:
         )
         await session.run()
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def cocclan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
@@ -175,7 +176,7 @@ class Clash_of_Clans:
         )
         await session.run()
 
-    @commands.group()
+    @group()
     @utils.has_perms()
     async def cocmembers(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
@@ -226,7 +227,7 @@ class Clash_of_Clans:
                 em = await embeds_coc.format_least_valuable(ctx, clan)
                 await ctx.send(embed=em)
 
-    @commands.command()
+    @command()
     async def cocsave(self, ctx, tag, index: str='0'):
         """Saves a Clash of Clans tag to your discord profile."""
         tag = self.conv.resolve_tag(ctx, tag)
@@ -243,7 +244,7 @@ class Clash_of_Clans:
 
         await ctx.send('Successfully saved tag. ' + prompt)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def cocusertag(self, ctx, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
@@ -255,7 +256,7 @@ class Clash_of_Clans:
             em.add_field(name=f'Tag index: {i}', value=tag[i])
         await ctx.send(embed=em)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
         '''Check your current war status.'''

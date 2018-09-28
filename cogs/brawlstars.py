@@ -7,6 +7,7 @@ from discord.ext import commands
 
 import box
 from ext import embeds_bs, utils
+from ext.command import command
 from ext.paginator import PaginatorSession
 
 shortcuts = {
@@ -93,7 +94,7 @@ class Brawl_Stars:
         else:
             return tag_or_user
 
-    @commands.command(enabled=False)
+    @command(enabled=False)
     async def bssave(self, ctx, *, tag):
         '''Saves a Brawl Stars tag to your discord profile.
 
@@ -108,7 +109,7 @@ class Brawl_Stars:
 
         await ctx.send('Successfully saved tag.')
 
-    @commands.command(enabled=False)
+    @command(enabled=False)
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
         '''Get general Brawl Stars player information.'''
         async with ctx.channel.typing():
@@ -125,7 +126,7 @@ class Brawl_Stars:
                 em = await embeds_bs.format_profile(ctx, profile)
                 await ctx.send(embed=em)
 
-    @commands.command(enabled=False)
+    @command(enabled=False)
     @utils.has_perms()
     async def bsband(self, ctx, tag_or_user: TagCheck=None):
         '''Get Brawl Stars band information.'''
@@ -147,7 +148,7 @@ class Brawl_Stars:
         )
         await session.run()
 
-    @commands.command(enabled=False)
+    @command(enabled=False)
     @utils.has_perms()
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''
@@ -162,7 +163,7 @@ class Brawl_Stars:
         )
         await session.run()
 
-    @commands.command(aliases=['bsrobo'])
+    @command(aliases=['bsrobo'])
     @utils.has_perms()
     async def bsroborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
@@ -177,7 +178,7 @@ class Brawl_Stars:
         )
         await session.run()
 
-    @commands.command(aliases=['bsboss'])
+    @command(aliases=['bsboss'])
     @utils.has_perms()
     async def bsbossfight(self, ctx):
         """Shows the boss fight leaderboard"""

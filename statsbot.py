@@ -22,6 +22,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from ext.context import CustomContext
 from ext.view import CustomView
 from locales.i18n import Translator
+from ext.command import command
 from ext.utils import InvalidPlatform, InvalidTag, NoTag
 
 _ = Translator('Core', __file__)
@@ -406,7 +407,7 @@ class StatsBot(commands.AutoShardedBot):
 
             await asyncio.sleep(60)
 
-    @commands.command()
+    @command()
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
         em = discord.Embed(

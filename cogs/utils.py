@@ -16,6 +16,7 @@ import psutil
 from discord.ext import commands
 
 from ext import utils
+from ext.command import command
 from ext.paginator import PaginatorSession
 
 from locales.i18n import Translator
@@ -29,7 +30,7 @@ class Bot_Related:
         self.bot = bot
 
     @utils.developer()
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def psa(self, ctx, *, message):
         em = discord.Embed(color=0xf9c93d)
         em.title = 'Created Announcement'
@@ -45,7 +46,7 @@ class Bot_Related:
         await ctx.send(embed=em)
 
     @utils.developer()
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def maintenance(self, ctx):
         if self.bot.maintenance_mode is True:
             await self.bot.change_presence(
@@ -67,7 +68,7 @@ class Bot_Related:
 
             await ctx.send('`Maintenance mode turned on.`')
 
-    @commands.command()
+    @command()
     async def invite(self, ctx):
         """Returns the invite url for the bot."""
         perms = discord.Permissions()
@@ -82,7 +83,7 @@ class Bot_Related:
         )
         await ctx.send(_('**Invite link:** \n<{}>', ctx).format(discord.utils.oauth_url(self.bot.user.id, perms)))
 
-    @commands.command()
+    @command()
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx, *, prefix):
         """Change the bot prefix for your server."""
@@ -98,7 +99,7 @@ class Bot_Related:
             )
         await ctx.send(_('Changed the prefix to: `{}`', ctx).format(prefix))
 
-    @commands.command(name='bot', aliases=['about', 'info', 'botto'])
+    @command(name='bot', aliases=['about', 'info', 'botto'])
     async def bot_(self, ctx):
         """Shows information and stats about the bot."""
         em = discord.Embed(timestamp=datetime.datetime.utcnow())
@@ -164,7 +165,7 @@ class Bot_Related:
         await ctx.send(embed=em)
 
     @utils.developer()
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def restart(self, ctx):
         """Restarts the bot."""
         em = discord.Embed(color=0xf9c93d)
@@ -213,19 +214,19 @@ class Bot_Related:
 
                     if cmd.hidden or not cmd.enabled or not can_run:
                         continue
-                    if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc:<{maxlen}}`\n') > 1024:
+                    if len(fmt[index] + f'`{prefix+cmd.qualified_name:<{maxlen}} ' + f'{cmd.short_doc(ctx):<{maxlen}}`\n') > 1024:
                         index += 1
                         fmt.append('')
                     fmt[index] += f'`{prefix+cmd.qualified_name:<{maxlen}} '
-                    fmt[index] += f'{cmd.short_doc:<{maxlen}}`\n'
+                    fmt[index] += f'{cmd.short_doc(ctx):<{maxlen}}`\n'
                     if hasattr(cmd, 'commands'):
                         for c in cmd.commands:
                             branch = '\u200b  └─ ' + c.name
-                            if len(fmt[index] + f"`{branch:<{maxlen+1}} " + f"{c.short_doc:<{maxlen}}`\n") > 1024:
+                            if len(fmt[index] + f"`{branch:<{maxlen+1}} " + f"{c.short_doc(ctx):<{maxlen}}`\n") > 1024:
                                 index += 1
                                 fmt.append('')
                             fmt[index] += f"`{branch:<{maxlen+1}} "
-                            fmt[index] += f"{c.short_doc:<{maxlen}}`\n"
+                            fmt[index] += f"{c.short_doc(ctx):<{maxlen}}`\n"
 
         em = discord.Embed(
             title=name.replace('_', ' '),
@@ -281,14 +282,14 @@ class Bot_Related:
                     else:
                         branch = '├─ ' + c.name
                     fmt += f"`{branch:<{maxlen+1}} "
-                    fmt += f"{c.short_doc:<{maxlen}}`\n"
+                    fmt += f"{c.short_doc(ctx):<{maxlen}}`\n"
 
                 em.add_field(name='Subcommands', value=fmt)
                 em.set_footer(text=f'Type {prefix}help {cmd} command for more info on a command.')
 
                 return em
 
-    @commands.command(name='help')
+    @command(name='help')
     async def _help(self, ctx, *, command=None):
         """Shows the help message."""
         try:
@@ -322,7 +323,7 @@ class Bot_Related:
         await p_session.run()
 
     @utils.developer()
-    @commands.command(pass_context=True, hidden=True, name='eval')
+    @command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
         env = {
@@ -397,7 +398,7 @@ class Bot_Related:
         # remove `foo`
         return content.strip('` \n')
 
-    @commands.command()
+    @command()
     async def suggest(self, ctx, *, details: str):
         """Suggest a game! Or a feature!"""
 
@@ -418,7 +419,7 @@ class Bot_Related:
 
         await ctx.send(_('Suggestion submitted. Thanks for the feedback!', ctx))
 
-    @commands.command()
+    @command()
     async def bug(self, ctx, *, details: str):
         """Report a bug!"""
 
@@ -440,7 +441,7 @@ class Bot_Related:
         await ctx.send(_('Bug Reported. Thanks for the report!', ctx))
 
     @utils.developer()
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def sudo(self, ctx, user: discord.Member, command, *, args=None):
         new_ctx = copy.copy(ctx)
         new_ctx.author = user
@@ -456,7 +457,7 @@ class Bot_Related:
         except Exception as e:
             await ctx.send(traceback.format_exc())
 
-    @commands.command(name='guilds', hidden=True)
+    @command(name='guilds', hidden=True)
     async def _guilds(self, ctx):
         nano = 0
         tiny = 0
@@ -487,7 +488,7 @@ Massive Servers [ 5000+]:  {massive}
 Total                   :  {len(self.bot.guilds)}```"""))
 
     @utils.developer()
-    @commands.command(name='commands', aliases=['cmd'], hidden=True)
+    @command(name='commands', aliases=['cmd'], hidden=True)
     async def commands_(self, ctx):
         """Displays command usage"""
         command_usage = (await self.bot.mongo.config.admin.find_one({'_id': 'master'}))['commands']
@@ -495,7 +496,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         sorted_commands = {i: command_usage[i] for i in sorted_usage}
         await ctx.send('```json\n' + json.dumps(sorted_commands, indent=4) + '\n```')
 
-    @commands.command(name='language')
+    @command(name='language')
     @commands.has_permissions(manage_guild=True)
     async def language_(self, ctx, language=''):
         """Changes your language!
@@ -516,7 +517,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             )
             await ctx.send(_('Language set.', ctx))
 
-    @commands.command()
+    @command()
     @commands.has_permissions(manage_guild=True)
     async def enable(self, ctx, *, cog_name: str):
         """Enables certain games"""
@@ -542,7 +543,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             )
             await ctx.send('Successfully enabled {}'.format(cog_name))
 
-    @commands.command()
+    @command()
     @commands.has_permissions(manage_guild=True)
     async def disable(self, ctx, *, cog_name: str):
         """Disables certain games"""
@@ -569,7 +570,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await ctx.send('Successfully disabled {}'.format(cog_name))
 
     @utils.developer()
-    @commands.command(name='reload', hidden=True)
+    @command(name='reload', hidden=True)
     async def reload_(self, ctx, *, cog_name):
         importlib.reload(importlib.import_module(cog_name))
         self.bot.unload_extension(cog_name)
@@ -577,7 +578,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         self.bot.load_extension(cog_name)
         await ctx.send('done')
 
-    @commands.command()
+    @command()
     async def discord(self, ctx):
         """Statsy support server invite link"""
         await ctx.send('<:statsy:464784655569387540> https://discord.gg/cBqsdPt')

@@ -2,9 +2,9 @@ import datetime
 
 import asyncio
 import discord
-from discord.ext import commands
 
 from ext import utils
+from ext.command import command
 
 
 def listget(l: list, index: int, default=None):
@@ -40,35 +40,35 @@ class Moderation:
         )
         await channel.send(embed=em)
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def warn(self, ctx, member: discord.Member, *, reason):
         """Warns a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
         """
         pass
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def kick(self, ctx, member: discord.Member, *, reason='Not specified'):
         """Kicks a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
         """
         await member.kick(reason=f'{ctx.author}: {reason}')
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def ban(self, ctx, member: discord.User, days=7, *, reason='Not specified'):
         """Bans a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
         """
         await ctx.guild.ban(member, reason=f'{ctx.author}: {reason}', delete_message_days=days)
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def unban(self, ctx, member: discord.User, *, reason='Not specified'):
         """Unbans a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt
         """
         await ctx.guild.unban(member, reason=f'{ctx.author}: {reason}')
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def softban(self, ctx, member: discord.Member, *, reason='Not specified'):
         """Softbans a user
         Only works on the official Statsy support server: https://discord.gg/cBqsdPt

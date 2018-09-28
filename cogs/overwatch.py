@@ -5,6 +5,7 @@ from discord.ext import commands
 from ext import embeds_ov, utils
 from ext.paginator import PaginatorSession
 
+from ext.command import command
 from locales.i18n import Translator
 
 _ = Translator('Overwatch', __file__)
@@ -76,7 +77,7 @@ class Overwatch:
         else:
             return tag_or_user
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def owprofile(self, ctx, *, tag_or_user: TagCheck=None):
         """Gets the Overwatch profile of a player."""
@@ -122,7 +123,7 @@ class Overwatch:
             else:
                 await ctx.send(embed=ems[0])
 
-    @commands.command()
+    @command()
     async def owsave(self, ctx, tag, index: str='0'):
         """Saves a Overwatch tag to your discord profile."""
         await ctx.save_tag(tag.replace("#", "-"), 'overwatch', index=index.replace('-', ''))
@@ -134,7 +135,7 @@ class Overwatch:
 
         await ctx.send('Successfully saved tag. ' + prompt)
 
-    @commands.command()
+    @command()
     @utils.has_perms()
     async def owusertag(self, ctx, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
