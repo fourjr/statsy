@@ -263,6 +263,7 @@ def format_robo(ctx, leaderboard):
 
     return embeds
 
+
 def format_boss(ctx, leaderboard):
     delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %H:%M:%S')
     hours, remainder = divmod(int(delta.total_seconds()), 3600)

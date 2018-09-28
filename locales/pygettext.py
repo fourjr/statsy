@@ -629,6 +629,7 @@ def main():
         try:
             eater.set_filename(filename)
             try:
+                print(fp.name)
                 tokens = tokenize.generate_tokens(fp.readline)
                 for _token in tokens:
                     eater(*_token)

@@ -163,8 +163,7 @@ class StatsBot(commands.AutoShardedBot):
         return prefixes
 
     async def on_connect(self):
-        """
-        Called when the bot has established a
+        """Called when the bot has established a
         gateway connection with discord
         """
         print('----------------------------')
@@ -174,8 +173,7 @@ class StatsBot(commands.AutoShardedBot):
         self.blacklist = await self.mongo.config.admin.find_one({'_id': 'blacklist'})
 
     async def on_ready(self):
-        """
-        Called when guild streaming is complete
+        """Called when guild streaming is complete
         and the client's internal cache is ready.
         """
         fmt = 'Statsy is ready!\n' \
@@ -192,8 +190,7 @@ class StatsBot(commands.AutoShardedBot):
             await self.log_hook.send(f'```{fmt}```')
 
     async def on_shard_connect(self, shard_id):
-        """
-        Called when a shard has successfuly
+        """Called when a shard has successfuly
         connected to the gateway.
         """
         print(f'Shard `{shard_id}` ready!')

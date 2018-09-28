@@ -1,18 +1,48 @@
+import os
+import re
 import subprocess
 import sys
-import os
 
 TO_TRANSLATE = ['../cogs/' + i for i in os.listdir('../cogs') if i.endswith('.py')] +\
-               ['../ext/' + i for i in os.listdir('../ext') if i.endswith('.py')] +\
                ['../statsbot.py']
 
 old_text = {}
+
+
+def nth_repl(string, sub, wanted, n):
+    # https://stackoverflow.com/a/35091558
+    where = [m.start() for m in re.finditer(sub, string)][n - 1]
+    before = string[:where]
+    after = string[where:]
+    after = after.replace(sub, wanted, 1)
+    newString = before + after
+    return newString
+
 
 for file in TO_TRANSLATE:
     with open(file, 'r+', encoding='utf8') as f:
         old_text[file] = f.read()
         f.seek(0)
-        f.write(old_text[file].replace(', ctx', ''))
+        new_content = old_text[file].replace(', ctx', '')
+        new_content_sl = new_content.splitlines()
+        if file.startswith('../cogs/') or file.startswith('../statsbot.py'):
+            # docstrings translation
+            for n, i in enumerate(new_content_sl):
+                if i.strip() == '"""':
+                    new_content_sl[n] = new_content_sl[n].replace('"""', '""")')
+
+                elif i.strip().startswith('"""'):
+                    # if it is a docstring line
+                    if i.endswith('"""'):
+                        # inline docstring, replace second iter
+                        new_content_sl[n] = nth_repl(i, '"""', '""")', 2)
+                    new_content_sl[n] = new_content_sl[n].replace('"""', '_("""', 1)
+
+                elif i.endswith('"""'):
+                    new_content_sl[n] = new_content_sl[n].replace('"""', '""")')
+
+        f.write('\n'.join(new_content_sl) + '\n')
+
         f.truncate()
 
 code = f'"{sys.executable}" pygettext.py {" ".join(TO_TRANSLATE)} -p pot'
