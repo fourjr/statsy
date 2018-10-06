@@ -24,9 +24,9 @@ def camel_case(text):
 def get_card_level(level, max_level):
     rarity_mapping = {
         13: 0,  # common
-        11: 3,  # rare
-        8: 6,   # epic
-        5: 9,   # legendary
+        11: 2,  # rare
+        8: 7,   # epic
+        5: 8,   # legendary
     }
     try:
         return level + rarity_mapping[max_level]
