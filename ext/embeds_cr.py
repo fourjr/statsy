@@ -25,7 +25,7 @@ def get_card_level(level, max_level):
     rarity_mapping = {
         13: 0,  # common
         11: 2,  # rare
-        8: 7,   # epic
+        8: 5,   # epic
         5: 8,   # legendary
     }
     try:
