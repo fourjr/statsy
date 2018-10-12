@@ -510,7 +510,7 @@ class Clash_Royale:
 
             try:
                 # Update existing config
-                config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)})
+                config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
                 message = None
                 message_id = config.get('claninfo', {}).get('message')
                 if message_id:
