@@ -7,3 +7,4 @@ motor==2.0.0
 python-dotenv==0.8.2
 cachetools==2.1.0
 psutil==5.4.6
+datadog==0.22.0
