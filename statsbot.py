@@ -118,8 +118,8 @@ class StatsBot(commands.AutoShardedBot):
 
     def get_game_emojis(self):
         emojis = []
-        for id in self.emoji_servers:
-            g = self.get_guild(id)
+        for id_ in self.emoji_servers:
+            g = self.get_guild(id_)
             for e in g.emojis:
                 emojis.append(e)
         return emojis
