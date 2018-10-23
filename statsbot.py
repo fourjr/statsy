@@ -62,7 +62,8 @@ class StatsBot(commands.AutoShardedBot):
             session=self.session,
             is_async=True,
             timeout=20,
-            constants=constants
+            constants=constants,
+            url=f"http://{os.getenv('spike')}/redirect?url=https://api.clashroyale.com/v1"
         )
         self.royaleapi = clashroyale.RoyaleAPI(
             os.getenv('royaleapi'),
@@ -77,7 +78,11 @@ class StatsBot(commands.AutoShardedBot):
         self.messages_sent = 0
         self.maintenance_mode = False
         self.psa_message = None
-        self.dev_mode = platform.system() != 'Linux'
+        try:
+            self.dev_mode = platform.system() != 'Linux' and sys.argv[1] != '-d'
+        except IndexError:
+            self.dev_mode = True
+
         if not self.dev_mode:
             self.backup_task_loop = self.loop.create_task(self.backup_task())
             self.datadog_loop = self.loop.create_task(self.datadog())
@@ -430,7 +435,7 @@ if __name__ == '__main__':
     logger.addHandler(handler)
 
     logger = logging.getLogger('commands')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(filename='bot.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)

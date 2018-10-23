@@ -78,7 +78,7 @@ class Clash_of_Clans:
             self.cache[endpoint]
         except KeyError:
             async with self.bot.session.get(
-                f"https://api.clashofclans.com/v1/{endpoint}",
+                f"http://{os.getenv('spike')}/redirect/?url=https://api.clashofclans.com/v1/{endpoint}",
                 headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"}
             ) as resp:
                 self.cache[endpoint] = await resp.json()

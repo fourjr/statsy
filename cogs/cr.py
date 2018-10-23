@@ -256,8 +256,8 @@ class Clash_Royale:
 
     async def on_message(self, m):
         await self.bot.wait_until_ready()
-        # if self.bot.dev_mode or not m.guild:
-        #     return
+        if self.bot.dev_mode or not m.guild:
+            return
 
         if m.channel.id == 480017443314597899 and m.author.bot:
             ctx = await self.bot.get_context(m)
