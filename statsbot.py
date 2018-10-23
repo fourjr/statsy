@@ -408,7 +408,7 @@ class StatsBot(commands.AutoShardedBot):
             for i in _.translations.keys():
                 if i == 'messages':
                     continue
-                num = await self.mongo.config.guilds.find({'language': i}).count()
+                num = await self.mongo.config.guilds.count_documents({'language': i})
                 datadog.statsd.gauge('statsy.language', num, [f'language: {i}'])
 
             await asyncio.sleep(60)
