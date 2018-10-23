@@ -1,8 +1,9 @@
 import io
 import os
 
-from cachetools import TTLCache
+import aiohttp
 import discord
+from cachetools import TTLCache
 from discord.ext import commands
 from PIL import Image
 
@@ -78,10 +79,23 @@ class Clash_of_Clans:
             self.cache[endpoint]
         except KeyError:
             async with self.bot.session.get(
-                f"http://{os.getenv('spike')}/redirect/?url=https://api.clashofclans.com/v1/{endpoint}",
+                f"http://{os.getenv('spike')}/redirect?url=https://api.clashofclans.com/v1/{endpoint}",
                 headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"}
             ) as resp:
-                self.cache[endpoint] = await resp.json()
+                try:
+                    self.cache[endpoint] = await resp.json()
+                except aiohttp.ContentTypeError:
+                    er = discord.Embed(
+                        title=_('Clash of Clans Server Down', ctx),
+                        color=discord.Color.red(),
+                        description='This could be caused by a maintainence break.'
+                    )
+                    if ctx.bot.psa_message:
+                        er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
+
+                    # end and ignore error
+                    raise commands.CheckFailure
 
         if self.cache[endpoint] == {"reason": "notFound"}:
             await ctx.send(_('The tag cannot be found!', ctx))
