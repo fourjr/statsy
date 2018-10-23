@@ -130,10 +130,7 @@ class Bot_Related:
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
         games = await self.bot.mongo.player_tags.list_collection_names()
-        try:
-            saved_tags = sum([await self.mongo.player_tags[i].count_documents({}) for i in games])
-        except AttributeError:
-            saved_tags = 'error'
+        saved_tags = sum([await self.bot.mongo.player_tags[i].count_documents({}) for i in games])
 
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'

@@ -395,7 +395,7 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
                 ('statsy.cache', len(self.get_cog('Clash_of_Clans').cache), ['game:clashofclans']),
                 ('statsy.claninfo', await self.mongo.config.guilds.count_documents({'claninfo': {'$exists': True}})),
-                ('statsy.tournament', await self.mongo.config.guilds.find({'tournament': {'$exists': True}}))
+                ('statsy.tournament', await self.mongo.config.guilds.count_documents({'tournament': {'$exists': True}}))
             ]
             for i in metrics:
                 try:
