@@ -131,7 +131,7 @@ class Bot_Related:
 
         games = await self.bot.mongo.player_tags.list_collection_names()
         try:
-            saved_tags = sum([await self.bot.mongo.player_tags[i].find().count() for i in games])
+            saved_tags = sum([await self.mongo.player_tags[i].count_documents({}) for i in games])
         except AttributeError:
             saved_tags = 'error'
 

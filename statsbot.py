@@ -391,10 +391,11 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.users', len(self.users)),
                 ('statsy.channels', len([i.id for g in self.guilds for i in g.channels])),
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
-                ('statsy.tags_saved', sum([await self.mongo.player_tags[i].find().iter().count() for i in games])),
+                ('statsy.tags_saved', sum([await self.mongo.player_tags[i].count_documents({}) for i in games])),
                 ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
-                ('statsy.claninfo', await self.mongo.config.guilds.find({'claninfo': {'$exists': True}}).iter().count()),
-                ('statsy.tournament', await self.mongo.config.guilds.find({'tournament': {'$exists': True}}).iter().count())
+                ('statsy.cache', len(self.get_cog('Clash_of_Clans').cache), ['game:clashofclans']),
+                ('statsy.claninfo', await self.mongo.config.guilds.count_documents({'claninfo': {'$exists': True}})),
+                ('statsy.tournament', await self.mongo.config.guilds.find({'tournament': {'$exists': True}}))
             ]
             for i in metrics:
                 try:
