@@ -703,7 +703,7 @@ class Clash_Royale:
     @leaderboard.command(aliases=['donation'])
     async def donations(self, ctx):
         """Gets the leaderboard of total donations"""
-        await self.parse_leaderboard(ctx, 'cards', 'stats', 'totalDonations')
+        await self.parse_leaderboard(ctx, 'cards', 'totalDonations')
 
     @utils.has_perms()
     @leaderboard.command()
@@ -715,25 +715,25 @@ class Clash_Royale:
     @leaderboard.command(aliases=['xp'])
     async def level(self, ctx):
         """Gets the leaderboard of XP Level"""
-        await self.parse_leaderboard(ctx, 'experience', 'stats', 'level')
+        await self.parse_leaderboard(ctx, 'experience', 'expLevel')
 
     @utils.has_perms()
     @leaderboard.command()
     async def cardswon(self, ctx):
         """Gets the leaderboard of challenge cards won"""
-        await self.parse_leaderboard(ctx, 'tournament', 'stats', 'challengeCardsWon', name='Challenge Cards Won')
+        await self.parse_leaderboard(ctx, 'tournament', 'challengeCardsWon', name='Challenge Cards Won')
 
     @utils.has_perms()
     @leaderboard.command()
     async def challengewins(self, ctx):
         """Gets the leaderboard of challenge max wins"""
-        await self.parse_leaderboard(ctx, 'tournament', 'stats', 'challengeMaxWins', name='Challenge Max Wins')
+        await self.parse_leaderboard(ctx, 'tournament', 'challengeMaxWins', name='Challenge Max Wins')
 
     @utils.has_perms()
     @leaderboard.command()
     async def clancards(self, ctx):
         """Gets the leaderboard of clan cards won"""
-        await self.parse_leaderboard(ctx, 'cards', 'stats', 'clanCardsCollected', name='Clan Cards Collected')
+        await self.parse_leaderboard(ctx, 'cards', 'clanCardsCollected', name='Clan Cards Collected')
 
     @utils.has_perms()
     @command()
