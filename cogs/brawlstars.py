@@ -129,7 +129,7 @@ class Brawl_Stars:
                             # end and ignore error
                             raise commands.CheckFailure
                 except asyncio.TimeoutError:
-                    await ctx.send(_('The tag cannot be found!', ctx))
+                    await ctx.send(_('Unable to find the tag. The tag is either invalid or there is a maintainence break.', ctx))
                     raise utils.NoTag
 
         return Box(self.cache[endpoint], camel_killer_box=True)
