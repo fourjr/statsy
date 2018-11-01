@@ -4,315 +4,327 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0.0\n"
-"POT-Creation-Date: 2018-09-28 15:57+Malay Peninsula Standard Time\n"
+"POT-Creation-Date: 2018-11-01 15:10+Malay Peninsula Standard Time\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ../cogs/brawlstars.py:168
-msgid "Shows the robo rumble leaderboard"
-msgstr ""
-
-#: ../cogs/brawlstars.py:183
-msgid "Shows the boss fight leaderboard"
-msgstr ""
-
-#: ../cogs/coc.py:51
-msgid "Invalid coc-tag passed."
-msgstr ""
-
-#: ../cogs/coc.py:86 ../cogs/cr.py:148
+#: ../cogs/brawlstars.py:108 ../cogs/coc.py:101 ../cogs/cr.py:149
 msgid "The tag cannot be found!"
 msgstr ""
 
-#: ../cogs/coc.py:106
-msgid "You don't have a saved tag. Save one using `{}cocsave <tag>`!"
+#: ../cogs/brawlstars.py:114
+msgid "Brawl Stars Server Down"
 msgstr ""
 
-#: ../cogs/coc.py:110 ../cogs/cr.py:207
-msgid "You don't have a clan!"
-msgstr ""
-
-#: ../cogs/coc.py:119
-msgid "That person does not have a clan!"
-msgstr ""
-
-#: ../cogs/coc.py:138 ../cogs/coc.py:156 ../cogs/coc.py:174
-msgid "Statsy | Powered by the COC API"
-msgstr ""
-
-#: ../cogs/coc.py:193
-msgid "/50 members"
-msgstr ""
-
-#: ../cogs/coc.py:209 ../cogs/coc.py:224
-msgid "Clan must have at least than 4 players for these statistics."
-msgstr ""
-
-#: ../cogs/coc.py:231
-msgid "Saves a Clash of Clans tag to your discord profile."
-msgstr ""
-
-#: ../cogs/coc.py:249 ../cogs/cr.py:883 ../cogs/fortnite.py:138
-#: ../cogs/overwatch.py:140
-msgid "Checks the saved tag(s) of a member"
-msgstr ""
-
-#: ../cogs/coc.py:266
-msgid "This clan's war logs aren't public."
-msgstr ""
-
-#: ../cogs/coc.py:268
-msgid "This clan isn't in a war right now!"
-msgstr ""
-
-#: ../cogs/cr.py:115
-msgid "Invalid cr-tag passed."
-msgstr ""
-
-#: ../cogs/cr.py:122
-msgid "Commands relating to the Clash Royale game made by supercell."
-msgstr ""
-
-#: ../cogs/cr.py:151
-msgid "Clash Royale Server Down"
-msgstr ""
-
-#: ../cogs/cr.py:156
+#: ../cogs/brawlstars.py:119 ../cogs/coc.py:94 ../cogs/cr.py:157
 msgid "Please Note!"
 msgstr ""
 
-#: ../cogs/cr.py:203
-msgid "You don't have a saved tag. Save one using `{}save <tag>`!"
+#: ../cogs/brawlstars.py:136
+msgid "Invalid tag"
 msgstr ""
 
-#: ../cogs/cr.py:214 ../cogs/fortnite.py:67
-msgid "That person doesnt have a saved tag!"
-msgstr ""
-
-#: ../cogs/cr.py:246
-msgid "{}, new tournament found!"
-msgstr ""
-
-#: ../cogs/cr.py:248
-msgid "New tournament found!"
-msgstr ""
-
-#: ../cogs/cr.py:398
-msgid "Check your guild's link beautifier status"
-msgstr ""
-
-#: ../cogs/cr.py:407
-msgid "Current status: {}"
-msgstr ""
-
-#: ../cogs/cr.py:409
-msgid " (default)"
-msgstr ""
-
-#: ../cogs/cr.py:416
-msgid "Enables link beautifier"
-msgstr ""
-
-#: ../cogs/cr.py:420
-msgid "Successfully set link beautifier to be enabled."
-msgstr ""
-
-#: ../cogs/cr.py:426
-msgid "Disables link beautifier"
-msgstr ""
-
-#: ../cogs/cr.py:430
-msgid "Successfully set link beautifier to be disabled."
-msgstr ""
-
-#: ../cogs/cr.py:436
-msgid "Sets the filters and channels for the tournament log"
-msgstr ""
-
-#: ../cogs/cr.py:443
-msgid "What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space."
-msgstr ""
-
-#: ../cogs/cr.py:448
-msgid "Invalid type(s)."
-msgstr ""
-
-#: ../cogs/cr.py:450
-msgid "Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`."
-msgstr ""
-
-#: ../cogs/cr.py:460
-msgid "Invalid role."
-msgstr ""
-
-#: ../cogs/cr.py:462
-msgid "Which channel do you want the alerts to be sent to?"
-msgstr ""
-
-#: ../cogs/cr.py:467
-msgid "Invalid channel."
-msgstr ""
-
-#: ../cogs/cr.py:481
-msgid "Log set!"
-msgstr ""
-
-#: ../cogs/cr.py:486
-msgid "Sets a clan log channel"
-msgstr ""
-
-#: ../cogs/cr.py:503
-msgid "{} is an invalid tag. Please use the clan tags seperated by spaces."
-msgstr ""
-
-#: ../cogs/cr.py:533
-msgid "Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}"
-msgstr ""
-
-#: ../cogs/cr.py:544
-msgid "Configuration complete."
-msgstr ""
-
-#: ../cogs/cr.py:549 ../cogs/cr.py:562
-msgid "Gets the clash royale profile of a player."
-msgstr ""
-
-#: ../cogs/cr.py:574
-msgid "Gets the season results a player."
-msgstr ""
-
-#: ../cogs/cr.py:593
-msgid "Gets the next chests of a player."
-msgstr ""
-
-#: ../cogs/cr.py:606
-msgid "Get a list of cards the user has and does not have"
-msgstr ""
-
-#: ../cogs/cr.py:618
-msgid "Get the latest 5 battles by the player!"
-msgstr ""
-
-#: ../cogs/cr.py:630
-msgid "Gets a clan by tag or by profile. (tagging the user)"
-msgstr ""
-
-#: ../cogs/cr.py:646
-msgid "Shows your clan clan war statistics"
-msgstr ""
-
-#: ../cogs/cr.py:698 ../cogs/cr.py:716
-msgid "Gets the leaderboard of XP Level"
-msgstr ""
-
-#: ../cogs/cr.py:704
-msgid "Gets the leaderboard of total donations"
-msgstr ""
-
-#: ../cogs/cr.py:710
-msgid "Gets the leaderboard of total trophies"
-msgstr ""
-
-#: ../cogs/cr.py:722
-msgid "Gets the leaderboard of challenge cards won"
-msgstr ""
-
-#: ../cogs/cr.py:728
-msgid "Gets the leaderboard of challenge max wins"
-msgstr ""
-
-#: ../cogs/cr.py:734
-msgid "Gets the leaderboard of clan cards won"
-msgstr ""
-
-#: ../cogs/cr.py:740
-msgid "Returns the global top 200 players."
-msgstr ""
-
-#: ../cogs/cr.py:764
-msgid "Returns the global top 200 clans by clan wars."
-msgstr ""
-
-#: ../cogs/cr.py:788
-msgid "Returns the global top 200 clans."
-msgstr ""
-
-#: ../cogs/cr.py:812
-msgid "Gets all the members of a clan."
-msgstr ""
-
-#: ../cogs/cr.py:831
-msgid "Finds the best members of the clan currently."
-msgstr ""
-
-#: ../cogs/cr.py:847
-msgid "Finds the worst members of the clan currently."
-msgstr ""
-
-#: ../cogs/cr.py:862
-msgid "Saves a Clash Royale tag to your discord profile."
-msgstr ""
-
-#: ../cogs/cr.py:874
-msgid "Check your stats with `{}profile`!"
-msgstr ""
-
-#: ../cogs/cr.py:876
-msgid "Check your stats with `{}profile -{}`!"
-msgstr ""
-
-#: ../cogs/cr.py:878
+#: ../cogs/brawlstars.py:140 ../cogs/cr.py:845
 msgid "Successfully saved tag."
 msgstr ""
 
-#: ../cogs/cr.py:895
+#: ../cogs/brawlstars.py:189
+msgid "Shows the robo rumble leaderboard"
+msgstr ""
+
+#: ../cogs/brawlstars.py:200
+msgid "Shows the boss fight leaderboard"
+msgstr ""
+
+#: ../cogs/coc.py:53
+msgid "Invalid coc-tag passed."
+msgstr ""
+
+#: ../cogs/coc.py:89
+msgid "Clash of Clans Server Down"
+msgstr ""
+
+#: ../cogs/coc.py:121
+msgid "You don't have a saved tag. Save one using `{}cocsave <tag>`!"
+msgstr ""
+
+#: ../cogs/coc.py:125 ../cogs/cr.py:208
+msgid "You don't have a clan!"
+msgstr ""
+
+#: ../cogs/coc.py:134
+msgid "That person does not have a clan!"
+msgstr ""
+
+#: ../cogs/coc.py:150 ../cogs/coc.py:163 ../cogs/coc.py:176
+msgid "Statsy | Powered by the COC API"
+msgstr ""
+
+#: ../cogs/coc.py:189
+msgid "/50 members"
+msgstr ""
+
+#: ../cogs/coc.py:201 ../cogs/coc.py:216
+msgid "Clan must have at least than 4 players for these statistics."
+msgstr ""
+
+#: ../cogs/coc.py:223
+msgid "Saves a Clash of Clans tag to your discord profile."
+msgstr ""
+
+#: ../cogs/coc.py:241 ../cogs/cr.py:850 ../cogs/fortnite.py:134
+#: ../cogs/overwatch.py:135
+msgid "Checks the saved tag(s) of a member"
+msgstr ""
+
+#: ../cogs/coc.py:258
+msgid "This clan's war logs aren't public."
+msgstr ""
+
+#: ../cogs/coc.py:260
+msgid "This clan isn't in a war right now!"
+msgstr ""
+
+#: ../cogs/cr.py:116
+msgid "Invalid cr-tag passed."
+msgstr ""
+
+#: ../cogs/cr.py:123
+msgid "Commands relating to the Clash Royale game made by supercell."
+msgstr ""
+
+#: ../cogs/cr.py:152
+msgid "Clash Royale Server Down"
+msgstr ""
+
+#: ../cogs/cr.py:204
+msgid "You don't have a saved tag. Save one using `{}save <tag>`!"
+msgstr ""
+
+#: ../cogs/cr.py:215 ../cogs/fortnite.py:68
+msgid "That person doesnt have a saved tag!"
+msgstr ""
+
+#: ../cogs/cr.py:247
+msgid "{}, new tournament found!"
+msgstr ""
+
+#: ../cogs/cr.py:249
+msgid "New tournament found!"
+msgstr ""
+
+#: ../cogs/cr.py:399
+msgid "Check your guild's link beautifier status"
+msgstr ""
+
+#: ../cogs/cr.py:408
+msgid "Current status: {}"
+msgstr ""
+
+#: ../cogs/cr.py:410
+msgid " (default)"
+msgstr ""
+
+#: ../cogs/cr.py:417
+msgid "Enables link beautifier"
+msgstr ""
+
+#: ../cogs/cr.py:421
+msgid "Successfully set link beautifier to be enabled."
+msgstr ""
+
+#: ../cogs/cr.py:427
+msgid "Disables link beautifier"
+msgstr ""
+
+#: ../cogs/cr.py:431
+msgid "Successfully set link beautifier to be disabled."
+msgstr ""
+
+#: ../cogs/cr.py:437
+msgid "Sets the filters and channels for the tournament log"
+msgstr ""
+
+#: ../cogs/cr.py:444
+msgid "What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space."
+msgstr ""
+
+#: ../cogs/cr.py:449
+msgid "Invalid type(s)."
+msgstr ""
+
+#: ../cogs/cr.py:451
+msgid "Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`."
+msgstr ""
+
+#: ../cogs/cr.py:461
+msgid "Invalid role."
+msgstr ""
+
+#: ../cogs/cr.py:463
+msgid "Which channel do you want the alerts to be sent to?"
+msgstr ""
+
+#: ../cogs/cr.py:468
+msgid "Invalid channel."
+msgstr ""
+
+#: ../cogs/cr.py:482
+msgid "Log set!"
+msgstr ""
+
+#: ../cogs/cr.py:487
+msgid "Sets a clan log channel"
+msgstr ""
+
+#: ../cogs/cr.py:504
+msgid "{} is an invalid tag. Please use the clan tags seperated by spaces."
+msgstr ""
+
+#: ../cogs/cr.py:534
+msgid "Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}"
+msgstr ""
+
+#: ../cogs/cr.py:545
+msgid "Configuration complete."
+msgstr ""
+
+#: ../cogs/cr.py:550 ../cogs/cr.py:563
+msgid "Gets the clash royale profile of a player."
+msgstr ""
+
+#: ../cogs/cr.py:575
+msgid "Gets the season results a player."
+msgstr ""
+
+#: ../cogs/cr.py:590
+msgid "Gets the next chests of a player."
+msgstr ""
+
+#: ../cogs/cr.py:603
+msgid "Get a list of cards the user has and does not have"
+msgstr ""
+
+#: ../cogs/cr.py:615
+msgid "Get the latest 5 battles by the player!"
+msgstr ""
+
+#: ../cogs/cr.py:627
+msgid "Gets a clan by tag or by profile. (tagging the user)"
+msgstr ""
+
+#: ../cogs/cr.py:639
+msgid "Shows your clan clan war statistics"
+msgstr ""
+
+#: ../cogs/cr.py:682 ../cogs/cr.py:700
+msgid "Gets the leaderboard of XP Level"
+msgstr ""
+
+#: ../cogs/cr.py:688
+msgid "Gets the leaderboard of total donations"
+msgstr ""
+
+#: ../cogs/cr.py:694
+msgid "Gets the leaderboard of total trophies"
+msgstr ""
+
+#: ../cogs/cr.py:706
+msgid "Gets the leaderboard of challenge cards won"
+msgstr ""
+
+#: ../cogs/cr.py:712
+msgid "Gets the leaderboard of challenge max wins"
+msgstr ""
+
+#: ../cogs/cr.py:718
+msgid "Gets the leaderboard of clan cards won"
+msgstr ""
+
+#: ../cogs/cr.py:724
+msgid "Returns the global top 200 players."
+msgstr ""
+
+#: ../cogs/cr.py:744
+msgid "Returns the global top 200 clans by clan wars."
+msgstr ""
+
+#: ../cogs/cr.py:764
+msgid "Returns the global top 200 clans."
+msgstr ""
+
+#: ../cogs/cr.py:784
+msgid "Gets all the members of a clan."
+msgstr ""
+
+#: ../cogs/cr.py:798
+msgid "Finds the best members of the clan currently."
+msgstr ""
+
+#: ../cogs/cr.py:814
+msgid "Finds the worst members of the clan currently."
+msgstr ""
+
+#: ../cogs/cr.py:829
+msgid "Saves a Clash Royale tag to your discord profile."
+msgstr ""
+
+#: ../cogs/cr.py:841
+msgid "Check your stats with `{}profile`!"
+msgstr ""
+
+#: ../cogs/cr.py:843
+msgid "Check your stats with `{}profile -{}`!"
+msgstr ""
+
+#: ../cogs/cr.py:862
 msgid "Gets the current deck of a player."
 msgstr ""
 
-#: ../cogs/cr.py:907
+#: ../cogs/cr.py:874
 msgid "Get information about a Clash Royale card."
 msgstr ""
 
-#: ../cogs/cr.py:942
+#: ../cogs/cr.py:909
 msgid "View statistics about a tournament"
 msgstr ""
 
-#: ../cogs/cr.py:956
+#: ../cogs/cr.py:919
 msgid "Show a list of open tournaments that you can join!"
 msgstr ""
 
-#: ../cogs/fortnite.py:18
+#: ../cogs/fortnite.py:19
 msgid "Raised when the Fortnite API is down"
 msgstr ""
 
-#: ../cogs/fortnite.py:35
+#: ../cogs/fortnite.py:36
 msgid "Commands related to the Fortnite game"
 msgstr ""
 
-#: ../cogs/fortnite.py:58
+#: ../cogs/fortnite.py:59
 msgid "You don't have a saved tag. Save one using `{}fnsave <tag>!`"
 msgstr ""
 
-#: ../cogs/fortnite.py:77
+#: ../cogs/fortnite.py:78
 msgid "Fortnite API is currently undergoing maintenance. Please try again later."
 msgstr ""
 
-#: ../cogs/fortnite.py:98
+#: ../cogs/fortnite.py:99
 msgid "The username cannot be found!"
 msgstr ""
 
-#: ../cogs/fortnite.py:105
+#: ../cogs/fortnite.py:106
 msgid "Saves a Fortnite tag to your discord profile."
 msgstr ""
 
-#: ../cogs/fortnite.py:118
+#: ../cogs/fortnite.py:119
 msgid "Gets the fortnite profile of a player with a provided platform"
 msgstr ""
 
-#: ../cogs/fortnite.py:131
+#: ../cogs/fortnite.py:129
 msgid "Statsy - Powered by fortniteapi.com"
 msgstr ""
 
@@ -340,285 +352,285 @@ msgstr ""
 msgid "Softbans a user"
 msgstr ""
 
-#: ../cogs/overwatch.py:29
+#: ../cogs/overwatch.py:30
 msgid "Commands relating to the Overwatch game."
 msgstr ""
 
-#: ../cogs/overwatch.py:64
+#: ../cogs/overwatch.py:65
 msgid "You don't have a saved tag. Save one using `{}owsave <tag>`!"
 msgstr ""
 
-#: ../cogs/overwatch.py:72
+#: ../cogs/overwatch.py:73
 msgid "That person doesn't have a saved tag!"
 msgstr ""
 
-#: ../cogs/overwatch.py:82
+#: ../cogs/overwatch.py:83
 msgid "Gets the Overwatch profile of a player."
 msgstr ""
 
-#: ../cogs/overwatch.py:93
+#: ../cogs/overwatch.py:94
 msgid "The battletag cannot be found! Make sure to include the part after the `#`"
 msgstr ""
 
-#: ../cogs/overwatch.py:95
+#: ../cogs/overwatch.py:96
 msgid "Please set your account statistics to be public to view stats."
 msgstr ""
 
-#: ../cogs/overwatch.py:121
+#: ../cogs/overwatch.py:116
 msgid "There aren't any stats for this user!"
 msgstr ""
 
-#: ../cogs/overwatch.py:127
+#: ../cogs/overwatch.py:122
 msgid "Saves a Overwatch tag to your discord profile."
 msgstr ""
 
-#: ../cogs/utils.py:27
+#: ../cogs/utils.py:28
 msgid "Commands that pertain to bot utility."
 msgstr ""
 
-#: ../cogs/utils.py:72
+#: ../cogs/utils.py:73
 msgid "Returns the invite url for the bot."
 msgstr ""
 
-#: ../cogs/utils.py:83
+#: ../cogs/utils.py:84
 msgid ""
 "**Invite link:** \n"
 "<{}>"
 msgstr ""
 
-#: ../cogs/utils.py:88
+#: ../cogs/utils.py:89
 msgid "Change the bot prefix for your server."
 msgstr ""
 
-#: ../cogs/utils.py:99
+#: ../cogs/utils.py:100
 msgid "Changed the prefix to: `{}`"
 msgstr ""
 
-#: ../cogs/utils.py:103
+#: ../cogs/utils.py:104
 msgid "Shows information and stats about the bot."
 msgstr ""
 
-#: ../cogs/utils.py:107 ../cogs/utils.py:111 ../cogs/utils.py:114
+#: ../cogs/utils.py:108 ../cogs/utils.py:112 ../cogs/utils.py:115
 msgid "Bot Information"
 msgstr ""
 
-#: ../cogs/utils.py:140
+#: ../cogs/utils.py:138
 msgid "Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR."
 msgstr ""
 
-#: ../cogs/utils.py:143
+#: ../cogs/utils.py:141
 msgid "This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy."
 msgstr ""
 
-#: ../cogs/utils.py:147
+#: ../cogs/utils.py:145
 msgid "Current Status"
 msgstr ""
 
-#: ../cogs/utils.py:148
+#: ../cogs/utils.py:146
 msgid "Uptime"
 msgstr ""
 
-#: ../cogs/utils.py:149
+#: ../cogs/utils.py:147
 msgid "Latency"
 msgstr ""
 
-#: ../cogs/utils.py:150
+#: ../cogs/utils.py:148
 msgid "Guilds"
 msgstr ""
 
-#: ../cogs/utils.py:151
+#: ../cogs/utils.py:149
 msgid "Members"
 msgstr ""
 
-#: ../cogs/utils.py:152
+#: ../cogs/utils.py:150
 msgid "Channels"
 msgstr ""
 
-#: ../cogs/utils.py:155
+#: ../cogs/utils.py:153
 msgid "RAM Usage"
 msgstr ""
 
-#: ../cogs/utils.py:156
+#: ../cogs/utils.py:154
 msgid "CPU Usage"
 msgstr ""
 
-#: ../cogs/utils.py:157
+#: ../cogs/utils.py:155
 msgid "Saved Tags"
 msgstr ""
 
-#: ../cogs/utils.py:158
+#: ../cogs/utils.py:156
 msgid "Library"
 msgstr ""
 
-#: ../cogs/utils.py:159
+#: ../cogs/utils.py:157
 msgid "Discord"
 msgstr ""
 
-#: ../cogs/utils.py:160
+#: ../cogs/utils.py:158
 msgid "Follow us on Twitter!"
 msgstr ""
 
-#: ../cogs/utils.py:161
+#: ../cogs/utils.py:159
 msgid "Upvote This Bot!"
 msgstr ""
 
-#: ../cogs/utils.py:162
+#: ../cogs/utils.py:160
 msgid "Bot ID: {}"
 msgstr ""
 
-#: ../cogs/utils.py:169
+#: ../cogs/utils.py:167
 msgid "Restarts the bot."
 msgstr ""
 
-#: ../cogs/utils.py:177
+#: ../cogs/utils.py:175
 msgid "Formats the text for a cog help"
 msgstr ""
 
-#: ../cogs/utils.py:245
+#: ../cogs/utils.py:243
 msgid "Formats command help."
 msgstr ""
 
-#: ../cogs/utils.py:293
+#: ../cogs/utils.py:291
 msgid "Shows the help message."
 msgstr ""
 
-#: ../cogs/utils.py:304
+#: ../cogs/utils.py:302
 msgid "Could not find a cog or command by that name."
 msgstr ""
 
-#: ../cogs/utils.py:318
+#: ../cogs/utils.py:314
 msgid "Type {}help command for more info on a command."
 msgstr ""
 
-#: ../cogs/utils.py:327
+#: ../cogs/utils.py:321
 msgid "Evaluates python code"
 msgstr ""
 
-#: ../cogs/utils.py:392
+#: ../cogs/utils.py:386
 msgid "Automatically removes code blocks from the code."
 msgstr ""
 
-#: ../cogs/utils.py:402
+#: ../cogs/utils.py:396
 msgid "Suggest a game! Or a feature!"
 msgstr ""
 
-#: ../cogs/utils.py:419
+#: ../cogs/utils.py:413
 msgid "Suggestion submitted. Thanks for the feedback!"
 msgstr ""
 
-#: ../cogs/utils.py:423
+#: ../cogs/utils.py:417
 msgid "Report a bug!"
 msgstr ""
 
-#: ../cogs/utils.py:440
+#: ../cogs/utils.py:434
 msgid "Bug Reported. Thanks for the report!"
 msgstr ""
 
-#: ../cogs/utils.py:492
+#: ../cogs/utils.py:486
 msgid "Displays command usage"
 msgstr ""
 
-#: ../cogs/utils.py:501
+#: ../cogs/utils.py:495
 msgid "Changes your language!"
 msgstr ""
 
-#: ../cogs/utils.py:513
+#: ../cogs/utils.py:507
 msgid "Available languages: {}"
 msgstr ""
 
-#: ../cogs/utils.py:518
+#: ../cogs/utils.py:512
 msgid "Language set."
 msgstr ""
 
-#: ../cogs/utils.py:523
+#: ../cogs/utils.py:517
 msgid "Enables certain games"
 msgstr ""
 
-#: ../cogs/utils.py:525
+#: ../cogs/utils.py:519
 msgid "All games are enabled in DMs."
 msgstr ""
 
-#: ../cogs/utils.py:538 ../cogs/utils.py:564
+#: ../cogs/utils.py:532 ../cogs/utils.py:558
 msgid "Invalid game. Pick from: {}"
 msgstr ""
 
-#: ../cogs/utils.py:549
+#: ../cogs/utils.py:543
 msgid "Disables certain games"
 msgstr ""
 
-#: ../cogs/utils.py:551
+#: ../cogs/utils.py:545
 msgid "All games cannot be disabled in DMs."
 msgstr ""
 
-#: ../cogs/utils.py:583
+#: ../cogs/utils.py:577
 msgid "Statsy support server invite link"
 msgstr ""
 
-#: ../statsbot.py:31
+#: ../statsbot.py:32
 msgid "Custom client for statsy made by Kyber"
 msgstr ""
 
-#: ../statsbot.py:127
+#: ../statsbot.py:133
 msgid "Adds commands automatically"
 msgstr ""
 
-#: ../statsbot.py:133
+#: ../statsbot.py:139
 msgid "Loads the default set of extensions or a seperate one if given"
 msgstr ""
 
-#: ../statsbot.py:144
+#: ../statsbot.py:150
 msgid "Forcefully restart the bot."
 msgstr ""
 
-#: ../statsbot.py:148
+#: ../statsbot.py:154
 msgid "Returns the prefix."
 msgstr ""
 
-#: ../statsbot.py:166
+#: ../statsbot.py:172
 msgid "Called when the bot has established a"
 msgstr ""
 
-#: ../statsbot.py:177
+#: ../statsbot.py:183
 msgid "Called when guild streaming is complete"
 msgstr ""
 
-#: ../statsbot.py:195
+#: ../statsbot.py:201
 msgid "Called when a shard has successfuly"
 msgstr ""
 
-#: ../statsbot.py:203
+#: ../statsbot.py:209
 msgid "Called when a command is invoked."
 msgstr ""
 
-#: ../statsbot.py:219
+#: ../statsbot.py:225
 msgid "Utilises the CustomContext subclass of discord.Context"
 msgstr ""
 
-#: ../statsbot.py:247
+#: ../statsbot.py:253
 msgid "Overwrites the default StringView for space insensitivity"
 msgstr ""
 
-#: ../statsbot.py:332
+#: ../statsbot.py:338
 msgid "Something went wrong and we are investigating the issue now."
 msgstr ""
 
-#: ../statsbot.py:350
+#: ../statsbot.py:356
 msgid "Called when a message is sent/recieved."
 msgstr ""
 
-#: ../statsbot.py:356
+#: ../statsbot.py:362
 msgid "Publish to botlists."
 msgstr ""
 
-#: ../statsbot.py:382
+#: ../statsbot.py:388
 msgid "Push to datadog"
 msgstr ""
 
-#: ../statsbot.py:415
+#: ../statsbot.py:422
 msgid "Pong! Returns average shard latency."
 msgstr ""
 
-#: ../statsbot.py:417
+#: ../statsbot.py:424
 msgid "Pong! Websocket Latency:"
 msgstr ""
 
