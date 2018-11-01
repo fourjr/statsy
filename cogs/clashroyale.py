@@ -15,9 +15,10 @@ from discord.ext import commands
 from oauth2client.service_account import ServiceAccountCredentials
 from pymongo import ReturnDocument
 
-from ext import embeds_cr, utils
+from ext import utils
 from ext.context import NoContext
 from ext.command import command, group
+from ext.embeds import clashroyale as cr
 from ext.paginator import Paginator
 from locales.i18n import Translator
 
@@ -277,7 +278,7 @@ class Clash_Royale:
             await self.tournament_sender(
                 ctx,
                 json.loads(' '.join(m.content.split(' ')[1:])),
-                (await embeds_cr.format_tournament(ctx, tournament))[0]
+                (await cr.format_tournament(ctx, tournament))[0]
             )
             return
 
@@ -305,7 +306,7 @@ class Clash_Royale:
             if m.content.find('?deck=') != -1:
                 # Deck
                 link = 'https://link.clashroyale.com/deck/en?deck=' + ';'.join(deck)
-                em = await embeds_cr.format_deck_link(ctx, deck, link, default)
+                em = await cr.format_deck_link(ctx, deck, link, default)
                 try:
                     await m.delete()
                 except (discord.NotFound, discord.Forbidden):
@@ -351,9 +352,9 @@ class Clash_Royale:
                 text = m.content[0:m.content.find('http')] + ' ' + m.content[platform:]
 
                 if 'link.clashroyale.com/invite/clan/' in m.content:
-                    em = await embeds_cr.format_clan_link(ctx, clan, link, default)
+                    em = await cr.format_clan_link(ctx, clan, link, default)
                 else:
-                    em = await embeds_cr.format_friend_link(ctx, profile, link, default)
+                    em = await cr.format_friend_link(ctx, profile, link, default)
 
                 try:
                     await m.delete()
@@ -553,7 +554,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
             cycle = await self.request(ctx, 'get_player_chests', tag)
-            em = await embeds_cr.format_profile(ctx, profile, cycle.get('items'))
+            em = await cr.format_profile(ctx, profile, cycle.get('items'))
 
         await ctx.send(embed=em)
 
@@ -565,7 +566,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
-            em = await embeds_cr.format_stats(ctx, profile)
+            em = await cr.format_stats(ctx, profile)
 
         await ctx.send(embed=em)
 
@@ -577,7 +578,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
-            ems = await embeds_cr.format_seasons(ctx, profile)
+            ems = await cr.format_seasons(ctx, profile)
 
         if len(ems) > 0:
             await Paginator(ctx, *ems).start()
@@ -593,7 +594,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
             cycle = await self.request(ctx, 'get_player_chests', tag)
-            em = await embeds_cr.format_chests(ctx, profile, cycle.get('items'))
+            em = await cr.format_chests(ctx, profile, cycle.get('items'))
 
         await ctx.send(embed=em)
 
@@ -605,7 +606,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
-            em = await embeds_cr.format_cards(ctx, profile)
+            em = await cr.format_cards(ctx, profile)
 
         await ctx.send(embed=em)
 
@@ -617,7 +618,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             battles = await self.request(ctx, 'get_player_battles', tag)
-            em = await embeds_cr.format_battles(ctx, battles)
+            em = await cr.format_battles(ctx, battles)
 
         await ctx.send(embed=em)
 
@@ -629,7 +630,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             clan = await self.request(ctx, 'get_clan', tag)
-            ems = await embeds_cr.format_clan(ctx, clan)
+            ems = await cr.format_clan(ctx, clan)
 
         await Paginator(ctx, *ems).start()
 
@@ -641,7 +642,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             war = await self.request(ctx, 'get_clan_war', tag)
-            ems = await embeds_cr.format_clan_war(ctx, war)
+            ems = await cr.format_clan_war(ctx, war)
 
         await Paginator(ctx, *ems).start()
 
@@ -666,7 +667,7 @@ class Clash_Royale:
                 sorted_result[i] = db_result[i]
 
             tag = await self.resolve_tag(ctx, ctx.author)
-            ems = await embeds_cr.format_lb(ctx, sorted_result, tag, emoji_name, *statistics, **kwargs)
+            ems = await cr.format_lb(ctx, sorted_result, tag, emoji_name, *statistics, **kwargs)
 
             del db_result
             del data
@@ -734,7 +735,7 @@ class Clash_Royale:
                 clans = await self.request(ctx, 'get_top_players', region)
             except clashroyale.NotFoundError:
                 return await ctx.send('Invalid region')
-            ems = await embeds_cr.format_top_players(ctx, clans.get('items'), name)
+            ems = await cr.format_top_players(ctx, clans.get('items'), name)
 
         await Paginator(ctx, *ems).start()
 
@@ -754,7 +755,7 @@ class Clash_Royale:
                 clans = await self.request(ctx, 'get_top_clanwar_clans', region)
             except clashroyale.NotFoundError:
                 return await ctx.send('Invalid region')
-            ems = await embeds_cr.format_top_clan_wars(ctx, clans.get('items'), name)
+            ems = await cr.format_top_clan_wars(ctx, clans.get('items'), name)
 
         await Paginator(ctx, *ems).start()
 
@@ -774,7 +775,7 @@ class Clash_Royale:
                 clans = await self.request(ctx, 'get_top_clans', region)
             except clashroyale.NotFoundError:
                 return await ctx.send('Invalid region')
-            ems = await embeds_cr.format_top_clans(ctx, clans.get('items'), name)
+            ems = await cr.format_top_clans(ctx, clans.get('items'), name)
 
         await Paginator(ctx, *ems).start()
 
@@ -788,7 +789,7 @@ class Clash_Royale:
             clan = await self.request(ctx, 'get_clan', tag)
             war = await self.request(ctx, 'get_clan_war_log', tag)
 
-            ems = await embeds_cr.format_members(ctx, clan, war.get('items'))
+            ems = await cr.format_members(ctx, clan, war.get('items'))
 
         await Paginator(ctx, *ems).start()
 
@@ -805,7 +806,7 @@ class Clash_Royale:
             if len(clan.member_list) < 4:
                 await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
-                em = await embeds_cr.format_most_valuable(ctx, clan, war.get('items'))
+                em = await cr.format_most_valuable(ctx, clan, war.get('items'))
                 await ctx.send(embed=em)
 
     @members.command()
@@ -821,7 +822,7 @@ class Clash_Royale:
             if len(clan.member_list) < 4:
                 return await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
-                em = await embeds_cr.format_least_valuable(ctx, clan, war.get('items'))
+                em = await cr.format_least_valuable(ctx, clan, war.get('items'))
                 await ctx.send(embed=em)
 
     @command()
@@ -864,7 +865,7 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
-            em = await embeds_cr.format_deck(ctx, profile)
+            em = await cr.format_deck(ctx, profile)
 
             await ctx.send(embed=em)
 
@@ -893,7 +894,7 @@ class Clash_Royale:
         if found_card is None:
             return await ctx.send("That's not a card!")
 
-        em = await embeds_cr.format_card(ctx, found_card)
+        em = await cr.format_card(ctx, found_card)
         try:
             async with self.bot.session.get(utils.emoji(ctx, card).url) as resp:
                 c = io.BytesIO(await resp.read())
@@ -909,7 +910,7 @@ class Clash_Royale:
         """View statistics about a tournament"""
         async with ctx.typing():
             t = await self.request(ctx, 'get_tournament', tag[0])
-            ems = await embeds_cr.format_tournament(ctx, t)
+            ems = await cr.format_tournament(ctx, t)
 
         await Paginator(ctx, *ems).start()
 
@@ -919,7 +920,7 @@ class Clash_Royale:
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
             t = await self.request(ctx, 'get_open_tournaments', client=self.bot.royaleapi)
-            em = await embeds_cr.format_tournaments(ctx, t)
+            em = await cr.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)
 
@@ -946,7 +947,7 @@ class Clash_Royale:
             total_members = 0
 
             for i in range(len(clans)):
-                embed.add_field(name=clans[i].name, value=embeds_cr.format_clan_stats(clans[i], wars[i]))
+                embed.add_field(name=clans[i].name, value=cr.format_clan_stats(clans[i], wars[i]))
                 total_members += len(clans[i].member_list)
 
             embed.add_field(name='More Info', value=f"<:clan:376373812012384267> {total_members}/{50*len(clans)}", inline=False)

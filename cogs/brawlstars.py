@@ -9,8 +9,9 @@ from box import Box
 from discord.ext import commands
 
 import box
-from ext import embeds_bs, utils
+from ext import utils
 from ext.command import command
+from ext.embeds import brawlstars
 from ext.paginator import Paginator
 from locales.i18n import Translator
 
@@ -55,7 +56,7 @@ class TagCheck(commands.MemberConverter):
 
 class Brawl_Stars:
 
-    '''Commands relating to the Brawl Stars game made by supercell.'''
+    """Commands relating to the Brawl Stars game made by supercell."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -126,10 +127,10 @@ class Brawl_Stars:
 
     @command()
     async def bssave(self, ctx, *, tag):
-        '''Saves a Brawl Stars tag to your discord profile.
+        """Saves a Brawl Stars tag to your discord profile.
 
         Ability to save multiple tags coming soon.
-        '''
+        """
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
@@ -141,45 +142,45 @@ class Brawl_Stars:
 
     @command()
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
-        '''Get general Brawl Stars player information.'''
+        """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.channel.typing():
             profile = await self.request(ctx, f'/players/{tag}')
-            em = await embeds_bs.format_profile(ctx, profile)
+            em = await brawlstars.format_profile(ctx, profile)
 
         await ctx.send(embed=em)
 
     @command(aliases=['bsbrawler'])
     async def bsbrawlers(self, ctx, tag_or_user: TagCheck=None):
-        '''Get general Brawl Stars player information.'''
+        """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.channel.typing():
             profile = await self.request(ctx, f'/players/{tag}')
-            ems = await embeds_bs.format_brawlers(ctx, profile)
+            ems = await brawlstars.format_brawlers(ctx, profile)
 
         await Paginator(ctx, *ems).start()
 
     @command()
     @utils.has_perms()
     async def bsband(self, ctx, tag_or_user: TagCheck=None):
-        '''Get Brawl Stars band information.'''
+        """Get Brawl Stars band information."""
         tag = await self.resolve_tag(ctx, tag_or_user, band=True)
 
         async with ctx.channel.typing():
             band = await self.request(ctx, f'/bands/{tag}')
-            ems = await embeds_bs.format_band(ctx, band)
+            ems = await brawlstars.format_band(ctx, band)
 
         await Paginator(ctx, *ems).start()
 
     @command(enabled=False)
     @utils.has_perms()
     async def bsevents(self, ctx):
-        '''Shows the upcoming events!'''
+        """Shows the upcoming events!"""
         async with ctx.channel.typing():
             events = await self.request(f'/events')
-            ems = await embeds_bs.format_events(ctx, events)
+            ems = await brawlstars.format_events(ctx, events)
 
         await Paginator(ctx, *ems).start()
 
@@ -190,7 +191,7 @@ class Brawl_Stars:
         async with ctx.channel.typing():
             async with ctx.session.get(f'https://leaderboard.brawlstars.com/rumbleboard.jsonp?_={int(time.time())}') as resp:
                 leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
-            ems = embeds_bs.format_robo(ctx, leaderboard)
+            ems = brawlstars.format_robo(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
 
@@ -201,7 +202,7 @@ class Brawl_Stars:
         async with ctx.channel.typing():
             async with ctx.session.get(f'https://leaderboard.brawlstars.com/bossboard.jsonp?_={int(time.time())}') as resp:
                 leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
-            ems = embeds_bs.format_boss(ctx, leaderboard)
+            ems = brawlstars.format_boss(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
 

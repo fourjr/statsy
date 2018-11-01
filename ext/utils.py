@@ -59,6 +59,7 @@ def emoji(ctx, name, should_format=True):
     if should_format:
         name = name.lower()
         replace = {
+            # new: to_replace
             '': ['.', ' ', '_', '-'],
             'chestgold': 'chestgolden',
             'rico': 'ricochet',
@@ -66,7 +67,7 @@ def emoji(ctx, name, should_format=True):
             'pekka': 'p.e.k.k.a',
             'jess': 'jessie',
             'mike': 'dynamike',
-            'franky': 'frank'
+            'frank': 'franky'
         }
         for i in replace:
             if isinstance(replace[i], list):

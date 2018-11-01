@@ -311,9 +311,7 @@ class Bot_Related:
             if em:
                 pages.append(em)
 
-        p_session = Paginator(ctx, *pages, _('Type {}help command for more info on a command.', ctx).format(prefix))
-
-        await p_session.run()
+        await Paginator(ctx, *pages, footer_text=_('Type {}help command for more info on a command.', ctx).format(prefix)).start()
 
     @utils.developer()
     @command(pass_context=True, hidden=True, name='eval')

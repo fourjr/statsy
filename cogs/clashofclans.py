@@ -7,8 +7,9 @@ from cachetools import TTLCache
 from discord.ext import commands
 from PIL import Image
 
-from ext import embeds_coc, utils
+from ext import utils
 from ext.command import command, group
+from ext.embeds import clashofclans
 from ext.paginator import Paginator
 from locales.i18n import Translator
 
@@ -145,7 +146,7 @@ class Clash_of_Clans:
         async with ctx.typing():
             profile = await self.request(ctx, f'players/%23{tag}')
 
-            ems = await embeds_coc.format_profile(ctx, profile)
+            ems = await clashofclans.format_profile(ctx, profile)
 
         await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
 
@@ -158,7 +159,7 @@ class Clash_of_Clans:
         async with ctx.typing():
             profile = await self.request(ctx, f'players/%23{tag}')
 
-            ems = await embeds_coc.format_achievements(ctx, profile)
+            ems = await clashofclans.format_achievements(ctx, profile)
 
         await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
 
@@ -171,7 +172,7 @@ class Clash_of_Clans:
         async with ctx.typing():
             clan = await self.request(ctx, f'clans/%23{tag}')
 
-            ems = await embeds_coc.format_clan(ctx, clan)
+            ems = await clashofclans.format_clan(ctx, clan)
 
         await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
 
@@ -184,7 +185,7 @@ class Clash_of_Clans:
         async with ctx.typing():
             clan = await self.request(ctx, f'clans/%23{tag}')
 
-            ems = await embeds_coc.format_members(ctx, clan)
+            ems = await clashofclans.format_members(ctx, clan)
 
         await Paginator(ctx, *ems, footer_text=str(clan["members"]) + _('/50 members', ctx)).start()
 
@@ -200,7 +201,7 @@ class Clash_of_Clans:
             if clan['members'] < 4:
                 return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
             else:
-                em = await embeds_coc.format_most_valuable(ctx, clan)
+                em = await clashofclans.format_most_valuable(ctx, clan)
                 await ctx.send(embed=em)
 
     @cocmembers.command()
@@ -215,7 +216,7 @@ class Clash_of_Clans:
             if clan['members'] < 4:
                 return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
             else:
-                em = await embeds_coc.format_least_valuable(ctx, clan)
+                em = await clashofclans.format_least_valuable(ctx, clan)
                 await ctx.send(embed=em)
 
     @command()
@@ -265,7 +266,7 @@ class Clash_of_Clans:
                 opp_img = Image.open(io.BytesIO(await resp.read()))
 
             image = await self.bot.loop.run_in_executor(None, self.war_image, ctx, clan_img, opp_img)
-            em = await embeds_coc.format_war(ctx, war)
+            em = await clashofclans.format_war(ctx, war)
             await ctx.send(file=discord.File(image, 'war.png'), embed=em)
 
     def war_image(self, ctx, clan_img, opp_img):

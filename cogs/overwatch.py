@@ -2,7 +2,8 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from ext import embeds_ov, utils
+from ext import utils
+from ext.embeds import overwatch
 from ext.paginator import Paginator
 
 from ext.command import command
@@ -107,7 +108,7 @@ class Overwatch:
             return await ctx.send(f'`{e}`')
         else:
             try:
-                ems = await embeds_ov.format_profile(
+                ems = await overwatch.format_profile(
                     ctx, tag.split('-')[0], profile["kr"]['stats'], heroes["kr"]['heroes']
                 )
             except Exception as e:
@@ -135,7 +136,7 @@ class Overwatch:
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await ctx.get_tag('overwatch', index='all')
-        em = discord.Embed(description='Tags saved', color=embeds_ov.random_color())
+        em = discord.Embed(description='Tags saved', color=overwatch.random_color())
         em.set_author(name=member.name, icon_url=member.avatar_url)
         for i in tag:
             em.add_field(name=f'Tag index: {i}', value=tag[i])

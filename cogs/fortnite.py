@@ -6,7 +6,8 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from ext import embeds_fn, utils
+from ext import utils
+from ext.embeds import fortnite
 from ext.paginator import Paginator
 
 from ext.command import command
@@ -124,7 +125,7 @@ class Fortnite:
                 'user_id': uid, 'window': 'alltime', 'platform': platform
             })
 
-            ems = await embeds_fn.format_profile(ctx, platform, player)
+            ems = await fortnite.format_profile(ctx, platform, player)
 
         await Paginator(ctx, *ems, footer_text=_('Statsy - Powered by fortniteapi.com', ctx)).start()
 
