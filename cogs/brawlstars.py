@@ -150,7 +150,7 @@ class Brawl_Stars:
 
         await ctx.send(embed=em)
 
-    @command()
+    @command(aliases=['bsbrawler'])
     async def bsbrawlers(self, ctx, tag_or_user: TagCheck=None):
         '''Get general Brawl Stars player information.'''
         tag = await self.resolve_tag(ctx, tag_or_user)

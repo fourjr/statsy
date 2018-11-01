@@ -10,7 +10,7 @@ class Paginator:
     ------------
     ctx: discord.Context
         The context of the command.
-    *embeds: list[discord.Embed] or dict.values[discord.Embed]
+    *embeds: discord.Embed
         A list of entries to paginate.
 
     **timeout: int[Optional]
@@ -20,6 +20,7 @@ class Paginator:
         Footer text before the page number
     **edit_footer: bool[Optional]
         Whether to update the footer with page number.
+        Footers only get edited if there is more than one embed
         Default: True
     **dest: discord.Messageable[Optional]
         Destination to send Paginated embeds
@@ -38,7 +39,7 @@ class Paginator:
         if len(self.embeds) == 0:
             raise SyntaxError('There should be at least 1 embed object provided to the paginator')
 
-        if kwargs.get('edit_footer', True):
+        if kwargs.get('edit_footer', True) and len(self.embeds) > 1:
             for i, em in enumerate(self.embeds):
                 footer_text = f'Page {i+1} of {len(self.embeds)}'
                 em.footer.text = kwargs.get('footer_text', em.footer.text)
