@@ -1,4 +1,5 @@
 import aiohttp
+import asyncio
 import json
 import time
 import os
@@ -104,30 +105,32 @@ class Brawl_Stars:
                 ) as resp:
                     self.cache[endpoint] = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
             else:
-                async with ctx.session.get(
-                    f"http://brawlapi.cf/api{endpoint}",
-                    headers={'Authorization': os.getenv('brawlstars')}
-                ) as resp:
-                    try:
-                        if resp.status == 200:
-                            self.cache[endpoint] = await resp.json()
-                        elif resp.status == 404 or resp.status == 524:
-                            await ctx.send(_('The tag cannot be found!', ctx))
-                            raise utils.NoTag
-                        else:
-                            raise utils.APIError
-                    except (aiohttp.ContentTypeError, utils.APIError):
-                        er = discord.Embed(
-                            title=_('Brawl Stars Server Down', ctx),
-                            color=discord.Color.red(),
-                            description='This could be caused by a maintainence break or an API issue.'
-                        )
-                        if ctx.bot.psa_message:
-                            er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
-                        await ctx.send(embed=er)
+                try:
+                    async with ctx.session.get(
+                        f"http://brawlapi.cf/api{endpoint}",
+                        headers={'Authorization': os.getenv('brawlstars')},
+                        timeout=5
+                    ) as resp:
+                        try:
+                            if resp.status == 200:
+                                self.cache[endpoint] = await resp.json()
+                            else:
+                                raise utils.APIError
+                        except (aiohttp.ContentTypeError, utils.APIError):
+                            er = discord.Embed(
+                                title=_('Brawl Stars Server Down', ctx),
+                                color=discord.Color.red(),
+                                description='This could be caused by a maintainence break or an API issue.'
+                            )
+                            if ctx.bot.psa_message:
+                                er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                            await ctx.send(embed=er)
 
-                        # end and ignore error
-                        raise commands.CheckFailure
+                            # end and ignore error
+                            raise commands.CheckFailure
+                except asyncio.TimeoutError:
+                    await ctx.send(_('The tag cannot be found!', ctx))
+                    raise utils.NoTag
 
         return Box(self.cache[endpoint], camel_killer_box=True)
 
