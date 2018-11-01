@@ -34,7 +34,7 @@ def format_timestamp(seconds: int):
 
 
 async def format_profile(ctx, p):
-    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.upgrades_power}' for i in p.brawlers])
+    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}' for i in p.brawlers])
 
     pic = f'{url}thumbnails/high/{p.avatar_id}.png'
 
@@ -102,12 +102,12 @@ async def format_brawlers(ctx, p):
 
         rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
 
-        if i.unk1:
+        if i.skin:
             skin = check
         else:
             skin = cross
 
-        val = f"{emoji(ctx, 'icon_xp')}　Level {i.upgrades_power}\n{skin}　Skins\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+        val = f"{emoji(ctx, 'icon_xp')}　Level {i.level}\n{skin}　Skins\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
