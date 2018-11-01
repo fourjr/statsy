@@ -325,6 +325,7 @@ async def format_lb(ctx, players, tag, emoji_name, *statistics, **kwargs):
 
     n = 0
     found_user = [False, 0]
+    users = []
     previous_page = False
     for p in players:
         user = ctx.guild.get_member(int(p.split('-')[0]))
@@ -335,7 +336,7 @@ async def format_lb(ctx, players, tag, emoji_name, *statistics, **kwargs):
 
         if user:
             str_n = f'0{n + 1}' if n + 1 < 10 else n + 1
-            embeds[-1].description += f'`{str_n}.` {emoji(ctx, emoji_name)} `{stat}`: {players[p]["name"]} (#{players[p]["tag"]}) - {user}\n'
+            embeds[-1].description += f'`{str_n}.` {emoji(ctx, emoji_name)} `{stat}`: {players[p]["name"]} ({players[p]["tag"]}) - {user}\n'
             n += 1
 
             if found_user[0]:

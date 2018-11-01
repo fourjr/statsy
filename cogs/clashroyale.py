@@ -655,7 +655,7 @@ class Clash_Royale:
         async with ctx.typing():
             db_result = await self.request_db()
 
-            def predicate(x, *, db_result):
+            def predicate(x):
                 result = db_result[x]
                 for i in statistics:
                     result = result[i]
