@@ -1,14 +1,20 @@
+import aiohttp
 import json
 import time
+import os
 
-import abrawlpy
+from cachetools import TTLCache
 import discord
+from box import Box
 from discord.ext import commands
 
 import box
 from ext import embeds_bs, utils
 from ext.command import command
-from ext.paginator import PaginatorSession
+from ext.paginator import Paginator
+from locales.i18n import Translator
+
+_ = Translator('Brawl Stars', __file__)
 
 shortcuts = {
     'juice': '2PP00',
@@ -54,21 +60,14 @@ class Brawl_Stars:
     def __init__(self, bot):
         self.bot = bot
         self.conv = TagCheck()
+        self.cache = TTLCache(500, 180)
 
     async def get_band_from_profile(self, ctx, tag, message):
+        profile = await self.request(ctx, f'/players/{tag}')
         try:
-            profile = await self.bot.bs.get_player(tag)
-        except abrawlpy.errors.RequestError:
-                await ctx.send(embed=discord.Embed(
-                    title='API Down',
-                    description='API Error',
-                    color=0xd22630
-                ))
-        else:
-            try:
-                return profile.band.tag
-            except box.BoxKeyError:
-                return await ctx.send(message)
+            return profile.band.tag
+        except box.BoxKeyError:
+            return await ctx.send(message)
 
     async def resolve_tag(self, ctx, tag_or_user, band=False):
         if not tag_or_user:
@@ -94,7 +93,38 @@ class Brawl_Stars:
         else:
             return tag_or_user
 
-    @command(enabled=False)
+    async def request(self, ctx, endpoint):
+        try:
+            self.cache[endpoint]
+        except KeyError:
+            async with self.bot.session.get(
+                f"http://brawlapi.cf/api{endpoint}",
+                headers={'Authorization': os.getenv('brawlstars')}
+            ) as resp:
+                try:
+                    if resp.status == 200:
+                        self.cache[endpoint] = await resp.json()
+                    elif resp.status == 404:
+                        await ctx.send(_('The tag cannot be found!', ctx))
+                        raise utils.NoTag
+                    else:
+                        raise utils.APIError
+                except aiohttp.ContentTypeError:
+                    er = discord.Embed(
+                        title=_('Brawl Stars Server Down', ctx),
+                        color=discord.Color.red(),
+                        description='This could be caused by a maintainence break or an API issue.'
+                    )
+                    if ctx.bot.psa_message:
+                        er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                    await ctx.send(embed=er)
+
+                    # end and ignore error
+                    raise commands.CheckFailure
+
+        return Box(self.cache[endpoint], camel_killer_box=True)
+
+    @command()
     async def bssave(self, ctx, *, tag):
         '''Saves a Brawl Stars tag to your discord profile.
 
@@ -103,65 +133,55 @@ class Brawl_Stars:
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            raise utils.InvalidTag('Invalid tag')
+            raise utils.InvalidTag(_('Invalid tag', ctx))
 
         await ctx.save_tag(tag, 'brawlstars')
 
-        await ctx.send('Successfully saved tag.')
+        await ctx.send(_('Successfully saved tag.', ctx))
 
-    @command(enabled=False)
+    @command()
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
         '''Get general Brawl Stars player information.'''
-        async with ctx.channel.typing():
-            tag = await self.resolve_tag(ctx, tag_or_user)
-            try:
-                profile = await self.bot.bs.get_player(tag)
-            except abrawlpy.errors.RequestError:
-                await ctx.send(embed=discord.Embed(
-                    title='API Down',
-                    description='API Error',
-                    color=0xd22630
-                ))
-            else:
-                em = await embeds_bs.format_profile(ctx, profile)
-                await ctx.send(embed=em)
+        tag = await self.resolve_tag(ctx, tag_or_user)
 
-    @command(enabled=False)
+        async with ctx.channel.typing():
+            profile = await self.request(ctx, f'/players/{tag}')
+            em = await embeds_bs.format_profile(ctx, profile)
+
+        await ctx.send(embed=em)
+
+    @command()
+    async def bsbrawlers(self, ctx, tag_or_user: TagCheck=None):
+        '''Get general Brawl Stars player information.'''
+        tag = await self.resolve_tag(ctx, tag_or_user)
+
+        async with ctx.channel.typing():
+            profile = await self.request(ctx, f'/players/{tag}')
+            ems = await embeds_bs.format_brawlers(ctx, profile)
+
+        await Paginator(ctx, *ems).start()
+
+    @command()
     @utils.has_perms()
     async def bsband(self, ctx, tag_or_user: TagCheck=None):
         '''Get Brawl Stars band information.'''
+        tag = await self.resolve_tag(ctx, tag_or_user, band=True)
+
         async with ctx.channel.typing():
-            tag = await self.resolve_tag(ctx, tag_or_user, band=True)
-            try:
-                band = await self.bot.bs.get_band(tag)
-            except abrawlpy.errors.RequestError:
-                return await ctx.send(embed=discord.Embed(
-                    title='API Down',
-                    description='API Error',
-                    color=0xd22630
-                ))
-            else:
-                ems = await embeds_bs.format_band(ctx, band)
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+            band = await self.request(ctx, f'/bands/{tag}')
+            ems = await embeds_bs.format_band(ctx, band)
+
+        await Paginator(ctx, *ems).start()
 
     @command(enabled=False)
     @utils.has_perms()
     async def bsevents(self, ctx):
         '''Shows the upcoming events!'''
         async with ctx.channel.typing():
-            async with ctx.session.get(self.url + 'events') as resp:
-                events = await resp.json()
+            events = await self.request(f'/events')
             ems = await embeds_bs.format_events(ctx, events)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @command(aliases=['bsrobo'])
     @utils.has_perms()
@@ -172,11 +192,7 @@ class Brawl_Stars:
                 leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
             ems = embeds_bs.format_robo(ctx, leaderboard)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @command(aliases=['bsboss'])
     @utils.has_perms()
@@ -187,14 +203,7 @@ class Brawl_Stars:
                 leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
             ems = embeds_bs.format_boss(ctx, leaderboard)
 
-        if len(ems) > 1:
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems
-            )
-            await session.run()
-        else:
-            await ctx.send(embed=ems[0])
+        await Paginator(ctx, *ems).start()
 
 
 def setup(bot):

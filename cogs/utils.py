@@ -17,7 +17,7 @@ from discord.ext import commands
 
 from ext import utils
 from ext.command import command
-from ext.paginator import PaginatorSession
+from ext.paginator import Paginator
 
 from locales.i18n import Translator
 
@@ -311,11 +311,7 @@ class Bot_Related:
             if em:
                 pages.append(em)
 
-        p_session = PaginatorSession(
-            ctx,
-            footer_text=_('Type {}help command for more info on a command.', ctx).format(prefix),
-            pages=pages
-        )
+        p_session = Paginator(ctx, *pages, _('Type {}help command for more info on a command.', ctx).format(prefix))
 
         await p_session.run()
 

@@ -18,6 +18,10 @@ class InvalidPlatform(commands.BadArgument):
               'pc, ps4, xb1'
 
 
+class APIError(Exception):
+    pass
+
+
 class NoTag(Exception):
     pass
 
@@ -61,7 +65,8 @@ def emoji(ctx, name, should_format=True):
             'primo': 'elprimo',
             'pekka': 'p.e.k.k.a',
             'jess': 'jessie',
-            'mike': 'dynamike'
+            'mike': 'dynamike',
+            'franky': 'frank'
         }
         for i in replace:
             if isinstance(replace[i], list):

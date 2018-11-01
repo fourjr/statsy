@@ -111,7 +111,7 @@ class StatsBot(commands.AutoShardedBot):
             pass
         except Exception:
             print('Fatal exception')
-            traceback.print_exc()
+            traceback.print_exc(file=sys.stderr)
         finally:
             if not self.dev_mode:
                 self.backup_task_loop.cancel()

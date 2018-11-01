@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from ext import embeds_fn, utils
-from ext.paginator import PaginatorSession
+from ext.paginator import Paginator
 
 from ext.command import command
 from locales.i18n import Translator
@@ -126,12 +126,7 @@ class Fortnite:
 
             ems = await embeds_fn.format_profile(ctx, platform, player)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems,
-            footer_text=_('Statsy - Powered by fortniteapi.com', ctx)
-        )
-        await session.run()
+        await Paginator(ctx, *ems, footer_text=_('Statsy - Powered by fortniteapi.com', ctx)).start()
 
     @command()
     @utils.has_perms()

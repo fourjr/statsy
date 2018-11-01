@@ -1,157 +1,154 @@
 import asyncio
-from collections import OrderedDict
 
 import discord
 
 
-class PaginatorSession:
+class Paginator:
     '''
-    Class that interactively paginates a set of embeds
-
-    - Made by verixx
-
+    Class that paginates a list of discord.Embed objects
     Parameters
     ------------
-    ctx: Context
+    ctx: discord.Context
         The context of the command.
-    timeout:
-        How long to wait for before the session closes
-    pages: List[discord.Embed]
+    *embeds: list[discord.Embed] or dict.values[discord.Embed]
         A list of entries to paginate.
 
+    **timeout: int[Optional]
+        How long to wait for before the session closes
+        Default: 30
+    **footer_text: str[Optional]
+        Footer text before the page number
+    **edit_footer: bool[Optional]
+        Whether to update the footer with page number.
+        Default: True
+    **dest: discord.Messageable[Optional]
+        Destination to send Paginated embeds
+        Default: ctx
     Methods
     -------
-    add_page:
-        Add an embed to paginate
-    run:
-        Run the interactive session
-    close:
-        Forcefully destroy a session
+    start:
+        Starts the paginator session
+    stop:
+        Stops the paginator session and deletes the embed.
     '''
-    def __init__(self, ctx, timeout=60, *, pages=[], page_nums=True, help_color=0x00FFFF, footer_text='', file=False):
-        self.footer_text = footer_text
+    def __init__(self, ctx, *embeds, **kwargs):
+        '''Initialises the class'''
+        self.embeds = list(embeds)
+
+        if len(self.embeds) == 0:
+            raise SyntaxError('There should be at least 1 embed object provided to the paginator')
+
+        if kwargs.get('edit_footer', True):
+            for i, em in enumerate(self.embeds):
+                footer_text = f'Page {i+1} of {len(self.embeds)}'
+                em.footer.text = kwargs.get('footer_text', em.footer.text)
+                if em.footer.text:
+                    footer_text = footer_text + ' | ' + em.footer.text
+
+                em.set_footer(text=footer_text, icon_url=em.footer.icon_url)
+
+        self.page = 0
         self.ctx = ctx
-        self.timeout = timeout
-        self.pages = pages
+        self.timeout = kwargs.get('timeout', 30)
         self.running = False
-        self.base = None
-        self.current = 0
-        self.reaction_map = OrderedDict({
-            '⏮': self.first_page,
-            '◀': self.previous_page,
-            '⏹': self.close,
-            '▶': self.next_page,
-            '⏭': self.last_page
-        })
-        self.help_color = help_color
-        self.page_num_enabled = page_nums
-        self.file = file
-        if isinstance(self.file, discord.File):
-            self.pages = self.pages[:-1]
+        self.emojis = {
+            u'\u23EE': 'track_previous',
+            u'\u25C0': 'arrow_backward',
+            u'\u23F9': 'stop_button',
+            u'\u25B6': 'arrow_forward',
+            u'\u23ED': 'track_next'
+        }
+        self.destination = kwargs.get('dest', ctx)
 
-    def add_page(self, embed):
-        if isinstance(embed, discord.Embed):
-            self.pages.append(embed)
-        else:
-            raise TypeError('Page must be an Embed object.')
+    async def start(self):
+        '''Starts the paginator session'''
+        self.message = await self.destination.send(embed=self.embeds[0])
 
-    def valid_page(self, index):
-        if index < 0 or index + 1 > len(self.pages):
-            return False
-        else:
-            return True
-
-    async def show_page(self, index: int):
-        if not self.valid_page(index):
+        if len(self.embeds) == 1:
             return
 
-        self.current = index
-        page = self.pages[index]
-
-        if self.page_num_enabled:
-            if self.footer_text:
-                fmt = f'Page {index+1}/{len(self.pages)} · {self.footer_text}'
+        self.running = True
+        self.ctx.bot.loop.create_task(self._wait_for_reaction())
+        for emoji in self.emojis:
+            if emoji.startswith('<:'):
+                await self.message.add_reaction(emoji[2:-1])
             else:
-                fmt = f'Page {index+1}/{len(self.pages)}'
-            page.set_footer(text=fmt)
+                await self.message.add_reaction(emoji)
+            await asyncio.sleep(0.05)
 
-        if self.running:
-            await self.base.edit(embed=page)
-        else:
-            self.running = True
-            if isinstance(self.file, discord.File):
-                self.base = await self.ctx.send(file=self.file, embed=page)
-            else:
-                self.base = await self.ctx.send(embed=page)
-            for reaction in self.reaction_map.keys():
-                if len(self.pages) == 2 and reaction in '⏮⏭':
-                    continue
-                await self.base.add_reaction(reaction)
+    async def stop(self):
+        self.running = False
+        try:
+            await self.message.clear_reactions()
+        except (discord.NotFound, discord.Forbidden):
+            pass
 
-    def react_check(self, reaction, user):
-        if user.id != self.ctx.author.id:
-            return False
-        if reaction.message.id != self.base.id:
-            return False
-        if reaction.emoji in self.reaction_map.keys():
-            return True
-
-    async def run(self):
-        if self.ctx.guild:
-            if not self.ctx.channel.permissions_for(self.ctx.guild.me).add_reactions:
-                await self.ctx.send('Bot requires Add Reactions permission(s) to run command')
-                return await self.show_page(0)
-        if not self.running:
-            await self.show_page(0)
-        if len(self.pages) == 1:
-            return await self.show_page(0)
+    async def _wait_for_reaction(self):
+        '''Waits for a user input reaction'''
         while self.running:
             try:
                 reaction, user = await self.ctx.bot.wait_for(
                     'reaction_add',
-                    check=self.react_check,
+                    check=self._reaction_check,
                     timeout=self.timeout
                 )
             except asyncio.TimeoutError:
-                self.paginating = False
-                try:
-                    await self.base.clear_reactions()
-                except:
-                    pass
-                finally:
-                    break
-            try:
-                await self.base.remove_reaction(reaction, user)
-            except:
-                pass
+                await self.stop()
+            else:
+                if self.running:
+                    self.ctx.bot.loop.create_task(self._reaction_action(reaction))
 
-            show_page = self.reaction_map.get(reaction.emoji)
+    def _reaction_check(self, reaction, user):
+        '''Checks if the reaction is from the user message and emoji is correct'''
+        if not self.running:
+            return True
+        if user.id == self.ctx.author.id:
+            if str(reaction.emoji) in self.emojis:
+                if reaction.message.id == self.message.id:
+                    return True
+        return False
 
-            await show_page()
+    async def _reaction_action(self, reaction):
+        '''Fires an action based on the reaction'''
+        if not self.running:
+            return
+        to_exec = self.emojis[str(reaction.emoji)]
 
-    def previous_page(self):
-        '''Go to the previous page.'''
-        return self.show_page(self.current - 1)
+        try:
+            # allow for additional execs in inherited class
+            func = getattr(self, f'exec_{to_exec}')
+        except AttributeError as e:
+            if to_exec == 'arrow_backward':
+                if self.page != 0:
+                    self.page -= 1
+            elif to_exec == 'arrow_forward':
+                if self.page != len(self.embeds) - 1:
+                    self.page += 1
+            elif to_exec == 'stop_button':
+                await self.ctx.message.add_reaction('check:383917703083327489')
+                await self.message.delete()
+                return
+            elif to_exec == 'track_previous':
+                self.page = 0
+            elif to_exec == 'track_next':
+                self.page = len(self.embeds) - 1
+            else:
+                raise NotImplementedError(f'_reaction_action in paginator, exec_{to_exec} not implemented') from e
+        else:
+            await func()
 
-    def next_page(self):
-        '''Go to the next page'''
-        return self.show_page(self.current + 1)
+        try:
+            func = getattr(self, 'exec_before_edit')
+        except AttributeError:
+            pass
+        else:
+            await func()
 
-    def message_check(self, m):
-        return m.author == self.ctx.author and \
-            self.ctx.channel == m.channel and \
-            m.content.isdigit()
-
-    def close(self, delete=True):
-        '''Delete this embed.'''
-        self.running = False
-        if delete:
-            return self.base.delete()
-
-    def first_page(self):
-        '''Go to immediately to the first page'''
-        return self.show_page(0)
-
-    def last_page(self):
-        '''Go to immediately to the last page'''
-        return self.show_page(len(self.pages) - 1)
+        try:
+            await self.message.edit(embed=self.embeds[self.page])
+        except discord.NotFound:
+            await self.stop()
+        try:
+            await self.message.remove_reaction(reaction.emoji, self.ctx.author)
+        except (discord.Forbidden, discord.NotFound):
+            pass

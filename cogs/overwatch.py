@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 from ext import embeds_ov, utils
-from ext.paginator import PaginatorSession
+from ext.paginator import Paginator
 
 from ext.command import command
 from locales.i18n import Translator
@@ -112,16 +112,10 @@ class Overwatch:
                 )
             except Exception as e:
                 raise e
-            if len(ems) > 1:
-                session = PaginatorSession(
-                    ctx=ctx,
-                    pages=ems
-                )
-                await session.run()
-            elif len(ems) == 0:
+            if len(ems) == 0:
                 await ctx.send(_("There aren't any stats for this user!", ctx))
             else:
-                await ctx.send(embed=ems[0])
+                await Paginator(ctx, *ems).start()
 
     @command()
     async def owsave(self, ctx, tag, index: str='0'):

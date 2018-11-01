@@ -9,10 +9,10 @@ from PIL import Image
 
 from ext import embeds_coc, utils
 from ext.command import command, group
-from ext.paginator import PaginatorSession
+from ext.paginator import Paginator
 from locales.i18n import Translator
 
-_ = Translator('COC Embeds', __file__)
+_ = Translator('Clash of Clans', __file__)
 
 shortcuts = {}
 
@@ -147,12 +147,7 @@ class Clash_of_Clans:
 
             ems = await embeds_coc.format_profile(ctx, profile)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems,
-            footer_text=_('Statsy | Powered by the COC API', ctx)
-        )
-        await session.run()
+        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
 
     @command()
     @utils.has_perms()
@@ -165,12 +160,7 @@ class Clash_of_Clans:
 
             ems = await embeds_coc.format_achievements(ctx, profile)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems,
-            footer_text=_('Statsy | Powered by the COC API', ctx)
-        )
-        await session.run()
+        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
 
     @command()
     @utils.has_perms()
@@ -183,12 +173,7 @@ class Clash_of_Clans:
 
             ems = await embeds_coc.format_clan(ctx, clan)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems,
-            footer_text=_('Statsy | Powered by the COC API', ctx)
-        )
-        await session.run()
+        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
 
     @group()
     @utils.has_perms()
@@ -201,15 +186,7 @@ class Clash_of_Clans:
 
             ems = await embeds_coc.format_members(ctx, clan)
 
-        if len(ems) > 1:
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems,
-                footer_text=str(clan["members"]) + _('/50 members', ctx)
-            )
-            await session.run()
-        else:
-            await ctx.send(embed=ems[0])
+        await Paginator(ctx, *ems, footer_text=str(clan["members"]) + _('/50 members', ctx)).start()
 
     @cocmembers.command()
     @utils.has_perms()

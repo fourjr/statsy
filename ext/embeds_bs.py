@@ -3,22 +3,14 @@ from datetime import datetime
 import math
 from time import time
 
-import box
 import discord
 
-from ext.utils import random_color
+from ext.utils import random_color, emoji
 from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
 
-
-def emoji(ctx, name):
-    name = name.lower().replace('ricochet', 'rico').replace('el primo', 'primo')
-    name = name.replace('jessie', 'jess').replace('dynamike', 'mike')
-    e = discord.utils.get(ctx.bot.game_emojis, name=name)
-    if e is None:
-        return name.title()
-    return e
+url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master/images/'
 
 
 def format_timestamp(seconds: int):
@@ -41,49 +33,28 @@ def format_timestamp(seconds: int):
     return timeleft
 
 
-url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master/images/'
-
-
 async def format_profile(ctx, p):
+    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.upgrades_power}' for i in p.brawlers])
 
-    name = p.name
-    tag = p.tag
-
-    brawlers = ''.join([str(emoji(ctx, i.name)) for i in p.brawlers])
-
-    # pic = url + 'thumbnails/high/' + p['avatar_export'] + '.png'
-
-    trophies = p.trophies
-    pb = p.highestTrophies
-    victories = p.victories
-    showdown = p.showdownVictories
-    # best_boss = format_timestamp(p['best_time_as_boss_in_seconds'])
-    # best_robo_rumble = format_timestamp(p['best_robo_rumble_time_in_seconds'])
-
-    # exp = p['current_experience']
-    try:
-        bandtag = p.band.tag
-        bandname = p.band.name
-    except box.BoxKeyError:
-        bandtag = None
-        bandname = None
+    pic = f'{url}thumbnails/high/{p.avatar_id}.png'
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{name} (#{tag})')
-    # em.set_thumbnail(url=pic)
-    em.set_footer(text='Powered by brawlstars-api')
+    em.set_author(name=f'{p.name} (#{p.tag})')
+    em.set_thumbnail(url=pic)
+    em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
 
     embed_fields = [
-        ('Trophies', f'{trophies}/{pb} PB {emoji(ctx, "icon_trophy")}', True),
-        ('Victories', f'{victories} {emoji(ctx, "star_gold_00")}', True),
-        ('Showdown Wins', f'{showdown} {emoji(ctx, "icon_showdown")}', True),
-        # ('Best time as Boss', f'{best_boss}', True),
-        # ('Best Robo Rumble Time', best_robo_rumble, True),
-        # ('Level', f'{exp} {emoji(ctx, "star_silver")}', True),
-        ('Band Name', bandname, True),
-        ('Band Tag', '#' + bandtag, True),
+        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'icon_trophy')}", True),
+        (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'star_gold_00')}", True),
+        (_('Solo Showdown Wins', ctx), f"{p.solo_showdown_victories} {emoji(ctx, 'soloshowdown')}", True),
+        (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
+        ('Best time as Boss', f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
+        ('Best Robo Rumble Time', f"{p.best_robo_rumble_time} {emoji(ctx, 'roborumble')}", True),
+        # ('Level', f"{p.exp} {emoji(ctx, 'star_silver')}", True),
+        ('Band Name', p.band.name, True),
+        ('Band Tag', f'#{p.band.tag}', True),
         ('Brawlers', brawlers, False),
     ]
 
@@ -94,69 +65,98 @@ async def format_profile(ctx, p):
     return em
 
 
+async def format_brawlers(ctx, p):
+    ems = []
+
+    ranks = [
+        1,
+        10,
+        20,
+        30,
+        40,
+        60,
+        80,
+        100,
+        120,
+        180,
+        220,
+        260,
+        300,
+        340,
+        380,
+        420,
+        460,
+        500
+    ]
+
+    for n, i in enumerate(p.brawlers):
+        if n % 9 == 0:
+            ems.append(discord.Embed(color=random_color()))
+            ems[-1].set_author(name=f'{p.name} (#{p.tag})')
+            ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+
+        rank = ranks.index([r for r in ranks if i.trophies >= r][-1])
+        val = f"Level {i.upgrades_power}\n{i.trophies}/{i.highest_trophies} PB {emoji(ctx, 'icon_trophy')} (Rank {rank})"
+        ems[-1].add_field(name=f"{i.name.replace('Franky', 'Frank')} {emoji(ctx, i.name)}", value=val)
+
+    return ems
+
+
 async def format_band(ctx, b):
-    name = b.name
-    description = b.description
-    # badge = url + 'bands/' + b['badge_export'] + '.png'
+    # badge = f'{url}bands/' + b['badge_export'] + '.png'
 
-    score = b.trophies
+    # _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
+    # experiences = []
+    # pushers = []
 
-    required = b.required_trophies
+    # if len(b.members) >= 3:
+    #     for i in range(3):
+    #         pushername = b.members[i].name
+    #         trophies = b.members[i].trophies
+    #         tag = b.members[i].tag
+    #         pushers.append(
+    #             f"**{pushername}**"
+    #             f"\n{trophies} "
+    #             f"{emoji(ctx, 'icon_trophy')}\n"
+    #             f"#{tag}"
+    #         )
 
-    members = b.members
-    _experiences = sorted(members, key=lambda x: x.exp_level, reverse=True)
-    experiences = []
-    pushers = []
+    #         xpname = _experiences[i].name
+    #         xpval = _experiences[i].exp_level
+    #         xptag = _experiences[i].tag
+    #         experiences.append(
+    #             f"**{xpname}**"
+    #             f"\n{emoji(ctx, 'star_silver')}"
+    #             f" {xpval}\n"
+    #             f"#{xptag}"
+    #         )
 
-    if len(members) >= 3:
-        for i in range(3):
-            pushername = members[i].name
-            trophies = members[i].trophies
-            tag = members[i].tag
-            pushers.append(
-                f"**{pushername}**"
-                f"\n{trophies} "
-                f"{emoji(ctx, 'icon_trophy')}\n"
-                f"#{tag}"
-            )
-
-            xpname = _experiences[i].name
-            xpval = _experiences[i].exp_level
-            xptag = _experiences[i].tag
-            experiences.append(
-                f"**{xpname}**"
-                f"\n{emoji(ctx, 'star_silver')}"
-                f" {xpval}\n"
-                f"#{xptag}"
-            )
-
-    page1 = discord.Embed(description=description, color=random_color())
-    page1.set_author(name=f"{name} (#{tag})")
+    page1 = discord.Embed(description=b.description, color=random_color())
+    page1.set_author(name=f"{b.name} (#{b.tag})")
+    page1.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
     # page1.set_thumbnail(url=badge)
-    page2 = copy.deepcopy(page1)
-    page2.description = 'Top Players/Experienced Players for this clan.'
+    # page2 = copy.deepcopy(page1)
+    # page2.description = 'Top Players/Experienced Players for this clan.'
 
     fields1 = [
-        ('Clan Score', f'{score} {emoji(ctx, "icon_trophy")}'),
-        ('Required Trophies', f'{required} {emoji(ctx, "icon_trophy")}'),
-        ('Members', f'{len(members)}/100')
+        ('Clan Score', f'{b.trophies} {emoji(ctx, "icon_trophy")}'),
+        ('Required Trophies', f'{b.required_trophies} {emoji(ctx, "icon_trophy")}'),
+        ('Members', f'{b.members_count}/100')
     ]
-    fields2 = [
-        ("Top Players", '\n\n'.join(pushers)),
-        ("Top Experience", '\n\n'.join(experiences))
-    ]
+    # fields2 = [
+    #     ("Top Players", '\n\n'.join(pushers)),
+    #     ("Top Experience", '\n\n'.join(experiences))
+    # ]
 
     for f, v in fields1:
         page1.add_field(name=f, value=v)
 
-    for f, v in fields2:
-        if v:
-            page2.add_field(name=f, value=v)
+    # for f, v in fields2:
+    #     if v:
+    #         page2.add_field(name=f, value=v)
 
-    page1.set_footer(text='Powered by brawlstars-api')
-    page2.set_footer(text='Powered by brawlstars-api')
-
-    return [page1, page2]
+    # return [page1, page2]
+    return [page1]
 
 
 async def format_events(ctx, events):

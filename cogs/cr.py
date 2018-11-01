@@ -18,10 +18,10 @@ from pymongo import ReturnDocument
 from ext import embeds_cr, utils
 from ext.context import NoContext
 from ext.command import command, group
-from ext.paginator import PaginatorSession
+from ext.paginator import Paginator
 from locales.i18n import Translator
 
-_ = Translator('Core', __file__)
+_ = Translator('Clash Royale', __file__)
 
 shortcuts = {
     # stus army
@@ -580,11 +580,7 @@ class Clash_Royale:
             ems = await embeds_cr.format_seasons(ctx, profile)
 
         if len(ems) > 0:
-            session = PaginatorSession(
-                ctx=ctx,
-                pages=ems
-            )
-            await session.run()
+            await Paginator(ctx, *ems).start()
         else:
             await ctx.send(f"**{profile.name}** doesn't have any season results.")
 
@@ -635,11 +631,7 @@ class Clash_Royale:
             clan = await self.request(ctx, 'get_clan', tag)
             ems = await embeds_cr.format_clan(ctx, clan)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @utils.has_perms()
     @command(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
@@ -651,11 +643,7 @@ class Clash_Royale:
             war = await self.request(ctx, 'get_clan_war', tag)
             ems = await embeds_cr.format_clan_war(ctx, war)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @utils.has_perms()
     @group(aliases=['lb'], usage='<option>', invoke_without_command=True)
@@ -666,7 +654,7 @@ class Clash_Royale:
         async with ctx.typing():
             db_result = await self.request_db()
 
-            def predicate(x):
+            def predicate(x, *, db_result):
                 result = db_result[x]
                 for i in statistics:
                     result = result[i]
@@ -684,13 +672,8 @@ class Clash_Royale:
             del data
             del sorted_result
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
-        del session
         del ems
 
     @utils.has_perms()
@@ -753,11 +736,7 @@ class Clash_Royale:
                 return await ctx.send('Invalid region')
             ems = await embeds_cr.format_top_players(ctx, clans.get('items'), name)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @command()
     @utils.has_perms()
@@ -777,11 +756,7 @@ class Clash_Royale:
                 return await ctx.send('Invalid region')
             ems = await embeds_cr.format_top_clan_wars(ctx, clans.get('items'), name)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @command()
     @utils.has_perms()
@@ -801,11 +776,7 @@ class Clash_Royale:
                 return await ctx.send('Invalid region')
             ems = await embeds_cr.format_top_clans(ctx, clans.get('items'), name)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @group(invoke_without_command=True)
     @utils.has_perms()
@@ -819,12 +790,7 @@ class Clash_Royale:
 
             ems = await embeds_cr.format_members(ctx, clan, war.get('items'))
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems,
-            footer_text=f'{clan.members}/50 members'
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @members.command()
     @utils.has_perms()
@@ -945,11 +911,7 @@ class Clash_Royale:
             t = await self.request(ctx, 'get_tournament', tag[0])
             ems = await embeds_cr.format_tournament(ctx, t)
 
-        session = PaginatorSession(
-            ctx=ctx,
-            pages=ems
-        )
-        await session.run()
+        await Paginator(ctx, *ems).start()
 
     @command(aliases=['tourneys'])
     @utils.has_perms()
