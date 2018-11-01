@@ -105,7 +105,7 @@ class Brawl_Stars:
                 try:
                     if resp.status == 200:
                         self.cache[endpoint] = await resp.json()
-                    elif resp.status == 404:
+                    elif resp.status == 404 or resp.status == 524:
                         await ctx.send(_('The tag cannot be found!', ctx))
                         raise utils.NoTag
                     else:

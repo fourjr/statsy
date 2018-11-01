@@ -23,7 +23,7 @@ from ext.context import CustomContext
 from ext.view import CustomView
 from locales.i18n import Translator
 from ext.command import command
-from ext.utils import InvalidPlatform, InvalidTag, NoTag
+from ext.utils import InvalidPlatform, InvalidTag, NoTag, APIError
 
 _ = Translator('Core', __file__)
 
@@ -296,6 +296,7 @@ class StatsBot(commands.AutoShardedBot):
         error = getattr(error, 'original', error)
         ignored = (
             NoTag,
+            APIError,
             discord.Forbidden,
             commands.CheckFailure,
             commands.DisabledCommand,

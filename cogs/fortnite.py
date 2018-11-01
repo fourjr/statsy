@@ -16,11 +16,6 @@ from locales.i18n import Translator
 _ = Translator('Fortnite', __file__)
 
 
-class FortniteServerError(Exception):
-    """Raised when the Fortnite API is down"""
-    pass
-
-
 class TagOrUser(commands.MemberConverter):
     async def convert(self, ctx, argument):
         try:
@@ -75,7 +70,7 @@ class Fortnite:
 
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
-        if isinstance(error, FortniteServerError):
+        if isinstance(error, utils.APIError):
             await ctx.send(_('Fortnite API is currently undergoing maintenance. Please try again later.', ctx))
 
     async def post(self, endpoint, payload):
@@ -88,11 +83,11 @@ class Fortnite:
             data=urlencode(payload), headers=headers
         ) as resp:
             if resp.status != 200:
-                raise FortniteServerError
+                raise utils.APIError
             try:
                 return await resp.json()
             except (json.JSONDecodeError, aiohttp.client_exceptions.ContentTypeError):
-                raise FortniteServerError
+                raise utils.APIError
 
     async def get_player_uid(self, ctx, name):
         data = await self.post('/users/id', {'username': name})

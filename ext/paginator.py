@@ -126,8 +126,8 @@ class Paginator:
                 if self.page != len(self.embeds) - 1:
                     self.page += 1
             elif to_exec == 'stop_button':
-                await self.ctx.message.add_reaction('check:383917703083327489')
                 await self.message.delete()
+                await self.ctx.message.add_reaction('check:383917703083327489')
                 return
             elif to_exec == 'track_previous':
                 self.page = 0
