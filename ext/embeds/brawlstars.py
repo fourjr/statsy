@@ -97,7 +97,7 @@ async def format_brawlers(ctx, p):
             ems[-1].set_author(name=f'{p.name} (#{p.tag})')
             ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
 
-        rank = ranks.index([r for r in ranks if i.trophies >= r][-1]) + 1
+        rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
         val = f"{emoji(ctx, 'icon_xp')}　Level {i.upgrades_power}\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 

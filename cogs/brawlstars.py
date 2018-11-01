@@ -75,11 +75,11 @@ class Brawl_Stars:
             try:
                 tag = await ctx.get_tag('brawlstars')
             except KeyError:
-                await ctx.send('You don\'t have a saved tag.')
+                await ctx.send(_("You don't have a saved tag. Save one using `{}bssave <tag>`!", ctx).format(ctx.prefix))
                 raise utils.NoTag
             else:
                 if band is True:
-                    return await self.get_band_from_profile(ctx, tag, 'You don\'t have a band!')
+                    return await self.get_band_from_profile(ctx, tag, _("You don't have a band!", ctx))
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
@@ -89,39 +89,45 @@ class Brawl_Stars:
                 raise utils.NoTag
             else:
                 if band is True:
-                    return await self.get_band_from_profile(ctx, tag, 'That person does not have a band!')
+                    return await self.get_band_from_profile(ctx, tag, _('That person does not have a band!', ctx))
                 return tag
         else:
             return tag_or_user
 
-    async def request(self, ctx, endpoint):
+    async def request(self, ctx, endpoint, *, leaderboard=False):
         try:
             self.cache[endpoint]
         except KeyError:
-            async with self.bot.session.get(
-                f"http://brawlapi.cf/api{endpoint}",
-                headers={'Authorization': os.getenv('brawlstars')}
-            ) as resp:
-                try:
-                    if resp.status == 200:
-                        self.cache[endpoint] = await resp.json()
-                    elif resp.status == 404 or resp.status == 524:
-                        await ctx.send(_('The tag cannot be found!', ctx))
-                        raise utils.NoTag
-                    else:
-                        raise utils.APIError
-                except aiohttp.ContentTypeError:
-                    er = discord.Embed(
-                        title=_('Brawl Stars Server Down', ctx),
-                        color=discord.Color.red(),
-                        description='This could be caused by a maintainence break or an API issue.'
-                    )
-                    if ctx.bot.psa_message:
-                        er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
-                    await ctx.send(embed=er)
+            if leaderboard:
+                async with ctx.session.get(
+                    f'https://leaderboard.brawlstars.com/{endpoint}.jsonp?_={int(time.time()) - 4}'
+                ) as resp:
+                    self.cache[endpoint] = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
+            else:
+                async with ctx.session.get(
+                    f"http://brawlapi.cf/api{endpoint}",
+                    headers={'Authorization': os.getenv('brawlstars')}
+                ) as resp:
+                    try:
+                        if resp.status == 200:
+                            self.cache[endpoint] = await resp.json()
+                        elif resp.status == 404 or resp.status == 524:
+                            await ctx.send(_('The tag cannot be found!', ctx))
+                            raise utils.NoTag
+                        else:
+                            raise utils.APIError
+                    except (aiohttp.ContentTypeError, utils.APIError):
+                        er = discord.Embed(
+                            title=_('Brawl Stars Server Down', ctx),
+                            color=discord.Color.red(),
+                            description='This could be caused by a maintainence break or an API issue.'
+                        )
+                        if ctx.bot.psa_message:
+                            er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                        await ctx.send(embed=er)
 
-                    # end and ignore error
-                    raise commands.CheckFailure
+                        # end and ignore error
+                        raise commands.CheckFailure
 
         return Box(self.cache[endpoint], camel_killer_box=True)
 
@@ -179,7 +185,7 @@ class Brawl_Stars:
     async def bsevents(self, ctx):
         """Shows the upcoming events!"""
         async with ctx.channel.typing():
-            events = await self.request(f'/events')
+            events = await self.request('/events')
             ems = await brawlstars.format_events(ctx, events)
 
         await Paginator(ctx, *ems).start()
@@ -189,8 +195,7 @@ class Brawl_Stars:
     async def bsroborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
         async with ctx.channel.typing():
-            async with ctx.session.get(f'https://leaderboard.brawlstars.com/rumbleboard.jsonp?_={int(time.time())}') as resp:
-                leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
+            leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True)
             ems = brawlstars.format_robo(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
@@ -200,8 +205,7 @@ class Brawl_Stars:
     async def bsbossfight(self, ctx):
         """Shows the boss fight leaderboard"""
         async with ctx.channel.typing():
-            async with ctx.session.get(f'https://leaderboard.brawlstars.com/bossboard.jsonp?_={int(time.time())}') as resp:
-                leaderboard = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
+            leaderboard = await self.request(ctx, 'bossboard', leaderboard=True)
             ems = brawlstars.format_boss(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
