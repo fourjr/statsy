@@ -91,14 +91,23 @@ async def format_brawlers(ctx, p):
         500
     ]
 
+    check = '<:check:383917703083327489>'
+    cross = '<:xmark:383917691318042624>'
+
     for n, i in enumerate(p.brawlers):
-        if n % 9 == 0:
+        if n % 6 == 0:
             ems.append(discord.Embed(color=random_color()))
             ems[-1].set_author(name=f'{p.name} (#{p.tag})')
             ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
 
         rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
-        val = f"{emoji(ctx, 'icon_xp')}　Level {i.upgrades_power}\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+
+        if i.unk1:
+            skin = check
+        else:
+            skin = cross
+
+        val = f"{emoji(ctx, 'icon_xp')}　Level {i.upgrades_power}\n{skin}　Skins\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
@@ -230,7 +239,7 @@ async def format_events(ctx, events):
 
 
 def format_robo(ctx, leaderboard):
-    delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %H:%M:%S')
+    delta = datetime.utcnow() - datetime.strptime(leaderboard.updated, '%Y-%m-%d %H:%M:%S')
     hours, remainder = divmod(int(delta.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
     days, hours = divmod(hours, 24)
@@ -246,19 +255,19 @@ def format_robo(ctx, leaderboard):
 
     embeds = []
 
-    for rnd in range(math.ceil(len(leaderboard['bestTeams']) / 5)):
+    for rnd in range(math.ceil(len(leaderboard.best_teams) / 5)):
         em = discord.Embed(
             title='Top Teams in Robo Rumble',
-            description=_('Top {} teams!\nLast updated: {} ago', ctx).format(len(leaderboard['bestTeams']), fmt),
+            description=_('Top {} teams!\nLast updated: {} ago', ctx).format(len(leaderboard.best_teams), fmt),
             color=random_color()
         )
         em.set_footer(text='Statsy')
 
         for i in range(rnd, 5 + rnd):
-            minutes, seconds = divmod(leaderboard['bestTeams'][i]['duration'], 60)
+            minutes, seconds = divmod(leaderboard.best_teams[i].duration, 60)
             rankings = ''
             for num in range(1, 4):
-                rankings += str(emoji(ctx, leaderboard['bestTeams'][i][f'brawler{num}'])) + ' ' + leaderboard['bestTeams'][i][f'player{num}'] + '\n'
+                rankings += str(emoji(ctx, leaderboard.best_teams[i][f'brawler{num}'])) + ' ' + leaderboard.best_teams[i][f'player{num}'] + '\n'
             em.add_field(name=f'{minutes}m {seconds}s', value=rankings)
 
         embeds.append(em)
@@ -267,7 +276,7 @@ def format_robo(ctx, leaderboard):
 
 
 def format_boss(ctx, leaderboard):
-    delta = datetime.utcnow() - datetime.strptime(leaderboard['updated'], '%Y-%m-%d %H:%M:%S')
+    delta = datetime.utcnow() - datetime.strptime(leaderboard.updated, '%Y-%m-%d %H:%M:%S')
     hours, remainder = divmod(int(delta.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
     days, hours = divmod(hours, 24)
@@ -283,17 +292,17 @@ def format_boss(ctx, leaderboard):
 
     embeds = []
 
-    for rnd in range(math.ceil(len(leaderboard['bestPlayers']) / 10)):
+    for rnd in range(math.ceil(len(leaderboard.best_players) / 10)):
         em = discord.Embed(
             title='Top Bosses in Boss Fight ',
-            description=_('Top {} bosses!\n\nLast updated: {} ago\nMap: {}', ctx).format(len(leaderboard['bestPlayers']), fmt, leaderboard['activeLevel']),
+            description=_('Top {} bosses!\n\nLast updated: {} ago\nMap: {}', ctx).format(len(leaderboard.best_players), fmt, leaderboard['activeLevel']),
             color=random_color()
         )
         em.set_footer(text='Statsy')
 
         for i in range(rnd, 10 + rnd):
-            minutes, seconds = divmod(leaderboard['bestPlayers'][i]['duration'], 60)
-            rankings = str(emoji(ctx, leaderboard['bestPlayers'][i]['brawler'])) + ' ' + leaderboard['bestPlayers'][i]['player'] + '\n'
+            minutes, seconds = divmod(leaderboard.best_players[i].duration, 60)
+            rankings = str(emoji(ctx, leaderboard.best_players[i].brawler)) + ' ' + leaderboard.best_players[i]['player'] + '\n'
             em.add_field(name=f'{minutes}m {seconds}s', value=rankings)
 
         embeds.append(em)
