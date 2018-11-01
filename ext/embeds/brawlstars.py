@@ -102,7 +102,7 @@ async def format_brawlers(ctx, p):
 
         rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
 
-        if i.skin:
+        if i.has_skin:
             skin = check
         else:
             skin = cross
