@@ -3,6 +3,7 @@ from datetime import datetime
 import math
 from time import time
 
+import box
 import discord
 
 from ext.utils import random_color, emoji
@@ -45,22 +46,29 @@ async def format_profile(ctx, p):
     em.set_thumbnail(url=pic)
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
 
+    try:
+        band = p.band.name
+    except box.BoxKeyError:
+        pass
+
     embed_fields = [
         (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'icon_trophy')}", True),
         (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'star_gold_00')}", True),
         (_('Solo Showdown Wins', ctx), f"{p.solo_showdown_victories} {emoji(ctx, 'soloshowdown')}", True),
         (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
-        ('Best time as Boss', f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
-        ('Best Robo Rumble Time', f"{p.best_robo_rumble_time} {emoji(ctx, 'roborumble')}", True),
+        (_('Best time as Boss', ctx), f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
+        (_('Best Robo Rumble Time', ctx), f"{p.best_robo_rumble_time} {emoji(ctx, 'roborumble')}", True),
         # ('Level', f"{p.exp} {emoji(ctx, 'star_silver')}", True),
-        ('Band Name', p.band.name, True),
-        ('Band Tag', f'#{p.band.tag}', True),
-        ('Brawlers', brawlers, False),
+        (_('Band Name', ctx), p.band.name if band else None, True),
+        (_('Band Tag', ctx), f'#{p.band.tag}' if band else None, True),
+        (_('Brawlers', ctx), brawlers, False),
     ]
 
     for n, v, i in embed_fields:
         if v:
             em.add_field(name=n, value=v, inline=i)
+        elif n == _('Band Name', ctx):
+            em.add_field(name=_('Band', ctx), value=_('None', ctx))
 
     return em
 
