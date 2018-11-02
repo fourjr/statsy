@@ -388,7 +388,7 @@ class StatsBot(commands.AutoShardedBot):
         while not self.is_closed():
             metrics = [
                 ('statsy.latency', self.latency * 1000),
-                # ('statsy.guilds', len(self.guilds)),
+                ('statsy.guilds', len(self.guilds)),
                 ('statsy.users', len(self.users)),
                 ('statsy.channels', len([i.id for g in self.guilds for i in g.channels])),
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
