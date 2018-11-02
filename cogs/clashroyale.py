@@ -181,14 +181,18 @@ class Clash_Royale:
         return data
 
     async def request_db(self, **kwargs):
-        async with self.bot.session.request(
-            kwargs.get('method', 'GET'),
-            kwargs.get('url', 'https://statsy-fourjr.firebaseio.com/players.json'),
-            headers={'Authorization': f'Bearer {self.firebase.get_access_token().access_token}'},
-            json=kwargs.get('json', {}),
-            params=kwargs.get('params', {})
-        ) as resp:
-            return await resp.json()
+        try:
+            return self.cache[f'LBDB{kwargs}']
+        except KeyError:
+            async with self.bot.session.request(
+                kwargs.get('method', 'GET'),
+                kwargs.get('url', 'https://statsy-fourjr.firebaseio.com/players.json'),
+                headers={'Authorization': f'Bearer {self.firebase.get_access_token().access_token}'},
+                json=kwargs.get('json', {}),
+                params=kwargs.get('params', {})
+            ) as resp:
+                self.cache[f'LBDB{kwargs}'] = await resp.json()
+                return self.cache[f'LBDB{kwargs}']
 
     async def get_clan_from_profile(self, ctx, tag, message):
         p = await self.request(ctx, 'get_player', tag)

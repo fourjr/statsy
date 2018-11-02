@@ -104,7 +104,7 @@ async def format_brawlers(ctx, p):
 
         skin = check if i.has_skin else cross
 
-        val = f"{emoji(ctx, 'icon_xp')}　Level {i.level}\n{skin}　Skins\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+        val = f"{emoji(ctx, 'icon_xp')}　Level {i.level}\n{skin}　Skin Active?\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
