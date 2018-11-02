@@ -49,11 +49,11 @@ async def format_profile(ctx, p):
     try:
         band = p.band.name
     except box.BoxKeyError:
-        pass
+        band = False
 
     embed_fields = [
-        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'icon_trophy')}", True),
-        (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'star_gold_00')}", True),
+        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}", True),
+        (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'goldstar')}", True),
         (_('Solo Showdown Wins', ctx), f"{p.solo_showdown_victories} {emoji(ctx, 'soloshowdown')}", True),
         (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
         (_('Best time as Boss', ctx), f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
@@ -77,7 +77,7 @@ async def format_brawlers(ctx, p):
     ems = []
 
     ranks = [
-        1,
+        0,
         10,
         20,
         30,
@@ -112,7 +112,7 @@ async def format_brawlers(ctx, p):
 
         skin = check if i.has_skin else cross
 
-        val = f"{emoji(ctx, 'icon_xp')}　Level {i.level}\n{skin}　Skin Active?\n{emoji(ctx, 'icon_trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+        val = f"{emoji(ctx, 'xp')}　Level {i.level}\n{skin}　Skin Active?\n{emoji(ctx, 'trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
@@ -133,7 +133,7 @@ async def format_band(ctx, b):
     #         pushers.append(
     #             f"**{pushername}**"
     #             f"\n{trophies} "
-    #             f"{emoji(ctx, 'icon_trophy')}\n"
+    #             f"{emoji(ctx, 'trophy')}\n"
     #             f"#{tag}"
     #         )
 
@@ -155,8 +155,8 @@ async def format_band(ctx, b):
     # page2.description = 'Top Players/Experienced Players for this clan.'
 
     fields1 = [
-        ('Clan Score', f'{b.trophies} {emoji(ctx, "icon_trophy")}'),
-        ('Required Trophies', f'{b.required_trophies} {emoji(ctx, "icon_trophy")}'),
+        ('Clan Score', f'{b.trophies} {emoji(ctx, "trophy")}'),
+        ('Required Trophies', f'{b.required_trophies} {emoji(ctx, "trophy")}'),
         ('Members', f'{b.members_count}/100')
     ]
     # fields2 = [
@@ -187,7 +187,7 @@ async def format_events(ctx, events):
 
     clock_emoji = u"\U0001F55B"
     first_win_emoji = str(emoji(ctx, 'first_win'))
-    coin_emoji = str(emoji(ctx, 'icon_coin'))
+    coin_emoji = str(emoji(ctx, 'coin'))
 
     for event in ongoing:
         date = (datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.utcnow()

@@ -3,6 +3,7 @@ import os
 from urllib.parse import urlencode
 
 import aiohttp
+import datadog
 import discord
 from discord.ext import commands
 
@@ -73,7 +74,7 @@ class Fortnite:
         if isinstance(error, utils.APIError):
             await ctx.send(_('Fortnite API is currently undergoing maintenance. Please try again later.', ctx))
 
-    async def post(self, endpoint, payload):
+    async def post(self, endpoint, payload, *, reason='command'):
         headers = {
             'Authorization': os.getenv('fortnite'),
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -82,6 +83,9 @@ class Fortnite:
             'https://fortnite-public-api.theapinetwork.com/prod09' + endpoint,
             data=urlencode(payload), headers=headers
         ) as resp:
+            datadog.statsd.increment('statsy.requests', 1, [
+                'game:fortnite', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+            ])
             if resp.status != 200:
                 raise utils.APIError
             try:
@@ -90,7 +94,7 @@ class Fortnite:
                 raise utils.APIError
 
     async def get_player_uid(self, ctx, name):
-        data = await self.post('/users/id', {'username': name})
+        data = await self.post('/users/id', {'username': name}, reason='get_uid')
         if data.get('code') in ('1012', '1006'):
             await ctx.send(_('The username cannot be found!', ctx))
             raise utils.NoTag

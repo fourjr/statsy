@@ -2,6 +2,7 @@ import io
 import os
 
 import aiohttp
+import datadog
 import discord
 from cachetools import TTLCache
 from discord.ext import commands
@@ -75,7 +76,7 @@ class Clash_of_Clans:
         else:
             return True
 
-    async def request(self, ctx, endpoint):
+    async def request(self, ctx, endpoint, *, reason='command'):
         try:
             self.cache[endpoint]
         except KeyError:
@@ -83,6 +84,9 @@ class Clash_of_Clans:
                 f"http://{os.getenv('spike')}/redirect?url=https://api.clashofclans.com/v1/{endpoint}",
                 headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"}
             ) as resp:
+                datadog.statsd.increment('statsy.requests', 1, [
+                    'game:clashofclans', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                ])
                 try:
                     self.cache[endpoint] = await resp.json()
                 except aiohttp.ContentTypeError:

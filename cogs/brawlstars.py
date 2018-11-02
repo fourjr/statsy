@@ -5,6 +5,7 @@ import time
 import os
 
 from cachetools import TTLCache
+import datadog
 import discord
 from box import Box
 from discord.ext import commands
@@ -95,7 +96,7 @@ class Brawl_Stars:
         else:
             return tag_or_user
 
-    async def request(self, ctx, endpoint, *, leaderboard=False):
+    async def request(self, ctx, endpoint, *, leaderboard=False, reason='command'):
         try:
             self.cache[endpoint]
         except KeyError:
@@ -103,6 +104,9 @@ class Brawl_Stars:
                 async with ctx.session.get(
                     f'https://leaderboard.brawlstars.com/{endpoint}.jsonp?_={int(time.time()) - 4}'
                 ) as resp:
+                    datadog.statsd.increment('statsy.requests', 1, [
+                        'game:brawlstars', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                    ])
                     self.cache[endpoint] = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
             else:
                 try:
@@ -111,6 +115,9 @@ class Brawl_Stars:
                         headers={'Authorization': os.getenv('brawlstars')},
                         timeout=15
                     ) as resp:
+                        datadog.statsd.increment('statsy.requests', 1, [
+                            'game:brawlstars', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                        ])
                         try:
                             if resp.status == 200:
                                 self.cache[endpoint] = await resp.json()
@@ -135,19 +142,19 @@ class Brawl_Stars:
         return Box(self.cache[endpoint], camel_killer_box=True)
 
     @command()
-    async def bssave(self, ctx, *, tag):
-        """Saves a Brawl Stars tag to your discord profile.
-
-        Ability to save multiple tags coming soon.
-        """
+    async def bssave(self, ctx, tag, index: int = 0):
+        """Saves a Brawl Stars tag to your discord profile."""
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            raise utils.InvalidTag(_('Invalid tag', ctx))
+            raise utils.InvalidTag
 
-        await ctx.save_tag(tag, 'brawlstars')
+        if index == '0':
+            prompt = _('Check your stats with `{}bsprofile`!', ctx).format(ctx.prefix)
+        else:
+            prompt = _('Check your stats with `{}bsprofile -{}`!', ctx).format(ctx.prefix, index)
 
-        await ctx.send(_('Successfully saved tag.', ctx))
+        await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
 
     @command()
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
@@ -198,7 +205,7 @@ class Brawl_Stars:
     async def bsroborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
         async with ctx.channel.typing():
-            leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True)
+            leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True, reason='rumbleboard')
             ems = brawlstars.format_robo(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
@@ -208,7 +215,7 @@ class Brawl_Stars:
     async def bsbossfight(self, ctx):
         """Shows the boss fight leaderboard"""
         async with ctx.channel.typing():
-            leaderboard = await self.request(ctx, 'bossboard', leaderboard=True)
+            leaderboard = await self.request(ctx, 'bossboard', leaderboard=True, reason='bossboard')
             ems = brawlstars.format_boss(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
