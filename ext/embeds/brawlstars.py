@@ -35,7 +35,7 @@ def format_timestamp(seconds: int):
 
 
 async def format_profile(ctx, p):
-    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}' for i in p.brawlers])
+    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{emoji(ctx, i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
 
     pic = f'{url}/player%20icons/{p.avatar_id}.png'
 
@@ -75,7 +75,7 @@ async def format_profile(ctx, p):
         band = False
 
     embed_fields = [
-        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}", False),
+        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'bstrophy')}", False),
         (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'goldstar')}", True),
         (_('Solo Showdown Wins', ctx), f"{p.solo_showdown_victories} {emoji(ctx, 'soloshowdown')}", True),
         (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
@@ -137,7 +137,7 @@ async def format_brawlers(ctx, p):
 
         skin = check if i.has_skin else cross
 
-        val = f"{emoji(ctx, 'xp')}　Level {i.level}\n{skin}　Skin Active?\n{emoji(ctx, 'trophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+        val = f"{emoji(ctx, 'xp')}　Level {i.level}\n{skin}　Skin Active?\n{emoji(ctx, 'bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
@@ -180,8 +180,8 @@ async def format_band(ctx, b):
     # page2.description = 'Top Players/Experienced Players for this clan.'
 
     fields1 = [
-        ('Clan Score', f'{b.trophies} {emoji(ctx, "trophy")}'),
-        ('Required Trophies', f'{b.required_trophies} {emoji(ctx, "trophy")}'),
+        ('Clan Score', f'{b.trophies} {emoji(ctx, "bstrophy")}'),
+        ('Required Trophies', f'{b.required_trophies} {emoji(ctx, "bstrophy")}'),
         ('Members', f'{b.members_count}/100')
     ]
     # fields2 = [
