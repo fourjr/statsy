@@ -156,7 +156,7 @@ class Brawl_Stars:
         if not tag:
             raise utils.InvalidTag
 
-        await ctx.save_tag(tag[0], 'clashroyale', index=index.replace('-', ''))
+        await ctx.save_tag(tag, 'brawlstars', index=index.replace('-', ''))
         if index == '0':
             prompt = _('Check your stats with `{}bsprofile`!', ctx).format(ctx.prefix)
         else:
@@ -165,6 +165,7 @@ class Brawl_Stars:
         await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
 
     @command()
+    @utils.has_perms()
     async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
         """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
