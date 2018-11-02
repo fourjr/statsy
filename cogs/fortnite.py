@@ -1,4 +1,5 @@
 import json
+import time
 import os
 from urllib.parse import urlencode
 
@@ -53,7 +54,7 @@ class Fortnite:
             try:
                 return await ctx.get_tag('fortnite', f'{ctx.author.id}: {platform}')
             except KeyError:
-                await ctx.send(_("You don't have a saved tag. Save one using `{}fnsave <tag>!`", ctx).format(ctx.prefix))
+                await ctx.send(_("You don't have a saved tag. Save one using `{}fnsave <platform> <username>!`", ctx).format(ctx.prefix))
                 raise utils.NoTag
         else:
             if platform not in ('pc', 'ps4', 'xb1'):
@@ -79,12 +80,17 @@ class Fortnite:
             'Authorization': os.getenv('fortnite'),
             'Content-Type': 'application/x-www-form-urlencoded'
         }
+        speed = time.time()
         async with self.session.post(
             'https://fortnite-public-api.theapinetwork.com/prod09' + endpoint,
             data=urlencode(payload), headers=headers
         ) as resp:
+            speed = speed - time.time()
+            datadog.statsd.increment('statsy.api_latency', 1, [
+                'game:fortnite', f'speed:{speed}', f'method:{endpoint}'
+            ])
             datadog.statsd.increment('statsy.requests', 1, [
-                'game:fortnite', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                'game:fortnite', f'code:{resp.status}', f'method:{endpoint}', f'reason:{reason}'
             ])
             if resp.status != 200:
                 raise utils.APIError

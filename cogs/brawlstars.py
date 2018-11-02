@@ -101,22 +101,29 @@ class Brawl_Stars:
             self.cache[endpoint]
         except KeyError:
             if leaderboard:
+                speed = time.time()
                 async with ctx.session.get(
                     f'https://leaderboard.brawlstars.com/{endpoint}.jsonp?_={int(time.time()) - 4}'
                 ) as resp:
+                    speed = time.time() - speed
                     datadog.statsd.increment('statsy.requests', 1, [
-                        'game:brawlstars', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                        'game:brawlstars', f'code:{resp.status}', f'method:{endpoint}', f'reason:{reason}'
                     ])
                     self.cache[endpoint] = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
             else:
                 try:
+                    speed = time.time()
                     async with ctx.session.get(
                         f"http://brawlapi.cf/api{endpoint}",
                         headers={'Authorization': os.getenv('brawlstars')},
                         timeout=15
                     ) as resp:
+                        speed = time.time() - speed
+                        datadog.statsd.increment('statsy.api_latency', 1, [
+                            'game:brawlstars', f'speed:{speed}', f'method:{endpoint}'
+                        ])
                         datadog.statsd.increment('statsy.requests', 1, [
-                            'game:brawlstars', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                            'game:brawlstars', f'code:{resp.status}', f'method:{endpoint}', f'reason:{reason}'
                         ])
                         try:
                             if resp.status == 200:
@@ -205,7 +212,7 @@ class Brawl_Stars:
     async def bsroborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
         async with ctx.channel.typing():
-            leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True, reason='rumbleboard')
+            leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True)
             ems = brawlstars.format_robo(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
@@ -215,7 +222,7 @@ class Brawl_Stars:
     async def bsbossfight(self, ctx):
         """Shows the boss fight leaderboard"""
         async with ctx.channel.typing():
-            leaderboard = await self.request(ctx, 'bossboard', leaderboard=True, reason='bossboard')
+            leaderboard = await self.request(ctx, 'bossboard', leaderboard=True)
             ems = brawlstars.format_boss(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()

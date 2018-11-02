@@ -1,4 +1,5 @@
 import io
+import time
 import os
 
 import aiohttp
@@ -80,12 +81,17 @@ class Clash_of_Clans:
         try:
             self.cache[endpoint]
         except KeyError:
+            speed = time.time()
             async with self.bot.session.get(
                 f"http://{os.getenv('spike')}/redirect?url=https://api.clashofclans.com/v1/{endpoint}",
                 headers={'Authorization': f"Bearer {os.getenv('clashofclans')}"}
             ) as resp:
+                speed = time.time() - speed
+                datadog.statsd.increment('statsy.api_latency', 1, [
+                    'game:clashofclans', f'speed:{speed}', f'method:{endpoint}'
+                ])
                 datadog.statsd.increment('statsy.requests', 1, [
-                    'game:clashofclans', f'code:{resp.status}', f'method:GET', f'reason:{reason}'
+                    'game:clashofclans', f'code:{resp.status}', f'method:{endpoint}', f'reason:{reason}'
                 ])
                 try:
                     self.cache[endpoint] = await resp.json()

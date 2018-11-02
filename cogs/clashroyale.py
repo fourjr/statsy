@@ -164,7 +164,9 @@ class Clash_Royale:
         try:
             data = self.cache[f'{method}{args}']
         except KeyError:
+            speed = time.time()
             data = await getattr(client, method)(*args)
+            speed = time.time() - speed
 
             if isinstance(data, list):
                 self.cache[f'{method}{args}'] = data
@@ -174,6 +176,9 @@ class Clash_Royale:
                 status_code = data.response.status
             datadog.statsd.increment('statsy.requests', 1, [
                 'game:clashroyale', f'code:{status_code}', f'method:{method}', f'reason:{reason}'
+            ])
+            datadog.statsd.increment('statsy.api_latency', 1, [
+                'game:clashroyale', f'speed:{speed}', f'method:{method}'
             ])
         else:
             if not isinstance(data, list):
