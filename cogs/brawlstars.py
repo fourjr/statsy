@@ -109,7 +109,7 @@ class Brawl_Stars:
                     async with ctx.session.get(
                         f"http://brawlapi.cf/api{endpoint}",
                         headers={'Authorization': os.getenv('brawlstars')},
-                        timeout=5
+                        timeout=10
                     ) as resp:
                         try:
                             if resp.status == 200:
