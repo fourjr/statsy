@@ -149,13 +149,14 @@ class Brawl_Stars:
         return Box(self.cache[endpoint], camel_killer_box=True)
 
     @command()
-    async def bssave(self, ctx, tag, index: int = 0):
+    async def bssave(self, ctx, tag, index: str = '0'):
         """Saves a Brawl Stars tag to your discord profile."""
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
             raise utils.InvalidTag
 
+        await ctx.save_tag(tag[0], 'clashroyale', index=index.replace('-', ''))
         if index == '0':
             prompt = _('Check your stats with `{}bsprofile`!', ctx).format(ctx.prefix)
         else:
