@@ -11,7 +11,7 @@ from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
 
-url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master/images/'
+url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master'
 
 
 def format_timestamp(seconds: int):
@@ -37,14 +37,37 @@ def format_timestamp(seconds: int):
 async def format_profile(ctx, p):
     brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}' for i in p.brawlers])
 
-    pic = f'{url}thumbnails/high/{p.avatar_id}.png'
+    pic = f'{url}/player%20icons/{p.avatar_id}.png'
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{p.name} (#{p.tag})')
-    em.set_thumbnail(url=pic)
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=pic)
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+
+    exp_level = 0
+    minus_exp = 30
+    while p.total_exp >= 0:
+        minus_exp += 10
+        p.total_exp -= minus_exp
+        exp_level += 1
+
+    # :exp_level: is the current XP Level
+    # :minus_exp - p.total_exp: is the amount of XP he has
+    # :minus_exp: is the total amount of XP needed for that level
+
+    account_age = ''
+    months, days = divmod(p.account_age_in_days, 30)
+    years, months = divmod(months, 12)
+    if years:
+        account_age += f'{years} year'
+        if years > 1:
+            account_age += 's,'
+        else:
+            account_age += ','
+    if months:
+        account_age += f' {months} months and'
+    account_age += f' {days} days'
 
     try:
         band = p.band.name
@@ -52,15 +75,17 @@ async def format_profile(ctx, p):
         band = False
 
     embed_fields = [
-        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}", True),
+        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'trophy')}", False),
         (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'goldstar')}", True),
         (_('Solo Showdown Wins', ctx), f"{p.solo_showdown_victories} {emoji(ctx, 'soloshowdown')}", True),
         (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
         (_('Best time as Boss', ctx), f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
         (_('Best Robo Rumble Time', ctx), f"{p.best_robo_rumble_time} {emoji(ctx, 'roborumble')}", True),
-        # ('Level', f"{p.exp} {emoji(ctx, 'star_silver')}", True),
+        (_('XP Level', ctx), f"{exp_level} ({minus_exp - p.total_exp}/{minus_exp}) {emoji(ctx, 'xp')}", True),
         (_('Band Name', ctx), p.band.name if band else None, True),
         (_('Band Tag', ctx), f'#{p.band.tag}' if band else None, True),
+        (_('Band Role', ctx), p.band.role if band else None, True),
+        (_('Account Age', ctx), account_age, False),
         (_('Brawlers', ctx), brawlers, False),
     ]
 

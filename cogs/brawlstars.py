@@ -114,8 +114,8 @@ class Brawl_Stars:
                 try:
                     speed = time.time()
                     async with ctx.session.get(
-                        f"http://brawlapi.cf/api{endpoint}",
-                        headers={'Authorization': os.getenv('brawlstars')},
+                        f"https://brawlapi.cf/api{endpoint}",
+                        headers={'Authorization': 'abc3bab08ebe97e3ac56243b0e2793596f877051bf1c03186f23a96002cb172eb155be45492b7a9d'},
                         timeout=15
                     ) as resp:
                         speed = time.time() - speed
@@ -134,7 +134,7 @@ class Brawl_Stars:
                             er = discord.Embed(
                                 title=_('Brawl Stars Server Down', ctx),
                                 color=discord.Color.red(),
-                                description='This could be caused by a maintainence break or an API issue.'
+                                description=f'This could be caused by a maintainence break or an API issue ({resp.status}).'
                             )
                             if ctx.bot.psa_message:
                                 er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
