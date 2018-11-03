@@ -394,7 +394,8 @@ class StatsBot(commands.AutoShardedBot):
                 ('statsy.memory', self.process.memory_full_info().uss / 1024**2),
                 ('statsy.tags_saved', sum([await self.mongo.player_tags[i].count_documents({}) for i in games])),
                 ('statsy.cache', len(self.get_cog('Clash_Royale').cache), ['game:clashroyale']),
-                ('statsy.cache', len(self.get_cog('Clash_of_Clans').cache), ['game:clashofclans']),
+                ('statsy.cache', len(self.get_cog('Clash_Of_Clans').cache), ['game:clashofclans']),
+                ('statsy.cache', len(self.get_cog('Brawl_Stars').cache), ['game:brawlstars']),
                 ('statsy.claninfo', await self.mongo.config.guilds.count_documents({'claninfo': {'$exists': True}})),
                 ('statsy.tournament', await self.mongo.config.guilds.count_documents({'tournament': {'$exists': True}}))
             ]
