@@ -11,7 +11,7 @@ from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
 
-url = 'https://raw.githubusercontent.com/fourjr/bs-assets/master'
+url = 'https://fourjr.github.io/bs-assets'
 
 
 def format_timestamp(seconds: int):
@@ -35,15 +35,13 @@ def format_timestamp(seconds: int):
 
 
 async def format_profile(ctx, p):
-    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{emoji(ctx, i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
-
-    pic = f'{url}/player%20icons/{p.avatar_id}.png'
-
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=pic)
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/player_icons/{p.avatar_id}.png')
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+
+    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{emoji(ctx, i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
 
     exp_level = 0
     minus_exp = 30
@@ -65,9 +63,17 @@ async def format_profile(ctx, p):
             account_age += 's,'
         else:
             account_age += ','
+
     if months:
-        account_age += f' {months} months and'
-    account_age += f' {days} days'
+        account_age += f' {months} month'
+        if months > 1:
+            account_age += 's and'
+        else:
+            account_age += 'and'
+
+    account_age += f' {days} day'
+    if days > 1:
+        account_age += 's'
 
     try:
         band = p.band.name
@@ -146,58 +152,58 @@ async def format_brawlers(ctx, p):
 async def format_band(ctx, b):
     # badge = f'{url}bands/' + b['badge_export'] + '.png'
 
-    # _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
-    # experiences = []
-    # pushers = []
+    _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
+    experiences = []
+    pushers = []
 
-    # if len(b.members) >= 3:
-    #     for i in range(3):
-    #         pushername = b.members[i].name
-    #         trophies = b.members[i].trophies
-    #         tag = b.members[i].tag
-    #         pushers.append(
-    #             f"**{pushername}**"
-    #             f"\n{trophies} "
-    #             f"{emoji(ctx, 'trophy')}\n"
-    #             f"#{tag}"
-    #         )
+    if len(b.members) >= 3:
+        for i in range(3):
+            pushername = b.members[i].name
+            trophies = b.members[i].trophies
+            tag = b.members[i].tag
+            pushers.append(
+                f"**{pushername}**"
+                f"\n{trophies} "
+                f"{emoji(ctx, 'bstrophy')}\n"
+                f"#{tag}"
+            )
 
-    #         xpname = _experiences[i].name
-    #         xpval = _experiences[i].exp_level
-    #         xptag = _experiences[i].tag
-    #         experiences.append(
-    #             f"**{xpname}**"
-    #             f"\n{emoji(ctx, 'star_silver')}"
-    #             f" {xpval}\n"
-    #             f"#{xptag}"
-    #         )
+            xpname = _experiences[i].name
+            xpval = _experiences[i].exp_level
+            xptag = _experiences[i].tag
+            experiences.append(
+                f"**{xpname}**"
+                f"\n{emoji(ctx, 'xp')}"
+                f" {xpval}\n"
+                f"#{xptag}"
+            )
 
     page1 = discord.Embed(description=b.description, color=random_color())
     page1.set_author(name=f"{b.name} (#{b.tag})")
     page1.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
     # page1.set_thumbnail(url=badge)
-    # page2 = copy.deepcopy(page1)
-    # page2.description = 'Top Players/Experienced Players for this clan.'
+    page2 = copy.deepcopy(page1)
+    page2.description = 'Top Players/Experienced Players for this band.'
 
     fields1 = [
-        ('Clan Score', f'{b.trophies} {emoji(ctx, "bstrophy")}'),
-        ('Required Trophies', f'{b.required_trophies} {emoji(ctx, "bstrophy")}'),
-        ('Members', f'{b.members_count}/100')
+        (_('Type', ctx), f'{b.status} 📩'),
+        (_('Score', ctx), f'{b.trophies} Trophies {emoji(ctx, "bstrophy")}'),
+        (_('Members', ctx), f'{b.members_count}/100'),
+        (_('Required Trophies', ctx), f'{b.required_trophies} {emoji(ctx, "bstrophy")}')
     ]
-    # fields2 = [
-    #     ("Top Players", '\n\n'.join(pushers)),
-    #     ("Top Experience", '\n\n'.join(experiences))
-    # ]
+    fields2 = [
+        ("Top Players", '\n\n'.join(pushers)),
+        ("Top Experience", '\n\n'.join(experiences))
+    ]
 
     for f, v in fields1:
         page1.add_field(name=f, value=v)
 
-    # for f, v in fields2:
-    #     if v:
-    #         page2.add_field(name=f, value=v)
+    for f, v in fields2:
+        if v:
+            page2.add_field(name=f, value=v)
 
-    # return [page1, page2]
-    return [page1]
+    return [page1, page2]
 
 
 async def format_events(ctx, events):
