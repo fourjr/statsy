@@ -345,7 +345,7 @@ class Bot_Related:
         try:
             with redirect_stdout(stdout):
                 ret = await func()
-        except Exception as e:
+        except Exception:
             value = stdout.getvalue()
             err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
@@ -445,7 +445,7 @@ class Bot_Related:
             print('Invalid args')
         try:
             await new_ctx.invoke(command, **args)
-        except Exception as e:
+        except Exception:
             await ctx.send(traceback.format_exc())
 
     @command(name='guilds', hidden=True)
@@ -517,7 +517,6 @@ Total                   :  {len(self.bot.guilds)}```"""))
         shortcuts = {
             'coc': 'Clash_Of_Clans',
             'cr': 'Clash_Royale',
-            'ow': 'Overwatch',
             'bs': 'Brawl_Stars',
             'fn': 'Fortnite'
         }
@@ -543,7 +542,6 @@ Total                   :  {len(self.bot.guilds)}```"""))
         shortcuts = {
             'coc': 'Clash_Of_Clans',
             'cr': 'Clash_Royale',
-            'ow': 'Overwatch',
             'bs': 'Brawl_Stars',
             'fn': 'Fortnite'
         }
