@@ -65,6 +65,13 @@ class Brawl_Stars:
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
 
+    async def __local_check(self, ctx):
+        if ctx.guild:
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
+            return guild_info.get('games', {}).get(self.__class__.__name__, True)
+        else:
+            return True
+
     async def get_band_from_profile(self, ctx, tag, message):
         profile = await self.request(ctx, f'/players/{tag}')
         try:

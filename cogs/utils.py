@@ -515,7 +515,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         if not ctx.guild:
             return await ctx.send(_('All games are enabled in DMs.'), ctx)
         shortcuts = {
-            'coc': 'Clash_of_Clans',
+            'coc': 'Clash_Of_Clans',
             'cr': 'Clash_Royale',
             'ow': 'Overwatch',
             'bs': 'Brawl_Stars',
@@ -532,7 +532,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await self.bot.mongo.config.guilds.find_one_and_update(
                 {'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': True}}, upsert=True
             )
-            await ctx.send('Successfully enabled {}'.format(cog_name))
+            await ctx.send('Successfully enabled {}'.format(' '.join(cog_name.split('_'))))
 
     @command()
     @commands.has_permissions(manage_guild=True)
@@ -541,7 +541,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         if not ctx.guild:
             return await ctx.send(_('All games cannot be disabled in DMs.'), ctx)
         shortcuts = {
-            'coc': 'Clash_of_Clans',
+            'coc': 'Clash_Of_Clans',
             'cr': 'Clash_Royale',
             'ow': 'Overwatch',
             'bs': 'Brawl_Stars',
@@ -558,7 +558,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
             await self.bot.mongo.config.guilds.find_one_and_update(
                 {'guild_id': str(ctx.guild.id)}, {'$set': {f'games.{cog_name}': False}}, upsert=True
             )
-            await ctx.send('Successfully disabled {}'.format(cog_name))
+            await ctx.send('Successfully disabled {}'.format(' '.join(cog_name.split('_'))))
 
     @utils.developer()
     @command(name='reload', hidden=True)

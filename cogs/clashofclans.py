@@ -58,7 +58,7 @@ class TagCheck(commands.MemberConverter):
             return tag
 
 
-class Clash_of_Clans:
+class Clash_Of_Clans:
 
     '''Commands relating to the Clash of Clans game made by supercell.'''
 
@@ -300,5 +300,5 @@ class Clash_of_Clans:
 
 
 def setup(bot):
-    cog = Clash_of_Clans(bot)
+    cog = Clash_Of_Clans(bot)
     bot.add_cog(cog)
