@@ -95,9 +95,13 @@ class Fortnite:
             if resp.status != 200:
                 raise utils.APIError
             try:
-                return await resp.json()
+                data = await resp.json()
+                if not data:
+                    raise utils.APIError
             except (json.JSONDecodeError, aiohttp.client_exceptions.ContentTypeError):
                 raise utils.APIError
+            else:
+                return data
 
     async def get_player_uid(self, ctx, name):
         data = await self.post('/users/id', {'username': name}, reason='get_uid')
@@ -105,6 +109,8 @@ class Fortnite:
             await ctx.send(_('The username cannot be found!', ctx))
             raise utils.NoTag
 
+        if not data:
+            raise utils.APIError
         return data['uid']
 
     @command()
