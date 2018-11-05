@@ -281,7 +281,7 @@ async def format_top_bands(ctx, clans):
             value=f"#{c.tag}"
                   f"\n{emoji(ctx, 'bstrophy')}{c.trophies}"
                   f"\n{emoji(ctx, 'bountystar')} Rank: {c.position} "
-                  f"\n{emoji(ctx, 'gameroom')} {c.members_count}/50 "
+                  f"\n{emoji(ctx, 'gameroom')} {c.members_count}/100 "
         )
         counter += 1
     embeds.append(em)
