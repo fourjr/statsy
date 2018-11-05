@@ -158,24 +158,21 @@ async def format_band(ctx, b):
 
     if len(b.members) >= 3:
         for i in range(3):
-            pushername = b.members[i].name
-            trophies = b.members[i].trophies
-            tag = b.members[i].tag
+            push_avatar = emoji(ctx, str(b.members[i].avatar_id).replace('21307136', '280000'))
+            exp_avatar = emoji(ctx, str(_experiences[i].avatar_id).replace('21307136', '280000'))
+
             pushers.append(
-                f"**{pushername}**"
-                f"\n{trophies} "
+                f"**{push_avatar} {b.members[i].name}**"
                 f"{emoji(ctx, 'bstrophy')}\n"
-                f"#{tag}"
+                f"\n{b.members[i].trophies} "
+                f"#{b.members[i].tag}"
             )
 
-            xpname = _experiences[i].name
-            xpval = _experiences[i].exp_level
-            xptag = _experiences[i].tag
             experiences.append(
-                f"**{xpname}**"
+                f"**{exp_avatar} {_experiences[i].name}**"
                 f"\n{emoji(ctx, 'xp')}"
-                f" {xpval}\n"
-                f"#{xptag}"
+                f" {_experiences[i].exp_level}\n"
+                f"#{_experiences[i].tag}"
             )
 
     page1 = discord.Embed(description=b.description, color=random_color())
