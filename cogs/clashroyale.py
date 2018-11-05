@@ -729,9 +729,9 @@ class Clash_Royale:
         await self.parse_leaderboard(ctx, 'cards', 'clanCardsCollected', name='Clan Cards Collected')
 
     @utils.has_perms()
-    @command()
+    @command(aliases=['toplayers'])
     async def topplayers(self, ctx, *, region: str = None):
-        """Returns the global top 200 players."""
+        """Returns the top 200 players."""
         async with ctx.typing():
             region = name = 'global'
             if region:

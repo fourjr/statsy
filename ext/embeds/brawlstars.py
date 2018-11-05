@@ -206,6 +206,88 @@ async def format_band(ctx, b):
     return [page1, page2]
 
 
+async def format_top_players(ctx, players):
+    region = 'global'
+
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    else:
+        em.description = _('Top 200 {} players right now.', ctx).format(region)
+    # badge_image = ctx.bot.cr.get_clan_image(players[0])
+    em.set_author(name='Top Players')   # , icon_url=badge_image)
+    em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+    embeds = []
+    counter = 0
+    for c in players:
+        if counter % 12 == 0 and counter != 0:
+            embeds.append(em)
+            em = discord.Embed(color=random_color())
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
+            else:
+                em.description = _('Top 200 {} players right now.', ctx).format(region)
+
+            # badge_image = ctx.bot.cr.get_clan_image(players[0])
+            em.set_author(name=_('Top Players', ctx))  # , icon_url=badge_image)
+            em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+
+        try:
+            band_name = c.band_name
+        except AttributeError:
+            band_name = 'No Clan'
+
+        em.add_field(
+            name=c.name,
+            value=f"#{c.tag}"
+                  f"\n{emoji(ctx, 'bstrophy')}{c.trophies}"
+                  f"\n{emoji(ctx, 'bountystar')} Rank: {c.position} "
+                  f"\n{emoji(ctx, 'xp')} XP Level: {c.exp_level}"
+                  f"\n{emoji(ctx, 'gameroom')} {band_name}"
+        )
+        counter += 1
+    embeds.append(em)
+    return embeds
+
+
+async def format_top_bands(ctx, clans):
+    region = 'global'
+
+    em = discord.Embed(color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    else:
+        em.description = _('Top 200 {} bands right now.', ctx).format(region)
+    # badge_image = ctx.bot.cr.get_clan_image(clans[0])
+    em.set_author(name='Top Bands')  # , icon_url=badge_image)
+    em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+    embeds = []
+    counter = 0
+    for c in clans:
+        if counter % 12 == 0 and counter != 0:
+            embeds.append(em)
+            em = discord.Embed(color=random_color())
+            if ctx.bot.psa_message:
+                em.description = f'*{ctx.bot.psa_message}*'
+            else:
+                em.description = _('Top 200 {} bands right now.', ctx).format(region)
+
+            # badge_image = ctx.bot.cr.get_clan_image(clans[0])
+            em.set_author(name=_('Top Bands', ctx))  # , icon_url=badge_image)
+            em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+
+        em.add_field(
+            name=c.name,
+            value=f"#{c.tag}"
+                  f"\n{emoji(ctx, 'bstrophy')}{c.trophies}"
+                  f"\n{emoji(ctx, 'bountystar')} Rank: {c.position} "
+                  f"\n{emoji(ctx, 'gameroom')} {c.members_count}/50 "
+        )
+        counter += 1
+    embeds.append(em)
+    return embeds
+
+
 async def format_events(ctx, events):
     em1 = discord.Embed(title='Ongoing events!', color=random_color())
     if ctx.bot.psa_message:

@@ -206,6 +206,26 @@ class Brawl_Stars:
 
         await Paginator(ctx, *ems).start()
 
+    @command(aliases=['bstoplayers'])
+    @utils.has_perms()
+    async def bstopplayers(self, ctx):
+        """Returns the global top 200 players."""
+        async with ctx.channel.typing():
+            player = await self.request(ctx, '/leaderboards/players')
+            ems = await brawlstars.format_top_players(ctx, player.players)
+
+        await Paginator(ctx, *ems).start()
+
+    @command()
+    @utils.has_perms()
+    async def bstopbands(self, ctx):
+        """Returns the global top 200 players."""
+        async with ctx.channel.typing():
+            band = await self.request(ctx, '/leaderboards/bands')
+            ems = await brawlstars.format_top_bands(ctx, band.bands)
+
+        await Paginator(ctx, *ems).start()
+
     @command(enabled=False)
     @utils.has_perms()
     async def bsevents(self, ctx):
