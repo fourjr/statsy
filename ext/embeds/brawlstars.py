@@ -87,7 +87,7 @@ async def format_profile(ctx, p):
         (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
         (_('Best time as Boss', ctx), f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
         (_('Best Robo Rumble Time', ctx), f"{p.best_robo_rumble_time} {emoji(ctx, 'roborumble')}", True),
-        (_('XP Level', ctx), f"{exp_level} ({minus_exp - p.total_exp}/{minus_exp}) {emoji(ctx, 'xp')}", True),
+        (_('XP Level', ctx), f"{exp_level} ({minus_exp}/{minus_exp - p.total_exp}) {emoji(ctx, 'xp')}", True),
         (_('Band Name', ctx), p.band.name if band else None, True),
         (_('Band Tag', ctx), f'#{p.band.tag}' if band else None, True),
         (_('Band Role', ctx), p.band.role if band else None, True),
