@@ -55,7 +55,13 @@ class Fortnite:
             try:
                 return await ctx.get_tag('fortnite', f'{ctx.author.id}: {platform}')
             except KeyError:
-                await ctx.send(_("You don't have a saved tag. Save one using `{}fnsave <platform> <username>!`", ctx).format(ctx.prefix))
+                try:
+                    default_game = self.bot.default_game[ctx.guild.id]
+                except AttributeError:
+                    default_game = self.bot.default_game[ctx.channel.id]
+                cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
+
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <platform> <username>!`", ctx).format(ctx.prefix, cmd_name))
                 raise utils.NoTag
         else:
             if platform not in ('pc', 'ps4', 'xb1'):
@@ -119,12 +125,18 @@ class Fortnite:
         """Saves a Fortnite tag to your discord profile."""
         await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}', index=index.replace('-', ''))
 
-        if index == '0':
-            prompt = f'Check your stats with `{ctx.prefix}fnprofile`!'
-        else:
-            prompt = f'Check your stats with `{ctx.prefix}fnprofile -{index}`!'
+        try:
+            default_game = self.bot.default_game[ctx.guild.id]
+        except AttributeError:
+            default_game = self.bot.default_game[ctx.channel.id]
+        cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
 
-        await ctx.send('Successfully saved tag. ' + prompt)
+        if index == '0':
+            prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
+        else:
+            prompt = _('Check your stats with `{}{} -{}`!', ctx).format(ctx.prefix, cmd_name, index)
+
+        await ctx.send(_('Successfully saved tag. ', ctx) + prompt)
 
     @command()
     @utils.has_perms()

@@ -212,7 +212,13 @@ class Clash_Royale:
             try:
                 tag = await ctx.get_tag('clashroyale', index=str(index))
             except KeyError:
-                await ctx.send(_("You don't have a saved tag. Save one using `{}save <tag>`!", ctx).format(ctx.prefix))
+                try:
+                    default_game = self.bot.default_game[ctx.guild.id]
+                except AttributeError:
+                    default_game = self.bot.default_game[ctx.channel.id]
+                cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
+
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!", ctx).format(ctx.prefix, cmd_name))
                 raise utils.NoTag
             else:
                 if clan is True:
@@ -848,10 +854,16 @@ class Clash_Royale:
             player.raw_data['timestamp'] = time.time()
             await ctx.save_tag(tag[0], 'clashroyale', index=index.replace('-', ''))
 
+            try:
+                default_game = self.bot.default_game[ctx.guild.id]
+            except AttributeError:
+                default_game = self.bot.default_game[ctx.channel.id]
+            cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
+
             if index == '0':
-                prompt = _('Check your stats with `{}profile`!', ctx).format(ctx.prefix)
+                prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
             else:
-                prompt = _('Check your stats with `{}profile -{}`!', ctx).format(ctx.prefix, index)
+                prompt = _('Check your stats with `{}{} -{}`!', ctx).format(ctx.prefix, cmd_name, index)
 
             await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
 

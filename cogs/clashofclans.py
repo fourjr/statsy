@@ -130,7 +130,13 @@ class Clash_Of_Clans:
             try:
                 tag = await ctx.get_tag('clashofclans', index=str(index))
             except KeyError:
-                await ctx.send(_("You don\'t have a saved tag. Save one using `{}cocsave <tag>`!", ctx).format(ctx.prefix))
+                try:
+                    default_game = self.bot.default_game[ctx.guild.id]
+                except AttributeError:
+                    default_game = self.bot.default_game[ctx.channel.id]
+                cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
+
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!", ctx).format(ctx.prefix, cmd_name))
                 raise utils.NoTag
             else:
                 if clan is True:
@@ -240,10 +246,16 @@ class Clash_Of_Clans:
 
         await ctx.save_tag(tag, 'clashofclans', index=index.replace('-', ''))
 
+        try:
+            default_game = self.bot.default_game[ctx.guild.id]
+        except AttributeError:
+            default_game = self.bot.default_game[ctx.channel.id]
+        cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
+
         if index == '0':
-            prompt = f'Check your stats with `{ctx.prefix}cocprofile`!'
+            prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
         else:
-            prompt = f'Check your stats with `{ctx.prefix}cocprofile -{index}`!'
+            prompt = _('Check your stats with `{}{} -{}`!').format(ctx.prefix, cmd_name, index)
 
         await ctx.send('Successfully saved tag. ' + prompt)
 
