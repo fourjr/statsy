@@ -21,6 +21,7 @@ MSGSTR = 'msgstr "'
 
 _translators = []
 
+
 def reload_locales():
     for translator in _translators:
         translator.load_translations()
@@ -48,7 +49,7 @@ def _parse(translation_file):
             # Don't check if step is WAITING_FOR_MSGID
             untranslated = ""
             translated = ""
-            data = line[len(MSGID) : -1]
+            data = line[len(MSGID): -1]
             if len(data) == 0:  # Multiline mode
                 step = IN_MSGID
             else:
@@ -63,7 +64,7 @@ def _parse(translation_file):
             step = WAITING_FOR_MSGSTR
 
         if step is WAITING_FOR_MSGSTR and line.startswith(MSGSTR):
-            data = line[len(MSGSTR) : -1]
+            data = line[len(MSGSTR): -1]
             if len(data) == 0:  # Multiline mode
                 step = IN_MSGSTR
             else:
@@ -99,7 +100,7 @@ def _normalize(string, remove_newline=False):
     """
 
     def normalize_whitespace(s):
-        """Normalizes the whitespace in a string; \s+ becomes one space."""
+        """Normalizes the whitespace in a string; \\s+ becomes one space."""
         if not s:
             return str(s)  # not the same reference
         starts_with_space = s[0] in " \n\t\r"

@@ -34,6 +34,7 @@ class Fortnite:
     """Commands related to the Fortnite game"""
     def __init__(self, bot):
         self.bot = bot
+        self.alias = 'fn'
         bot.loop.create_task(self.__ainit__())
 
     async def __ainit__(self):

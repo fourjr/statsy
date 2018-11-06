@@ -2,7 +2,7 @@ import copy
 
 import discord
 
-from ext.utils import cdir, emoji, random_color
+from ext.utils import emoji, random_color
 from locales.i18n import Translator
 
 _ = Translator('COC Embeds', __file__)

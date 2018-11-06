@@ -1,8 +1,6 @@
-import asyncio
 import copy
 import datetime
 import inspect
-import importlib
 import io
 import json
 import os
@@ -558,14 +556,33 @@ Total                   :  {len(self.bot.guilds)}```"""))
             )
             await ctx.send('Successfully disabled {}'.format(' '.join(cog_name.split('_'))))
 
-    @utils.developer()
-    @command(name='reload', hidden=True)
-    async def reload_(self, ctx, *, cog_name):
-        importlib.reload(importlib.import_module(cog_name))
-        self.bot.unload_extension(cog_name)
-        await asyncio.sleep(0.2)
-        self.bot.load_extension(cog_name)
-        await ctx.send('done')
+    @command()
+    @commands.has_permissions(manage_guild=True)
+    async def setdefault(self, ctx, *, cog_name):
+        if not ctx.guild:
+            guild_id = str(ctx.channel.id)
+        else:
+            guild_id = str(ctx.guild.id)
+
+        shortcuts = {
+            'coc': 'Clash_Of_Clans',
+            'cr': 'Clash_Royale',
+            'bs': 'Brawl_Stars',
+            'fn': 'Fortnite'
+        }
+        if cog_name in shortcuts:
+            cog_name = shortcuts[cog_name]
+        cog = self.bot.get_cog(cog_name.title().replace(' ', '_'))
+
+        if cog in (self, self.bot.get_cog('Moderation'), None):
+            await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
+        else:
+            cog_name = cog.__class__.__name__
+            await self.bot.mongo.config.guilds.find_one_and_update(
+                {'guild_id': guild_id}, {'$set': {'default_game': cog_name}}, upsert=True
+            )
+            await ctx.send('Successfully set `{}` as the default game.'.format(' '.join(cog_name.split('_'))))
+            self.bot.default_game[ctx.guild.id] = cog_name
 
     @command()
     async def discord(self, ctx):

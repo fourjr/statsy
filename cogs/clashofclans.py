@@ -64,6 +64,7 @@ class Clash_Of_Clans:
 
     def __init__(self, bot):
         self.bot = bot
+        self.alias = 'coc'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
 

@@ -8,6 +8,7 @@ import platform
 import random
 import sys
 import traceback
+from collections import defaultdict
 
 import aiohttp
 import clashroyale
@@ -78,6 +79,7 @@ class StatsBot(commands.AutoShardedBot):
         self.messages_sent = 0
         self.maintenance_mode = False
         self.psa_message = None
+        self.default_game = defaultdict(lambda: 'Clash_Royale')
         try:
             self.dev_mode = platform.system() != 'Linux' and sys.argv[1] != '-d'
         except IndexError:
@@ -177,6 +179,9 @@ class StatsBot(commands.AutoShardedBot):
         print('----------------------------')
         datadog.statsd.increment('statsy.connect')
         self.blacklist = await self.mongo.config.admin.find_one({'_id': 'blacklist'})
+        async for g in self.mongo.config.guilds.find({'default_game': {'$exists': True}}):
+            self.default_game[int(g['guild_id'])] = g['default_game']
+        print('Guild syncing complete')
 
     async def on_ready(self):
         """Called when guild streaming is complete
@@ -223,6 +228,9 @@ class StatsBot(commands.AutoShardedBot):
         await self.wait_until_ready()
         ctx = await self.get_context(message)
 
+        if ctx.prefix is None:
+            return
+
         try:
             blacklist = [
                 str(ctx.author.id) in self.blacklist['users'],
@@ -234,17 +242,26 @@ class StatsBot(commands.AutoShardedBot):
         except AttributeError:
             pass
 
-        if ctx.guild:
-            ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
-        else:
-            ctx.language = 'messages'
-
         if ctx.command:
             if self.maintenance_mode is True:
                 if message.author.id not in self.developers:
                     return await ctx.send('The bot is under maintenance at the moment!')
             else:
                 await self.invoke(ctx)
+        else:
+            if ctx.guild:
+                default_cog = self.get_cog(self.default_game[ctx.guild.id])
+            else:
+                default_cog = self.get_cog(self.default_game[ctx.channel.id])
+
+            ctx.message.content = ctx.prefix + default_cog.alias + ctx.message.content.replace(ctx.prefix, '', 1)
+            ctx = await self.get_context(ctx.message)
+            if ctx.command:
+                if self.maintenance_mode is True:
+                    if message.author.id not in self.developers:
+                        return await ctx.send('The bot is under maintenance at the moment!')
+                else:
+                    await self.invoke(ctx)
 
     async def get_context(self, message, *, cls=CustomContext):
         """Overwrites the default StringView for space insensitivity
@@ -290,6 +307,12 @@ class StatsBot(commands.AutoShardedBot):
         ctx.invoked_with = invoker
         ctx.prefix = invoked_prefix
         ctx.command = self.all_commands.get(invoker)
+
+        if ctx.guild:
+            ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
+        else:
+            ctx.language = 'messages'
+
         return ctx
 
     async def on_command_error(self, ctx, error, description=None):

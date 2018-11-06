@@ -62,6 +62,7 @@ class Brawl_Stars:
 
     def __init__(self, bot):
         self.bot = bot
+        self.alias = 'bs'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
 
