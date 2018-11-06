@@ -10,6 +10,7 @@ from datetime import datetime
 import clashroyale
 import datadog
 import discord
+import requests
 from cachetools import TTLCache
 from discord.ext import commands
 from oauth2client.service_account import ServiceAccountCredentials
@@ -126,7 +127,6 @@ class Clash_Royale:
     def __init__(self, bot):
         self.bot = bot
         self.alias = 'cr'
-        self.cr = bot.cr
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
         scopes = [
@@ -134,6 +134,26 @@ class Clash_Royale:
             "https://www.googleapis.com/auth/firebase.database"
         ]
         self.firebase = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(b64decode(os.getenv('firebase')).decode()), scopes=scopes)
+
+        try:
+            constants = json.loads(requests.get('https://fourjr-webserver.herokuapp.com/cr/constants').text)
+        except json.JSONDecodeError:
+            constants = None
+        self.cr = clashroyale.OfficialAPI(
+            os.getenv('clashroyale'),
+            session=self.bot.session,
+            is_async=True,
+            timeout=20,
+            constants=constants,
+            url=f"http://{os.getenv('spike')}/redirect?url=https://api.clashroyale.com/v1"
+        )
+        self.royaleapi = clashroyale.RoyaleAPI(
+            os.getenv('royaleapi'),
+            session=self.bot.session,
+            is_async=True,
+            timeout=20
+        )
+
         if not self.bot.dev_mode:
             self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
@@ -941,7 +961,7 @@ class Clash_Royale:
     async def crtournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
-            t = await self.request(ctx, 'get_open_tournaments', client=self.bot.royaleapi)
+            t = await self.request(ctx, 'get_open_tournaments', client=self.royaleapi)
             em = await cr.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)

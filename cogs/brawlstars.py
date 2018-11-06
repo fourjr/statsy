@@ -4,10 +4,11 @@ import json
 import time
 import os
 
-from cachetools import TTLCache
 import datadog
 import discord
+import requests
 from box import Box
+from cachetools import TTLCache
 from discord.ext import commands
 
 import box
@@ -65,6 +66,7 @@ class Brawl_Stars:
         self.alias = 'bs'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
+        self.constants = box.Box(json.loads(requests.get('https://fourjr-webserver.herokuapp.com/bs/constants').text))
 
     async def __local_check(self, ctx):
         if ctx.guild:

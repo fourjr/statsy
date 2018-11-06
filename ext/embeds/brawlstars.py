@@ -38,7 +38,13 @@ async def format_profile(ctx, p):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/player_icons/{p.avatar_id}.png')
+    badge = ctx.cog.constants.alliance_badges[p.band.badge_id].name
+    em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/band_badges/{badge}.png')
+
+    try:
+        em.set_thumbnail(url=f'{url}/player_icons/{p.avatar_id}.png')
+    except box.BoxKeyError:
+        pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
 
     brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{emoji(ctx, i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
@@ -150,7 +156,7 @@ async def format_brawlers(ctx, p):
 
 
 async def format_band(ctx, b):
-    # badge = f'{url}bands/' + b['badge_export'] + '.png'
+    # badge = f'{url}/band_icons/' + b.avatar_id + '.png'
 
     _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
     experiences = []
@@ -231,7 +237,7 @@ async def format_top_players(ctx, players):
 
         try:
             band_name = c.band_name
-        except AttributeError:
+        except box.BoxKeyError:
             band_name = 'No Clan'
 
         em.add_field(

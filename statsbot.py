@@ -54,24 +54,6 @@ class StatsBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(case_insensitive=True, command_prefix=None)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        try:
-            constants = json.loads(requests.get('https://fourjr-webserver.herokuapp.com/cr/constants').text)
-        except json.JSONDecodeError:
-            constants = None
-        self.cr = clashroyale.OfficialAPI(
-            os.getenv('clashroyale'),
-            session=self.session,
-            is_async=True,
-            timeout=20,
-            constants=constants,
-            url=f"http://{os.getenv('spike')}/redirect?url=https://api.clashroyale.com/v1"
-        )
-        self.royaleapi = clashroyale.RoyaleAPI(
-            os.getenv('royaleapi'),
-            session=self.session,
-            is_async=True,
-            timeout=20
-        )
         self.mongo = AsyncIOMotorClient(os.getenv('mongo'))
         self.uptime = datetime.datetime.utcnow()
         self.process = psutil.Process()
@@ -88,6 +70,7 @@ class StatsBot(commands.AutoShardedBot):
         if not self.dev_mode:
             self.backup_task_loop = self.loop.create_task(self.backup_task())
             self.datadog_loop = self.loop.create_task(self.datadog())
+
         self.load_extensions()
         self._add_commands()
 

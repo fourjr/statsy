@@ -11,11 +11,7 @@ class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    @property
-    def session(self):
-        '''Returns the bot's aiohttp client session'''
-        return self.bot.session
+        self.session = self.bot.session
 
     def delete(self):
         '''shortcut'''

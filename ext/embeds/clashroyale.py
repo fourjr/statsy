@@ -69,7 +69,7 @@ async def format_least_valuable(ctx, clan, wars):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{clan.name} ({clan.tag})')
-    em.set_thumbnail(url=ctx.bot.cr.get_clan_image(clan))
+    em.set_thumbnail(url=ctx.cog.cr.get_clan_image(clan))
     em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     for m in reversed(to_kick):
@@ -105,7 +105,7 @@ async def format_most_valuable(ctx, clan, wars):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{clan.name} ({clan.tag})')
-    em.set_thumbnail(url=ctx.bot.cr.get_clan_image(clan))
+    em.set_thumbnail(url=ctx.cog.cr.get_clan_image(clan))
     em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     for m in reversed(best):
@@ -136,7 +136,7 @@ def get_chests(ctx, cycle):
 
 
 async def format_chests(ctx, p, c):
-    av = ctx.bot.cr.get_clan_image(p)
+    av = ctx.cog.cr.get_clan_image(p)
     em = discord.Embed(color=random_color())
     em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
     if ctx.bot.psa_message:
@@ -150,7 +150,7 @@ async def format_chests(ctx, p, c):
 
 
 async def format_cards(ctx, p):
-    constants = ctx.bot.cr.constants
+    constants = ctx.cog.cr.constants
 
     name = p.name
     tag = p.tag
@@ -283,7 +283,7 @@ async def format_members(ctx, c, ws):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f"{c.name} ({c.tag})")
-    em.set_thumbnail(url=ctx.bot.cr.get_clan_image(c))
+    em.set_thumbnail(url=ctx.cog.cr.get_clan_image(c))
     embeds = []
     counter = 0
 
@@ -302,7 +302,7 @@ async def format_members(ctx, c, ws):
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             em.set_author(name=f"{c.name} ({c.tag})")
-            em.set_thumbnail(url=ctx.bot.cr.get_clan_image(c))
+            em.set_thumbnail(url=ctx.cog.cr.get_clan_image(c))
         em.add_field(
             name=f'{m.name} ({camel_case(m.role)})',
             value=f"{m.tag}\n{m.trophies} "
@@ -399,7 +399,7 @@ async def format_top_players(ctx, players, region):
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = _('Top 200 {} players right now.', ctx).format(region)
-    badge_image = ctx.bot.cr.get_clan_image(players[0])
+    badge_image = ctx.cog.cr.get_clan_image(players[0])
     em.set_author(name='Top Players', icon_url=badge_image)
     embeds = []
     counter = 0
@@ -412,7 +412,7 @@ async def format_top_players(ctx, players, region):
             else:
                 em.description = _('Top 200 {} players right now.', ctx).format(region)
 
-            badge_image = ctx.bot.cr.get_clan_image(players[0])
+            badge_image = ctx.cog.cr.get_clan_image(players[0])
             em.set_author(name=_('Top Players', ctx), icon_url=badge_image)
 
         try:
@@ -439,7 +439,7 @@ async def format_top_clans(ctx, clans, region):
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = _('Top 200 {} clans right now.', ctx).format(region)
-    badge_image = ctx.bot.cr.get_clan_image(clans[0])
+    badge_image = ctx.cog.cr.get_clan_image(clans[0])
     em.set_author(name='Top Clans', icon_url=badge_image)
     embeds = []
     counter = 0
@@ -452,7 +452,7 @@ async def format_top_clans(ctx, clans, region):
             else:
                 em.description = _('Top 200 {} clans right now.', ctx).format(region)
 
-            badge_image = ctx.bot.cr.get_clan_image(clans[0])
+            badge_image = ctx.cog.cr.get_clan_image(clans[0])
             em.set_author(name=_('Top Clans', ctx), icon_url=badge_image)
 
         em.add_field(
@@ -474,7 +474,7 @@ async def format_top_clan_wars(ctx, clans, region):
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = _('Top 200 {} clans by clan wars right now.', ctx).format(region)
-    badge_image = ctx.bot.cr.get_clan_image(clans[0])
+    badge_image = ctx.cog.cr.get_clan_image(clans[0])
     em.set_author(name='Top Clans By Clan Wars', icon_url=badge_image)
     embeds = []
     counter = 0
@@ -487,7 +487,7 @@ async def format_top_clan_wars(ctx, clans, region):
             else:
                 em.description = _('Top 200 {} clans by clan wars right now.', ctx).format(region)
 
-            badge_image = ctx.bot.cr.get_clan_image(clans[0])
+            badge_image = ctx.cog.cr.get_clan_image(clans[0])
             em.set_author(name=_('Top Clans', ctx), icon_url=badge_image)
 
         em.add_field(
@@ -504,7 +504,7 @@ async def format_top_clan_wars(ctx, clans, region):
 
 
 async def format_seasons(ctx, p):
-    av = ctx.bot.cr.get_clan_image(p)
+    av = ctx.cog.cr.get_clan_image(p)
     embeds = []
     if p.league_statistics:
         for season in p.league_statistics.to_dict().keys():
@@ -548,7 +548,7 @@ async def format_deck(ctx, p):
     elixir = 0
 
     for i in p.current_deck:
-        card = ctx.bot.cr.get_card_info(i.name)
+        card = ctx.cog.cr.get_card_info(i.name)
         deck_link += f'{card.id};'
         elixir += card.elixir
 
@@ -559,7 +559,7 @@ async def format_deck(ctx, p):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_author(name=f'{p.name} ({p.tag})', icon_url=ctx.bot.cr.get_clan_image(p))
+    em.set_author(name=f'{p.name} ({p.tag})', icon_url=ctx.cog.cr.get_clan_image(p))
     em.add_field(name='Current Deck', value=f'{deck}[Copy this deck!]({deck_link}) {emoji(ctx, "copydeck")}')
     em.set_footer(text='Statsy - Powered by the CR API')
 
@@ -567,7 +567,7 @@ async def format_deck(ctx, p):
 
 
 async def format_card(ctx, c):
-    arenas = {i.arena: i.title for i in ctx.bot.cr.constants.arenas}
+    arenas = {i.arena: i.title for i in ctx.cog.cr.constants.arenas}
 
     em = discord.Embed(description=c.description, color=random_color())
     em.set_author(name=_('{} Info', ctx).format(c.name), icon_url='attachment://card.png')
@@ -581,12 +581,12 @@ async def format_card(ctx, c):
 
 async def format_profile(ctx, p, c):
 
-    av = ctx.bot.cr.get_clan_image(p)
+    av = ctx.cog.cr.get_clan_image(p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
-    em.set_thumbnail(url=ctx.bot.cr.get_arena_image(p))
+    em.set_thumbnail(url=ctx.cog.cr.get_arena_image(p))
 
     deck = get_deck(ctx, p)
 
@@ -663,12 +663,12 @@ async def format_profile(ctx, p, c):
 
 
 async def format_stats(ctx, p):
-    av = ctx.bot.cr.get_clan_image(p)
+    av = ctx.cog.cr.get_clan_image(p)
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
-    em.set_thumbnail(url=ctx.bot.cr.get_arena_image(p))
+    em.set_thumbnail(url=ctx.cog.cr.get_arena_image(p))
 
     trophies = f"{p.trophies}/{p.best_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
@@ -714,7 +714,7 @@ async def format_clan(ctx, c):
     page1.set_footer(text=_('Statsy | Powered by the CR API', ctx))
     page2 = copy.deepcopy(page1)
     page2.description = _('Top Players/Donators/Contributors for this clan.', ctx)
-    page1.set_thumbnail(url=ctx.bot.cr.get_clan_image(c))
+    page1.set_thumbnail(url=ctx.cog.cr.get_clan_image(c))
 
     _donators = list(reversed(sorted(c.member_list, key=lambda m: m.donations)))
 
@@ -772,7 +772,7 @@ async def format_clan_war(ctx, w):
         page1.add_field(name=_('Day', ctx), value=f'{camel_case(w.state)} {emoji(ctx, "clanwar")}')
         return [page1]
 
-    page1.set_author(name=f"{w.clan.name} ({w.clan.tag})", icon_url=ctx.bot.cr.get_clan_image(w))
+    page1.set_author(name=f"{w.clan.name} ({w.clan.tag})", icon_url=ctx.cog.cr.get_clan_image(w))
 
     page2 = copy.deepcopy(page1)
     return_vals = [page1, page2]
@@ -939,7 +939,7 @@ async def format_tournament(ctx, t):
 
 
 async def format_friend_link(ctx, p, link, default):
-    av = ctx.bot.cr.get_clan_image(p)
+    av = ctx.cog.cr.get_clan_image(p)
     if not link.startswith('http'):
         link = 'https://' + link
 
@@ -955,7 +955,7 @@ async def format_friend_link(ctx, p, link, default):
         em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     em.set_author(name=f'{p.name} ({p.tag})', icon_url=av)
-    em.set_thumbnail(url=ctx.bot.cr.get_arena_image(p))
+    em.set_thumbnail(url=ctx.cog.cr.get_arena_image(p))
 
     trophies = f"{p.trophies}/{p.best_trophies} PB {emoji(ctx, 'trophy')}"
     deck = get_deck(ctx, p)
@@ -973,7 +973,7 @@ async def format_friend_link(ctx, p, link, default):
 
 
 async def format_clan_link(ctx, c, link, default):
-    av = ctx.bot.cr.get_clan_image(c)
+    av = ctx.cog.cr.get_clan_image(c)
     if not link.startswith('http'):
         link = 'https://' + link
 
@@ -989,7 +989,7 @@ async def format_clan_link(ctx, c, link, default):
         em.set_footer(text=_('Statsy | Powered by the CR API', ctx))
 
     em.set_author(name=f'{c.name} ({c.tag})')
-    em.set_thumbnail(url=ctx.bot.cr.get_arena_image(av))
+    em.set_thumbnail(url=ctx.cog.cr.get_arena_image(av))
 
     embed_fields = [
         (_('Type', ctx), camel_case(c.type) + ' 📩'),
@@ -1010,7 +1010,7 @@ async def format_deck_link(ctx, d, link, default):
     deck = ''
     elixir = 0
     for n, i in enumerate(d):
-        for c in ctx.bot.cr.constants.cards:
+        for c in ctx.cog.cr.constants.cards:
             if str(c.id) == i:
                 deck += str(emoji(ctx, c.name))
                 elixir += c.elixir
