@@ -86,7 +86,7 @@ async def format_profile(ctx, p):
 
     try:
         band = p.band.name
-    except box.BoxKeyError:
+    except AttributeError:
         band = False
 
     embed_fields = [
@@ -240,7 +240,7 @@ async def format_top_players(ctx, players):
 
         try:
             band_name = c.band_name
-        except box.BoxKeyError:
+        except AttributeError:
             band_name = 'No Clan'
 
         em.add_field(
