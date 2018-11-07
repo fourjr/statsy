@@ -116,8 +116,9 @@ class Fortnite:
             await ctx.send(_('The username cannot be found!', ctx))
             raise utils.NoTag
 
-        if not data:
-            raise utils.APIError
+        if not data.get('uid'):
+            await ctx.send('Invalid username.')
+            raise utils.NoTag
         return data['uid']
 
     @command()

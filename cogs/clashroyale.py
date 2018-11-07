@@ -689,6 +689,9 @@ class Clash_Royale:
 
     async def parse_leaderboard(self, ctx, emoji_name, *statistics, **kwargs):
         async with ctx.typing():
+            if not ctx.guild:
+                return await ctx.send('This command can only be run in servers.')
+
             db_result = await self.request_db()
 
             def predicate(x):
