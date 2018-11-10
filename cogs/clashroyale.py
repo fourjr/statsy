@@ -765,7 +765,7 @@ class Clash_Royale:
         async with ctx.typing():
             region = name = 'global'
             if region:
-                for i in self.bot.cr.constants.regions:
+                for i in self.cr.constants.regions:
                     if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
                         region = i.key
                         name = i.name
@@ -785,7 +785,7 @@ class Clash_Royale:
         async with ctx.typing():
             region = name = 'global'
             if region:
-                for i in self.bot.cr.constants.regions:
+                for i in self.cr.constants.regions:
                     if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
                         region = i.key
                         name = i.name
@@ -805,7 +805,7 @@ class Clash_Royale:
         async with ctx.typing():
             region = name = 'global'
             if region:
-                for i in self.bot.cr.constants.regions:
+                for i in self.cr.constants.regions:
                     if i.name.lower() == region or str(i.id) == region or i.key.replace('_', '').lower() == region:
                         region = i.key
                         name = i.name
@@ -929,7 +929,7 @@ class Clash_Royale:
         card = card.lower()
         if card in aliases:
             card = aliases[card]
-        constants = self.bot.cr.constants
+        constants = self.cr.constants
 
         found_card = None
         for c in constants.cards:
