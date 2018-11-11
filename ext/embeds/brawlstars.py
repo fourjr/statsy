@@ -172,16 +172,16 @@ async def format_band(ctx, b):
 
             pushers.append(
                 f"**{push_avatar} {b.members[i].name}**"
-                f"{emoji(ctx, 'bstrophy')}\n"
-                f"\n{b.members[i].trophies} "
-                f"#{b.members[i].tag}"
+                f"\n{emoji(ctx, 'bstrophy')}"
+                f" {b.members[i].trophies} "
+                f"\n#{b.members[i].tag}"
             )
 
             experiences.append(
                 f"**{exp_avatar} {_experiences[i].name}**"
                 f"\n{emoji(ctx, 'xp')}"
-                f" {_experiences[i].exp_level}\n"
-                f"#{_experiences[i].tag}"
+                f" {_experiences[i].exp_level}"
+                f"\n#{_experiences[i].tag}"
             )
 
     page1 = discord.Embed(description=b.description, color=random_color())

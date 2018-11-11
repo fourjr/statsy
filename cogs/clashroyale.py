@@ -590,7 +590,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
             cycle = await self.request(ctx, 'get_player_chests', tag)
-            em = await cr.format_profile(ctx, profile, cycle.get('items'))
+            em = await cr.format_profile(ctx, profile, cycle)
 
         await ctx.send(embed=em)
 
@@ -630,7 +630,7 @@ class Clash_Royale:
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
             cycle = await self.request(ctx, 'get_player_chests', tag)
-            em = await cr.format_chests(ctx, profile, cycle.get('items'))
+            em = await cr.format_chests(ctx, profile, cycle)
 
         await ctx.send(embed=em)
 
@@ -774,7 +774,7 @@ class Clash_Royale:
                 clans = await self.request(ctx, 'get_top_players', region)
             except clashroyale.NotFoundError:
                 return await ctx.send('Invalid region')
-            ems = await cr.format_top_players(ctx, clans.get('items'), name)
+            ems = await cr.format_top_players(ctx, clans, name)
 
         await Paginator(ctx, *ems).start()
 
@@ -794,7 +794,7 @@ class Clash_Royale:
                 clans = await self.request(ctx, 'get_top_clanwar_clans', region)
             except clashroyale.NotFoundError:
                 return await ctx.send('Invalid region')
-            ems = await cr.format_top_clan_wars(ctx, clans.get('items'), name)
+            ems = await cr.format_top_clan_wars(ctx, clans, name)
 
         await Paginator(ctx, *ems).start()
 
@@ -814,7 +814,7 @@ class Clash_Royale:
                 clans = await self.request(ctx, 'get_top_clans', region)
             except clashroyale.NotFoundError:
                 return await ctx.send('Invalid region')
-            ems = await cr.format_top_clans(ctx, clans.get('items'), name)
+            ems = await cr.format_top_clans(ctx, clans, name)
 
         await Paginator(ctx, *ems).start()
 
@@ -828,7 +828,7 @@ class Clash_Royale:
             clan = await self.request(ctx, 'get_clan', tag)
             war = await self.request(ctx, 'get_clan_war_log', tag)
 
-            ems = await cr.format_members(ctx, clan, war.get('items'))
+            ems = await cr.format_members(ctx, clan, war)
 
         await Paginator(ctx, *ems).start()
 
@@ -845,7 +845,7 @@ class Clash_Royale:
             if len(clan.member_list) < 4:
                 await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
-                em = await cr.format_most_valuable(ctx, clan, war.get('items'))
+                em = await cr.format_most_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
 
     @crmembers.command()
@@ -861,7 +861,7 @@ class Clash_Royale:
             if len(clan.member_list) < 4:
                 return await ctx.send('Clan must have at least 4 players for these statistics.')
             else:
-                em = await cr.format_least_valuable(ctx, clan, war.get('items'))
+                em = await cr.format_least_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
 
     @command()
