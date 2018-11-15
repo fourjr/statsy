@@ -287,9 +287,9 @@ async def format_members(ctx, c, ws):
     embeds = []
     counter = 0
 
-    def war_score(tag):
+    async def war_score(tag):
         score = 0
-        for w in ws:
+        async for w in ws:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
@@ -308,7 +308,7 @@ async def format_members(ctx, c, ws):
             value=f"{m.tag}\n{m.trophies} "
                   f"{emoji(ctx, 'crownblue')}\n{m.donations} "
                   f"{emoji(ctx, 'cards')}\n"
-                  f"{war_score(m.tag)} {emoji(ctx, 'clanwar')}"
+                  f"{await war_score(m.tag)} {emoji(ctx, 'clanwar')}"
         )
         counter += 1
     embeds.append(em)

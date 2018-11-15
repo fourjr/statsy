@@ -144,6 +144,7 @@ class Bot_Related:
         em.add_field(name=_('Uptime', ctx), value=uptime)
         em.add_field(name=_('Latency', ctx), value=f'{self.bot.latency*1000:.2f} ms')
         em.add_field(name=_('Guilds', ctx), value=len(self.bot.guilds))
+        em.add_field(name=_('Shards', ctx), value=self.bot.shard_count)
         em.add_field(name=_('Members', ctx), value=f'{total_online}/{total_unique} online')
         em.add_field(name=_('Channels', ctx), value=f'{channels} total')
         memory_usage = self.bot.process.memory_full_info().uss / 1024**2
@@ -447,7 +448,7 @@ class Bot_Related:
             await ctx.send(traceback.format_exc())
 
     @command(name='guilds', hidden=True)
-    async def _guilds(self, ctx):
+    async def guilds_(self, ctx):
         nano = 0
         tiny = 0
         small = 0
@@ -468,6 +469,7 @@ class Bot_Related:
             else:
                 massive += 1
         await ctx.send(textwrap.dedent(f"""```css
+Shard ID        [      ]:  {ctx.guild.shard_id}
 Nano Servers    [ <10  ]:  {nano}
 Tiny Servers    [ 10+  ]:  {tiny}
 Small Servers   [ 100+ ]:  {small}

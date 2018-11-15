@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import inspect
-import json
 import logging
 import os
 import platform
@@ -14,7 +13,6 @@ import aiohttp
 import clashroyale
 import datadog
 import discord
-import requests
 import psutil
 from discord.ext import commands
 from dotenv import find_dotenv, load_dotenv
@@ -165,6 +163,9 @@ class StatsBot(commands.AutoShardedBot):
         async for g in self.mongo.config.guilds.find({'default_game': {'$exists': True}}):
             self.default_game[int(g['guild_id'])] = g['default_game']
         print('Guild syncing complete')
+
+    async def on_shard_ready(self, shard_id):
+        print(f'Shard {shard_id} ready')
 
     async def on_ready(self):
         """Called when guild streaming is complete
