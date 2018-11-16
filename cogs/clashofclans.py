@@ -10,7 +10,7 @@ from discord.ext import commands
 from PIL import Image
 
 from ext import utils
-from ext.command import command, group
+from ext.command import cog, command, group
 from ext.embeds import clashofclans
 from ext.paginator import Paginator
 from locales.i18n import Translator
@@ -58,6 +58,7 @@ class TagCheck(commands.MemberConverter):
             return tag
 
 
+@cog('coc')
 class Clash_Of_Clans:
 
     '''Commands relating to the Clash of Clans game made by supercell.'''
@@ -156,7 +157,7 @@ class Clash_Of_Clans:
 
     @command()
     @utils.has_perms()
-    async def cocprofile(self, ctx, *, tag_or_user: TagCheck=None):
+    async def profile(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans profile of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -169,7 +170,7 @@ class Clash_Of_Clans:
 
     @command()
     @utils.has_perms()
-    async def cocachieve(self, ctx, *, tag_or_user: TagCheck=None):
+    async def achieve(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets the Clash of Clans achievements of a player.'''
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -182,7 +183,7 @@ class Clash_Of_Clans:
 
     @command()
     @utils.has_perms()
-    async def cocclan(self, ctx, *, tag_or_user: TagCheck=None):
+    async def clan(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets a clan by tag or by profile. (tagging the user)'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
@@ -195,7 +196,7 @@ class Clash_Of_Clans:
 
     @group()
     @utils.has_perms()
-    async def cocmembers(self, ctx, *, tag_or_user: TagCheck=None):
+    async def members(self, ctx, *, tag_or_user: TagCheck=None):
         '''Gets all the members of a clan.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
@@ -206,7 +207,7 @@ class Clash_Of_Clans:
 
         await Paginator(ctx, *ems, footer_text=str(clan["members"]) + _('/50 members', ctx)).start()
 
-    @cocmembers.command()
+    @members.command()
     @utils.has_perms()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the best members of the clan currently.'''
@@ -221,7 +222,7 @@ class Clash_Of_Clans:
                 em = await clashofclans.format_most_valuable(ctx, clan)
                 await ctx.send(embed=em)
 
-    @cocmembers.command()
+    @members.command()
     @utils.has_perms()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
         '''Finds the worst members of the clan currently.'''
@@ -237,7 +238,7 @@ class Clash_Of_Clans:
                 await ctx.send(embed=em)
 
     @command()
-    async def cocsave(self, ctx, tag, index: str='0'):
+    async def save(self, ctx, tag, index: str='0'):
         """Saves a Clash of Clans tag to your discord profile."""
         tag = self.conv.resolve_tag(ctx, tag)
 
@@ -261,7 +262,7 @@ class Clash_Of_Clans:
 
     @command()
     @utils.has_perms()
-    async def cocusertag(self, ctx, *, member: discord.Member=None):
+    async def usertag(self, ctx, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await ctx.get_tag('clashofclans', id=member.id, index='all')
@@ -273,7 +274,7 @@ class Clash_Of_Clans:
 
     @command()
     @utils.has_perms()
-    async def cocwar(self, ctx, *, tag_or_user: TagCheck=None):
+    async def war(self, ctx, *, tag_or_user: TagCheck=None):
         '''Check your current war status.'''
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():

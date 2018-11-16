@@ -18,7 +18,7 @@ from pymongo import ReturnDocument
 
 from ext import utils
 from ext.context import NoContext
-from ext.command import command, group
+from ext.command import cog, command, group
 from ext.embeds import clashroyale as cr
 from ext.paginator import Paginator
 from locales.i18n import Translator
@@ -120,13 +120,12 @@ class TagCheck(commands.MemberConverter):
             return tag
 
 
+@cog('cr')
 class Clash_Royale:
-
     """Commands relating to the Clash Royale game made by supercell."""
 
     def __init__(self, bot):
         self.bot = bot
-        self.alias = 'cr'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
         scopes = [
@@ -434,7 +433,7 @@ class Clash_Royale:
 
     @commands.guild_only()
     @group()
-    async def crlink(self, ctx):
+    async def link(self, ctx):
         """Check your guild's link beautifier status"""
         guild_config = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
         friend_config = guild_config.get('friend_link')
@@ -451,7 +450,7 @@ class Clash_Royale:
 
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
-    @crlink.command()
+    @link.command()
     async def enable(self, ctx):
         """Enables link beautifier"""
         await self.bot.mongo.config.guilds.find_one_and_update(
@@ -461,7 +460,7 @@ class Clash_Royale:
 
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
-    @crlink.command()
+    @link.command()
     async def disable(self, ctx):
         """Disables link beautifier"""
         await self.bot.mongo.config.guilds.find_one_and_update(
@@ -472,7 +471,7 @@ class Clash_Royale:
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     @command(aliases=['crsettourneylog'])
-    async def crsettournamentlog(self, ctx):
+    async def settournamentlog(self, ctx):
         """Sets the filters and channels for the tournament log"""
         allowed_types = ['all', '50', '100', '200', '1000', 'open:all', 'open:50', 'open:100', 'open:200', 'open:1000']
 
@@ -522,7 +521,7 @@ class Clash_Royale:
 
     @commands.has_permissions(manage_guild=True)
     @command()
-    async def crsetclanstats(self, ctx, channel: discord.TextChannel, *clans):
+    async def setclanstats(self, ctx, channel: discord.TextChannel, *clans):
         """Sets a clan log channel"""
         tag = await self.resolve_tag(ctx, ctx.author)
 
@@ -583,9 +582,9 @@ class Clash_Royale:
             await self.clanupdate(data)
             await ctx.send(_('Configuration complete.', ctx))
 
-    @command(aliases=['crplayer'])
+    @command(aliases=['player'])
     @utils.has_perms()
-    async def crprofile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def profile(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -598,7 +597,7 @@ class Clash_Royale:
 
     @command(alises=['crstatistics'])
     @utils.has_perms()
-    async def crstats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def stats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -610,7 +609,7 @@ class Clash_Royale:
 
     @command(aliases=['crseason'])
     @utils.has_perms()
-    async def crseasons(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def seasons(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the season results a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -625,7 +624,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crchests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def chests(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the next chests of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -638,7 +637,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crcards(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def cards(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Get a list of cards the user has and does not have"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -650,7 +649,7 @@ class Clash_Royale:
 
     @command(aliases=['matches'])
     @utils.has_perms()
-    async def crbattles(self, ctx, tag_or_user: TagCheck=(None, 0)):
+    async def battles(self, ctx, tag_or_user: TagCheck=(None, 0)):
         """Get the latest 5 battles by the player!"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -662,7 +661,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crclan(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def clan(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets a clan by tag or by profile. (tagging the user)"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
@@ -674,7 +673,7 @@ class Clash_Royale:
 
     @utils.has_perms()
     @command(aliases=['clan_war', 'clan-war'], invoke_without_command=True)
-    async def crclanwar(self, ctx, tag_or_user: TagCheck=(None, 0)):
+    async def clanwar(self, ctx, tag_or_user: TagCheck=(None, 0)):
         """Shows your clan clan war statistics"""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
@@ -686,7 +685,7 @@ class Clash_Royale:
 
     @utils.has_perms()
     @group(aliases=['lb'], usage='<option>', invoke_without_command=True)
-    async def crleaderboard(self, ctx, option=None):
+    async def leaderboard(self, ctx, option=None):
         await ctx.invoke(self.bot.get_command('help'), command=str(ctx.command))
 
     async def parse_leaderboard(self, ctx, emoji_name, *statistics, **kwargs):
@@ -719,50 +718,50 @@ class Clash_Royale:
         del ems
 
     @utils.has_perms()
-    @crleaderboard.command()
+    @leaderboard.command()
     async def clansjoined(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'clan', 'achievements', 0, 'value', name='Clans Joined')
 
     @utils.has_perms()
-    @crleaderboard.command(aliases=['donation'])
+    @leaderboard.command(aliases=['donation'])
     async def donations(self, ctx):
         """Gets the leaderboard of total donations"""
         await self.parse_leaderboard(ctx, 'cards', 'totalDonations')
 
     @utils.has_perms()
-    @crleaderboard.command()
+    @leaderboard.command()
     async def trophies(self, ctx):
         """Gets the leaderboard of total trophies"""
         await self.parse_leaderboard(ctx, 'trophy', 'trophies')
 
     @utils.has_perms()
-    @crleaderboard.command(aliases=['xp'])
+    @leaderboard.command(aliases=['xp'])
     async def level(self, ctx):
         """Gets the leaderboard of XP Level"""
         await self.parse_leaderboard(ctx, 'experience', 'expLevel')
 
     @utils.has_perms()
-    @crleaderboard.command()
+    @leaderboard.command()
     async def cardswon(self, ctx):
         """Gets the leaderboard of challenge cards won"""
         await self.parse_leaderboard(ctx, 'tournament', 'challengeCardsWon', name='Challenge Cards Won')
 
     @utils.has_perms()
-    @crleaderboard.command()
+    @leaderboard.command()
     async def challengewins(self, ctx):
         """Gets the leaderboard of challenge max wins"""
         await self.parse_leaderboard(ctx, 'tournament', 'challengeMaxWins', name='Challenge Max Wins')
 
     @utils.has_perms()
-    @crleaderboard.command()
+    @leaderboard.command()
     async def clancards(self, ctx):
         """Gets the leaderboard of clan cards won"""
         await self.parse_leaderboard(ctx, 'cards', 'clanCardsCollected', name='Clan Cards Collected')
 
     @utils.has_perms()
     @command(aliases=['crtoplayers'])
-    async def crtopplayers(self, ctx, *, region: str = None):
+    async def topplayers(self, ctx, *, region: str = None):
         """Returns the top 200 players."""
         async with ctx.typing():
             region = name = 'global'
@@ -782,7 +781,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crtopclanwars(self, ctx, *, region: str = None):
+    async def topclanwars(self, ctx, *, region: str = None):
         """Returns the global top 200 clans by clan wars."""
         async with ctx.typing():
             region = name = 'global'
@@ -802,7 +801,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crtopclans(self, ctx, *, region: str = None):
+    async def topclans(self, ctx, *, region: str = None):
         """Returns the global top 200 clans."""
         async with ctx.typing():
             region = name = 'global'
@@ -822,7 +821,7 @@ class Clash_Royale:
 
     @group(invoke_without_command=True)
     @utils.has_perms()
-    async def crmembers(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def members(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets all the members of a clan."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1], clan=True)
 
@@ -834,7 +833,7 @@ class Clash_Royale:
 
         await Paginator(ctx, *ems).start()
 
-    @crmembers.command()
+    @members.command()
     @utils.has_perms()
     async def best(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Finds the best members of the clan currently."""
@@ -850,7 +849,7 @@ class Clash_Royale:
                 em = await cr.format_most_valuable(ctx, clan, war)
                 await ctx.send(embed=em)
 
-    @crmembers.command()
+    @members.command()
     @utils.has_perms()
     async def worst(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Finds the worst members of the clan currently."""
@@ -867,7 +866,7 @@ class Clash_Royale:
                 await ctx.send(embed=em)
 
     @command()
-    async def crsave(self, ctx, tag, index: str='0'):
+    async def save(self, ctx, tag, index: str='0'):
         """Saves a Clash Royale tag to your discord profile."""
         async with ctx.typing():
             tag = self.conv.resolve_tag(ctx, tag)
@@ -894,7 +893,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crusertag(self, ctx, member: discord.Member = None):
+    async def usertag(self, ctx, member: discord.Member = None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await self.resolve_tag(ctx, member, index='all')
@@ -906,7 +905,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def crdeck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+    async def deck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the current deck of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user[0], index=tag_or_user[1])
 
@@ -953,7 +952,7 @@ class Clash_Royale:
 
     @command(aliases=['crtourney'])
     @utils.has_perms()
-    async def crtournament(self, ctx, tag: TagOnly):
+    async def tournament(self, ctx, tag: TagOnly):
         """View statistics about a tournament"""
         async with ctx.typing():
             t = await self.request(ctx, 'get_tournament', tag[0])
@@ -963,7 +962,7 @@ class Clash_Royale:
 
     @command(aliases=['crtourneys'])
     @utils.has_perms()
-    async def crtournaments(self, ctx):
+    async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
             t = await self.request(ctx, 'get_open_tournaments', client=self.royaleapi, params={'joinable': 1})

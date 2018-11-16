@@ -13,7 +13,7 @@ from discord.ext import commands
 
 import box
 from ext import utils
-from ext.command import command
+from ext.command import cog, command
 from ext.embeds import brawlstars
 from ext.paginator import Paginator
 from locales.i18n import Translator
@@ -57,6 +57,7 @@ class TagCheck(commands.MemberConverter):
             return tag
 
 
+@cog('bs')
 class Brawl_Stars:
 
     """Commands relating to the Brawl Stars game made by supercell."""
@@ -165,7 +166,7 @@ class Brawl_Stars:
         return Box(self.cache[endpoint], camel_killer_box=True)
 
     @command()
-    async def bssave(self, ctx, tag, index: str = '0'):
+    async def save(self, ctx, tag, index: str = '0'):
         """Saves a Brawl Stars tag to your discord profile."""
         tag = self.conv.resolve_tag(tag)
 
@@ -188,7 +189,7 @@ class Brawl_Stars:
 
     @command()
     @utils.has_perms()
-    async def bsprofile(self, ctx, tag_or_user: TagCheck=None):
+    async def profile(self, ctx, tag_or_user: TagCheck=None):
         """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -199,7 +200,7 @@ class Brawl_Stars:
         await ctx.send(embed=em)
 
     @command(aliases=['bsbrawler'])
-    async def bsbrawlers(self, ctx, tag_or_user: TagCheck=None):
+    async def brawlers(self, ctx, tag_or_user: TagCheck=None):
         """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
@@ -211,7 +212,7 @@ class Brawl_Stars:
 
     @command()
     @utils.has_perms()
-    async def bsband(self, ctx, tag_or_user: TagCheck=None):
+    async def band(self, ctx, tag_or_user: TagCheck=None):
         """Get Brawl Stars band information."""
         tag = await self.resolve_tag(ctx, tag_or_user, band=True)
 
@@ -223,7 +224,7 @@ class Brawl_Stars:
 
     @command(aliases=['bstoplayers'])
     @utils.has_perms()
-    async def bstopplayers(self, ctx):
+    async def topplayers(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.channel.typing():
             player = await self.request(ctx, '/leaderboards/players')
@@ -233,7 +234,7 @@ class Brawl_Stars:
 
     @command()
     @utils.has_perms()
-    async def bstopbands(self, ctx):
+    async def topbands(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.channel.typing():
             band = await self.request(ctx, '/leaderboards/bands')
@@ -243,7 +244,7 @@ class Brawl_Stars:
 
     @command(enabled=False)
     @utils.has_perms()
-    async def bsevents(self, ctx):
+    async def events(self, ctx):
         """Shows the upcoming events!"""
         async with ctx.channel.typing():
             events = await self.request('/events')
@@ -253,7 +254,7 @@ class Brawl_Stars:
 
     @command(aliases=['bsrobo'])
     @utils.has_perms()
-    async def bsroborumble(self, ctx):
+    async def roborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
         async with ctx.channel.typing():
             leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True)
@@ -263,7 +264,7 @@ class Brawl_Stars:
 
     @command(aliases=['bsboss'])
     @utils.has_perms()
-    async def bsbossfight(self, ctx):
+    async def bossfight(self, ctx):
         """Shows the boss fight leaderboard"""
         async with ctx.channel.typing():
             leaderboard = await self.request(ctx, 'bossboard', leaderboard=True)

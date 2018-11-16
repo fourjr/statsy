@@ -12,7 +12,7 @@ from ext import utils
 from ext.embeds import fortnite
 from ext.paginator import Paginator
 
-from ext.command import command
+from ext.command import cog, command
 from locales.i18n import Translator
 
 _ = Translator('Fortnite', __file__)
@@ -30,6 +30,7 @@ def lower(argument):
     return argument.lower()
 
 
+@cog('fn')
 class Fortnite:
     """Commands related to the Fortnite game"""
     def __init__(self, bot):
@@ -122,7 +123,7 @@ class Fortnite:
         return data['uid']
 
     @command()
-    async def fnsave(self, ctx, platform: lower, username: str, index: str='0'):
+    async def save(self, ctx, platform: lower, username: str, index: str='0'):
         """Saves a Fortnite tag to your discord profile."""
         await ctx.save_tag(username, 'fortnite', f'{ctx.author.id}: {platform}', index=index.replace('-', ''))
 
@@ -141,7 +142,7 @@ class Fortnite:
 
     @command()
     @utils.has_perms()
-    async def fnprofile(self, ctx, platform: lower, *, username: TagOrUser=None):
+    async def profile(self, ctx, platform: lower, *, username: TagOrUser=None):
         """Gets the fortnite profile of a player with a provided platform"""
         async with ctx.typing():
             username = await self.resolve_username(ctx, username, platform)
@@ -156,7 +157,7 @@ class Fortnite:
 
     @command()
     @utils.has_perms()
-    async def fnusertag(self, ctx, platform: lower, *, member: discord.Member=None):
+    async def usertag(self, ctx, platform: lower, *, member: discord.Member=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await ctx.get_tag('fortnite', f'{member.id}: {platform}', index='all')

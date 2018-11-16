@@ -23,6 +23,8 @@ from ext.view import CustomView
 from locales.i18n import Translator
 from ext.command import command
 from ext.utils import InvalidPlatform, InvalidTag, NoTag, APIError
+from ext.log import LoggingHandler
+
 
 _ = Translator('Core', __file__)
 
@@ -84,7 +86,9 @@ class StatsBot(commands.AutoShardedBot):
             os.getenv('guild_hook'),
             adapter=discord.AsyncWebhookAdapter(self.session)
         )
-        self.command_logger = logging.getLogger('commands')
+        self.command_logger = logging.getLogger('statsy.commands')
+        self.main_logger = logging.getLogger('statsy.main')
+        self.main_logger.addHandler(LoggingHandler(logging.INFO))
 
         try:
             self.loop.run_until_complete(self.start(os.getenv('token')))
@@ -165,6 +169,7 @@ class StatsBot(commands.AutoShardedBot):
         print('Guild syncing complete')
 
     async def on_shard_ready(self, shard_id):
+        self.main_logger.info(f'Shard {shard_id} ready')
         print(f'Shard {shard_id} ready')
 
     async def on_ready(self):
@@ -177,12 +182,12 @@ class StatsBot(commands.AutoShardedBot):
               f'Client ID: {self.user.id}\n' \
               '----------------------------\n' \
               f'Guilds: {len(self.guilds)}\n' \
+              f'Shards: {self.shard_count}\n' \
               f'Users: {len(self.users)}\n' \
               '----------------------------'
-        print(fmt)
         self.game_emojis = self.get_game_emojis()
-        if not self.dev_mode:
-            await self.log_hook.send(f'```{fmt}```')
+        self.main_logger.info(fmt)
+        print(fmt)
 
     async def on_shard_connect(self, shard_id):
         """Called when a shard has successfuly
@@ -440,6 +445,7 @@ if __name__ == '__main__':
     load_dotenv(find_dotenv())
 
     logger = logging.getLogger('discord')
+    logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)

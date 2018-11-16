@@ -36,3 +36,14 @@ def command(**attrs):
 def group(**attrs):
     """Makes use of StatsyGroup"""
     return commands.command(cls=StatsyGroup, **attrs)
+
+
+def cog(alias):
+    """Creates a cog with support for aliases"""
+    def decorator(cls):
+        cls.alias = alias
+        for name, method in cls.__dict__.items():
+            if isinstance(method, (StatsyCommand, StatsyGroup)):
+                method.name = alias + method.name
+        return cls
+    return decorator
