@@ -556,7 +556,8 @@ class Clash_Royale:
                     if not message:
                         # Delete old message in another channel
                         try:
-                            await (await self.bot.get_channel(config['claninfo']).get_message(message)).delete()
+                            message = await self.bot.get_channel(config['claninfo']).get_message(message)
+                            await message.delete()
                         except AttributeError:
                             pass
 
