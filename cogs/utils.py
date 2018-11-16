@@ -2,7 +2,6 @@ import copy
 import datetime
 import inspect
 import io
-import json
 import os
 import textwrap
 import traceback
@@ -317,6 +316,7 @@ class Bot_Related:
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
         env = {
+            'self': self,
             'bot': self.bot,
             'ctx': ctx,
             'channel': ctx.channel,
@@ -478,14 +478,16 @@ Large Servers   [ 1000+]:  {large}
 Massive Servers [ 5000+]:  {massive}
 Total                   :  {len(self.bot.guilds)}```"""))
 
-    @utils.developer()
-    @command(name='commands', aliases=['cmd'], hidden=True)
-    async def commands_(self, ctx):
-        """Displays command usage"""
-        command_usage = (await self.bot.mongo.config.admin.find_one({'_id': 'master'}))['commands']
-        sorted_usage = sorted(command_usage, key=lambda x: command_usage[x], reverse=True)
-        sorted_commands = {i: command_usage[i] for i in sorted_usage}
-        await ctx.send('```json\n' + json.dumps(sorted_commands, indent=4) + '\n```')
+    @command(name='shards', hidden=True)
+    async def shards_(self, ctx):
+        em = discord.Embed(title='Shard Information', color=utils.random_color())
+        latencies = [i[1] * 1000 for i in self.bot.latencies]
+        for i in range(self.bot.shard_count):
+            users = len({u.id for g in self.bot.guilds for u in g.members})
+            guilds = sum(g.shard_id == i for g in self.bot.guilds)
+            val = f'{users} users\n{guilds} guilds\n{latencies[i]:.2f}ms ping'
+            em.add_field(name=f'Shard #{i}', value=val)
+        await ctx.send(embed=em)
 
     @command(name='language')
     @commands.has_permissions(manage_guild=True)
