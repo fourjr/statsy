@@ -188,6 +188,8 @@ class StatsBot(commands.AutoShardedBot):
         self.game_emojis = self.get_game_emojis()
         self.main_logger.info(fmt)
         print(fmt)
+        if not self.dev_mode:
+            await self.log_hook.send(f'```{fmt}```')
 
     async def on_shard_connect(self, shard_id):
         """Called when a shard has successfuly

@@ -8,22 +8,30 @@ from discord.ext import commands
 
 
 class CustomContext(commands.Context):
-    '''Custom Context class to provide utility.'''
+    """Custom Context class to provide utility."""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.session = self.bot.session
+        self.force_cog = None
+
+    @property
+    def cog(self):
+        """Returns the cog associated with this context's command. None if it does not exist."""
+        if self.command is None:
+            return None
+        return self.force_cog or self.command.instance
 
     def delete(self):
-        '''shortcut'''
+        """shortcut"""
         return self.message.delete()
 
     async def purge(self, *args, **kwargs):
-        '''Shortcut to channel.purge'''
+        """Shortcut to channel.purge"""
         await self.channel.purge(*args, **kwargs)
 
     @staticmethod
     def valid_image_url(url):
-        '''Checks if a url leads to an image.'''
+        """Checks if a url leads to an image."""
         types = ['.png', '.jpg', '.gif', '.webp']
         parsed = urlparse(url)
         if any(parsed.path.endswith(i) for i in types):
@@ -31,9 +39,9 @@ class CustomContext(commands.Context):
         return False
 
     async def get_dominant_color(self, url=None, quality=10):
-        '''
+        """
         Returns the dominant color of an image from a url
-        '''
+        """
         av = self.author.avatar_url
         url = self.valid_image_url(url or av)
 
@@ -87,7 +95,7 @@ class CustomContext(commands.Context):
 
     @staticmethod
     def paginate(text: str):
-        '''Simple generator that paginates text.'''
+        """Simple generator that paginates text."""
         last = 0
         pages = []
         for curr in range(0, len(text)):

@@ -297,7 +297,7 @@ class Clash_Royale:
 
         if m.channel.id == 480017443314597899 and m.author.bot:
             ctx = await self.bot.get_context(m)
-            ctx.cog = self
+            ctx.force_cog = self
             if ctx.guild:
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:
@@ -332,7 +332,7 @@ class Clash_Royale:
 
         if friend_config:
             ctx = await self.bot.get_context(m)
-            ctx.cog = self
+            ctx.force_cog = self
             if ctx.guild:
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:
