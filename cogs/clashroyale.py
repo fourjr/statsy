@@ -180,20 +180,20 @@ class Clash_Royale:
             await ctx.send(embed=er)
 
     async def request(self, ctx, method, *args, **kwargs):
-        client = kwargs.get('client', self.cr)
-        reason = kwargs.get('reason', 'command')
+        client = kwargs.pop('client', self.cr)
+        reason = kwargs.pop('reason', 'command')
         try:
-            data = self.cache[f'{method}{args}']
+            data = self.cache[f'{method}{args}{kwargs}']
         except KeyError:
             speed = time.time()
-            data = await getattr(client, method)(*args)
+            data = await getattr(client, method)(*args, **kwargs)
             speed = time.time() - speed
 
             if isinstance(data, list):
-                self.cache[f'{method}{args}'] = data
+                self.cache[f'{method}{args}{kwargs}'] = data
                 status_code = 'list'
             else:
-                self.cache[f'{method}{args}'] = data.raw_data
+                self.cache[f'{method}{args}{kwargs}'] = data.raw_data
                 status_code = data.response.status
             datadog.statsd.increment('statsy.requests', 1, [
                 'game:clashroyale', f'code:{status_code}', f'method:{method}', f'reason:{reason}'
@@ -964,7 +964,7 @@ class Clash_Royale:
     async def crtournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
-            t = await self.request(ctx, 'get_open_tournaments', client=self.royaleapi)
+            t = await self.request(ctx, 'get_open_tournaments', client=self.royaleapi, params={'joinable': 1})
             em = await cr.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)

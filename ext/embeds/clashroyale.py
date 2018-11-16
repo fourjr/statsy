@@ -48,16 +48,16 @@ def timestamp(datatime: int):
 
 
 async def format_least_valuable(ctx, clan, wars):
-    def war_score(tag):
+    async def war_score(tag):
         score = 0
-        for w in wars:
+        async for w in wars:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
         return score
 
     for m in clan.member_list:
-        m.war_score = war_score(m.tag)
+        m.war_score = await war_score(m.tag)
         m.score = ((m.donations / 5) + (m.war_score / 3) + (m.trophies / 7)) / 3
 
     to_kick = sorted(clan.member_list, key=lambda m: m.score)[:4]
@@ -84,16 +84,16 @@ async def format_least_valuable(ctx, clan, wars):
 
 
 async def format_most_valuable(ctx, clan, wars):
-    def war_score(tag):
+    async def war_score(tag):
         score = 0
-        for w in wars:
+        async for w in wars:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
         return score
 
     for m in clan.member_list:
-        m.war_score = war_score(m.tag)
+        m.war_score = await war_score(m.tag)
         m.score = ((m.donations / 5) + (m.war_score / 3) + (m.trophies / 7)) / 3
 
     best = sorted(clan.member_list, key=lambda m: m.score, reverse=True)[:4]
@@ -236,7 +236,7 @@ async def format_battles(ctx, battles):
 
     em = discord.Embed(description='A list of battles played recently', color=random_color())
 
-    for b in battles:
+    async for b in battles:
         if b.type == 'PvP':
             name = b.team[0].name
             tag = b.team[0].tag
@@ -250,7 +250,7 @@ async def format_battles(ctx, battles):
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
-    for b in battles:
+    async for b in battles:
         b.winner = b.team[0].crowns - b.opponent[0].crowns
         if b.winner < 0:
             # OP Lost
@@ -403,7 +403,7 @@ async def format_top_players(ctx, players, region):
     em.set_author(name='Top Players', icon_url=badge_image)
     embeds = []
     counter = 0
-    for c in players:
+    async for c in players:
         if counter % 12 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(color=random_color())
@@ -443,7 +443,7 @@ async def format_top_clans(ctx, clans, region):
     em.set_author(name='Top Clans', icon_url=badge_image)
     embeds = []
     counter = 0
-    for c in clans:
+    async for c in clans:
         if counter % 12 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(color=random_color())
@@ -478,7 +478,7 @@ async def format_top_clan_wars(ctx, clans, region):
     em.set_author(name='Top Clans By Clan Wars', icon_url=badge_image)
     embeds = []
     counter = 0
-    for c in clans:
+    async for c in clans:
         if counter % 12 == 0 and counter != 0:
             embeds.append(em)
             em = discord.Embed(color=random_color())
@@ -847,7 +847,7 @@ async def format_tournaments(ctx, t):
 
     tournaments = sorted(t, key=lambda x: int(x.max_players))
     i = 0
-    for t in tournaments:
+    async for t in tournaments:
         if t.current_players == t.max_players:
             continue
 
