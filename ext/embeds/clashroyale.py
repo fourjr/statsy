@@ -50,7 +50,7 @@ def timestamp(datatime: int):
 async def format_least_valuable(ctx, clan, wars):
     async def war_score(tag):
         score = 0
-        for w in wars:
+        async for w in wars:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
@@ -86,7 +86,7 @@ async def format_least_valuable(ctx, clan, wars):
 async def format_most_valuable(ctx, clan, wars):
     async def war_score(tag):
         score = 0
-        for w in wars:
+        async for w in wars:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
