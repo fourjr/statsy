@@ -1,4 +1,4 @@
-clashroyale==4.0.0
+clashroyale==4.0.1
 colorthief==0.2.1
 dnspython==1.15.0
 git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py==1.0.0a1590+g860d6a9
