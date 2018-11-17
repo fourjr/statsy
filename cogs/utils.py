@@ -483,7 +483,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         em = discord.Embed(title='Shard Information', color=utils.random_color())
         latencies = [i[1] * 1000 for i in self.bot.latencies]
         for i in range(self.bot.shard_count):
-            users = len({u.id for g in self.bot.guilds for u in g.members})
+            users = len({u.id for g in self.bot.guilds for u in g.members if g.shard_id == i})
             guilds = sum(g.shard_id == i for g in self.bot.guilds)
             val = f'{users} users\n{guilds} guilds\n{latencies[i]:.2f}ms ping'
             em.add_field(name=f'Shard #{i}', value=val)
