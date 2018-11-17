@@ -847,7 +847,7 @@ async def format_tournaments(ctx, t):
 
     tournaments = sorted(t, key=lambda x: int(x.max_players))
     i = 0
-    async for t in tournaments:
+    for t in tournaments:
         if t.current_players == t.max_players:
             continue
 
