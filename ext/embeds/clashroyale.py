@@ -50,7 +50,7 @@ def timestamp(datatime: int):
 async def format_least_valuable(ctx, clan, wars):
     async def war_score(tag):
         score = 0
-        async for w in wars:
+        for w in wars:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
@@ -86,7 +86,7 @@ async def format_least_valuable(ctx, clan, wars):
 async def format_most_valuable(ctx, clan, wars):
     async def war_score(tag):
         score = 0
-        async for w in wars:
+        for w in wars:
             if tag in [i.tag for i in w.participants]:
                 score += 1
 
@@ -236,7 +236,7 @@ async def format_battles(ctx, battles):
 
     em = discord.Embed(description='A list of battles played recently', color=random_color())
 
-    async for b in battles:
+    for b in battles:
         if b.type == 'PvP':
             name = b.team[0].name
             tag = b.team[0].tag
@@ -250,7 +250,7 @@ async def format_battles(ctx, battles):
         em.description = f'*{ctx.bot.psa_message}*'
 
     i = 0
-    async for b in battles:
+    for b in battles:
         b.winner = b.team[0].crowns - b.opponent[0].crowns
         if b.winner < 0:
             # OP Lost

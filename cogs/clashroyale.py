@@ -966,7 +966,7 @@ class Clash_Royale:
     async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""
         async with ctx.typing():
-            t = await self.request(ctx, 'get_open_tournaments', client=self.royaleapi, params={'joinable': 1})
+            t = await self.request(ctx, 'get_open_tournaments', client=self.royaleapi, joinable=1)
             em = await cr.format_tournaments(ctx, t)
 
         await ctx.send(embed=em)
