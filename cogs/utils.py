@@ -469,7 +469,7 @@ class Bot_Related:
             else:
                 massive += 1
         await ctx.send(textwrap.dedent(f"""```css
-Shard ID        [      ]:  {ctx.guild.shard_id}
+Shards          [      ]:  {self.bot.shard_count}
 Nano Servers    [ <10  ]:  {nano}
 Tiny Servers    [ 10+  ]:  {tiny}
 Small Servers   [ 100+ ]:  {small}
@@ -481,6 +481,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
     @command(name='shards', hidden=True)
     async def shards_(self, ctx):
         em = discord.Embed(title='Shard Information', color=utils.random_color())
+        em.set_footer(text=f'Shard ID: {ctx.guild.shard_id}')
         latencies = [i[1] * 1000 for i in self.bot.latencies]
         for i in range(self.bot.shard_count):
             users = len({u.id for g in self.bot.guilds for u in g.members if g.shard_id == i})
