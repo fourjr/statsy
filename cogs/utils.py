@@ -391,7 +391,8 @@ class Bot_Related:
     @command()
     async def suggest(self, ctx, *, details: str):
         """Suggest a game! Or a feature!"""
-        em = discord.Embed(title=f'Suggestion by: {ctx.author} ({ctx.author.id})', description=details, color=utils.random_color())
+        em = discord.Embed(title=f'New Suggestion', description=details, color=utils.random_color())
+        em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM")} | C: {ctx.channel.id} | U: {ctx.author.id}')
         await self.bot.get_channel(513715119520481290).send(embed=em)
 
         await ctx.send(_('Suggestion submitted. Thanks for the feedback!', ctx))
