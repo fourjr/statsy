@@ -44,6 +44,9 @@ def cog(alias):
         cls.alias = alias
         for name, method in cls.__dict__.items():
             if isinstance(method, (StatsyCommand, StatsyGroup)):
-                method.name = alias + method.name
+                if not method.parent:
+                    method.name = alias + method.name
+                    for n, i in enumerate(method.aliases):
+                        method.aliases[n] = alias + i
         return cls
     return decorator
