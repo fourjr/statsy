@@ -28,7 +28,6 @@ This is a stats bot which displays all your player profile's info from different
 - Translations
 
 
-
 If you want to request features, [create an issue](https://github.com/fourjr/statsy/issues) on this repo.
 
 ## Installation
