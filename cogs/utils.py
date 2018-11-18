@@ -153,6 +153,7 @@ class Bot_Related:
         em.add_field(name=_('Saved Tags', ctx), value=saved_tags)
         em.add_field(name=_('Library', ctx), value='discord.py rewrite')
         em.add_field(name=_('Discord', ctx), value='[Click Here](https://discord.gg/cBqsdPt)')
+        em.add_field(name=_('Github', ctx), value='[Click Here](https://github.com/cgrok/statsy)')
         em.add_field(name=_('Follow us on Twitter!', ctx), value='https://twitter.com/StatsyBot', inline=False)
         em.add_field(name=_('Upvote This Bot!', ctx), value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
         em.set_footer(text=_('Bot ID: {}', ctx).format(self.bot.user.id))
