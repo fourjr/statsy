@@ -15,7 +15,7 @@ images = 'https://royaleapi.github.io/cr-api-assets/'
 
 def camel_case(text):
     # from stackoverflow :p
-    if text is None:
+    if text in (None, 'PvP'):
         return text
     matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
     return ' '.join(m.group(0) for m in matches).title()
@@ -84,6 +84,8 @@ async def format_least_valuable(ctx, clan, wars):
 
 
 async def format_most_valuable(ctx, clan, wars):
+    await wars.all_data()
+
     async def war_score(tag):
         score = 0
         async for w in wars:

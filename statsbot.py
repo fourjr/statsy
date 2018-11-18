@@ -200,10 +200,6 @@ class StatsBot(commands.AutoShardedBot):
 
     async def on_command(self, ctx):
         """Called when a command is invoked."""
-        if not self.dev_mode:
-            await self.mongo.config.admin.find_one_and_update(
-                {'_id': 'master'}, {'$inc': {f'commands.{ctx.command.name}': 1}}, upsert=True
-            )
         if not ctx.command.hidden:
             datadog.statsd.increment('statsy.commands', 1, [
                 f'command:{ctx.command.name}',

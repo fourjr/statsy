@@ -187,22 +187,19 @@ class Clash_Royale:
             speed = time.time()
             data = await getattr(client, method)(*args, **kwargs)
             speed = time.time() - speed
+            self.cache[f'{method}{args}{kwargs}'] = data
 
             if isinstance(data, list):
-                self.cache[f'{method}{args}{kwargs}'] = data
                 status_code = 'list'
             else:
-                self.cache[f'{method}{args}{kwargs}'] = data.raw_data
                 status_code = data.response.status
+
             datadog.statsd.increment('statsy.requests', 1, [
                 'game:clashroyale', f'code:{status_code}', f'method:{method}', f'reason:{reason}'
             ])
             datadog.statsd.increment('statsy.api_latency', 1, [
                 'game:clashroyale', f'speed:{speed}', f'method:{method}'
             ])
-        else:
-            if not isinstance(data, list):
-                data = clashroyale.official_api.BaseAttrDict(self.cr, data, None)
         return data
 
     async def request_db(self, **kwargs):
