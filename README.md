@@ -50,6 +50,7 @@ Join the development server here: https://discord.gg/cBqsdPt
 ## Acknowledgements
  
  Core API's and libraries we use include:
+ 
 | Dependancy          | description                                             |
 |---------------------|---------------------------------------------------------|
 | discord.py          | The core library we use to interact with discord.       |
