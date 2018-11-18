@@ -84,8 +84,6 @@ async def format_least_valuable(ctx, clan, wars):
 
 
 async def format_most_valuable(ctx, clan, wars):
-    await wars.all_data()
-
     async def war_score(tag):
         score = 0
         async for w in wars:
