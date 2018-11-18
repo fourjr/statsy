@@ -391,44 +391,10 @@ class Bot_Related:
     @command()
     async def suggest(self, ctx, *, details: str):
         """Suggest a game! Or a feature!"""
-
-        details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
-
-        async with self.bot.session.post(
-            'https://api.github.com/repos/kyb3r/statsy/issues',
-            json={
-                'title': f'New suggestion from {ctx.author.name}',
-                'body': details,
-                'labels': ['suggestion', 'discord']
-            },
-            headers={'Authorization': f'Bearer {os.getenv("github")}'}
-        ) as resp:
-            if not 300 > resp.status >= 200:
-                await self.bot.get_channel(373646610560712704).send(f'Suggestion (APIDOWN)\n\n{details}')
-                await ctx.send('Suggestion submitted.')
+        em = discord.Embed(title=f'Suggestion by: {ctx.author} ({ctx.author.id})', description=details, color=utils.random_color())
+        await self.bot.get_channel(513715119520481290).send(embed=em)
 
         await ctx.send(_('Suggestion submitted. Thanks for the feedback!', ctx))
-
-    @command()
-    async def bug(self, ctx, *, details: str):
-        """Report a bug!"""
-
-        details += f'\n\n Posted by: {ctx.author} ({ctx.author.id})'
-
-        async with self.bot.session.post(
-            'https://api.github.com/repos/kyb3r/statsy/issues',
-            json={
-                'title': f'New bug report from {ctx.author.name}',
-                'body': details,
-                'labels': ['bug', 'discord']
-            },
-            headers={'Authorization': f'Bearer {os.getenv("github")}'}
-        ) as resp:
-            if not 300 > resp.status >= 200:
-                await self.bot.get_channel(373646610560712704).send(f'Bug (APIDOWN)\n\n{details}')
-                await ctx.send('Bug reported.')
-
-        await ctx.send(_('Bug Reported. Thanks for the report!', ctx))
 
     @utils.developer()
     @command(hidden=True)
