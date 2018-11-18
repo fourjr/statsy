@@ -49,11 +49,23 @@ Join the development server here: https://discord.gg/cBqsdPt
 
 ## Acknowledgements
  
- Core API's and libraries we use include:
- 
-| Dependancy          | description                                             |
-|---------------------|---------------------------------------------------------|
-| discord.py          | The core library we use to interact with discord.       |
-| api.clashroyale.com | API we use to retrieve Clash Royale player information. |
-| brawlapi.cf         | API we use to retrieve Brawl Stars player information.  |
+Core API's and libraries we use include:
 
+| APIs                                                 | Description                 |
+| ---------------------------------------------------- |---------------------------- |
+| [https://api.clashroyale.com](api.clashroyale.com)   | Clash Royale Official API   |
+| [https://royaleapi.com/](RoyaleAPI)                  | Clash Royale Unofficial API |
+| [https://api.clashofclans.com](api.clashofclans.com) | Clash of Clans Official API |
+| [https://brawlapi.cf](brawlapi.cf)                   | Brawl Stars Unofficial API  |
+| [https://detectlanguage.com/](detectlanguage.com)    | API for language detection  |
+| [https://firebase.google.com/](Google Firebase)      | Database to store data      |
+| [https://www.mongodb.com/](MongoDB)                  | Database to store data      |
+
+
+| Wrappers                                                    | Description                               |
+| ----------------------------------------------------------- | ----------------------------------------- |
+| [https://github.com/Rapptz/discord.py](Rapptz/discord.py)   | Python wrapper to access the Discord API  |
+| [https://github.com/cgrok/clashroyale](cgrok/clashroyale)   | (A)sync wrapper to access CR APIs         |
+| [https://github.com/theskumar/python-dotenv](python-dotenv) | Access .env files as enviroment variables |
+| [https://github.com/mongodb/motor](mongodb/motor)           | Async wrapper to access MongoDB           |
+| [https://github.com/DataDog/datadogpy](DataDog/datadogpy)   | Python wrapper to access datadog statsd   |
