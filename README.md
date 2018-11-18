@@ -22,11 +22,10 @@ This is a stats bot which displays all your player profile's info from different
 
 - Realtime statistics
 - Dedicated developers
-- Eye-pleasing layout
+- Aesthetically pleasing user interface
 - Multiple account saving
 - Paginated responses to view more results
 - Translations
-
 
 If you want to request features, [create an issue](https://github.com/fourjr/statsy/issues) on this repo.
 
@@ -34,5 +33,26 @@ If you want to request features, [create an issue](https://github.com/fourjr/sta
 
 Please dont host your own instance, instead invite the bot [with this link.](https://discordapp.com/oauth2/authorize?client_id=347006499677143041&scope=bot&permissions=314432)
 
-Join its development server here: https://discord.gg/cBqsdPt
+You can run the bot locally for development purposes. Simply install the requirements.
+
+```
+pip3 install -r requirements.txt
+```
+Then make a `.env` file and fill it out with the information required in the `.env.example` file.
+
+
+## Contributing
+
+Feel free to make contributions for the development of this bot. Contributors will get a special role in the discord server.
+
+Join the development server here: https://discord.gg/cBqsdPt
+
+## Acknowledgements
  
+ Core API's and libraries we use include:
+| Dependancy          | description                                             |
+|---------------------|---------------------------------------------------------|
+| discord.py          | The core library we use to interact with discord.       |
+| api.clashroyale.com | API we use to retrieve Clash Royale player information. |
+| brawlapi.cf         | API we use to retrieve Brawl Stars player information.  |
+
