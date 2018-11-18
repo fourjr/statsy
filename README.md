@@ -3,7 +3,7 @@
         <h1>Statsy</h1>
         <p><i><b>Stats for Games in a Discord Bot!</b></i></p>
 <p>
-    <a href="https://discord.gg/maZqxnm"><img src="https://discordapp.com/api/guilds/444482551139008522/widget.png?style=shield" alt="" /></a>
+    <a href="https://discord.gg/cBqsdPt"><img src="https://discordapp.com/api/guilds/444482551139008522/widget.png?style=shield" alt="" /></a>
     <img src="https://discordbots.org/api/widget/lib/347006499677143041.svg?noavatar=true&rightcolor=7289DA" alt="Discord Bots" />
     </a>
     <a href="https://discordbots.org/bot/statsy">
@@ -35,5 +35,5 @@ If you want to request features, [create an issue](https://github.com/fourjr/sta
 
 Please dont host your own instance, instead invite the bot [with this link.](https://discordapp.com/oauth2/authorize?client_id=347006499677143041&scope=bot&permissions=314432)
 
-Join its development server here: https://discord.gg/maZqxnm
+Join its development server here: https://discord.gg/cBqsdPt
  
