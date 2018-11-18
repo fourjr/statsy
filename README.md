@@ -51,6 +51,12 @@ Join the development server here: https://discord.gg/cBqsdPt
  
 Core API's and libraries we use include:
 
+| Libraries                                                   | Description                               |
+| ----------------------------------------------------------- | ----------------------------------------- |
+| [Rapptz/discord.py](https://github.com/Rapptz/discord.py)   | Python wrapper to access the Discord API  |
+| [cgrok/clashroyale](https://github.com/cgrok/clashroyale)   | (A)sync wrapper to access CR APIs         |
+| [mongodb/motor](https://github.com/mongodb/motor)           | Async wrapper to access MongoDB           |
+
 | APIs                                                 | Description                 |
 | ---------------------------------------------------- |---------------------------- |
 | [api.clashroyale.com](https://api.clashroyale.com)   | Clash Royale Official API   |
@@ -60,12 +66,3 @@ Core API's and libraries we use include:
 | [detectlanguage.com](https://detectlanguage.com/)    | API for language detection  |
 | [Google Firebase](https://firebase.google.com/)      | Database to store data      |
 | [MongoDB](https://www.mongodb.com/)                  | Database to store data      |
-
-
-| Wrappers                                                    | Description                               |
-| ----------------------------------------------------------- | ----------------------------------------- |
-| [Rapptz/discord.py](https://github.com/Rapptz/discord.py)   | Python wrapper to access the Discord API  |
-| [cgrok/clashroyale](https://github.com/cgrok/clashroyale)   | (A)sync wrapper to access CR APIs         |
-| [theskumar/python-dotenv](https://github.com/python-dotenv) | Access .env files as enviroment variables |
-| [mongodb/motor](https://github.com/mongodb/motor)           | Async wrapper to access MongoDB           |
-| [DataDog/datadogpy](https://github.com/DataDog/datadogpy)   | Python wrapper to access datadog statsd   |
