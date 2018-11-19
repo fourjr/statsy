@@ -922,7 +922,7 @@ class Clash_Royale:
     @command()
     @utils.has_perms()
     async def randomdeck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
-        """Gets the current deck of a player."""
+        """Gets a random deck"""
         async with ctx.typing():
             rand_deck = random.sample(self.cr.constants.cards, 8)
             try:

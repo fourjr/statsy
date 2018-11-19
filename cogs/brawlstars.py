@@ -281,7 +281,7 @@ class Brawl_Stars:
     @command()
     @utils.has_perms()
     async def randombrawler(self, ctx):
-        """Shows the boss fight leaderboard"""
+        """Gets a random brawler"""
         async with ctx.typing():
             brawler = random.choice([i for i in self.constants.characters if i.tID]).tID
             await brawlstars.format_random_brawler_and_send(ctx, brawler)
