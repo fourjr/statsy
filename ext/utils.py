@@ -1,3 +1,6 @@
+import asyncio
+import functools
+import inspect
 import random
 
 import discord
@@ -54,7 +57,35 @@ def random_color():
     return random.randint(0, 0xFFFFFF)
 
 
-def emoji(ctx, name, should_format=True):
+def asyncexecutor(loop=None, executor=None):
+    loop = loop or asyncio.get_event_loop()
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            partial = functools.partial(func, *args, **kwargs)
+            return loop.run_in_executor(executor, partial)
+        return wrapper
+    return decorator
+
+
+def get_stack_variable(name):
+    stack = inspect.stack()
+    try:
+        for frames in stack:
+            try:
+                frame = frames[0]
+                current_locals = frame.f_locals
+                if name in current_locals:
+                    return current_locals[name]
+            finally:
+                del frame
+    finally:
+        del stack
+
+
+def e(name, should_format=True):
+    ctx = get_stack_variable('ctx')
     name = str(name)
     if should_format:
         name = name.lower()
@@ -69,15 +100,15 @@ def emoji(ctx, name, should_format=True):
             'mike': 'dynamike',
             'frank': 'franky'
         }
-        for i in replace:
-            if isinstance(replace[i], list):
-                for k in replace[i]:
-                    name = name.replace(k, i)
+        for key, value in replace.items():
+            if isinstance(value, list):
+                for val in value:
+                    name = name.replace(val, key)
             else:
-                name = name.replace(replace[i], i)
+                name = name.replace(value, key)
 
-    e = discord.utils.get(ctx.bot.game_emojis, name=name)
-    return e or name
+    emoji = discord.utils.get(ctx.bot.game_emojis, name=name)
+    return emoji or name
 
 
 def cdir(obj):

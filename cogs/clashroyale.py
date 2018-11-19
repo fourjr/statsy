@@ -1,11 +1,13 @@
 import asyncio
 import io
 import json
+import random
 import os
 import time
 from base64 import b64decode
 from collections import OrderedDict
 from datetime import datetime
+import traceback
 
 import clashroyale
 import datadog
@@ -19,6 +21,7 @@ from pymongo import ReturnDocument
 from ext import utils
 from ext.context import NoContext
 from ext.command import cog, command, group
+from ext.utils import e
 from ext.embeds import clashroyale as cr
 from ext.paginator import Paginator
 from locales.i18n import Translator
@@ -75,7 +78,7 @@ class TagOnly(commands.Converter):
             return tag
 
 
-class TagCheck(commands.MemberConverter):
+class TagCheck(commands.UserConverter):
 
     check = 'PYLQGRJCUV0289'
 
@@ -115,7 +118,7 @@ class TagCheck(commands.MemberConverter):
         tag = self.resolve_tag(ctx, argument)
 
         if not tag:
-            raise utils.InvalidTag(_('Invalid cr-tag passed.', ctx))
+            raise utils.InvalidTag(_('Invalid cr-tag passed.'))
         else:
             return tag
 
@@ -167,15 +170,15 @@ class Clash_Royale:
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
         if isinstance(error, clashroyale.NotFoundError):
-            await ctx.send(_('The tag cannot be found!', ctx))
+            await ctx.send(_('The tag cannot be found!'))
         elif isinstance(error, clashroyale.RequestError):
             er = discord.Embed(
-                title=_('Clash Royale Server Down', ctx),
+                title=_('Clash Royale Server Down'),
                 color=discord.Color.red(),
                 description='This could be caused by a maintainence break.'
             )
             if ctx.bot.psa_message:
-                er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
             await ctx.send(embed=er)
 
     async def request(self, ctx, method, *args, **kwargs):
@@ -234,18 +237,18 @@ class Clash_Royale:
                     default_game = self.bot.default_game[ctx.channel.id]
                 cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
 
-                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!", ctx).format(ctx.prefix, cmd_name))
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!").format(ctx.prefix, cmd_name))
                 raise utils.NoTag
             else:
                 if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!", ctx))
+                    return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!"))
                 return tag
 
         if isinstance(tag_or_user, discord.abc.User):
             try:
                 tag = await ctx.get_tag('clashroyale', tag_or_user.id, index=str(index))
             except KeyError:
-                await ctx.send(_('That person doesnt have a saved tag!', ctx))
+                await ctx.send(_('That person doesnt have a saved tag!'))
                 raise utils.NoTag
             else:
                 if clan is True:
@@ -277,9 +280,9 @@ class Clash_Royale:
                 role_mention = role.mention
 
             if role_mention:
-                fmt = _('{}, new tournament found!', ctx).format(role_mention)
+                fmt = _('{}, new tournament found!').format(role_mention)
             else:
-                fmt = _('New tournament found!', ctx)
+                fmt = _('New tournament found!')
             await guild.get_channel(int(g['tournament']['channel_id'])).send(
                 content=fmt,
                 embed=em
@@ -440,9 +443,9 @@ class Clash_Royale:
         if friend_config is None and self.bot.get_user(402656158667767808) not in ctx.guild.members:
             default = friend_config = True
 
-        resp = _('Current status: {}', ctx).format(friend_config)
+        resp = _('Current status: {}').format(friend_config)
         if default:
-            resp += _(' (default)', ctx)
+            resp += _(' (default)')
         await ctx.send(resp)
 
     @commands.guild_only()
@@ -453,7 +456,7 @@ class Clash_Royale:
         await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': str(ctx.guild.id)}, {'$set': {'friend_link': True}}, upsert=True
         )
-        await ctx.send(_('Successfully set link beautifier to be enabled.', ctx))
+        await ctx.send(_('Successfully set link beautifier to be enabled.'))
 
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
@@ -463,11 +466,11 @@ class Clash_Royale:
         await self.bot.mongo.config.guilds.find_one_and_update(
             {'guild_id': str(ctx.guild.id)}, {'$set': {'friend_link': False}}, upsert=True
         )
-        await ctx.send(_('Successfully set link beautifier to be disabled.', ctx))
+        await ctx.send(_('Successfully set link beautifier to be disabled.'))
 
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
-    @command(aliases=['crsettourneylog'])
+    @command(aliases=['settourneylog'])
     async def settournamentlog(self, ctx):
         """Sets the filters and channels for the tournament log"""
         allowed_types = ['all', '50', '100', '200', '1000', 'open:all', 'open:50', 'open:100', 'open:200', 'open:1000']
@@ -476,14 +479,14 @@ class Clash_Royale:
             return m.author == ctx.author and m.channel == ctx.channel
 
         try:
-            await ctx.send(_('What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space.', ctx).format(
+            await ctx.send(_('What kind of tournaments do you want alerts for? Pick from these: `{}`. The numbers represent max member count. Seperate multiple types with a space.').format(
                 ', '.join(allowed_types)
             ))
             types = (await self.bot.wait_for('message', check=predicate, timeout=60)).content.split(' ')
             if not all([i in allowed_types for i in types]):
-                return await ctx.send(_('Invalid type(s).', ctx))
+                return await ctx.send(_('Invalid type(s).'))
 
-            await ctx.send(_('Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`.', ctx))
+            await ctx.send(_('Do you want to mention any role when a tournament is found? Respond with a role name, `everyone`, `here` or `no`.'))
             role = (await self.bot.wait_for('message', check=predicate, timeout=60)).content
             try:
                 role = str((await commands.RoleConverter().convert(ctx, role)).id)
@@ -493,14 +496,14 @@ class Clash_Royale:
                 elif role in ('everyone', 'here'):
                     role = '@' + role
                 else:
-                    return await ctx.send(_('Invalid role.', ctx))
+                    return await ctx.send(_('Invalid role.'))
 
-            await ctx.send(_('Which channel do you want the alerts to be sent to?', ctx))
+            await ctx.send(_('Which channel do you want the alerts to be sent to?'))
             channel = (await self.bot.wait_for('message', check=predicate, timeout=60)).content
             try:
                 channel = (await commands.TextChannelConverter().convert(ctx, channel)).id
             except commands.BadArgument:
-                return await ctx.send(_('Invalid channel.', ctx))
+                return await ctx.send(_('Invalid channel.'))
 
         except asyncio.TimeoutError:
             return await ctx.send('Command timeout. Do the command again to restart the process.')
@@ -514,7 +517,7 @@ class Clash_Royale:
                 }
             }}, upsert=True
         )
-        await ctx.send(_('Log set!', ctx))
+        await ctx.send(_('Log set!'))
 
     @commands.has_permissions(manage_guild=True)
     @command()
@@ -536,7 +539,7 @@ class Clash_Royale:
                     tag = shortcuts[tag]
                 tag = tag.replace('O', '0')
                 if any(i not in 'PYLQGRJCUV0289' for i in tag):
-                    return await ctx.send(_('{} is an invalid tag. Please use the clan tags seperated by spaces.', ctx).format(tag))
+                    return await ctx.send(_('{} is an invalid tag. Please use the clan tags seperated by spaces.').format(tag))
                 else:
                     cleaned_tags.append(tag)
 
@@ -567,7 +570,7 @@ class Clash_Royale:
                     await message.delete()
                 except NameError:
                     pass
-                return await ctx.send(_('Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}', ctx).format(channel.name))
+                return await ctx.send(_('Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}').format(channel.name))
 
             data = await self.bot.mongo.config.guilds.find_one_and_update({'guild_id': str(ctx.guild.id)}, {'$set': {
                 'claninfo': {
@@ -578,7 +581,7 @@ class Clash_Royale:
             }}, upsert=True, return_document=ReturnDocument.AFTER)
 
             await self.clanupdate(data)
-            await ctx.send(_('Configuration complete.', ctx))
+            await ctx.send(_('Configuration complete.'))
 
     @command(aliases=['player'])
     @utils.has_perms()
@@ -593,7 +596,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @command(alises=['crstatistics'])
+    @command(alises=['statistics'])
     @utils.has_perms()
     async def stats(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the clash royale profile of a player."""
@@ -605,7 +608,7 @@ class Clash_Royale:
 
         await ctx.send(embed=em)
 
-    @command(aliases=['crseason'])
+    @command(aliases=['season'])
     @utils.has_perms()
     async def seasons(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
         """Gets the season results a player."""
@@ -758,7 +761,7 @@ class Clash_Royale:
         await self.parse_leaderboard(ctx, 'cards', 'clanCardsCollected', name='Clan Cards Collected')
 
     @utils.has_perms()
-    @command(aliases=['crtoplayers'])
+    @command(aliases=['toplayers'])
     async def topplayers(self, ctx, *, region: str = None):
         """Returns the top 200 players."""
         async with ctx.typing():
@@ -883,11 +886,11 @@ class Clash_Royale:
             cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
 
             if index == '0':
-                prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
+                prompt = _('Check your stats with `{}{}`!').format(ctx.prefix, cmd_name)
             else:
-                prompt = _('Check your stats with `{}{} -{}`!', ctx).format(ctx.prefix, cmd_name, index)
+                prompt = _('Check your stats with `{}{} -{}`!').format(ctx.prefix, cmd_name, index)
 
-            await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
+            await ctx.send(_('Successfully saved tag.') + ' ' + prompt)
 
     @command()
     @utils.has_perms()
@@ -909,9 +912,25 @@ class Clash_Royale:
 
         async with ctx.typing():
             profile = await self.request(ctx, 'get_player', tag)
-            em = await cr.format_deck(ctx, profile)
+            try:
+                await cr.format_deck_image_and_send(ctx, profile)
+            except Exception:
+                traceback.print_exc()
+                em = await cr.format_deck(ctx, profile)
+                await ctx.send(embed=em)
 
-            await ctx.send(embed=em)
+    @command()
+    @utils.has_perms()
+    async def randomdeck(self, ctx, *, tag_or_user: TagCheck=(None, 0)):
+        """Gets the current deck of a player."""
+        async with ctx.typing():
+            rand_deck = random.sample(self.cr.constants.cards, 8)
+            try:
+                await cr.format_random_deck_image_and_send(ctx, rand_deck)
+            except Exception:
+                traceback.print_exc()
+                em = await cr.format_random_deck(ctx, rand_deck)
+                await ctx.send(embed=em)
 
     @command(name='crcard')
     @utils.has_perms()
@@ -940,7 +959,7 @@ class Clash_Royale:
 
         em = await cr.format_card(ctx, found_card)
         try:
-            async with self.bot.session.get(utils.emoji(ctx, card).url) as resp:
+            async with self.bot.session.get(e(card).url) as resp:
                 c = io.BytesIO(await resp.read())
         except AttributeError:
             # new card, no emoji
@@ -948,7 +967,7 @@ class Clash_Royale:
         else:
             await ctx.send(embed=em, files=[discord.File(c, 'card.png')])
 
-    @command(aliases=['crtourney'])
+    @command(aliases=['tourney'])
     @utils.has_perms()
     async def tournament(self, ctx, tag: TagOnly):
         """View statistics about a tournament"""
@@ -958,7 +977,7 @@ class Clash_Royale:
 
         await Paginator(ctx, *ems).start()
 
-    @command(aliases=['crtourneys'])
+    @command(aliases=['tourneys'])
     @utils.has_perms()
     async def tournaments(self, ctx):
         """Show a list of open tournaments that you can join!"""

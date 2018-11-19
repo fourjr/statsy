@@ -342,7 +342,7 @@ class StatsBot(commands.AutoShardedBot):
             )
         else:
             if not description:
-                await ctx.send(_('Something went wrong and we are investigating the issue now.', ctx))
+                await ctx.send(_('Something went wrong and we are investigating the issue now.'))
             error_message = 'Ignoring exception in command {}:\n'.format(ctx.command)
             error_message += ''.join(traceback.format_exception(type(error), error, error.__traceback__))
             error_message = f"```py\n{error_message}\n```"
@@ -430,7 +430,7 @@ class StatsBot(commands.AutoShardedBot):
     async def ping(self, ctx):
         """Pong! Returns average shard latency."""
         em = discord.Embed(
-            title=_('Pong! Websocket Latency:', ctx),
+            title=_('Pong! Websocket Latency:'),
             description=f'{self.latency * 1000:.4f} ms',
             color=0xf9c93d
         )

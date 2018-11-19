@@ -4,82 +4,73 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0.0\n"
-"POT-Creation-Date: 2018-11-17 13:36+Malay Peninsula Standard Time\n"
+"POT-Creation-Date: 2018-11-19 15:12+Malay Peninsula Standard Time\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ../cogs/brawlstars.py:63
+#: ../cogs/brawlstars.py:64
 msgid "Commands relating to the Brawl Stars game made by supercell."
 msgstr ""
 
-#: ../cogs/brawlstars.py:97 ../cogs/clashofclans.py:140
-#: ../cogs/clashroyale.py:240
-msgid "You don't have a saved tag. Save one using `{}{} <tag>`!"
-msgstr ""
-
-#: ../cogs/brawlstars.py:101
-msgid "You don't have a band!"
-msgstr ""
-
-#: ../cogs/brawlstars.py:111
+#: ../cogs/brawlstars.py:112
 msgid "That person does not have a band!"
 msgstr ""
 
-#: ../cogs/brawlstars.py:152
+#: ../cogs/brawlstars.py:153
 msgid "Brawl Stars Server Down"
 msgstr ""
 
-#: ../cogs/brawlstars.py:157 ../cogs/clashofclans.py:107
-#: ../cogs/clashroyale.py:178
+#: ../cogs/brawlstars.py:158 ../cogs/clashofclans.py:107
+#: ../cogs/clashroyale.py:181
 msgid "Please Note!"
 msgstr ""
 
-#: ../cogs/brawlstars.py:163
+#: ../cogs/brawlstars.py:164
 msgid "Unable to find the tag. The tag is either invalid or there is a maintainence break."
 msgstr ""
 
-#: ../cogs/brawlstars.py:170
+#: ../cogs/brawlstars.py:171
 msgid "Saves a Brawl Stars tag to your discord profile."
 msgstr ""
 
-#: ../cogs/brawlstars.py:184 ../cogs/clashofclans.py:257
+#: ../cogs/brawlstars.py:185 ../cogs/clashofclans.py:257
 #: ../cogs/clashroyale.py:889 ../cogs/fortnite.py:137
 msgid "Check your stats with `{}{}`!"
 msgstr ""
 
-#: ../cogs/brawlstars.py:186 ../cogs/clashofclans.py:259
+#: ../cogs/brawlstars.py:187 ../cogs/clashofclans.py:259
 #: ../cogs/clashroyale.py:891 ../cogs/fortnite.py:139
 msgid "Check your stats with `{}{} -{}`!"
 msgstr ""
 
-#: ../cogs/brawlstars.py:188 ../cogs/clashroyale.py:893
+#: ../cogs/brawlstars.py:189 ../cogs/clashroyale.py:893
 msgid "Successfully saved tag."
 msgstr ""
 
-#: ../cogs/brawlstars.py:193 ../cogs/brawlstars.py:204
+#: ../cogs/brawlstars.py:194 ../cogs/brawlstars.py:205
 msgid "Get general Brawl Stars player information."
 msgstr ""
 
-#: ../cogs/brawlstars.py:216
+#: ../cogs/brawlstars.py:217
 msgid "Get Brawl Stars band information."
 msgstr ""
 
-#: ../cogs/brawlstars.py:228 ../cogs/brawlstars.py:238
+#: ../cogs/brawlstars.py:229 ../cogs/brawlstars.py:239
 msgid "Returns the global top 200 players."
 msgstr ""
 
-#: ../cogs/brawlstars.py:248
+#: ../cogs/brawlstars.py:249
 msgid "Shows the upcoming events!"
 msgstr ""
 
-#: ../cogs/brawlstars.py:258
+#: ../cogs/brawlstars.py:260
 msgid "Shows the robo rumble leaderboard"
 msgstr ""
 
-#: ../cogs/brawlstars.py:268
+#: ../cogs/brawlstars.py:270 ../cogs/brawlstars.py:280
 msgid "Shows the boss fight leaderboard"
 msgstr ""
 
@@ -91,12 +82,8 @@ msgstr ""
 msgid "Clash of Clans Server Down"
 msgstr ""
 
-#: ../cogs/clashofclans.py:114 ../cogs/clashroyale.py:170
+#: ../cogs/clashofclans.py:114 ../cogs/clashroyale.py:173
 msgid "The tag cannot be found!"
-msgstr ""
-
-#: ../cogs/clashofclans.py:144 ../cogs/clashroyale.py:244
-msgid "You don't have a clan!"
 msgstr ""
 
 #: ../cogs/clashofclans.py:153
@@ -125,23 +112,15 @@ msgstr ""
 msgid "Checks the saved tag(s) of a member"
 msgstr ""
 
-#: ../cogs/clashofclans.py:283
-msgid "This clan's war logs aren't public."
-msgstr ""
-
-#: ../cogs/clashofclans.py:285
-msgid "This clan isn't in a war right now!"
-msgstr ""
-
-#: ../cogs/clashroyale.py:118
+#: ../cogs/clashroyale.py:121
 msgid "Invalid cr-tag passed."
 msgstr ""
 
-#: ../cogs/clashroyale.py:125
+#: ../cogs/clashroyale.py:128
 msgid "Commands relating to the Clash Royale game made by supercell."
 msgstr ""
 
-#: ../cogs/clashroyale.py:173
+#: ../cogs/clashroyale.py:176
 msgid "Clash Royale Server Down"
 msgstr ""
 
@@ -313,28 +292,24 @@ msgstr ""
 msgid "Saves a Clash Royale tag to your discord profile."
 msgstr ""
 
-#: ../cogs/clashroyale.py:910
+#: ../cogs/clashroyale.py:910 ../cogs/clashroyale.py:925
 msgid "Gets the current deck of a player."
 msgstr ""
 
-#: ../cogs/clashroyale.py:922
+#: ../cogs/clashroyale.py:935
 msgid "Get information about a Clash Royale card."
 msgstr ""
 
-#: ../cogs/clashroyale.py:957
+#: ../cogs/clashroyale.py:970
 msgid "View statistics about a tournament"
 msgstr ""
 
-#: ../cogs/clashroyale.py:967
+#: ../cogs/clashroyale.py:980
 msgid "Show a list of open tournaments that you can join!"
 msgstr ""
 
 #: ../cogs/fortnite.py:35
 msgid "Commands related to the Fortnite game"
-msgstr ""
-
-#: ../cogs/fortnite.py:65
-msgid "You don't have a saved tag. Save one using `{}{} <platform> <username>!`"
 msgstr ""
 
 #: ../cogs/fortnite.py:84
@@ -359,30 +334,6 @@ msgstr ""
 
 #: ../cogs/fortnite.py:156
 msgid "Statsy - Powered by fortniteapi.com"
-msgstr ""
-
-#: ../cogs/mod.py:18
-msgid "These commands only work on the official Statsy support server: https://discord.gg/cBqsdPt"
-msgstr ""
-
-#: ../cogs/mod.py:45
-msgid "Warns a user"
-msgstr ""
-
-#: ../cogs/mod.py:53
-msgid "Kicks a user"
-msgstr ""
-
-#: ../cogs/mod.py:61
-msgid "Bans a user"
-msgstr ""
-
-#: ../cogs/mod.py:69
-msgid "Unbans a user"
-msgstr ""
-
-#: ../cogs/mod.py:77
-msgid "Softbans a user"
 msgstr ""
 
 #: ../cogs/utils.py:25
@@ -420,7 +371,7 @@ msgid "Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR."
 msgstr ""
 
 #: ../cogs/utils.py:138
-msgid "This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy."
+msgid "This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy"
 msgstr ""
 
 #: ../cogs/utils.py:142
@@ -472,98 +423,98 @@ msgid "Discord"
 msgstr ""
 
 #: ../cogs/utils.py:156
-msgid "Follow us on Twitter!"
+msgid "Github"
 msgstr ""
 
 #: ../cogs/utils.py:157
-msgid "Upvote This Bot!"
+msgid "Follow us on Twitter!"
 msgstr ""
 
 #: ../cogs/utils.py:158
+msgid "Upvote This Bot!"
+msgstr ""
+
+#: ../cogs/utils.py:159
 msgid "Bot ID: {}"
 msgstr ""
 
-#: ../cogs/utils.py:165
+#: ../cogs/utils.py:166
 msgid "Restarts the bot."
 msgstr ""
 
-#: ../cogs/utils.py:173
+#: ../cogs/utils.py:176
+msgid "Reloads a module."
+msgstr ""
+
+#: ../cogs/utils.py:186
 msgid "Formats the text for a cog help"
 msgstr ""
 
-#: ../cogs/utils.py:241
+#: ../cogs/utils.py:254
 msgid "Formats command help."
 msgstr ""
 
-#: ../cogs/utils.py:289
+#: ../cogs/utils.py:302
 msgid "Shows the help message."
 msgstr ""
 
-#: ../cogs/utils.py:300
+#: ../cogs/utils.py:313
 msgid "Could not find a cog or command by that name."
 msgstr ""
 
-#: ../cogs/utils.py:312
+#: ../cogs/utils.py:325
 msgid "Type {}help command for more info on a command."
 msgstr ""
 
-#: ../cogs/utils.py:317
+#: ../cogs/utils.py:330
 msgid "Evaluates python code"
 msgstr ""
 
-#: ../cogs/utils.py:383
+#: ../cogs/utils.py:396
 msgid "Automatically removes code blocks from the code."
 msgstr ""
 
-#: ../cogs/utils.py:393
+#: ../cogs/utils.py:406
 msgid "Suggest a game! Or a feature!"
 msgstr ""
 
-#: ../cogs/utils.py:410
+#: ../cogs/utils.py:411
 msgid "Suggestion submitted. Thanks for the feedback!"
 msgstr ""
 
-#: ../cogs/utils.py:414
-msgid "Report a bug!"
-msgstr ""
-
-#: ../cogs/utils.py:431
-msgid "Bug Reported. Thanks for the report!"
-msgstr ""
-
-#: ../cogs/utils.py:495
+#: ../cogs/utils.py:476
 msgid "Changes your language!"
 msgstr ""
 
-#: ../cogs/utils.py:507
+#: ../cogs/utils.py:489
 msgid "Available languages: {}"
 msgstr ""
 
-#: ../cogs/utils.py:512
+#: ../cogs/utils.py:494
 msgid "Language set."
 msgstr ""
 
-#: ../cogs/utils.py:517
+#: ../cogs/utils.py:499
 msgid "Enables certain games"
 msgstr ""
 
-#: ../cogs/utils.py:519
+#: ../cogs/utils.py:501
 msgid "All games are enabled in DMs."
 msgstr ""
 
-#: ../cogs/utils.py:531 ../cogs/utils.py:556 ../cogs/utils.py:583
+#: ../cogs/utils.py:513 ../cogs/utils.py:538 ../cogs/utils.py:565
 msgid "Invalid game. Pick from: {}"
 msgstr ""
 
-#: ../cogs/utils.py:542
+#: ../cogs/utils.py:524
 msgid "Disables certain games"
 msgstr ""
 
-#: ../cogs/utils.py:544
+#: ../cogs/utils.py:526
 msgid "All games cannot be disabled in DMs."
 msgstr ""
 
-#: ../cogs/utils.py:594
+#: ../cogs/utils.py:576
 msgid "Statsy support server invite link"
 msgstr ""
 
@@ -603,35 +554,35 @@ msgstr ""
 msgid "Called when a command is invoked."
 msgstr ""
 
-#: ../statsbot.py:221
+#: ../statsbot.py:217
 msgid "Utilises the CustomContext subclass of discord.Context"
 msgstr ""
 
-#: ../statsbot.py:261
+#: ../statsbot.py:257
 msgid "Overwrites the default StringView for space insensitivity"
 msgstr ""
 
-#: ../statsbot.py:353
+#: ../statsbot.py:349
 msgid "Something went wrong and we are investigating the issue now."
 msgstr ""
 
-#: ../statsbot.py:371
+#: ../statsbot.py:367
 msgid "Called when a message is sent/recieved."
 msgstr ""
 
-#: ../statsbot.py:377
+#: ../statsbot.py:373
 msgid "Publish to botlists."
 msgstr ""
 
-#: ../statsbot.py:403
+#: ../statsbot.py:399
 msgid "Push to datadog"
 msgstr ""
 
-#: ../statsbot.py:439
+#: ../statsbot.py:435
 msgid "Pong! Returns average shard latency."
 msgstr ""
 
-#: ../statsbot.py:441
+#: ../statsbot.py:437
 msgid "Pong! Websocket Latency:"
 msgstr ""
 

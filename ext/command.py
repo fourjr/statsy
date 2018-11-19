@@ -9,14 +9,14 @@ class StatsyCommand(commands.Command):
 
     def short_doc(self, ctx):
         """Overwrites default to use translations"""
-        return _(super().short_doc, ctx)
+        return _(super().short_doc)
 
 
 class StatsyGroup(commands.Group):
 
     def short_doc(self, ctx):
         """Overwrites default to use translations"""
-        return _(super().short_doc, ctx)
+        return _(super().short_doc)
 
     def command(self, *args, **kwargs):
         """Overwrites GroupMixin.command to use StatsyCommand"""

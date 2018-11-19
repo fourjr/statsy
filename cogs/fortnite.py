@@ -18,7 +18,7 @@ from locales.i18n import Translator
 _ = Translator('Fortnite', __file__)
 
 
-class TagOrUser(commands.MemberConverter):
+class TagOrUser(commands.UserConverter):
     async def convert(self, ctx, argument):
         try:
             return await super().convert(ctx, argument)
@@ -62,7 +62,7 @@ class Fortnite:
                     default_game = self.bot.default_game[ctx.channel.id]
                 cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
 
-                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <platform> <username>!`", ctx).format(ctx.prefix, cmd_name))
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <platform> <username>!`").format(ctx.prefix, cmd_name))
                 raise utils.NoTag
         else:
             if platform not in ('pc', 'ps4', 'xb1'):
@@ -71,7 +71,7 @@ class Fortnite:
                 try:
                     return await ctx.get_tag('fortnite', f'{username.id}: {platform}')
                 except KeyError:
-                    await ctx.send(_('That person doesnt have a saved tag!', ctx))
+                    await ctx.send(_('That person doesnt have a saved tag!'))
                     raise utils.NoTag
             else:
                 if username.startswith('-'):
@@ -81,7 +81,7 @@ class Fortnite:
     async def __error(self, ctx, error):
         error = getattr(error, 'original', error)
         if isinstance(error, utils.APIError):
-            await ctx.send(_('Fortnite API is currently undergoing maintenance. Please try again later.', ctx))
+            await ctx.send(_('Fortnite API is currently undergoing maintenance. Please try again later.'))
 
     async def post(self, endpoint, payload, *, reason='command'):
         headers = {
@@ -114,7 +114,7 @@ class Fortnite:
     async def get_player_uid(self, ctx, name):
         data = await self.post('/users/id', {'username': name}, reason='get_uid')
         if data.get('code') in ('1012', '1006'):
-            await ctx.send(_('The username cannot be found!', ctx))
+            await ctx.send(_('The username cannot be found!'))
             raise utils.NoTag
 
         if not data.get('uid'):
@@ -134,11 +134,11 @@ class Fortnite:
         cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
 
         if index == '0':
-            prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
+            prompt = _('Check your stats with `{}{}`!').format(ctx.prefix, cmd_name)
         else:
-            prompt = _('Check your stats with `{}{} -{}`!', ctx).format(ctx.prefix, cmd_name, index)
+            prompt = _('Check your stats with `{}{} -{}`!').format(ctx.prefix, cmd_name, index)
 
-        await ctx.send(_('Successfully saved tag. ', ctx) + prompt)
+        await ctx.send(_('Successfully saved tag. ') + prompt)
 
     @command()
     @utils.has_perms()
@@ -153,7 +153,7 @@ class Fortnite:
 
             ems = await fortnite.format_profile(ctx, platform, player)
 
-        await Paginator(ctx, *ems, footer_text=_('Statsy - Powered by fortniteapi.com', ctx)).start()
+        await Paginator(ctx, *ems, footer_text=_('Statsy - Powered by fortniteapi.com')).start()
 
     @command()
     @utils.has_perms()

@@ -1,12 +1,13 @@
 import copy
-from datetime import datetime
+import io
 import math
+from datetime import datetime
 from time import time
 
 import box
 import discord
 
-from ext.utils import random_color, emoji
+from ext.utils import e, random_color
 from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
@@ -34,7 +35,7 @@ def format_timestamp(seconds: int):
     return timeleft
 
 
-async def format_profile(ctx, p):
+def format_profile(ctx, p):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
@@ -48,9 +49,9 @@ async def format_profile(ctx, p):
         em.set_thumbnail(url=f'{url}/player_icons/{p.avatar_id}.png')
     except box.BoxKeyError:
         pass
-    em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+    em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-    brawlers = ' '.join([f'{emoji(ctx, i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{emoji(ctx, i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
+    brawlers = ' '.join([f'{e(i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
 
     exp_level = 0
     minus_exp = 30
@@ -90,30 +91,30 @@ async def format_profile(ctx, p):
         band = False
 
     embed_fields = [
-        (_('Trophies', ctx), f"{p.trophies}/{p.highest_trophies} PB {emoji(ctx, 'bstrophy')}", False),
-        (_('3v3 Victories', ctx), f"{p.victories} {emoji(ctx, 'goldstar')}", True),
-        (_('Solo Showdown Wins', ctx), f"{p.solo_showdown_victories} {emoji(ctx, 'soloshowdown')}", True),
-        (_('Duo Showdown Wins', ctx), f"{p.duo_showdown_victories} {emoji(ctx, 'duoshowdown')}", True),
-        (_('Best time as Boss', ctx), f"{p.best_time_as_boss} {emoji(ctx, 'bossfight')}", True),
-        (_('Best Robo Rumble Time', ctx), f"{p.best_robo_rumble_time} {emoji(ctx, 'roborumble')}", True),
-        (_('XP Level', ctx), f"{exp_level} ({minus_exp}/{minus_exp - p.total_exp}) {emoji(ctx, 'xp')}", True),
-        (_('Band Name', ctx), p.band.name if band else None, True),
-        (_('Band Tag', ctx), f'#{p.band.tag}' if band else None, True),
-        (_('Band Role', ctx), p.band.role if band else None, True),
-        (_('Account Age', ctx), account_age, False),
-        (_('Brawlers', ctx), brawlers, False),
+        (_('Trophies'), f"{p.trophies}/{p.highest_trophies} PB {e('bstrophy')}", False),
+        (_('3v3 Victories'), f"{p.victories} {e('goldstar')}", True),
+        (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('soloshowdown')}", True),
+        (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
+        (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
+        (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
+        (_('XP Level'), f"{exp_level} ({minus_exp}/{minus_exp - p.total_exp}) {e('xp')}", True),
+        (_('Band Name'), p.band.name if band else None, True),
+        (_('Band Tag'), f'#{p.band.tag}' if band else None, True),
+        (_('Band Role'), p.band.role if band else None, True),
+        (_('Account Age'), account_age, False),
+        (_('Brawlers'), brawlers, False),
     ]
 
     for n, v, i in embed_fields:
         if v:
             em.add_field(name=n, value=v, inline=i)
-        elif n == _('Band Name', ctx):
-            em.add_field(name=_('Band', ctx), value=_('None', ctx))
+        elif n == _('Band Name'):
+            em.add_field(name=_('Band', ctx), value=_('None'))
 
     return em
 
 
-async def format_brawlers(ctx, p):
+def format_brawlers(ctx, p):
     ems = []
 
     ranks = [
@@ -146,19 +147,19 @@ async def format_brawlers(ctx, p):
         if n % 6 == 0:
             ems.append(discord.Embed(color=random_color()))
             ems[-1].set_author(name=f'{p.name} (#{p.tag})')
-            ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+            ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
 
         skin = check if i.has_skin else cross
 
-        val = f"{emoji(ctx, 'xp')}　Level {i.level}\n{skin}　Skin Active?\n{emoji(ctx, 'bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
-        ems[-1].add_field(name=f"{emoji(ctx, i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
+        val = f"{e('xp')}　Level {i.level}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+        ems[-1].add_field(name=f"{e(i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
 
 
-async def format_band(ctx, b):
+def format_band(ctx, b):
     # badge = f'{url}/band_icons/' + b.avatar_id + '.png'
 
     _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
@@ -167,35 +168,35 @@ async def format_band(ctx, b):
 
     if len(b.members) >= 3:
         for i in range(3):
-            push_avatar = emoji(ctx, str(b.members[i].avatar_id).replace('21307136', '280000'))
-            exp_avatar = emoji(ctx, str(_experiences[i].avatar_id).replace('21307136', '280000'))
+            push_avatar = e(str(b.members[i].avatar_id).replace('21307136', '280000'))
+            exp_avatar = e(str(_experiences[i].avatar_id).replace('21307136', '280000'))
 
             pushers.append(
                 f"**{push_avatar} {b.members[i].name}**"
-                f"\n{emoji(ctx, 'bstrophy')}"
+                f"\n{e('bstrophy')}"
                 f" {b.members[i].trophies} "
                 f"\n#{b.members[i].tag}"
             )
 
             experiences.append(
                 f"**{exp_avatar} {_experiences[i].name}**"
-                f"\n{emoji(ctx, 'xp')}"
+                f"\n{e('xp')}"
                 f" {_experiences[i].exp_level}"
                 f"\n#{_experiences[i].tag}"
             )
 
     page1 = discord.Embed(description=b.description, color=random_color())
     page1.set_author(name=f"{b.name} (#{b.tag})")
-    page1.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+    page1.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     # page1.set_thumbnail(url=badge)
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Experienced Players for this band.'
 
     fields1 = [
-        (_('Type', ctx), f'{b.status} 📩'),
-        (_('Score', ctx), f'{b.trophies} Trophies {emoji(ctx, "bstrophy")}'),
-        (_('Members', ctx), f'{b.members_count}/100'),
-        (_('Required Trophies', ctx), f'{b.required_trophies} {emoji(ctx, "bstrophy")}')
+        (_('Type'), f'{b.status} 📩'),
+        (_('Score'), f'{b.trophies} Trophies {e("bstrophy")}'),
+        (_('Members'), f'{b.members_count}/100'),
+        (_('Required Trophies'), f'{b.required_trophies} {e("bstrophy")}')
     ]
     fields2 = [
         ("Top Players", '\n\n'.join(pushers)),
@@ -212,17 +213,17 @@ async def format_band(ctx, b):
     return [page1, page2]
 
 
-async def format_top_players(ctx, players):
+def format_top_players(ctx, players):
     region = 'global'
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
-        em.description = _('Top 200 {} players right now.', ctx).format(region)
+        em.description = _('Top 200 {} players right now.').format(region)
     # badge_image = ctx.bot.cr.get_clan_image(players[0])
     em.set_author(name='Top Players')   # , icon_url=badge_image)
-    em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+    em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     embeds = []
     counter = 0
     for c in players:
@@ -232,11 +233,11 @@ async def format_top_players(ctx, players):
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
-                em.description = _('Top 200 {} players right now.', ctx).format(region)
+                em.description = _('Top 200 {} players right now.').format(region)
 
             # badge_image = ctx.bot.cr.get_clan_image(players[0])
-            em.set_author(name=_('Top Players', ctx))  # , icon_url=badge_image)
-            em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+            em.set_author(name=_('Top Players'))  # , icon_url=badge_image)
+            em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         try:
             band_name = c.band_name
@@ -246,27 +247,27 @@ async def format_top_players(ctx, players):
         em.add_field(
             name=c.name,
             value=f"#{c.tag}"
-                  f"\n{emoji(ctx, 'bstrophy')}{c.trophies}"
-                  f"\n{emoji(ctx, 'bountystar')} Rank: {c.position} "
-                  f"\n{emoji(ctx, 'xp')} XP Level: {c.exp_level}"
-                  f"\n{emoji(ctx, 'gameroom')} {band_name}"
+                  f"\n{e('bstrophy')}{c.trophies}"
+                  f"\n{e('bountystar')} Rank: {c.position} "
+                  f"\n{e('xp')} XP Level: {c.exp_level}"
+                  f"\n{e('gameroom')} {band_name}"
         )
         counter += 1
     embeds.append(em)
     return embeds
 
 
-async def format_top_bands(ctx, clans):
+def format_top_bands(ctx, clans):
     region = 'global'
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
-        em.description = _('Top 200 {} bands right now.', ctx).format(region)
+        em.description = _('Top 200 {} bands right now.').format(region)
     # badge_image = ctx.bot.cr.get_clan_image(clans[0])
     em.set_author(name='Top Bands')  # , icon_url=badge_image)
-    em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+    em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     embeds = []
     counter = 0
     for c in clans:
@@ -276,25 +277,25 @@ async def format_top_bands(ctx, clans):
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
-                em.description = _('Top 200 {} bands right now.', ctx).format(region)
+                em.description = _('Top 200 {} bands right now.').format(region)
 
             # badge_image = ctx.bot.cr.get_clan_image(clans[0])
-            em.set_author(name=_('Top Bands', ctx))  # , icon_url=badge_image)
-            em.set_footer(text=_('Statsy | Powered by brawlapi.cf', ctx))
+            em.set_author(name=_('Top Bands'))  # , icon_url=badge_image)
+            em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         em.add_field(
             name=c.name,
             value=f"#{c.tag}"
-                  f"\n{emoji(ctx, 'bstrophy')}{c.trophies}"
-                  f"\n{emoji(ctx, 'bountystar')} Rank: {c.position} "
-                  f"\n{emoji(ctx, 'gameroom')} {c.members_count}/100 "
+                  f"\n{e('bstrophy')}{c.trophies}"
+                  f"\n{e('bountystar')} Rank: {c.position} "
+                  f"\n{e('gameroom')} {c.members_count}/100 "
         )
         counter += 1
     embeds.append(em)
     return embeds
 
 
-async def format_events(ctx, events):
+def format_events(ctx, events):
     em1 = discord.Embed(title='Ongoing events!', color=random_color())
     if ctx.bot.psa_message:
         em1.description = ctx.bot.psa_message
@@ -305,8 +306,8 @@ async def format_events(ctx, events):
     upcoming = events['later']
 
     clock_emoji = u"\U0001F55B"
-    first_win_emoji = str(emoji(ctx, 'first_win'))
-    coin_emoji = str(emoji(ctx, 'coin'))
+    first_win_emoji = str(e('first_win'))
+    coin_emoji = str(e('coin'))
 
     for event in ongoing:
         date = (datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.utcnow()
@@ -382,7 +383,7 @@ def format_robo(ctx, leaderboard):
     for rnd in range(math.ceil(len(leaderboard.best_teams) / 5)):
         em = discord.Embed(
             title='Top Teams in Robo Rumble',
-            description=_('Top {} teams!\nLast updated: {} ago', ctx).format(len(leaderboard.best_teams), fmt),
+            description=_('Top {} teams!\nLast updated: {} ago').format(len(leaderboard.best_teams), fmt),
             color=random_color()
         )
         em.set_footer(text='Statsy')
@@ -391,7 +392,7 @@ def format_robo(ctx, leaderboard):
             minutes, seconds = divmod(leaderboard.best_teams[i].duration, 60)
             rankings = ''
             for num in range(1, 4):
-                rankings += str(emoji(ctx, leaderboard.best_teams[i][f'brawler{num}'])) + ' ' + leaderboard.best_teams[i][f'player{num}'] + '\n'
+                rankings += str(e(leaderboard.best_teams[i][f'brawler{num}'])) + ' ' + leaderboard.best_teams[i][f'player{num}'] + '\n'
             em.add_field(name=f'{minutes}m {seconds}s', value=rankings)
 
         embeds.append(em)
@@ -419,16 +420,33 @@ def format_boss(ctx, leaderboard):
     for rnd in range(math.ceil(len(leaderboard.best_players) / 10)):
         em = discord.Embed(
             title='Top Bosses in Boss Fight ',
-            description=_('Top {} bosses!\n\nLast updated: {} ago\nMap: {}', ctx).format(len(leaderboard.best_players), fmt, leaderboard['activeLevel']),
+            description=_('Top {} bosses!\n\nLast updated: {} ago\nMap: {}').format(len(leaderboard.best_players), fmt, leaderboard['activeLevel']),
             color=random_color()
         )
         em.set_footer(text='Statsy')
 
         for i in range(rnd, 10 + rnd):
             minutes, seconds = divmod(leaderboard.best_players[i].duration, 60)
-            rankings = str(emoji(ctx, leaderboard.best_players[i].brawler)) + ' ' + leaderboard.best_players[i]['player'] + '\n'
+            rankings = str(e(leaderboard.best_players[i].brawler)) + ' ' + leaderboard.best_players[i]['player'] + '\n'
             em.add_field(name=f'{minutes}m {seconds}s', value=rankings)
 
         embeds.append(em)
 
     return embeds
+
+
+async def get_image(ctx, url):
+    async with ctx.session.get(url) as resp:
+        file = io.BytesIO(await resp.read())
+    return file
+
+
+async def format_random_brawler_and_send(ctx, brawler):
+    image = await get_image(ctx, e(brawler).url)
+
+    em = discord.Embed(title=brawler.title(), color=random_color())
+    if ctx.bot.psa_message:
+        em.description = f'*{ctx.bot.psa_message}*'
+    em.set_image(url='attachment://brawler.png')
+
+    await ctx.send(file=discord.File(image, 'brawler.png'), embed=em)

@@ -20,7 +20,7 @@ _ = Translator('Clash of Clans', __file__)
 shortcuts = {}
 
 
-class TagCheck(commands.MemberConverter):
+class TagCheck(commands.UserConverter):
 
     check = 'PYLQGRJCUV0289'
 
@@ -53,7 +53,7 @@ class TagCheck(commands.MemberConverter):
         tag = self.resolve_tag(ctx, argument)
 
         if not tag:
-            raise utils.InvalidTag(_('Invalid coc-tag passed.', ctx))
+            raise utils.InvalidTag(_('Invalid coc-tag passed.'))
         else:
             return tag
 
@@ -61,7 +61,7 @@ class TagCheck(commands.MemberConverter):
 @cog('coc')
 class Clash_Of_Clans:
 
-    '''Commands relating to the Clash of Clans game made by supercell.'''
+    """Commands relating to the Clash of Clans game made by supercell."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -99,19 +99,19 @@ class Clash_Of_Clans:
                     self.cache[endpoint] = await resp.json()
                 except aiohttp.ContentTypeError:
                     er = discord.Embed(
-                        title=_('Clash of Clans Server Down', ctx),
+                        title=_('Clash of Clans Server Down'),
                         color=discord.Color.red(),
                         description='This could be caused by a maintainence break.'
                     )
                     if ctx.bot.psa_message:
-                        er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                        er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
                     await ctx.send(embed=er)
 
                     # end and ignore error
                     raise commands.CheckFailure
 
         if self.cache[endpoint] == {"reason": "notFound"}:
-            await ctx.send(_('The tag cannot be found!', ctx))
+            await ctx.send(_('The tag cannot be found!'))
             raise utils.NoTag
 
         return self.cache[endpoint]
@@ -137,11 +137,11 @@ class Clash_Of_Clans:
                     default_game = self.bot.default_game[ctx.channel.id]
                 cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
 
-                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!", ctx).format(ctx.prefix, cmd_name))
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!").format(ctx.prefix, cmd_name))
                 raise utils.NoTag
             else:
                 if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!", ctx))
+                    return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!"))
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
@@ -150,7 +150,7 @@ class Clash_Of_Clans:
                 raise utils.NoTag
             else:
                 if clan is True:
-                    return await self.get_clan_from_profile(ctx, tag, _('That person does not have a clan!', ctx))
+                    return await self.get_clan_from_profile(ctx, tag, _('That person does not have a clan!'))
                 return tag
         else:
             return tag_or_user
@@ -158,7 +158,7 @@ class Clash_Of_Clans:
     @command()
     @utils.has_perms()
     async def profile(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the Clash of Clans profile of a player.'''
+        """Gets the Clash of Clans profile of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -166,12 +166,12 @@ class Clash_Of_Clans:
 
             ems = await clashofclans.format_profile(ctx, profile)
 
-        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
+        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API')).start()
 
     @command()
     @utils.has_perms()
     async def achieve(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets the Clash of Clans achievements of a player.'''
+        """Gets the Clash of Clans achievements of a player."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
@@ -179,12 +179,12 @@ class Clash_Of_Clans:
 
             ems = await clashofclans.format_achievements(ctx, profile)
 
-        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
+        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API')).start()
 
     @command()
     @utils.has_perms()
     async def clan(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets a clan by tag or by profile. (tagging the user)'''
+        """Gets a clan by tag or by profile. (tagging the user)"""
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
@@ -192,12 +192,12 @@ class Clash_Of_Clans:
 
             ems = await clashofclans.format_clan(ctx, clan)
 
-        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API', ctx)).start()
+        await Paginator(ctx, *ems, footer_text=_('Statsy | Powered by the COC API')).start()
 
     @group()
     @utils.has_perms()
     async def members(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Gets all the members of a clan.'''
+        """Gets all the members of a clan."""
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
@@ -205,19 +205,19 @@ class Clash_Of_Clans:
 
             ems = await clashofclans.format_members(ctx, clan)
 
-        await Paginator(ctx, *ems, footer_text=str(clan["members"]) + _('/50 members', ctx)).start()
+        await Paginator(ctx, *ems, footer_text=str(clan["members"]) + _('/50 members')).start()
 
     @members.command()
     @utils.has_perms()
     async def best(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Finds the best members of the clan currently.'''
+        """Finds the best members of the clan currently."""
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
             clan = await self.request(ctx, f'clans/%23{tag}')
 
             if clan['members'] < 4:
-                return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
+                return await ctx.send(_('Clan must have at least than 4 players for these statistics.'))
             else:
                 em = await clashofclans.format_most_valuable(ctx, clan)
                 await ctx.send(embed=em)
@@ -225,14 +225,14 @@ class Clash_Of_Clans:
     @members.command()
     @utils.has_perms()
     async def worst(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Finds the worst members of the clan currently.'''
+        """Finds the worst members of the clan currently."""
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
 
         async with ctx.typing():
             clan = await self.request(ctx, f'clans/%23{tag}')
 
             if clan['members'] < 4:
-                return await ctx.send(_('Clan must have at least than 4 players for these statistics.', ctx))
+                return await ctx.send(_('Clan must have at least than 4 players for these statistics.'))
             else:
                 em = await clashofclans.format_least_valuable(ctx, clan)
                 await ctx.send(embed=em)
@@ -254,7 +254,7 @@ class Clash_Of_Clans:
         cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
 
         if index == '0':
-            prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
+            prompt = _('Check your stats with `{}{}`!').format(ctx.prefix, cmd_name)
         else:
             prompt = _('Check your stats with `{}{} -{}`!').format(ctx.prefix, cmd_name, index)
 
@@ -275,7 +275,7 @@ class Clash_Of_Clans:
     @command()
     @utils.has_perms()
     async def war(self, ctx, *, tag_or_user: TagCheck=None):
-        '''Check your current war status.'''
+        """Check your current war status."""
         tag = await self.resolve_tag(ctx, tag_or_user, clan=True)
         async with ctx.typing():
             war = await self.request(ctx, f'clans/%23{tag}/currentwar')

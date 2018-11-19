@@ -5,6 +5,8 @@ from pathlib import Path
 from discord.ext import commands
 from dotenv import find_dotenv, load_dotenv
 
+from ext.utils import get_stack_variable
+
 """Modified version of https://github.com/Cog-Creators/Red-DiscordBot/blob/V3/develop/redbot/core/i18n.py"""
 
 __all__ = ["reload_locales", "cog_i18n", "Translator"]
@@ -167,12 +169,13 @@ class Translator:
 
         self.load_translations()
 
-    def __call__(self, untranslated: str, ctx):
+    def __call__(self, untranslated: str):
         """Translate the given string.
 
         This will look for the string in the translator's :code:`.pot` file,
         with respect to the current locale.
         """
+        ctx = get_stack_variable('ctx')
         normalized_untranslated = _normalize(untranslated, True)
         try:
             return self.translations[ctx.language][normalized_untranslated]
