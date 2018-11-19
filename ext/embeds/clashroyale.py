@@ -961,7 +961,7 @@ async def format_clan(ctx, c):
     fields1 = [
         (_('Type'), camel_case(c.type) + ' 📩'),
         (_('Score'), str(c.clan_score) + _(' Trophies ') + str(e('trophy'))),
-        (_('War Trophies'), str(c.clan_war_trophies) + _(' Trophies ') + str(e('trophy'))),
+        (_('War Trophies'), str(c.clan_war_trophies) + _(' Trophies ') + str(e('wartrophy'))),
         (_('Donations/Week'), str(c.donations_per_week) + _(' Cards ') + str(e('cards'))),
         (_('Location'), c.location.name + ' 🌎'),
         (_('Members'), f"{len(c.member_list)}/50 {e('clan')}"),
