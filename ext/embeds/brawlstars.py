@@ -109,7 +109,7 @@ def format_profile(ctx, p):
         if v:
             em.add_field(name=n, value=v, inline=i)
         elif n == _('Band Name'):
-            em.add_field(name=_('Band', ctx), value=_('None'))
+            em.add_field(name=_('Band'), value=_('None'))
 
     return em
 
