@@ -67,7 +67,7 @@ class Fortnite:
         else:
             if platform not in ('pc', 'ps4', 'xb1'):
                 raise utils.InvalidPlatform
-            if isinstance(username, discord.Member):
+            if isinstance(username, discord.User):
                 try:
                     return await ctx.get_tag('fortnite', f'{username.id}: {platform}')
                 except KeyError:
@@ -157,7 +157,7 @@ class Fortnite:
 
     @command()
     @utils.has_perms()
-    async def usertag(self, ctx, platform: lower, *, member: discord.Member=None):
+    async def usertag(self, ctx, platform: lower, *, member: discord.User=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await ctx.get_tag('fortnite', f'{member.id}: {platform}', index='all')

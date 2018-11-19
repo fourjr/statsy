@@ -101,7 +101,7 @@ class Brawl_Stars:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, _("You don't have a band!"))
                 return tag
-        if isinstance(tag_or_user, discord.Member):
+        if isinstance(tag_or_user, discord.User):
             try:
                 tag = await ctx.get_tag('brawlstars', tag_or_user.id)
             except KeyError:
@@ -110,7 +110,7 @@ class Brawl_Stars:
             else:
                 if band is True:
                     return await self.get_band_from_profile(ctx, tag, _('That person does not have a band!'))
-                return tag
+            return tag
         else:
             return tag_or_user
 
@@ -219,7 +219,11 @@ class Brawl_Stars:
 
         async with ctx.typing():
             band = await self.request(ctx, f'/bands/{tag}')
-            ems = brawlstars.format_band(ctx, band)
+            try:
+                player = await self.request(ctx, f'/players/{band.members[0].tag}')
+            except IndexError:
+                player = None
+            ems = brawlstars.format_band(ctx, band, player)
 
         await Paginator(ctx, *ems).start()
 

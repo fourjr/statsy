@@ -894,7 +894,7 @@ class Clash_Royale:
 
     @command()
     @utils.has_perms()
-    async def usertag(self, ctx, member: discord.Member = None):
+    async def usertag(self, ctx, member: discord.User = None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await self.resolve_tag(ctx, member, index='all')

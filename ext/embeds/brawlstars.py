@@ -140,9 +140,6 @@ def format_brawlers(ctx, p):
         500
     ]
 
-    check = '<:check:383917703083327489>'
-    cross = '<:xmark:383917691318042624>'
-
     for n, i in enumerate(p.brawlers):
         if n % 6 == 0:
             ems.append(discord.Embed(color=random_color()))
@@ -151,7 +148,7 @@ def format_brawlers(ctx, p):
 
         rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
 
-        skin = check if i.has_skin else cross
+        skin = e('tick') if i.has_skin else e('xmark')
 
         val = f"{e('xp')}　Level {i.level}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
         ems[-1].add_field(name=f"{e(i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
@@ -159,8 +156,9 @@ def format_brawlers(ctx, p):
     return ems
 
 
-def format_band(ctx, b):
-    # badge = f'{url}/band_icons/' + b.avatar_id + '.png'
+def format_band(ctx, b, p):
+    badge = ctx.cog.constants.alliance_badges[p.band.badge_id].name
+    badge_url = f'{url}/band_badges/{badge}.png'
 
     _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
     experiences = []
@@ -188,7 +186,7 @@ def format_band(ctx, b):
     page1 = discord.Embed(description=b.description, color=random_color())
     page1.set_author(name=f"{b.name} (#{b.tag})")
     page1.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
-    # page1.set_thumbnail(url=badge)
+    page1.set_thumbnail(url=badge_url)
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Experienced Players for this band.'
 
@@ -196,7 +194,8 @@ def format_band(ctx, b):
         (_('Type'), f'{b.status} 📩'),
         (_('Score'), f'{b.trophies} Trophies {e("bstrophy")}'),
         (_('Members'), f'{b.members_count}/100'),
-        (_('Required Trophies'), f'{b.required_trophies} {e("bstrophy")}')
+        (_('Required Trophies'), f'{b.required_trophies} {e("bstrophy")}'),
+        (_('Online Players'), f'{p.band.online_members} {e("online")}')
     ]
     fields2 = [
         ("Top Players", '\n\n'.join(pushers)),

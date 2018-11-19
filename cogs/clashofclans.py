@@ -143,7 +143,7 @@ class Clash_Of_Clans:
                 if clan is True:
                     return await self.get_clan_from_profile(ctx, tag, _("You don't have a clan!"))
                 return tag
-        if isinstance(tag_or_user, discord.Member):
+        if isinstance(tag_or_user, discord.User):
             try:
                 tag = await ctx.get_tag('clashofclans', tag_or_user.id, index=str(index))
             except KeyError:
@@ -262,7 +262,7 @@ class Clash_Of_Clans:
 
     @command()
     @utils.has_perms()
-    async def usertag(self, ctx, *, member: discord.Member=None):
+    async def usertag(self, ctx, *, member: discord.User=None):
         """Checks the saved tag(s) of a member"""
         member = member or ctx.author
         tag = await ctx.get_tag('clashofclans', id=member.id, index='all')
@@ -280,9 +280,9 @@ class Clash_Of_Clans:
         async with ctx.typing():
             war = await self.request(ctx, f'clans/%23{tag}/currentwar')
             if "reason" in war:
-                return await ctx.send(_("This clan's war logs aren't public.", ctx))
+                return await ctx.send(_("This clan's war logs aren't public."))
             if war['state'] == 'notInWar':
-                return await ctx.send(_("This clan isn't in a war right now!", ctx))
+                return await ctx.send(_("This clan isn't in a war right now!"))
 
             async with ctx.session.get(war['clan']['badgeUrls']['large']) as resp:
                 clan_img = Image.open(io.BytesIO(await resp.read()))
