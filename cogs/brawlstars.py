@@ -2,6 +2,7 @@ import aiohttp
 import asyncio
 import json
 import time
+import random
 import os
 
 import datadog
@@ -26,7 +27,7 @@ shortcuts = {
 }
 
 
-class TagCheck(commands.MemberConverter):
+class TagCheck(commands.UserConverter):
 
     check = 'PYLQGRJCUV0289'
 
@@ -67,7 +68,7 @@ class Brawl_Stars:
         self.alias = 'bs'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
-        self.constants = box.Box(json.loads(requests.get('https://fourjr-webserver.herokuapp.com/bs/constants').text))
+        self.constants = box.Box(json.loads(requests.get('https://fourjr-webserver.herokuapp.com/bs/constants').text), camel_case_killer=True)
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -94,11 +95,11 @@ class Brawl_Stars:
                     default_game = self.bot.default_game[ctx.channel.id]
                 cmd_name = 'save' if default_game == self.__class__.__name__ else f'{self.alias}save'
 
-                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!", ctx).format(ctx.prefix, cmd_name))
+                await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!").format(ctx.prefix, cmd_name))
                 raise utils.NoTag
             else:
                 if band is True:
-                    return await self.get_band_from_profile(ctx, tag, _("You don't have a band!", ctx))
+                    return await self.get_band_from_profile(ctx, tag, _("You don't have a band!"))
                 return tag
         if isinstance(tag_or_user, discord.Member):
             try:
@@ -108,7 +109,7 @@ class Brawl_Stars:
                 raise utils.NoTag
             else:
                 if band is True:
-                    return await self.get_band_from_profile(ctx, tag, _('That person does not have a band!', ctx))
+                    return await self.get_band_from_profile(ctx, tag, _('That person does not have a band!'))
                 return tag
         else:
             return tag_or_user
@@ -149,18 +150,18 @@ class Brawl_Stars:
                                 raise utils.APIError
                         except (aiohttp.ContentTypeError, utils.APIError):
                             er = discord.Embed(
-                                title=_('Brawl Stars Server Down', ctx),
+                                title=_('Brawl Stars Server Down'),
                                 color=discord.Color.red(),
                                 description=f'This could be caused by a maintainence break or an API issue ({resp.status}).'
                             )
                             if ctx.bot.psa_message:
-                                er.add_field(name=_('Please Note!', ctx), value=ctx.bot.psa_message)
+                                er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
                             await ctx.send(embed=er)
 
                             # end and ignore error
                             raise commands.CheckFailure
                 except asyncio.TimeoutError:
-                    await ctx.send(_('Unable to find the tag. The tag is either invalid or there is a maintainence break.', ctx))
+                    await ctx.send(_('Unable to find the tag. The tag is either invalid or there is a maintainence break.'))
                     raise utils.NoTag
 
         return Box(self.cache[endpoint], camel_killer_box=True)
@@ -181,54 +182,54 @@ class Brawl_Stars:
         cmd_name = 'profile' if default_game == self.__class__.__name__ else f'{self.alias}profile'
 
         if index == '0':
-            prompt = _('Check your stats with `{}{}`!', ctx).format(ctx.prefix, cmd_name)
+            prompt = _('Check your stats with `{}{}`!').format(ctx.prefix, cmd_name)
         else:
-            prompt = _('Check your stats with `{}{} -{}`!', ctx).format(ctx.prefix, index)
+            prompt = _('Check your stats with `{}{} -{}`!').format(ctx.prefix, index)
 
-        await ctx.send(_('Successfully saved tag.', ctx) + ' ' + prompt)
+        await ctx.send(_('Successfully saved tag.') + ' ' + prompt)
 
     @command()
     @utils.has_perms()
-    async def profile(self, ctx, tag_or_user: TagCheck=None):
+    async def profile(self, ctx, *, tag_or_user: TagCheck=None):
         """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
-        async with ctx.channel.typing():
+        async with ctx.typing():
             profile = await self.request(ctx, f'/players/{tag}')
-            em = await brawlstars.format_profile(ctx, profile)
+            em = brawlstars.format_profile(ctx, profile)
 
         await ctx.send(embed=em)
 
-    @command(aliases=['bsbrawler'])
-    async def brawlers(self, ctx, tag_or_user: TagCheck=None):
+    @command()
+    async def brawlers(self, ctx, *, tag_or_user: TagCheck=None):
         """Get general Brawl Stars player information."""
         tag = await self.resolve_tag(ctx, tag_or_user)
 
-        async with ctx.channel.typing():
+        async with ctx.typing():
             profile = await self.request(ctx, f'/players/{tag}')
-            ems = await brawlstars.format_brawlers(ctx, profile)
+            ems = brawlstars.format_brawlers(ctx, profile)
 
         await Paginator(ctx, *ems).start()
 
     @command()
     @utils.has_perms()
-    async def band(self, ctx, tag_or_user: TagCheck=None):
+    async def band(self, ctx, *, tag_or_user: TagCheck=None):
         """Get Brawl Stars band information."""
         tag = await self.resolve_tag(ctx, tag_or_user, band=True)
 
-        async with ctx.channel.typing():
+        async with ctx.typing():
             band = await self.request(ctx, f'/bands/{tag}')
-            ems = await brawlstars.format_band(ctx, band)
+            ems = brawlstars.format_band(ctx, band)
 
         await Paginator(ctx, *ems).start()
 
-    @command(aliases=['bstoplayers'])
+    @command(aliases=['toplayers'])
     @utils.has_perms()
     async def topplayers(self, ctx):
         """Returns the global top 200 players."""
-        async with ctx.channel.typing():
+        async with ctx.typing():
             player = await self.request(ctx, '/leaderboards/players')
-            ems = await brawlstars.format_top_players(ctx, player.players)
+            ems = brawlstars.format_top_players(ctx, player.players)
 
         await Paginator(ctx, *ems).start()
 
@@ -236,9 +237,9 @@ class Brawl_Stars:
     @utils.has_perms()
     async def topbands(self, ctx):
         """Returns the global top 200 players."""
-        async with ctx.channel.typing():
+        async with ctx.typing():
             band = await self.request(ctx, '/leaderboards/bands')
-            ems = await brawlstars.format_top_bands(ctx, band.bands)
+            ems = brawlstars.format_top_bands(ctx, band.bands)
 
         await Paginator(ctx, *ems).start()
 
@@ -246,31 +247,40 @@ class Brawl_Stars:
     @utils.has_perms()
     async def events(self, ctx):
         """Shows the upcoming events!"""
-        async with ctx.channel.typing():
+        # TODO
+        async with ctx.typing():
             events = await self.request('/events')
-            ems = await brawlstars.format_events(ctx, events)
+            ems = brawlstars.format_events(ctx, events)
 
         await Paginator(ctx, *ems).start()
 
-    @command(aliases=['bsrobo'])
+    @command(aliases=['robo'])
     @utils.has_perms()
     async def roborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
-        async with ctx.channel.typing():
+        async with ctx.typing():
             leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True)
             ems = brawlstars.format_robo(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
 
-    @command(aliases=['bsboss'])
+    @command(aliases=['boss'])
     @utils.has_perms()
     async def bossfight(self, ctx):
         """Shows the boss fight leaderboard"""
-        async with ctx.channel.typing():
+        async with ctx.typing():
             leaderboard = await self.request(ctx, 'bossboard', leaderboard=True)
             ems = brawlstars.format_boss(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
+
+    @command()
+    @utils.has_perms()
+    async def randombrawler(self, ctx):
+        """Shows the boss fight leaderboard"""
+        async with ctx.typing():
+            brawler = random.choice([i for i in self.constants.characters if i.tID]).tID
+            await brawlstars.format_random_brawler_and_send(ctx, brawler)
 
 
 def setup(bot):

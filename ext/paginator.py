@@ -4,7 +4,7 @@ import discord
 
 
 class Paginator:
-    '''
+    """
     Class that paginates a list of discord.Embed objects
     Parameters
     ------------
@@ -31,9 +31,9 @@ class Paginator:
         Starts the paginator session
     stop:
         Stops the paginator session and deletes the embed.
-    '''
+    """
     def __init__(self, ctx, *embeds, **kwargs):
-        '''Initialises the class'''
+        """Initialises the class"""
         self.embeds = list(embeds)
 
         if len(self.embeds) == 0:
@@ -62,7 +62,7 @@ class Paginator:
         self.destination = kwargs.get('dest', ctx)
 
     async def start(self):
-        '''Starts the paginator session'''
+        """Starts the paginator session"""
         self.message = await self.destination.send(embed=self.embeds[0])
 
         if len(self.embeds) == 1:
@@ -85,7 +85,7 @@ class Paginator:
             pass
 
     async def _wait_for_reaction(self):
-        '''Waits for a user input reaction'''
+        """Waits for a user input reaction"""
         while self.running:
             try:
                 reaction, user = await self.ctx.bot.wait_for(
@@ -100,7 +100,7 @@ class Paginator:
                     self.ctx.bot.loop.create_task(self._reaction_action(reaction))
 
     def _reaction_check(self, reaction, user):
-        '''Checks if the reaction is from the user message and emoji is correct'''
+        """Checks if the reaction is from the user message and emoji is correct"""
         if not self.running:
             return True
         if user.id == self.ctx.author.id:
@@ -110,7 +110,7 @@ class Paginator:
         return False
 
     async def _reaction_action(self, reaction):
-        '''Fires an action based on the reaction'''
+        """Fires an action based on the reaction"""
         if not self.running:
             return
         to_exec = self.emojis[str(reaction.emoji)]

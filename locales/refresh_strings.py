@@ -23,7 +23,7 @@ for file in TO_TRANSLATE:
     with open(file, 'r+', encoding='utf8') as f:
         old_text[file] = f.read()
         f.seek(0)
-        new_content = old_text[file].replace(', ctx', '')
+        new_content = old_text[file]
         new_content_sl = new_content.splitlines()
         if file.startswith('../cogs/') or file.startswith('../statsbot.py'):
             # docstrings translation

@@ -43,7 +43,7 @@ class Bot_Related:
         await ctx.send(embed=em)
 
     @utils.developer()
-    @command(hidden=True)
+    @command()
     async def maintenance(self, ctx):
         if self.bot.maintenance_mode is True:
             await self.bot.change_presence(
@@ -78,7 +78,7 @@ class Bot_Related:
             add_reactions=True,
             manage_messages=True
         )
-        await ctx.send(_('**Invite link:** \n<{}>', ctx).format(discord.utils.oauth_url(self.bot.user.id, perms)))
+        await ctx.send(_('**Invite link:** \n<{}>').format(discord.utils.oauth_url(self.bot.user.id, perms)))
 
     @command()
     @commands.has_permissions(manage_guild=True)
@@ -94,7 +94,7 @@ class Bot_Related:
             await self.bot.mongo.config.guilds.find_one_and_update(
                 {'guild_id': str(ctx.guild.id)}, {'$set': {'prefix': str(prefix)}}, upsert=True
             )
-        await ctx.send(_('Changed the prefix to: `{}`', ctx).format(prefix))
+        await ctx.send(_('Changed the prefix to: `{}`').format(prefix))
 
     @command(name='bot', aliases=['about', 'info', 'botto'])
     async def bot_(self, ctx):
@@ -102,14 +102,14 @@ class Bot_Related:
         em = discord.Embed(timestamp=datetime.datetime.utcnow())
         status = str(getattr(ctx.guild, 'me', self.bot.guilds[0].me).status)
         if status == 'online':
-            em.set_author(name=_("Bot Information", ctx), icon_url='https://i.imgur.com/wlh1Uwb.png')
+            em.set_author(name=_("Bot Information"), icon_url='https://i.imgur.com/wlh1Uwb.png')
             em.color = discord.Color.green()
         elif status == 'dnd':
             status = 'maintenance'
-            em.set_author(name=_("Bot Information", ctx), icon_url='https://i.imgur.com/lbMqojO.png')
+            em.set_author(name=_("Bot Information"), icon_url='https://i.imgur.com/lbMqojO.png')
             em.color = discord.Color.purple()
         else:
-            em.set_author(name=_("Bot Information", ctx), icon_url='https://i.imgur.com/dCLTaI3.png')
+            em.set_author(name=_("Bot Information"), icon_url='https://i.imgur.com/dCLTaI3.png')
             em.color = discord.Color.red()
 
         total_online = len({m.id for m in self.bot.get_all_members() if m.status is not discord.Status.offline})
@@ -132,36 +132,36 @@ class Bot_Related:
         if self.bot.psa_message:
             em.description = f'*{self.bot.psa_message}*'
         else:
-            em.description = _('Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR.', ctx)
+            em.description = _('Statsy is a realtime game stats bot made by Kyber, Kwug and 4JR.')
 
         em.description += '\n\n'
-        em.description += _("This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy.", ctx)
+        em.description += _("This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy")
 
         cbot = '<:certifiedbot:427089403060551700>'
 
-        em.add_field(name=_('Current Status', ctx), value=str(status).title())
-        em.add_field(name=_('Uptime', ctx), value=uptime)
-        em.add_field(name=_('Latency', ctx), value=f'{self.bot.latency*1000:.2f} ms')
-        em.add_field(name=_('Guilds', ctx), value=len(self.bot.guilds))
-        em.add_field(name=_('Shards', ctx), value=self.bot.shard_count)
-        em.add_field(name=_('Members', ctx), value=f'{total_online}/{total_unique} online')
-        em.add_field(name=_('Channels', ctx), value=f'{channels} total')
+        em.add_field(name=_('Current Status'), value=str(status).title())
+        em.add_field(name=_('Uptime'), value=uptime)
+        em.add_field(name=_('Latency'), value=f'{self.bot.latency*1000:.2f} ms')
+        em.add_field(name=_('Guilds'), value=len(self.bot.guilds))
+        em.add_field(name=_('Shards'), value=self.bot.shard_count)
+        em.add_field(name=_('Members'), value=f'{total_online}/{total_unique} online')
+        em.add_field(name=_('Channels'), value=f'{channels} total')
         memory_usage = self.bot.process.memory_full_info().uss / 1024**2
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
-        em.add_field(name=_('RAM Usage', ctx), value=f'{memory_usage:.2f} MiB')
-        em.add_field(name=_('CPU Usage', ctx), value=f'{cpu_usage:.2f}% CPU')
-        em.add_field(name=_('Saved Tags', ctx), value=saved_tags)
-        em.add_field(name=_('Library', ctx), value='discord.py rewrite')
-        em.add_field(name=_('Discord', ctx), value='[Click Here](https://discord.gg/cBqsdPt)')
-        em.add_field(name=_('Github', ctx), value='[Click Here](https://github.com/cgrok/statsy)')
-        em.add_field(name=_('Follow us on Twitter!', ctx), value='https://twitter.com/StatsyBot', inline=False)
-        em.add_field(name=_('Upvote This Bot!', ctx), value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
-        em.set_footer(text=_('Bot ID: {}', ctx).format(self.bot.user.id))
+        em.add_field(name=_('RAM Usage'), value=f'{memory_usage:.2f} MiB')
+        em.add_field(name=_('CPU Usage'), value=f'{cpu_usage:.2f}% CPU')
+        em.add_field(name=_('Saved Tags'), value=saved_tags)
+        em.add_field(name=_('Library'), value='discord.py rewrite')
+        em.add_field(name=_('Discord'), value='[Click Here](https://discord.gg/cBqsdPt)')
+        em.add_field(name=_('Github'), value='[Click Here](https://github.com/cgrok/statsy)')
+        em.add_field(name=_('Follow us on Twitter!'), value='https://twitter.com/StatsyBot', inline=False)
+        em.add_field(name=_('Upvote This Bot!'), value=f'https://discordbots.org/bot/statsy {cbot}', inline=False)
+        em.set_footer(text=_('Bot ID: {}').format(self.bot.user.id))
 
         await ctx.send(embed=em)
 
     @utils.developer()
-    @command(hidden=True)
+    @command()
     async def restart(self, ctx):
         """Restarts the bot."""
         em = discord.Embed(color=0xf9c93d)
@@ -169,6 +169,18 @@ class Bot_Related:
         em.description = 'Restarting `Statsy`.'
         await ctx.send(embed=em)
         await self.bot.logout()
+
+    @utils.developer()
+    @command(name='reload')
+    async def reload_(self, ctx, *, module):
+        """Reloads a module."""
+        try:
+            self.bot.unload_extension(module)
+            self.bot.load_extension(module)
+        except Exception:
+            await ctx.send(f'```py\n{traceback.format_exc()}\n```')
+        else:
+            await ctx.message.add_reaction('check:383917703083327489')
 
     async def format_cog_help(self, ctx, name, cog, prefix):
         """Formats the text for a cog help"""
@@ -298,19 +310,16 @@ class Bot_Related:
             if em:
                 return await ctx.send(embed=em)
             else:
-                return await ctx.send(_('Could not find a cog or command by that name.', ctx))
+                return await ctx.send(_('Could not find a cog or command by that name.'))
 
         pages = []
 
         for name, cog in sorted(self.bot.cogs.items()):
-            if name == 'Moderation':
-                # hidden cog :p
-                continue
             em = await self.format_cog_help(ctx, name, cog, prefix)
             if em:
                 pages.append(em)
 
-        await Paginator(ctx, *pages, footer_text=_('Type {}help command for more info on a command.', ctx).format(prefix)).start()
+        await Paginator(ctx, *pages, footer_text=_('Type {}help command for more info on a command.').format(prefix)).start()
 
     @utils.developer()
     @command(pass_context=True, hidden=True, name='eval')
@@ -396,11 +405,11 @@ class Bot_Related:
         em.set_footer(text=f'G: {getattr(ctx.guild, "id", "DM")} | C: {ctx.channel.id} | U: {ctx.author.id}')
         await self.bot.get_channel(513715119520481290).send(embed=em)
 
-        await ctx.send(_('Suggestion submitted. Thanks for the feedback!', ctx))
+        await ctx.send(_('Suggestion submitted. Thanks for the feedback!'))
 
     @utils.developer()
-    @command(hidden=True)
-    async def sudo(self, ctx, user: discord.Member, command, *, args=None):
+    @command()
+    async def sudo(self, ctx, user: discord.User, command, *, args=None):
         new_ctx = copy.copy(ctx)
         new_ctx.author = user
         command = self.bot.get_command(command)
@@ -472,12 +481,12 @@ Total                   :  {len(self.bot.guilds)}```"""))
             'english': 'messages'
         }
         if not language or language.lower() not in languages:
-            await ctx.send(_('Available languages: {}', ctx).format(', '.join([i.title() for i in languages.keys()])))
+            await ctx.send(_('Available languages: {}').format(', '.join([i.title() for i in languages.keys()])))
         else:
             await self.bot.mongo.config.guilds.find_one_and_update(
                 {'guild_id': str(ctx.guild.id)}, {'$set': {'language': languages[language.lower()]}}, upsert=True
             )
-            await ctx.send(_('Language set.', ctx))
+            await ctx.send(_('Language set.'))
 
     @command()
     @commands.has_permissions(manage_guild=True)
@@ -496,7 +505,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         cog = self.bot.get_cog(cog_name.title().replace(' ', '_'))
 
         if cog in (self, self.bot.get_cog('Moderation'), None):
-            await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
+            await ctx.send(_('Invalid game. Pick from: {}').format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
             await self.bot.mongo.config.guilds.find_one_and_update(
@@ -521,7 +530,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         cog = self.bot.get_cog(cog_name.title().replace(' ', '_'))
 
         if cog in (self, self.bot.get_cog('Moderation'), None):
-            await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
+            await ctx.send(_('Invalid game. Pick from: {}').format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
             await self.bot.mongo.config.guilds.find_one_and_update(
@@ -548,7 +557,7 @@ Total                   :  {len(self.bot.guilds)}```"""))
         cog = self.bot.get_cog(cog_name.title().replace(' ', '_'))
 
         if cog in (self, self.bot.get_cog('Moderation'), None):
-            await ctx.send(_('Invalid game. Pick from: {}', ctx).format(', '.join(shortcuts.keys())))
+            await ctx.send(_('Invalid game. Pick from: {}').format(', '.join(shortcuts.keys())))
         else:
             cog_name = cog.__class__.__name__
             await self.bot.mongo.config.guilds.find_one_and_update(
