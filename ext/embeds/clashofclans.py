@@ -239,7 +239,7 @@ async def format_profile(ctx, p):
             em.add_field(name=n, value=v, inline=i)
         else:
             if n == _('Clan Name'):
-                em.add_field(name=_('Clan', ctx), value=_('No Clan'))
+                em.add_field(name=_('Clan'), value=_('No Clan'))
 
     em.set_footer(text=_('Statsy - Powered by the COC API'))
     embeds.append(em)
