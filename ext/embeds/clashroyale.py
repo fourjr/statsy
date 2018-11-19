@@ -155,7 +155,7 @@ def get_deck_image(card_images, *, profile=None, deck=None):
     image.paste(statsy, (txt_x_elixir - 130, txt_y_line1 + 25), statsy)  # -150
 
     total_elixir = sum(c.elixir for c in card_info)
-    average_elixir = "{:.3f}".format(total_elixir / len(deck))
+    average_elixir = "{:.1f}".format(total_elixir / len(deck))
 
     txt = Image.new("RGBA", size)
     txt_name = Image.new("RGBA", size)
