@@ -92,7 +92,7 @@ def format_profile(ctx, p):
 
     embed_fields = [
         (_('Trophies'), f"{p.trophies}/{p.highest_trophies} PB {e('bstrophy')}", False),
-        (_('3v3 Victories'), f"{p.victories} {e('goldstar')}", True),
+        (_('3v3 Victories'), f"{p.victories} {e('bountystar')}", True),
         (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('soloshowdown')}", True),
         (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
         (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
@@ -193,7 +193,7 @@ def format_band(ctx, b, p):
     fields1 = [
         (_('Type'), f'{b.status} 📩'),
         (_('Score'), f'{b.trophies} Trophies {e("bstrophy")}'),
-        (_('Members'), f'{b.members_count}/100'),
+        (_('Members'), f'{b.members_count}/100 {e("gameroom")}'),
         (_('Required Trophies'), f'{b.required_trophies} {e("bstrophy")}'),
         (_('Online Players'), f'{p.band.online_members} {e("online")}')
     ]
