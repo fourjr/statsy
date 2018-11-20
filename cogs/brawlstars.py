@@ -53,7 +53,7 @@ class TagCheck(commands.UserConverter):
         tag = self.resolve_tag(argument)
 
         if not tag:
-            raise utils.InvalidTag('Invalid bs-tag passed.')
+            raise utils.InvalidBSTag
         else:
             return tag
 
@@ -172,7 +172,7 @@ class Brawl_Stars:
         tag = self.conv.resolve_tag(tag)
 
         if not tag:
-            raise utils.InvalidTag
+            raise utils.InvalidBSTag
 
         await ctx.save_tag(tag, 'brawlstars', index=index.replace('-', ''))
         try:

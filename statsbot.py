@@ -18,12 +18,13 @@ from discord.ext import commands
 from dotenv import find_dotenv, load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from ext import utils
 from ext.context import CustomContext
 from ext.view import CustomView
-from locales.i18n import Translator
 from ext.command import command
-from ext.utils import InvalidPlatform, InvalidTag, NoTag, APIError
+from ext.utils import InvalidPlatform, InvalidBSTag, InvalidTag, NoTag, APIError
 from ext.log import LoggingHandler
+from locales.i18n import Translator
 
 
 _ = Translator('Core', __file__)
@@ -322,6 +323,10 @@ class StatsBot(commands.AutoShardedBot):
             await ctx.send('This command can only be used in servers.')
         elif isinstance(error, ignored):
             pass
+        elif isinstance(error, InvalidBSTag):
+            em = discord.Embed(title='Invalid Tag', description=error.message, color=utils.random_color())
+            em.set_image(url='https://i.imgur.com/Al3Ourz.png')
+            await ctx.send(embed=em)
         elif isinstance(error, (InvalidTag, InvalidPlatform)):
             await ctx.send(error.message)
         elif isinstance(error, commands.BotMissingPermissions):

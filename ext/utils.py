@@ -15,8 +15,13 @@ class InvalidTag(commands.BadArgument):
               '**Letters:** P, Y, L, Q, G, R, J, C, U, V'
 
 
+class InvalidBSTag(InvalidTag):
+    """Raised when a brawl stars tag is invalid."""
+    pass
+
+
 class InvalidPlatform(commands.BadArgument):
-    """Raised when a tag is invalid."""
+    """Raised when a platform is invalid."""
     message = 'Platforms should only be one of the following:\n' \
               'pc, ps4, xb1'
 
