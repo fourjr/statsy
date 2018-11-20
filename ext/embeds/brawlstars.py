@@ -190,8 +190,17 @@ def format_band(ctx, b, p):
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Experienced Players for this band.'
 
+    if b.status == 'Invite Only':
+        status = 'Open'
+    elif b.status == 'Closed':
+        status = 'Invite Only'
+    elif b.status == 'N/A':
+        status = 'Closed'
+    else:
+        b.status = status
+
     fields1 = [
-        (_('Type'), f'{b.status} 📩'),
+        (_('Type'), f'{status} 📩'),
         (_('Score'), f'{b.trophies} Trophies {e("bstrophy")}'),
         (_('Members'), f'{b.members_count}/100 {e("gameroom")}'),
         (_('Required Trophies'), f'{b.required_trophies} {e("bstrophy")}'),
