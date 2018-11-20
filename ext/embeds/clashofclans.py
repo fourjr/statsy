@@ -102,14 +102,14 @@ async def format_members(ctx, c):
 
 
 async def format_achievements(ctx, p):
-    em = discord.Embed(description=_("All of {}'s achievements", ctx).format(p['name']), color=random_color())
+    em = discord.Embed(description=_("All of {}'s achievements").format(p['name']), color=random_color())
     em.set_author(name=f"{p['name']} ({p['tag']})")
     embeds = []
     counter = 0
     for achievement in p['achievements']:
         if counter % 4 == 0 and counter != 0:
             embeds.append(em)
-            em = discord.Embed(description=_("All of {}'s achievements", ctx).format(p['name']), color=random_color())
+            em = discord.Embed(description=_("All of {}'s achievements").format(p['name']), color=random_color())
             em.set_author(name=f"{p['name']} ({p['tag']})")
         try:
             status = achievement['completionInfo']
@@ -175,13 +175,13 @@ async def format_profile(ctx, p):
         (_('Trophies'), trophies, True),
         (_('XP Level'), f"{p['expLevel']} {e('experience')}", True),
         (_('TH Level'), f"{p['townHallLevel']} {e('townhall'+str(p['townHallLevel']))}", True),
-        (_('Clan Name', ctx), f"{clan['name']} {e('clan')}" if clan else _('No Clan'), True),
-        (_('Clan Tag', ctx), f"{clan['tag']} {e('clan')}" if clan else _('No Clan'), True),
-        (_('Clan Role', ctx), f"{role} {e('clan')}" if clan else _('No Clan'), True),
-        (_('War Stars', ctx), f"{war_stars} {e('cocstar')}" if clan else _('No Clan'), True),
+        (_('Clan Name'), f"{clan['name']} {e('clan')}" if clan else _('No Clan'), True),
+        (_('Clan Tag'), f"{clan['tag']} {e('clan')}" if clan else _('No Clan'), True),
+        (_('Clan Role'), f"{role} {e('clan')}" if clan else _('No Clan'), True),
+        (_('War Stars'), f"{war_stars} {e('cocstar')}" if clan else _('No Clan'), True),
         (_('Successful Attacks'), f'{p["attackWins"]} {e("sword")}', True),
         (_('Successful Defenses'), f'{p["defenseWins"]} {e("cocshield")}', True),
-        (_("Donate:Give Ratio", ctx), _('{:.2f} {}').format(donations, e('troops')), True)
+        (_("Donate:Give Ratio"), _('{:.2f} {}').format(donations, e('troops')), True)
     ]
 
     try:
@@ -189,7 +189,7 @@ async def format_profile(ctx, p):
             (_('BH Level'), f"{p['builderHallLevel']} {e('builderhall'+str(p['builderHallLevel']))}", True)
         )
         embed_fields.append(
-            (_("Builder Trophies", ctx), f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {e('axes')}", True)
+            (_("Builder Trophies"), f"{p['versusTrophies']}/{p['bestVersusTrophies']} PB {e('axes')}", True)
         )
     except KeyError:
         pass
@@ -258,19 +258,19 @@ async def format_profile(ctx, p):
         spells.append(f'{e("coc"+spell["name"].lower().replace(" ", ""))}{spell["level"]}')
     for hero in p['heroes']:
         heroes.append(f'{e("coc"+hero["name"].lower().replace(" ", ""))}{hero["level"]}')
-    em.add_field(name=_("Home Troops", ctx), value='  '.join(troops), inline=False)
+    em.add_field(name=_("Home Troops"), value='  '.join(troops), inline=False)
     if builders:
-        em.add_field(name=_("Builder Troops", ctx), value='  '.join(builders), inline=False)
+        em.add_field(name=_("Builder Troops"), value='  '.join(builders), inline=False)
     else:
-        em.add_field(name=_("Builder Troops", ctx), value='None')
+        em.add_field(name=_("Builder Troops"), value='None')
     if spells:
-        em.add_field(name=_("Spells", ctx), value='  '.join(spells), inline=False)
+        em.add_field(name=_("Spells"), value='  '.join(spells), inline=False)
     else:
-        em.add_field(name=_("Spells", ctx), value='None')
+        em.add_field(name=_("Spells"), value='None')
     if heroes:
-        em.add_field(name=_("Heroes", ctx), value='  '.join(heroes), inline=False)
+        em.add_field(name=_("Heroes"), value='  '.join(heroes), inline=False)
     else:
-        em.add_field(name=_("Heroes", ctx), value='None')
+        em.add_field(name=_("Heroes"), value='None')
     embeds.append(em)
     return embeds
 

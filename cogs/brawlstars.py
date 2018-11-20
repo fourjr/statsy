@@ -81,7 +81,7 @@ class Brawl_Stars:
         profile = await self.request(ctx, f'/players/{tag}')
         try:
             return profile.band.tag
-        except box.BoxKeyError:
+        except AttributeError:
             return await ctx.send(message)
 
     async def resolve_tag(self, ctx, tag_or_user, band=False):
