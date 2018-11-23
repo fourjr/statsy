@@ -82,7 +82,8 @@ class Brawl_Stars:
         try:
             return profile.band.tag
         except AttributeError:
-            return await ctx.send(message)
+            await ctx.send(message)
+            raise utils.NoTag(message)
 
     async def resolve_tag(self, ctx, tag_or_user, band=False):
         if not tag_or_user:
