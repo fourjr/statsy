@@ -147,7 +147,7 @@ class Clash_Royale:
             is_async=True,
             timeout=20,
             constants=constants,
-            url=f"http://{os.getenv('spike')}/redirect?url=https://api.clashroyale.com/v1"
+            url=f"http://{os.getenv('spike')}:6969/redirect?url=https://api.clashroyale.com/v1"
         )
         self.royaleapi = clashroyale.RoyaleAPI(
             os.getenv('royaleapi'),
