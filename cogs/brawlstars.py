@@ -68,7 +68,7 @@ class Brawl_Stars:
         self.alias = 'bs'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
-        self.constants = box.Box(json.loads(requests.get('https://fourjr-webserver.herokuapp.com/bs/constants').text), camel_case_killer=True)
+        self.constants = box.Box(json.loads(requests.get('https://fourjr-webserver2.herokuapp.com/bs/constants').text), camel_case_killer=True)
 
     async def __local_check(self, ctx):
         if ctx.guild:

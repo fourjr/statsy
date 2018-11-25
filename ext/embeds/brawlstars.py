@@ -64,27 +64,6 @@ def format_profile(ctx, p):
     # :minus_exp - p.total_exp: is the amount of XP he has
     # :minus_exp: is the total amount of XP needed for that level
 
-    account_age = ''
-    months, days = divmod(p.account_age_in_days, 30)
-    years, months = divmod(months, 12)
-    if years:
-        account_age += f'{years} year'
-        if years > 1:
-            account_age += 's,'
-        else:
-            account_age += ','
-
-    if months:
-        account_age += f' {months} month'
-        if months > 1:
-            account_age += 's and'
-        else:
-            account_age += 'and'
-
-    account_age += f' {days} day'
-    if days > 1:
-        account_age += 's'
-
     try:
         band = p.band.name
     except AttributeError:
@@ -101,7 +80,6 @@ def format_profile(ctx, p):
         (_('Band Name'), p.band.name if band else None, True),
         (_('Band Tag'), f'#{p.band.tag}' if band else None, True),
         (_('Band Role'), p.band.role if band else None, True),
-        (_('Account Age'), account_age, False),
         (_('Brawlers'), brawlers, False),
     ]
 
