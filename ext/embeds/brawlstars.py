@@ -43,10 +43,10 @@ def format_profile(ctx, p):
         badge = ctx.cog.constants.alliance_badges[p.band.badge_id].name
         em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/band_badges/{badge}.png')
     except AttributeError:
-        em.set_author(name=f'{p.name} (#{p.tag})')
+        pass
 
     try:
-        em.set_thumbnail(url=f'{url}/player_icons/{p.account_age_in_days}.png')
+        em.set_thumbnail(url=f'{url}/player_icons/{p.avatar_id}.png')
     except box.BoxKeyError:
         pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
@@ -61,50 +61,47 @@ def format_profile(ctx, p):
         exp_level += 1
 
     # :exp_level: is the current XP Level
-    # :p.total_exp + minus_exp: is the amount of XP he has
+    # :minus_exp - p.total_exp: is the amount of XP he has
     # :minus_exp: is the total amount of XP needed for that level
 
-    # account_age = ''
-    # months, days = divmod(p.account_age_in_days, 30)
-    # years, months = divmod(months, 12)
-    # if years:
-    #     account_age += f'{years} year'
-    #     if years > 1:
-    #         account_age += 's,'
-    #     else:
-    #         account_age += ','
+    account_age = ''
+    months, days = divmod(p.account_age_in_days, 30)
+    years, months = divmod(months, 12)
+    if years:
+        account_age += f'{years} year'
+        if years > 1:
+            account_age += 's,'
+        else:
+            account_age += ','
 
-    # if months:
-    #     account_age += f' {months} month'
-    #     if months > 1:
-    #         account_age += 's and'
-    #     else:
-    #         account_age += 'and'
+    if months:
+        account_age += f' {months} month'
+        if months > 1:
+            account_age += 's and'
+        else:
+            account_age += 'and'
 
-    # account_age += f' {days} day'
-    # if days > 1:
-    #     account_age += 's'
+    account_age += f' {days} day'
+    if days > 1:
+        account_age += 's'
 
-    # try:
-    #     band = p.band.name
-    # except AttributeError:
-    #     band = False
-
-    minutes, seconds = divmod(p.duo_showdown_victories, 60)
-    boss_time = f'{minutes}m {seconds}s'
+    try:
+        band = p.band.name
+    except AttributeError:
+        band = False
 
     embed_fields = [
         (_('Trophies'), f"{p.trophies}/{p.highest_trophies} PB {e('bstrophy')}", False),
         (_('3v3 Victories'), f"{p.victories} {e('bountystar')}", True),
-        (_('Solo Showdown Wins'), f"{p.avatar_id} {e('soloshowdown')}", True),
-        (_('Duo Showdown Wins'), f"{p.solo_showdown_victories} {e('duoshowdown')}", True),
-        (_('Best time as Boss'), f"{boss_time} {e('bossfight')}", True),
-        (_('Best Robo Rumble Time'), f"{p.best_time_as_boss} {e('roborumble')}", True),
-        (_('XP Level'), f"{exp_level} ({p.total_exp + minus_exp}/{minus_exp}) {e('xp')}", True),
-        # (_('Band Name'), p.band.name if band else None, True),
-        # (_('Band Tag'), f'#{p.band.tag}' if band else None, True),
-        # (_('Band Role'), p.band.role if band else None, True),
-        # (_('Account Age'), account_age, False),
+        (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('soloshowdown')}", True),
+        (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
+        (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
+        (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
+        (_('XP Level'), f"{exp_level} ({minus_exp}/{minus_exp - p.total_exp}) {e('xp')}", True),
+        (_('Band Name'), p.band.name if band else None, True),
+        (_('Band Tag'), f'#{p.band.tag}' if band else None, True),
+        (_('Band Role'), p.band.role if band else None, True),
+        (_('Account Age'), account_age, False),
         (_('Brawlers'), brawlers, False),
     ]
 
