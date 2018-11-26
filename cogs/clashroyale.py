@@ -412,7 +412,7 @@ class Clash_Royale:
         guild_id = getattr(ctx.guild, 'id', 'DM')
         try:
             datadog.statsd.increment('statsy.magic_caching.check', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:clashroyale'])
-            tag = await self.resolve_tag(ctx, user)
+            tag = await self.resolve_tag(ctx, None)
 
             try:
                 player = await self.request(ctx, 'get_player', tag, reason='magic caching')

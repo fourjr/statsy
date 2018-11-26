@@ -300,7 +300,7 @@ class Brawl_Stars:
         guild_id = getattr(ctx.guild, 'id', 'DM')
         try:
             datadog.statsd.increment('statsy.magic_caching.check', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
-            tag = await self.resolve_tag(ctx, user)
+            tag = await self.resolve_tag(ctx, None)
 
             try:
                 player = await self.request(ctx, f'/players/{tag}', reason='magic caching')
@@ -314,6 +314,8 @@ class Brawl_Stars:
             except AttributeError:
                 pass
         except (utils.NoTag, commands.CheckFailure):
+            print('e')
+            __import__('traceback').print_exc()
             pass
 
 
