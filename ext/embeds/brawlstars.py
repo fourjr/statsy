@@ -43,7 +43,7 @@ def format_profile(ctx, p):
         badge = ctx.cog.constants.alliance_badges[p.band.badge_id].name
         em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/band_badges/{badge}.png')
     except AttributeError:
-        pass
+        em.set_author(name=f'{p.name} (#{p.tag})')
 
     try:
         em.set_thumbnail(url=f'{url}/player_icons/{p.avatar_id}.png')
