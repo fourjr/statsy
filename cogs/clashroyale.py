@@ -159,10 +159,9 @@ class Clash_Royale:
         if not self.bot.dev_mode:
             self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
-    async def __local_check(self, ctx=None, channel=None):
-        guild = getattr(ctx or channel, 'guild', None)
-        if guild:
-            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(guild.id)}) or {}
+    async def __local_check(self, ctx):
+        if ctx.guild:
+            guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
             return guild_info.get('games', {}).get(self.__class__.__name__, True)
         else:
             return True
@@ -401,7 +400,7 @@ class Clash_Royale:
                 await m.channel.send(text, embed=em)
 
     async def on_typing(self, channel, user, when):
-        if self.bot.is_closed() or not await self.__local_check(channel=channel) or user.bot:
+        if self.bot.is_closed() or not await self.__local_check(channel) or user.bot:
             return
 
         ctx = NoContext(self.bot, user)

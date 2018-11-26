@@ -288,7 +288,7 @@ class Brawl_Stars:
             await brawlstars.format_random_brawler_and_send(ctx, brawler)
 
     async def on_typing(self, channel, user, when):
-        if self.bot.is_closed() or not await self.__local_check(channel=channel) or user.bot:
+        if self.bot.is_closed() or not await self.__local_check(channel) or user.bot:
             return
 
         ctx = NoContext(self.bot, user)
