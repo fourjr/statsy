@@ -314,8 +314,6 @@ class Brawl_Stars:
             except AttributeError:
                 pass
         except (utils.NoTag, commands.CheckFailure):
-            print('e')
-            __import__('traceback').print_exc()
             pass
 
 

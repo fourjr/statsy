@@ -116,6 +116,7 @@ class NoContext(CustomContext):
         self.bot = bot
         self.author = user
         self.session = self.bot.session
+        self.prefix = None
         self.guild = getattr(user, 'guild', None)
 
     async def send(self, *args, **kwargs):
