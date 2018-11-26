@@ -310,8 +310,9 @@ class Brawl_Stars:
             datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
 
             try:
-                await self.request(ctx, f'/bands/{player.band.tag}', reason='magic caching')
-            except AttributeError:
+                band = await self.request(ctx, f'/bands/{player.band.tag}', reason='magic caching')
+                await self.request(ctx, f'/players/{band.members[0].tag}')
+            except (AttributeError, IndexError):
                 pass
         except (utils.NoTag, commands.CheckFailure):
             pass
