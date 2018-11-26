@@ -15,6 +15,7 @@ from discord.ext import commands
 import box
 from ext import utils
 from ext.command import cog, command
+from ext.context import NoContext
 from ext.embeds import brawlstars
 from ext.paginator import Paginator
 from locales.i18n import Translator
@@ -285,6 +286,35 @@ class Brawl_Stars:
         async with ctx.typing():
             brawler = random.choice([i for i in self.constants.characters if i.tID]).tID
             await brawlstars.format_random_brawler_and_send(ctx, brawler)
+
+    async def on_typing(self, channel, user, when):
+        if self.bot.is_closed() or not await self.__local_check(channel=channel) or user.bot:
+            return
+
+        ctx = NoContext(self.bot, user)
+        if ctx.guild:
+            ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
+        else:
+            ctx.language = 'messages'
+
+        guild_id = getattr(ctx.guild, 'id', 'DM')
+        try:
+            datadog.statsd.increment('statsy.magic_caching.check', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
+            tag = await self.resolve_tag(ctx, user)
+
+            try:
+                player = await self.request(ctx, f'/players/{tag}', reason='magic caching')
+            except ValueError:
+                return
+
+            datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
+
+            try:
+                await self.request(ctx, f'/bands/{tag}', player.band.tag, reason='magic caching')
+            except AttributeError:
+                pass
+        except (utils.NoTag, commands.CheckFailure):
+            pass
 
 
 def setup(bot):
