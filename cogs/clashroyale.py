@@ -558,7 +558,7 @@ class Clash_Royale:
                         try:
                             message = await self.bot.get_channel(config['claninfo']).get_message(message)
                             await message.delete()
-                        except AttributeError:
+                        except (AttributeError, discord.NotFound):
                             pass
 
                 # Send a new message
@@ -568,7 +568,7 @@ class Clash_Royale:
             except (discord.Forbidden, discord.HTTPException):
                 try:
                     await message.delete()
-                except NameError:
+                except (NameError, discord.NotFound):
                     pass
                 return await ctx.send(_('Statsy should have permissions to `Send Messages` and `Add Reactions` in #{}').format(channel.name))
 
