@@ -242,7 +242,7 @@ class StatsBot(commands.AutoShardedBot):
             else:
                 default_cog = self.get_cog(self.default_game[ctx.channel.id])
 
-            ctx.message.content = ctx.prefix + default_cog.alias + ctx.message.content.replace(ctx.prefix, '', 1)
+            ctx.message.content = ctx.prefix + default_cog.alias + ctx.message.content.replace(ctx.prefix, '', 1).strip()
             ctx = await self.get_context(ctx.message)
             if ctx.command:
                 if self.maintenance_mode is True:

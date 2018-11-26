@@ -201,6 +201,8 @@ def get_deck_image(card_images, *, profile=None, deck=None):
         if profile:
             image.paste(experience, experience_corner, experience)
 
+        card_image.close()
+
     d_name.text(
         (txt_x_name, txt_y_line1), 'Deck', font=font_bold,
         fill=white)
@@ -223,6 +225,7 @@ def get_deck_image(card_images, *, profile=None, deck=None):
         d.text(
             (txt_x_cards, txt_y_line2), f'{profile.trophies} Trophies', font=font_regular,
             fill=white)
+        experience.close()
     else:
         d_name.multiline_text(
             (txt_x_name, txt_y_line2), 'Randomly Generated', font=font_regular,
@@ -240,6 +243,11 @@ def get_deck_image(card_images, *, profile=None, deck=None):
     file = io.BytesIO()
 
     image.save(file, format='PNG')
+
+    statsy.close()
+    elixirdrop.close()
+    bg_image.close()
+    image.close()
 
     file.seek(0)
 
