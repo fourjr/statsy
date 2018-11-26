@@ -160,7 +160,7 @@ class Brawl_Stars:
                             await ctx.send(embed=er)
 
                             # end and ignore error
-                            raise commands.CheckFailure
+                            raise commands.CheckFailure(resp.status)
                 except asyncio.TimeoutError:
                     await ctx.send(_('Unable to find the tag. The tag is either invalid or there is a maintainence break.'))
                     raise utils.NoTag

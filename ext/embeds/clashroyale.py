@@ -220,7 +220,7 @@ def get_deck_image(card_images, *, profile=None, deck=None):
             (txt_x_name, txt_y_line2), profile.name, font=font_regular,
             fill=white)
         d.text(
-            (txt_x_cards, txt_y_line1), profile.arena.name, font=font_regular,
+            (txt_x_cards, txt_y_line1), profile.arena.name, font=font_bold,
             fill=white)
         d.text(
             (txt_x_cards, txt_y_line2), f'{profile.trophies} Trophies', font=font_regular,
