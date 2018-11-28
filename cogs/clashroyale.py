@@ -138,7 +138,7 @@ class Clash_Royale:
         self.firebase = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(b64decode(os.getenv('firebase')).decode()), scopes=scopes)
 
         try:
-            constants = json.loads(requests.get('https://fourjr-webserver2.herokuapp.com/cr/constants').text)
+            constants = json.loads(requests.get('https://fourjr.herokuapp.com/cr/constants').text)
         except json.JSONDecodeError:
             constants = None
         self.cr = clashroyale.OfficialAPI(
