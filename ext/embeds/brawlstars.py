@@ -72,7 +72,7 @@ def format_profile(ctx, p):
     embed_fields = [
         (_('Trophies'), f"{p.trophies}/{p.highest_trophies} PB {e('bstrophy')}", False),
         (_('3v3 Victories'), f"{p.victories} {e('bountystar')}", True),
-        (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('soloshowdown')}", True),
+        (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('showdown')}", True),
         (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
         (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
         (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
@@ -285,19 +285,27 @@ def format_events(ctx, events):
     em1 = discord.Embed(title='Ongoing events!', color=random_color())
     if ctx.bot.psa_message:
         em1.description = ctx.bot.psa_message
+    em1.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     em2 = copy.deepcopy(em1)
     em2.title = 'Upcoming events!'
 
-    ongoing = events['now']
-    upcoming = events['later']
+    clock_emoji = '<a:clock:492642532489035796>'
+    # first_win_emoji = str(e('first_win'))
+    # coin_emoji = str(e('coin'))
 
-    clock_emoji = u"\U0001F55B"
-    first_win_emoji = str(e('first_win'))
-    coin_emoji = str(e('coin'))
+    modes = {
+        'BattleRoyale': 'Showdown',
+        'BattleRoyaleTeam': 'Duo Showdown',
+        'CoinRush': 'Gem Grab',
+        'AttackDefend': 'Heist',
+        'BossFight': 'Boss Fight',
+        'BountyHunter': 'Bounty',
+        'LaserBall': 'Brawl Ball',
+        'Survival': 'Robo Rumble'
+    }
 
-    for event in ongoing:
-        date = (datetime.fromtimestamp(event['time']['ends_in'] + int(time()))) - datetime.utcnow()
-        seconds = math.floor(date.total_seconds())
+    for event in events.current:
+        seconds = event.time_in_seconds
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
         hours = max(math.floor(minutes / 60), 0)
@@ -310,42 +318,58 @@ def format_events(ctx, events):
         if seconds > 0:
             timeleft += f' {seconds}s'
 
-        name = event['mode']['name']
-        _map = event['location']
-        first = event['coins']['first_win']
-        freecoins = event['coins']['free']
-        maxcoins = event['coins']['max']
+        for i in ctx.cog.constants.locations:
+            if i.sc_id == event.map_id:
+                map_ = i
+                break
+
+        # first = event['coins']['first_win']
+        # freecoins = event['coins']['free']
+        # maxcoins = event['coins']['max']
         em1.add_field(
-            name=name,
+            name=f'{e(modes[map_.game_mode])} {modes[map_.game_mode]}: {map_.tID}',
             value=(
-                f'**{_map}**\n'
                 f'Time Left: {timeleft} {clock_emoji}\n'
-                f'First game: {first} {first_win_emoji}\n'
-                f'Free coins: {freecoins} {coin_emoji}\n'
-                f'Max Coins: {maxcoins} {coin_emoji}'
-            )
+                # f'First game: {first} {first_win_emoji}\n'
+                # f'Free coins: {freecoins} {coin_emoji}\n'
+                # f'Max Coins: {maxcoins} {coin_emoji}'
+            ),
+            inline=False
         )
 
-    for event in upcoming:
-        date = (datetime.fromtimestamp(event['time']['starts_in'] + int(time()))) - datetime.utcnow()
-        seconds = math.floor(date.total_seconds())
-        timeleft = format_timestamp(seconds)
+    for event in events.upcoming:
+        seconds = event.time_in_seconds
+        minutes = max(math.floor(seconds / 60), 0)
+        seconds -= minutes * 60
+        hours = max(math.floor(minutes / 60), 0)
+        minutes -= hours * 60
+        timeleft = ''
+        if hours > 0:
+            timeleft += f'{hours}h'
+        if minutes > 0:
+            timeleft += f' {minutes}m'
+        if seconds > 0:
+            timeleft += f' {seconds}s'
 
-        name = event['mode']['name']
-        _map = event['location']
-        first = event['coins']['first_win']
-        freecoins = event['coins']['free']
-        maxcoins = event['coins']['max']
-        em2.add_field(name=name, value=(
-            f'**{_map}**\n'
-            f'Time to go: {timeleft} {clock_emoji}\n'
-            f'First game: {first} {first_win_emoji}\n'
-            f'Free coins: {freecoins} {coin_emoji}\n'
-            f'Max Coins: {maxcoins} {coin_emoji}'
-        ))
+        for i in ctx.cog.constants.locations:
+            if i.sc_id == event.map_id:
+                map_ = i
+                break
 
-    em1.set_footer(text='Powered by brawlstars-api')
-    em2.set_footer(text='Powered by brawlstars-api')
+        # first = event['coins']['first_win']
+        # freecoins = event['coins']['free']
+        # maxcoins = event['coins']['max']
+        em2.add_field(
+            name=f'{e(modes[map_.game_mode])} {modes[map_.game_mode]}: {map_.tID}',
+            value=(
+                f'Time to go: {timeleft} {clock_emoji}\n'
+                # f'First game: {first} {first_win_emoji}\n'
+                # f'Free coins: {freecoins} {coin_emoji}\n'
+                # f'Max Coins: {maxcoins} {coin_emoji}'
+            ),
+            inline=False
+        )
+
     return [em1, em2]
 
 

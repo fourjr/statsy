@@ -69,7 +69,7 @@ class Brawl_Stars:
         self.alias = 'bs'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
-        self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_case_killer=True)
+        self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -252,7 +252,6 @@ class Brawl_Stars:
     @utils.has_perms()
     async def events(self, ctx):
         """Shows the upcoming events!"""
-        # TODO
         async with ctx.typing():
             events = await self.request('/events')
             ems = brawlstars.format_events(ctx, events)
