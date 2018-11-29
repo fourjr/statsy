@@ -248,7 +248,7 @@ class Brawl_Stars:
 
         await Paginator(ctx, *ems).start()
 
-    @command(enabled=False)
+    @command()
     @utils.has_perms()
     async def events(self, ctx):
         """Shows the upcoming events!"""
