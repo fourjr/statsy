@@ -160,7 +160,7 @@ class Brawl_Stars:
                             await ctx.send(embed=er)
 
                             # end and ignore error
-                            raise commands.CheckFailure(resp.status)
+                            raise commands.CheckFailure(str(resp.status))
                 except asyncio.TimeoutError:
                     await ctx.send(_('Unable to find the tag. The tag is either invalid or there is a maintainence break.'))
                     raise utils.NoTag
@@ -253,7 +253,7 @@ class Brawl_Stars:
     async def events(self, ctx):
         """Shows the upcoming events!"""
         async with ctx.typing():
-            events = await self.request('/events')
+            events = await self.request(ctx, '/events')
             ems = brawlstars.format_events(ctx, events)
 
         await Paginator(ctx, *ems).start()
