@@ -337,8 +337,8 @@ def format_events(ctx, events):
             inline=False
         )
 
-    for event in events.upcoming:
-        seconds = event.time_in_seconds
+    for n, event in enumerate(events.upcoming):
+        seconds = events.current[n].time_in_seconds
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
         hours = max(math.floor(minutes / 60), 0)
