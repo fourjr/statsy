@@ -304,8 +304,8 @@ def format_events(ctx, events):
         'Survival': 'Robo Rumble'
     }
 
-    for event in events.current:
-        seconds = event.time_in_seconds
+    for event in events.current[:4]:
+        seconds = event.end_time_in_seconds
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
         hours = max(math.floor(minutes / 60), 0)
@@ -337,8 +337,8 @@ def format_events(ctx, events):
             inline=False
         )
 
-    for n, event in enumerate(events.upcoming):
-        seconds = events.current[n].time_in_seconds
+    for event in events.upcoming[:4]:
+        seconds = event.start_time_in_seconds
         minutes = max(math.floor(seconds / 60), 0)
         seconds -= minutes * 60
         hours = max(math.floor(minutes / 60), 0)
