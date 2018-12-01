@@ -133,7 +133,7 @@ class Brawl_Stars:
                 try:
                     speed = time.time()
                     async with ctx.session.get(
-                        f"https://brawlapi.cf/api{endpoint}",
+                        f"{os.getenv('bs_url')}{endpoint}",
                         headers={'Authorization': os.getenv('brawlstars')},
                         timeout=15
                     ) as resp:
