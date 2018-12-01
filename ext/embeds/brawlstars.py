@@ -306,13 +306,15 @@ def format_events(ctx, events):
 
     for event in events.current[:4]:
         seconds = event.end_time_in_seconds
-        minutes = max(math.floor(seconds / 60), 0)
-        seconds -= minutes * 60
-        hours = max(math.floor(minutes / 60), 0)
-        minutes -= hours * 60
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+
         timeleft = ''
+        if days > 0:
+            timeleft += f'{days}d'
         if hours > 0:
-            timeleft += f'{hours}h'
+            timeleft += f' {hours}h'
         if minutes > 0:
             timeleft += f' {minutes}m'
         if seconds > 0:
@@ -343,13 +345,15 @@ def format_events(ctx, events):
 
     for event in events.upcoming[:4]:
         seconds = event.start_time_in_seconds
-        minutes = max(math.floor(seconds / 60), 0)
-        seconds -= minutes * 60
-        hours = max(math.floor(minutes / 60), 0)
-        minutes -= hours * 60
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+
         timeleft = ''
+        if days > 0:
+            timeleft += f'{days}d'
         if hours > 0:
-            timeleft += f'{hours}h'
+            timeleft += f' {hours}h'
         if minutes > 0:
             timeleft += f' {minutes}m'
         if seconds > 0:
