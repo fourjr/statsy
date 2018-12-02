@@ -51,11 +51,12 @@ Join the development server here: https://discord.gg/cBqsdPt
  
 Core API's and libraries we use include:
 
-| Libraries                                                   | Description                               |
-| ----------------------------------------------------------- | ----------------------------------------- |
-| [Rapptz/discord.py](https://github.com/Rapptz/discord.py)   | Python wrapper to access the Discord API  |
-| [cgrok/clashroyale](https://github.com/cgrok/clashroyale)   | (A)sync wrapper to access CR APIs         |
-| [mongodb/motor](https://github.com/mongodb/motor)           | Async wrapper to access MongoDB           |
+| Libraries                                                     | Description                              |
+| ------------------------------------------------------------- | ---------------------------------------- |
+| [Rapptz/discord.py](https://github.com/Rapptz/discord.py)     | Python wrapper to access the Discord API |
+| [cgrok/clashroyale](https://github.com/cgrok/clashroyale)     | (A)sync wrapper to access CR APIs        |
+| [SharpBit/brawlstats](https://github.com/SharpBit/brawlstats) | (A)sync wrapper to access CR APIs        |
+| [mongodb/motor](https://github.com/mongodb/motor)             | Async wrapper to access MongoDB          |
 
 | APIs                                                 | Description                 |
 | ---------------------------------------------------- |---------------------------- |

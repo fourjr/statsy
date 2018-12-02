@@ -2,7 +2,6 @@ import copy
 import io
 import math
 from datetime import datetime
-from time import time
 
 import box
 import discord
@@ -46,23 +45,12 @@ def format_profile(ctx, p):
         em.set_author(name=f'{p.name} (#{p.tag})')
 
     try:
-        em.set_thumbnail(url=f'{url}/player_icons/{p.avatar_id}.png')
+        em.set_thumbnail(url=p.avatar_url)
     except box.BoxKeyError:
         pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
     brawlers = ' '.join([f'{e(i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
-
-    exp_level = 0
-    minus_exp = 30
-    while p.total_exp >= 0:
-        minus_exp += 10
-        p.total_exp -= minus_exp
-        exp_level += 1
-
-    # :exp_level: is the current XP Level
-    # :minus_exp - p.total_exp: is the amount of XP he has
-    # :minus_exp: is the total amount of XP needed for that level
 
     try:
         band = p.band.name
@@ -76,7 +64,7 @@ def format_profile(ctx, p):
         (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
         (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
         (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
-        (_('XP Level'), f"{exp_level} ({minus_exp}/{minus_exp - p.total_exp}) {e('xp')}", True),
+        (_('XP Level'), f"{p.exp_level} ({p.exp_fmt}) {e('xp')}", True),
         (_('Band Name'), p.band.name if band else None, True),
         (_('Band Tag'), f'#{p.band.tag}' if band else None, True),
         (_('Band Role'), p.band.role if band else None, True),
@@ -134,18 +122,15 @@ def format_brawlers(ctx, p):
     return ems
 
 
-def format_band(ctx, b, p):
-    badge = ctx.cog.constants.alliance_badges[p.band.badge_id].name
-    badge_url = f'{url}/band_badges/{badge}.png'
-
+def format_band(ctx, b):
     _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
     experiences = []
     pushers = []
 
     if len(b.members) >= 3:
         for i in range(3):
-            push_avatar = e(str(b.members[i].avatar_id).replace('21307136', '280000'))
-            exp_avatar = e(str(_experiences[i].avatar_id).replace('21307136', '280000'))
+            push_avatar = e(b.members[i].avatar_id)
+            exp_avatar = e(_experiences[i].avatar_id)
 
             pushers.append(
                 f"**{push_avatar} {b.members[i].name}**"
@@ -164,25 +149,16 @@ def format_band(ctx, b, p):
     page1 = discord.Embed(description=b.description, color=random_color())
     page1.set_author(name=f"{b.name} (#{b.tag})")
     page1.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
-    page1.set_thumbnail(url=badge_url)
+    page1.set_thumbnail(url=b.badge_url)
     page2 = copy.deepcopy(page1)
     page2.description = 'Top Players/Experienced Players for this band.'
 
-    if b.status == 'Invite Only':
-        status = 'Open'
-    elif b.status == 'Closed':
-        status = 'Invite Only'
-    elif b.status == 'N/A':
-        status = 'Closed'
-    else:
-        b.status = status
-
     fields1 = [
-        (_('Type'), f'{status} 📩'),
+        (_('Type'), f'{b.status} 📩'),
         (_('Score'), f'{b.trophies} Trophies {e("bstrophy")}'),
         (_('Members'), f'{b.members_count}/100 {e("gameroom")}'),
         (_('Required Trophies'), f'{b.required_trophies} {e("bstrophy")}'),
-        (_('Online Players'), f'{p.band.online_members} {e("online")}')
+        (_('Online Players'), f'{b.online_members} {e("online")}')
     ]
     fields2 = [
         ("Top Players", '\n\n'.join(pushers)),

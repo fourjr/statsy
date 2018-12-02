@@ -10,6 +10,7 @@ import traceback
 from collections import defaultdict
 
 import aiohttp
+import brawlstats
 import clashroyale
 import datadog
 import discord
@@ -311,7 +312,8 @@ class StatsBot(commands.AutoShardedBot):
             discord.Forbidden,
             commands.CheckFailure,
             commands.DisabledCommand,
-            clashroyale.RequestError
+            clashroyale.RequestError,
+            brawlstats.RequestError
         )
 
         if isinstance(error, commands.errors.BotMissingPermissions):

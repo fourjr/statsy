@@ -5,6 +5,7 @@ import time
 import random
 import os
 
+import brawlstats
 import datadog
 import discord
 import requests
@@ -69,6 +70,13 @@ class Brawl_Stars:
         self.alias = 'bs'
         self.conv = TagCheck()
         self.cache = TTLCache(500, 180)
+        self.bs = brawlstats.core.Client(
+            os.getenv('brawlstars'),
+            session=bot.session,
+            is_async=True,
+            timeout=20,
+            url=os.getenv('bs_url')
+        )
         self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
 
     async def __local_check(self, ctx):
@@ -78,8 +86,22 @@ class Brawl_Stars:
         else:
             return True
 
+    async def __error(self, ctx, error):
+        error = getattr(error, 'original', error)
+        if isinstance(error, brawlstats.NotFoundError):
+            await ctx.send(_('The tag cannot be found!'))
+        elif isinstance(error, brawlstats.RequestError):
+            er = discord.Embed(
+                title=_('Clash Royale Server Down'),
+                color=discord.Color.red(),
+                description='This could be caused by a maintainence break.'
+            )
+            if ctx.bot.psa_message:
+                er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
+            await ctx.send(embed=er)
+
     async def get_band_from_profile(self, ctx, tag, message):
-        profile = await self.request(ctx, f'/players/{tag}')
+        profile = await self.request(ctx, 'get_player', tag)
         try:
             return profile.band.tag
         except AttributeError:
@@ -115,57 +137,42 @@ class Brawl_Stars:
         else:
             return tag_or_user
 
-    async def request(self, ctx, endpoint, *, leaderboard=False, reason='command'):
+    async def request(self, ctx, method, *args, **kwargs):
+        leaderboard = kwargs.pop('leaderboard', False)
+        reason = kwargs.pop('reason', 'command')
         try:
-            self.cache[endpoint]
+            data = self.cache[f'{method}{args}{kwargs}']
         except KeyError:
             if leaderboard:
                 speed = time.time()
                 async with ctx.session.get(
-                    f'https://leaderboard.brawlstars.com/{endpoint}.jsonp?_={int(time.time()) - 4}'
+                    f'https://leaderboard.brawlstars.com/{method}.jsonp?_={int(time.time()) - 4}'
                 ) as resp:
                     speed = time.time() - speed
                     datadog.statsd.increment('statsy.requests', 1, [
-                        'game:brawlstars', f'code:{resp.status}', f'method:{endpoint}', f'reason:{reason}'
+                        'game:brawlstars', f'code:{resp.status}', f'method:{method}', f'reason:{reason}'
                     ])
-                    self.cache[endpoint] = json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2])
+                    data = box.Box(json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2]), camel_case_killer=True)
             else:
-                try:
-                    speed = time.time()
-                    async with ctx.session.get(
-                        f"{os.getenv('bs_url')}{endpoint}",
-                        headers={'Authorization': os.getenv('brawlstars')},
-                        timeout=15
-                    ) as resp:
-                        speed = time.time() - speed
-                        datadog.statsd.increment('statsy.api_latency', 1, [
-                            'game:brawlstars', f'speed:{speed}', f'method:{endpoint}'
-                        ])
-                        datadog.statsd.increment('statsy.requests', 1, [
-                            'game:brawlstars', f'code:{resp.status}', f'method:{endpoint}', f'reason:{reason}'
-                        ])
-                        try:
-                            if resp.status == 200:
-                                self.cache[endpoint] = await resp.json()
-                            else:
-                                raise utils.APIError
-                        except (aiohttp.ContentTypeError, utils.APIError):
-                            er = discord.Embed(
-                                title=_('Brawl Stars Server Down'),
-                                color=discord.Color.red(),
-                                description=f'This could be caused by a maintainence break or an API issue ({resp.status}).'
-                            )
-                            if ctx.bot.psa_message:
-                                er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
-                            await ctx.send(embed=er)
+                speed = time.time()
+                data = await getattr(self.bs, method)(*args, **kwargs)
+                speed = time.time() - speed
 
-                            # end and ignore error
-                            raise commands.CheckFailure(str(resp.status))
-                except asyncio.TimeoutError:
-                    await ctx.send(_('Unable to find the tag. The tag is either invalid or there is a maintainence break.'))
-                    raise utils.NoTag
+                if isinstance(data, list):
+                    status_code = 'list'
+                else:
+                    status_code = data.resp.status
 
-        return Box(self.cache[endpoint], camel_killer_box=True)
+                datadog.statsd.increment('statsy.api_latency', 1, [
+                    'game:brawlstars', f'speed:{speed}', f'method:{method}'
+                ])
+                datadog.statsd.increment('statsy.requests', 1, [
+                    'game:brawlstars', f'code:{status_code}', f'method:{method}', f'reason:{reason}'
+                ])
+
+            self.cache[f'{method}{args}{kwargs}'] = data
+
+        return data
 
     @command()
     async def save(self, ctx, tag, index: str = '0'):
@@ -196,7 +203,7 @@ class Brawl_Stars:
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
-            profile = await self.request(ctx, f'/players/{tag}')
+            profile = await self.request(ctx, 'get_player', tag)
             em = brawlstars.format_profile(ctx, profile)
 
         await ctx.send(embed=em)
@@ -207,7 +214,7 @@ class Brawl_Stars:
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
-            profile = await self.request(ctx, f'/players/{tag}')
+            profile = await self.request(ctx, 'get_player', tag)
             ems = brawlstars.format_brawlers(ctx, profile)
 
         await Paginator(ctx, *ems).start()
@@ -219,12 +226,8 @@ class Brawl_Stars:
         tag = await self.resolve_tag(ctx, tag_or_user, band=True)
 
         async with ctx.typing():
-            band = await self.request(ctx, f'/bands/{tag}')
-            try:
-                player = await self.request(ctx, f'/players/{band.members[0].tag}')
-            except IndexError:
-                player = None
-            ems = brawlstars.format_band(ctx, band, player)
+            band = await self.request(ctx, 'get_band', tag)
+            ems = brawlstars.format_band(ctx, band)
 
         await Paginator(ctx, *ems).start()
 
@@ -233,7 +236,7 @@ class Brawl_Stars:
     async def topplayers(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.typing():
-            player = await self.request(ctx, '/leaderboards/players')
+            player = await self.request(ctx, 'get_leaderboard', 'players')
             ems = brawlstars.format_top_players(ctx, player.players)
 
         await Paginator(ctx, *ems).start()
@@ -243,7 +246,7 @@ class Brawl_Stars:
     async def topbands(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.typing():
-            band = await self.request(ctx, '/leaderboards/bands')
+            band = await self.request(ctx, 'get_leaderboard', 'bands')
             ems = brawlstars.format_top_bands(ctx, band.bands)
 
         await Paginator(ctx, *ems).start()
@@ -253,7 +256,7 @@ class Brawl_Stars:
     async def events(self, ctx):
         """Shows the upcoming events!"""
         async with ctx.typing():
-            events = await self.request(ctx, '/events')
+            events = await self.request(ctx, 'get_events')
             ems = brawlstars.format_events(ctx, events)
 
         await Paginator(ctx, *ems).start()
@@ -302,15 +305,14 @@ class Brawl_Stars:
             tag = await self.resolve_tag(ctx, None)
 
             try:
-                player = await self.request(ctx, f'/players/{tag}', reason='magic caching')
+                player = await self.request(ctx, 'get_player', tag, reason='magic caching')
             except ValueError:
                 return
 
             datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
 
             try:
-                band = await self.request(ctx, f'/bands/{player.band.tag}', reason='magic caching')
-                await self.request(ctx, f'/players/{band.members[0].tag}')
+                await self.request(ctx, 'get_band', player.band.tag, reason='magic caching')
             except (AttributeError, IndexError):
                 pass
         except (utils.NoTag, commands.CheckFailure):
