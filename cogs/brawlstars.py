@@ -152,7 +152,7 @@ class Brawl_Stars:
                     datadog.statsd.increment('statsy.requests', 1, [
                         'game:brawlstars', f'code:{resp.status}', f'method:{method}', f'reason:{reason}'
                     ])
-                    data = box.Box(json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2]), camel_case_killer=True)
+                    data = box.Box(json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2]), camel_killer_box=True)
             else:
                 speed = time.time()
                 data = await getattr(self.bs, method)(*args, **kwargs)
