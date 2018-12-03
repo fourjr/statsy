@@ -335,10 +335,13 @@ def format_events(ctx, events):
         if seconds > 0:
             timeleft += f' {seconds}s'
 
+        map_ = None
         for i in ctx.cog.constants.locations:
             if i.sc_id == event.map_id:
                 map_ = i
-                break
+
+        if map_ is None:
+            continue
 
         # first = event['coins']['first_win']
         # freecoins = event['coins']['free']
