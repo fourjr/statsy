@@ -100,14 +100,14 @@ class Brawl_Stars:
                 er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
             await ctx.send(embed=er)
 
-    async def get_band_from_profile(self, ctx, tag, message):
+    async def get_club_from_profile(self, ctx, tag, message):
         profile = await self.request(ctx, 'get_player', tag)
         try:
-            return profile.band.tag
+            return profile.club.tag
         except AttributeError:
             return await ctx.send(message)
 
-    async def resolve_tag(self, ctx, tag_or_user, band=False):
+    async def resolve_tag(self, ctx, tag_or_user, club=False):
         if not tag_or_user:
             try:
                 tag = await ctx.get_tag('brawlstars')
@@ -121,8 +121,8 @@ class Brawl_Stars:
                 await ctx.send(_("You don't have a saved tag. Save one using `{}{} <tag>`!").format(ctx.prefix, cmd_name))
                 raise utils.NoTag
             else:
-                if band is True:
-                    return await self.get_band_from_profile(ctx, tag, _("You don't have a band!"))
+                if club is True:
+                    return await self.get_club_from_profile(ctx, tag, _("You don't have a club!"))
                 return tag
         if isinstance(tag_or_user, discord.User):
             try:
@@ -131,8 +131,8 @@ class Brawl_Stars:
                 await ctx.send('That person doesnt have a saved tag!')
                 raise utils.NoTag
             else:
-                if band is True:
-                    return await self.get_band_from_profile(ctx, tag, _('That person does not have a band!'))
+                if club is True:
+                    return await self.get_club_from_profile(ctx, tag, _('That person does not have a club!'))
             return tag
         else:
             return tag_or_user
@@ -221,13 +221,13 @@ class Brawl_Stars:
 
     @command()
     @utils.has_perms()
-    async def band(self, ctx, *, tag_or_user: TagCheck=None):
-        """Get Brawl Stars band information."""
-        tag = await self.resolve_tag(ctx, tag_or_user, band=True)
+    async def club(self, ctx, *, tag_or_user: TagCheck=None):
+        """Get Brawl Stars club information."""
+        tag = await self.resolve_tag(ctx, tag_or_user, club=True)
 
         async with ctx.typing():
-            band = await self.request(ctx, 'get_band', tag)
-            ems = brawlstars.format_band(ctx, band)
+            club = await self.request(ctx, 'get_club', tag)
+            ems = brawlstars.format_club(ctx, club)
 
         await Paginator(ctx, *ems).start()
 
@@ -243,11 +243,11 @@ class Brawl_Stars:
 
     @command()
     @utils.has_perms()
-    async def topbands(self, ctx):
+    async def topclubs(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.typing():
-            band = await self.request(ctx, 'get_leaderboard', 'bands')
-            ems = brawlstars.format_top_bands(ctx, band.bands)
+            club = await self.request(ctx, 'get_leaderboard', 'clubs')
+            ems = brawlstars.format_top_clubs(ctx, club.clubs)
 
         await Paginator(ctx, *ems).start()
 
@@ -312,7 +312,7 @@ class Brawl_Stars:
             datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
 
             try:
-                await self.request(ctx, 'get_band', player.band.tag, reason='magic caching')
+                await self.request(ctx, 'get_club', player.club.tag, reason='magic caching')
             except (AttributeError, IndexError):
                 pass
         except (utils.NoTag, commands.CheckFailure):

@@ -39,8 +39,8 @@ def format_profile(ctx, p):
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     try:
-        badge = ctx.cog.constants.alliance_badges[p.band.badge_id].name
-        em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/band_badges/{badge}.png')
+        badge = ctx.cog.constants.alliance_badges[p.club.badge_id].name
+        em.set_author(name=f'{p.name} (#{p.tag})', icon_url=f'{url}/club_badges/{badge}.png')
     except AttributeError:
         em.set_author(name=f'{p.name} (#{p.tag})')
 
@@ -53,9 +53,9 @@ def format_profile(ctx, p):
     brawlers = ' '.join([f'{e(i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
 
     try:
-        band = p.band.name
+        club = p.club.name
     except AttributeError:
-        band = False
+        club = False
 
     embed_fields = [
         (_('Trophies'), f"{p.trophies}/{p.highest_trophies} PB {e('bstrophy')}", False),
@@ -65,17 +65,17 @@ def format_profile(ctx, p):
         (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
         (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
         (_('XP Level'), f"{p.exp_level} ({p.exp_fmt}) {e('xp')}", True),
-        (_('Band Name'), p.band.name if band else None, True),
-        (_('Band Tag'), f'#{p.band.tag}' if band else None, True),
-        (_('Band Role'), p.band.role if band else None, True),
+        (_('Club Name'), p.club.name if club else None, True),
+        (_('Club Tag'), f'#{p.club.tag}' if club else None, True),
+        (_('Club Role'), p.club.role if club else None, True),
         (_('Brawlers'), brawlers, False),
     ]
 
     for n, v, i in embed_fields:
         if v:
             em.add_field(name=n, value=v, inline=i)
-        elif n == _('Band Name'):
-            em.add_field(name=_('Band'), value=_('None'))
+        elif n == _('Club Name'):
+            em.add_field(name=_('Club'), value=_('None'))
 
     return em
 
@@ -122,7 +122,7 @@ def format_brawlers(ctx, p):
     return ems
 
 
-def format_band(ctx, b):
+def format_club(ctx, b):
     _experiences = sorted(b.members, key=lambda x: x.exp_level, reverse=True)
     experiences = []
     pushers = []
@@ -151,7 +151,7 @@ def format_band(ctx, b):
     page1.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     page1.set_thumbnail(url=b.badge_url)
     page2 = copy.deepcopy(page1)
-    page2.description = 'Top Players/Experienced Players for this band.'
+    page2.description = 'Top Players/Experienced Players for this club.'
 
     fields1 = [
         (_('Type'), f'{b.status} 📩'),
@@ -202,9 +202,9 @@ def format_top_players(ctx, players):
             em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         try:
-            band_name = c.band_name
+            club_name = c.club_name
         except AttributeError:
-            band_name = 'No Clan'
+            club_name = 'No Clan'
 
         em.add_field(
             name=c.name,
@@ -212,23 +212,23 @@ def format_top_players(ctx, players):
                   f"\n{e('bstrophy')}{c.trophies}"
                   f"\n{e('bountystar')} Rank: {c.position} "
                   f"\n{e('xp')} XP Level: {c.exp_level}"
-                  f"\n{e('gameroom')} {band_name}"
+                  f"\n{e('gameroom')} {club_name}"
         )
         counter += 1
     embeds.append(em)
     return embeds
 
 
-def format_top_bands(ctx, clans):
+def format_top_clubs(ctx, clans):
     region = 'global'
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
-        em.description = _('Top 200 {} bands right now.').format(region)
+        em.description = _('Top 200 {} clubs right now.').format(region)
     # badge_image = ctx.bot.cr.get_clan_image(clans[0])
-    em.set_author(name='Top Bands')  # , icon_url=badge_image)
+    em.set_author(name='Top Clubs')  # , icon_url=badge_image)
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     embeds = []
     counter = 0
@@ -239,10 +239,10 @@ def format_top_bands(ctx, clans):
             if ctx.bot.psa_message:
                 em.description = f'*{ctx.bot.psa_message}*'
             else:
-                em.description = _('Top 200 {} bands right now.').format(region)
+                em.description = _('Top 200 {} clubs right now.').format(region)
 
             # badge_image = ctx.bot.cr.get_clan_image(clans[0])
-            em.set_author(name=_('Top Bands'))  # , icon_url=badge_image)
+            em.set_author(name=_('Top Clubs'))  # , icon_url=badge_image)
             em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         em.add_field(
