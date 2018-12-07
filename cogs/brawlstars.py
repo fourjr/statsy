@@ -92,7 +92,7 @@ class Brawl_Stars:
             await ctx.send(_('The tag cannot be found!'))
         elif isinstance(error, brawlstats.RequestError):
             er = discord.Embed(
-                title=_('Clash Royale Server Down'),
+                title=_('Brawl Stars Server Down'),
                 color=discord.Color.red(),
                 description='This could be caused by a maintainence break.'
             )
