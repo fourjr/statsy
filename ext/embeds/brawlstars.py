@@ -280,7 +280,7 @@ def format_events(ctx, events):
         'Survival': 'Robo Rumble'
     }
 
-    for event in events.current[:4]:
+    for event in events.current:
         seconds = event.end_time_in_seconds
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
@@ -319,7 +319,7 @@ def format_events(ctx, events):
             inline=False
         )
 
-    for event in events.upcoming[:4]:
+    for event in events.upcoming:
         seconds = event.start_time_in_seconds
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
