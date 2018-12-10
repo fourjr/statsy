@@ -334,8 +334,8 @@ class Brawl_Stars:
                 'Big Game': 0xDC2422
             }
 
-            # events = await self.request('get_events')
-            # await asyncio.sleep(min(i.start_time_in_seconds for i in events.upcoming))
+            events = await self.request('get_events')
+            await asyncio.sleep(min(i.start_time_in_seconds for i in events.upcoming))
 
             guilds = self.bot.mongo.config.guilds.find({'event_notify': {'$exists': True}})
             async for g in guilds:
@@ -359,7 +359,10 @@ class Brawl_Stars:
                         text='End Time'
                     )
 
-                    await channel.send(embed=em)
+                    try:
+                        await channel.send(embed=em)
+                    except (AttributeError, discord.NotFound):
+                        pass
 
 
 def setup(bot):
