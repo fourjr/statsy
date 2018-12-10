@@ -1,4 +1,3 @@
-import aiohttp
 import asyncio
 import json
 import time
@@ -9,7 +8,6 @@ import brawlstats
 import datadog
 import discord
 import requests
-from box import Box
 from cachetools import TTLCache
 from discord.ext import commands
 
@@ -78,6 +76,7 @@ class Brawl_Stars:
             url=os.getenv('bs_url')
         )
         self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
+        self.bot.loop.create_task(self.event_notifications())
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -101,7 +100,7 @@ class Brawl_Stars:
             await ctx.send(embed=er)
 
     async def get_club_from_profile(self, ctx, tag, message):
-        profile = await self.request(ctx, 'get_player', tag)
+        profile = await self.request('get_player', tag)
         try:
             return profile.club.tag
         except AttributeError:
@@ -137,7 +136,7 @@ class Brawl_Stars:
         else:
             return tag_or_user
 
-    async def request(self, ctx, method, *args, **kwargs):
+    async def request(self, method, *args, **kwargs):
         leaderboard = kwargs.pop('leaderboard', False)
         reason = kwargs.pop('reason', 'command')
         try:
@@ -145,7 +144,7 @@ class Brawl_Stars:
         except KeyError:
             if leaderboard:
                 speed = time.time()
-                async with ctx.session.get(
+                async with self.bot.session.get(
                     f'https://leaderboard.brawlstars.com/{method}.jsonp?_={int(time.time()) - 4}'
                 ) as resp:
                     speed = time.time() - speed
@@ -203,7 +202,7 @@ class Brawl_Stars:
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
-            profile = await self.request(ctx, 'get_player', tag)
+            profile = await self.request('get_player', tag)
             em = brawlstars.format_profile(ctx, profile)
 
         await ctx.send(embed=em)
@@ -214,7 +213,7 @@ class Brawl_Stars:
         tag = await self.resolve_tag(ctx, tag_or_user)
 
         async with ctx.typing():
-            profile = await self.request(ctx, 'get_player', tag)
+            profile = await self.request('get_player', tag)
             ems = brawlstars.format_brawlers(ctx, profile)
 
         await Paginator(ctx, *ems).start()
@@ -226,7 +225,7 @@ class Brawl_Stars:
         tag = await self.resolve_tag(ctx, tag_or_user, club=True)
 
         async with ctx.typing():
-            club = await self.request(ctx, 'get_club', tag)
+            club = await self.request('get_club', tag)
             ems = brawlstars.format_club(ctx, club)
 
         await Paginator(ctx, *ems).start()
@@ -236,7 +235,7 @@ class Brawl_Stars:
     async def topplayers(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.typing():
-            player = await self.request(ctx, 'get_leaderboard', 'players')
+            player = await self.request('get_leaderboard', 'players')
             ems = brawlstars.format_top_players(ctx, player.players)
 
         await Paginator(ctx, *ems).start()
@@ -246,27 +245,31 @@ class Brawl_Stars:
     async def topclubs(self, ctx):
         """Returns the global top 200 players."""
         async with ctx.typing():
-            club = await self.request(ctx, 'get_leaderboard', 'clubs')
+            club = await self.request('get_leaderboard', 'clubs')
             ems = brawlstars.format_top_clubs(ctx, club.clubs)
 
         await Paginator(ctx, *ems).start()
 
     @command()
     @utils.has_perms()
-    async def events(self, ctx):
+    async def events(self, ctx, type: utils.lower='all'):
         """Shows the upcoming events!"""
-        async with ctx.typing():
-            events = await self.request(ctx, 'get_events')
-            ems = brawlstars.format_events(ctx, events)
+        if type not in ('all', 'current', 'upcoming'):
+            return await ctx.send('Invalid type. Pick from either `current` or `upcoming`')
 
-        await Paginator(ctx, *ems).start()
+        async with ctx.typing():
+            events = await self.request('get_events')
+            ems = brawlstars.format_events(ctx, events, type)
+
+        for i in ems:
+            await Paginator(ctx, *i).start()
 
     @command(aliases=['robo'])
     @utils.has_perms()
     async def roborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
         async with ctx.typing():
-            leaderboard = await self.request(ctx, 'rumbleboard', leaderboard=True)
+            leaderboard = await self.request('rumbleboard', leaderboard=True)
             ems = brawlstars.format_robo(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
@@ -276,7 +279,7 @@ class Brawl_Stars:
     async def bossfight(self, ctx):
         """Shows the boss fight leaderboard"""
         async with ctx.typing():
-            leaderboard = await self.request(ctx, 'bossboard', leaderboard=True)
+            leaderboard = await self.request('bossboard', leaderboard=True)
             ems = brawlstars.format_boss(ctx, leaderboard)
 
         await Paginator(ctx, *ems).start()
@@ -305,18 +308,58 @@ class Brawl_Stars:
             tag = await self.resolve_tag(ctx, None)
 
             try:
-                player = await self.request(ctx, 'get_player', tag, reason='magic caching')
+                player = await self.request('get_player', tag, reason='magic caching')
             except ValueError:
                 return
 
             datadog.statsd.increment('statsy.magic_caching.request', 1, [f'user:{user.id}', f'guild:{guild_id}', 'game:brawlstars'])
 
             try:
-                await self.request(ctx, 'get_club', player.club.tag, reason='magic caching')
+                await self.request('get_club', player.club.tag, reason='magic caching')
             except (AttributeError, IndexError):
                 pass
         except (utils.NoTag, commands.CheckFailure):
             pass
+
+    async def event_notifications(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            colors = {
+                'Gem Grab': 0x9B3DF3,
+                'Showdown': 0x81D621,
+                'Heist': 0xD65CD3,
+                'Bounty': 0x01CFFF,
+                'Brawl Ball': 0x8CA0DF,
+                'Robo Rumble': 0xAE0026,
+                'Big Game': 0xDC2422
+            }
+
+            # events = await self.request('get_events')
+            # await asyncio.sleep(min(i.start_time_in_seconds for i in events.upcoming))
+
+            guilds = self.bot.mongo.config.guilds.find({'event_notify': {'$exists': True}})
+            async for g in guilds:
+                channel = self.bot.get_guild(int(g['guild_id'])).get_channel(int(g['event_notify']))
+
+                events = await self.request('get_events')
+                announce = [i for i in events.current if i.end_time_in_seconds == max(e.end_time_in_seconds for e in events.current)]
+
+                for event in announce:
+                    em = discord.Embed(
+                        color=colors[event.game_mode],
+                        timestamp=utils.get_datetime(event.end_time, unix=False)
+                    ).add_field(
+                        name=f'{utils.e(event.game_mode)} {event.game_mode}: {event.map_name}',
+                        value=f'{utils.e(event.modifier_name)} {event.modifier_name}' if event.has_modifier else 'No Modifiers'
+                    ).set_author(
+                        name='New Event!'
+                    ).set_image(
+                        url=event.map_image_url
+                    ).set_footer(
+                        text='End Time'
+                    )
+
+                    await channel.send(embed=em)
 
 
 def setup(bot):

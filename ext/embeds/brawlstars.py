@@ -6,7 +6,7 @@ from datetime import datetime
 import box
 import discord
 
-from ext.utils import e, random_color
+from ext.utils import e, get_datetime, random_color
 from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
@@ -257,107 +257,58 @@ def format_top_clubs(ctx, clans):
     return embeds
 
 
-def format_events(ctx, events):
-    em1 = discord.Embed(title='Ongoing events!', color=random_color())
-    if ctx.bot.psa_message:
-        em1.description = ctx.bot.psa_message
-    em1.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
-    em2 = copy.deepcopy(em1)
-    em2.title = 'Upcoming events!'
+def format_events(ctx, events, type_):
+    ems = []
 
-    clock_emoji = '<a:clock:492642532489035796>'
-    # first_win_emoji = str(e('first_win'))
-    # coin_emoji = str(e('coin'))
-
-    modes = {
-        'BattleRoyale': 'Showdown',
-        'BattleRoyaleTeam': 'Duo Showdown',
-        'CoinRush': 'Gem Grab',
-        'AttackDefend': 'Heist',
-        'BossFight': 'Boss Fight',
-        'BountyHunter': 'Bounty',
-        'LaserBall': 'Brawl Ball',
-        'Survival': 'Robo Rumble'
+    colors = {
+        'Gem Grab': 0x9B3DF3,
+        'Showdown': 0x81D621,
+        'Heist': 0xD65CD3,
+        'Bounty': 0x01CFFF,
+        'Brawl Ball': 0x8CA0DF,
+        'Robo Rumble': 0xAE0026,
+        'Big Game': 0xDC2422
     }
 
-    for event in events.current:
-        seconds = event.end_time_in_seconds
-        minutes, seconds = divmod(seconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
+    if type_ in ('current', 'all'):
+        ems.append([])
+        for i in events.current:
+            ems[0].append(
+                discord.Embed(
+                    color=colors[i.game_mode],
+                    timestamp=get_datetime(i.end_time, unix=False)
+                ).add_field(
+                    name=f'{e(i.game_mode)} {i.game_mode}: {i.map_name}',
+                    value=f'{e(i.modifier_name)} {i.modifier_name}' if i.has_modifier else 'No Modifiers'
+                ).set_author(
+                    name='Current Events'
+                ).set_image(
+                    url=i.map_image_url
+                ).set_footer(
+                    text='End Time'
+                )
+            )
 
-        timeleft = ''
-        if days > 0:
-            timeleft += f'{days}d'
-        if hours > 0:
-            timeleft += f' {hours}h'
-        if minutes > 0:
-            timeleft += f' {minutes}m'
-        if seconds > 0:
-            timeleft += f' {seconds}s'
+    if type_ in ('upcoming', 'all'):
+        ems.append([])
+        for i in events.upcoming:
+            ems[1].append(
+                discord.Embed(
+                    color=colors[i.game_mode],
+                    timestamp=get_datetime(i.end_time, unix=False)
+                ).add_field(
+                    name=f'{e(i.game_mode)} {i.game_mode}: {i.map_name}',
+                    value=f'{e(i.modifier_name)} {i.modifier_name}' if i.has_modifier else 'No Modifiers'
+                ).set_author(
+                    name='Upcoming Events'
+                ).set_image(
+                    url=i.map_image_url
+                ).set_footer(
+                    text='End Time'
+                )
+            )
 
-        map_ = None
-        for i in ctx.cog.constants.locations:
-            if i.sc_id == event.map_id:
-                map_ = i
-                break
-
-        if map_ is None:
-            continue
-
-        # first = event['coins']['first_win']
-        # freecoins = event['coins']['free']
-        # maxcoins = event['coins']['max']
-        em1.add_field(
-            name=f'{e(modes[map_.game_mode])} {modes[map_.game_mode]}: {map_.tID}',
-            value=(
-                f'Time Left: {timeleft} {clock_emoji}\n'
-                # f'First game: {first} {first_win_emoji}\n'
-                # f'Free coins: {freecoins} {coin_emoji}\n'
-                # f'Max Coins: {maxcoins} {coin_emoji}'
-            ),
-            inline=False
-        )
-
-    for event in events.upcoming:
-        seconds = event.start_time_in_seconds
-        minutes, seconds = divmod(seconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-
-        timeleft = ''
-        if days > 0:
-            timeleft += f'{days}d'
-        if hours > 0:
-            timeleft += f' {hours}h'
-        if minutes > 0:
-            timeleft += f' {minutes}m'
-        if seconds > 0:
-            timeleft += f' {seconds}s'
-
-        map_ = None
-        for i in ctx.cog.constants.locations:
-            if i.sc_id == event.map_id:
-                map_ = i
-
-        if map_ is None:
-            continue
-
-        # first = event['coins']['first_win']
-        # freecoins = event['coins']['free']
-        # maxcoins = event['coins']['max']
-        em2.add_field(
-            name=f'{e(modes[map_.game_mode])} {modes[map_.game_mode]}: {map_.tID}',
-            value=(
-                f'Time to go: {timeleft} {clock_emoji}\n'
-                # f'First game: {first} {first_win_emoji}\n'
-                # f'Free coins: {freecoins} {coin_emoji}\n'
-                # f'Max Coins: {maxcoins} {coin_emoji}'
-            ),
-            inline=False
-        )
-
-    return [em1, em2]
+    return ems
 
 
 def format_robo(ctx, leaderboard):
