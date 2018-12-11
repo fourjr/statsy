@@ -72,11 +72,12 @@ class Brawl_Stars:
             os.getenv('brawlstars'),
             session=bot.session,
             is_async=True,
-            timeout=20,
+            timeout=30,
             url=os.getenv('bs_url')
         )
-        self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
-        self.bot.loop.create_task(self.event_notifications())
+        if not self.bot.dev_mode:
+            self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
+        self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -236,7 +237,7 @@ class Brawl_Stars:
         """Returns the global top 200 players."""
         async with ctx.typing():
             player = await self.request('get_leaderboard', 'players')
-            ems = brawlstars.format_top_players(ctx, player.players)
+            ems = brawlstars.format_top_players(ctx, player)
 
         await Paginator(ctx, *ems).start()
 
@@ -246,7 +247,7 @@ class Brawl_Stars:
         """Returns the global top 200 players."""
         async with ctx.typing():
             club = await self.request('get_leaderboard', 'clubs')
-            ems = brawlstars.format_top_clubs(ctx, club.clubs)
+            ems = brawlstars.format_top_clubs(ctx, club)
 
         await Paginator(ctx, *ems).start()
 

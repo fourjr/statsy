@@ -107,6 +107,7 @@ class StatsBot(commands.AutoShardedBot):
                 self.backup_task_loop.cancel()
                 self.clan_update.cancel()
                 self.datadog_loop.cancel()
+                self.event_notifications_loop.cancel()
             self.loop.run_until_complete(self.logout())
             self.loop.run_until_complete(self.session.close())
             self.loop.close()

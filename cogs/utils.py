@@ -310,7 +310,15 @@ class Bot_Related:
             if em:
                 return await ctx.send(embed=em)
             else:
-                return await ctx.send(_('Could not find a cog or command by that name.'))
+                if ctx.guild:
+                    default_cog = self.bot.get_cog(self.bot.default_game[ctx.guild.id])
+                else:
+                    default_cog = self.bot.get_cog(self.bot.default_game[ctx.channel.id])
+
+                if not command.startswith(default_cog.alias):
+                    return await ctx.invoke(self._help, command=default_cog.alias + command)
+                else:
+                    return await ctx.send(_('Could not find a cog or command by that name.'))
 
         pages = []
 
