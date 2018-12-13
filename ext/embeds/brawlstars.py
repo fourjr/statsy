@@ -1,5 +1,6 @@
 import copy
 import io
+import json
 import math
 from datetime import datetime
 
@@ -177,14 +178,14 @@ def format_club(ctx, b):
 
 def format_top_players(ctx, players):
     region = 'global'
+    players = [box.Box(i, camel_killer_box=True) for i in json.loads(players.to_json())]
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = _('Top 200 {} players right now.').format(region)
-    # badge_image = ctx.bot.cr.get_clan_image(players[0])
-    em.set_author(name='Top Players')   # , icon_url=badge_image)
+    em.set_author(name='Top Players', icon_url=players[0].avatar_url)
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     embeds = []
     counter = 0
@@ -197,8 +198,7 @@ def format_top_players(ctx, players):
             else:
                 em.description = _('Top 200 {} players right now.').format(region)
 
-            # badge_image = ctx.bot.cr.get_clan_image(players[0])
-            em.set_author(name=_('Top Players'))  # , icon_url=badge_image)
+            em.set_author(name=_('Top Players'), icon_url=players[0].avatar_url)
             em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         try:
@@ -221,14 +221,14 @@ def format_top_players(ctx, players):
 
 def format_top_clubs(ctx, clans):
     region = 'global'
+    clans = [box.Box(i, camel_killer_box=True) for i in json.loads(clans.to_json())]
 
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
     else:
         em.description = _('Top 200 {} clubs right now.').format(region)
-    # badge_image = ctx.bot.cr.get_clan_image(clans[0])
-    em.set_author(name='Top Clubs')  # , icon_url=badge_image)
+    em.set_author(name='Top Clubs', icon_url=clans[0].badge_url)
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
     embeds = []
     counter = 0
@@ -241,8 +241,7 @@ def format_top_clubs(ctx, clans):
             else:
                 em.description = _('Top 200 {} clubs right now.').format(region)
 
-            # badge_image = ctx.bot.cr.get_clan_image(clans[0])
-            em.set_author(name=_('Top Clubs'))  # , icon_url=badge_image)
+            em.set_author(name=_('Top Clubs'), icon_url=clans[0].badge_url)
             em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
         em.add_field(
