@@ -336,19 +336,18 @@ class Brawl_Stars:
             }
 
             events = await self.request('get_events')
-            await asyncio.sleep(min(i.start_time_in_seconds for i in events.upcoming))
+            wait_time = min(i.start_time_in_seconds for i in events.upcoming)
+            await asyncio.sleep(wait_time)
 
             guilds = self.bot.mongo.config.guilds.find({'event_notify': {'$exists': True}})
+            announce = [i for i in events.upcoming if i.start_time_in_seconds == wait_time]
             async for g in guilds:
                 channel = self.bot.get_guild(int(g['guild_id'])).get_channel(int(g['event_notify']))
-
-                events = await self.request('get_events')
-                announce = [i for i in events.current if i.end_time_in_seconds == max(e.end_time_in_seconds for e in events.current)]
 
                 for event in announce:
                     em = discord.Embed(
                         color=colors[event.game_mode],
-                        timestamp=utils.get_datetime(event.end_time, unix=False)
+                        timestamp=self.bs.get_datetime(event.end_time, unix=False)
                     ).add_field(
                         name=f'{utils.e(event.game_mode)} {event.game_mode}: {event.map_name}',
                         value=f'{utils.e(event.modifier_name)} {event.modifier_name}' if event.has_modifier else 'No Modifiers'
