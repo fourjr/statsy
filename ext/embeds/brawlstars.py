@@ -292,10 +292,10 @@ def format_events(ctx, events, type_):
     if type_ in ('upcoming', 'all'):
         ems.append([])
         for i in events.upcoming:
-            ems[1].append(
+            ems[-1].append(
                 discord.Embed(
                     color=colors[i.game_mode],
-                    timestamp=get_datetime(i.end_time, unix=False)
+                    timestamp=get_datetime(i.start_time, unix=False)
                 ).add_field(
                     name=f'{e(i.game_mode)} {i.game_mode}: {i.map_name}',
                     value=f'{e(i.modifier_name)} {i.modifier_name}' if i.has_modifier else 'No Modifiers'
@@ -304,7 +304,7 @@ def format_events(ctx, events, type_):
                 ).set_image(
                     url=i.map_image_url
                 ).set_footer(
-                    text='End Time'
+                    text='Start Time'
                 )
             )
 
