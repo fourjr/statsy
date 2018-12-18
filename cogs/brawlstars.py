@@ -400,7 +400,7 @@ class Brawl_Stars:
 
             if not message:
                 try:
-                    message = await self.bot.get_channel(m['channel']).send('Clan Stats')
+                    message = await self.bot.get_channel(int(m['channel'])).send('Clan Stats')
                 except AttributeError:
                     await self.bot.mongo.find_one_and_delete({'guild_id': str(g['guild_id'])})
                     break
