@@ -1278,7 +1278,7 @@ def format_clan_stats(clan, war):
             f'<:clan:376373812012384267> {len(clan.member_list)}/50',
             f'<:trophy:376367869551706112> {clan.clan_score}',
             f'<:wartrophy:448423299668770816> {war_trophies}',
-            f'<:trophy:376367869551706112> {clan.required_trophies} required',
+            f'<:trophy:376367869551706112> {clan.required_trophies} Required',
             f'<:cards:376367863935664130> {clan.donations_per_week}/week'
         )
     )

@@ -397,3 +397,13 @@ async def format_random_brawler_and_send(ctx, brawler):
     em.set_image(url='attachment://brawler.png')
 
     await ctx.send(file=discord.File(image, 'brawler.png'), embed=em)
+
+
+def format_club_stats(clan):
+    return '\n'.join(
+        (
+            f"{e('gameroom')} {len(clan.members)}/100",
+            f"{e('bsangel')} {clan.trophies}",
+            f"{e('bstrophy2')} {clan.required_trophies} Required"
+        )
+    )

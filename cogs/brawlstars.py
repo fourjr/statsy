@@ -9,6 +9,7 @@ import datadog
 import discord
 import requests
 from cachetools import TTLCache
+from datetime import datetime
 from discord.ext import commands
 
 import box
@@ -78,6 +79,7 @@ class Brawl_Stars:
         if not self.bot.dev_mode:
             self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
         self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
+        self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -363,6 +365,66 @@ class Brawl_Stars:
                         await channel.send(embed=em)
                     except (AttributeError, discord.NotFound):
                         pass
+
+    async def get_clubs(self, *tags):
+        clans = []
+        for t in tags:
+            clans.append(await self.request('get_club', t, reason='clanstats'))
+            await asyncio.sleep(0.5)
+        return clans
+
+    async def clanupdate(self, clan=None):
+        if not clan:
+            guilds = await self.bot.mongo.config.guilds.find({'bsclubinfo': {'$exists': True}}).to_list(None)
+        else:
+            guilds = [clan]
+
+        for g in guilds:
+            m = g['bsclubinfo']
+            clans = await self.get_clubs(*m['clubs'])
+
+            embed = discord.Embed(title="Club Statistics!", color=0xf1c40f, timestamp=datetime.utcnow())
+            total_members = 0
+
+            for i in range(len(clans)):
+                embed.add_field(name=clans[i].name, value=brawlstars.format_club_stats(clans[i]))
+                total_members += len(clans[i].members)
+
+            embed.add_field(name='More Info', value=f"{utils.e('friends')} {total_members}/{100*len(clans)}", inline=False)
+
+            try:
+                channel = self.bot.get_channel(int(m['channel']))
+                message = await channel.get_message(int(m['message']))
+            except AttributeError:
+                message = None
+
+            if not message:
+                try:
+                    message = await self.bot.get_channel(m['channel']).send('Clan Stats')
+                except AttributeError:
+                    await self.bot.mongo.find_one_and_delete({'guild_id': str(g['guild_id'])})
+                    break
+
+            await message.edit(content='', embed=embed)
+            return message
+
+    async def on_raw_reaction_add(self, payload):
+        data = await self.bot.mongo.config.guilds.find_one({'guild_id': str(payload.guild_id), 'claninfo.message': str(payload.message_id)})
+        if data:
+            member = self.bot.get_guild(payload.guild_id).get_member(payload.user_id)
+
+            if member == self.bot.user:
+                return
+
+            message = await self.clanupdate(data)
+            await message.clear_reactions()
+            await message.add_reaction(':refresh:477405504512065536')
+
+    async def clan_update_loop(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            await self.clanupdate()
+            await asyncio.sleep(600)
 
 
 def setup(bot):
