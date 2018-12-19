@@ -334,7 +334,8 @@ class Brawl_Stars:
                 'Bounty': 0x01CFFF,
                 'Brawl Ball': 0x8CA0DF,
                 'Robo Rumble': 0xAE0026,
-                'Big Game': 0xDC2422
+                'Big Game': 0xDC2422,
+                'Boss Fight': 0xDC2422
             }
 
             events = await self.request('get_events')
