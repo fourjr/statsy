@@ -410,7 +410,7 @@ class Brawl_Stars:
             return message
 
     async def on_raw_reaction_add(self, payload):
-        data = await self.bot.mongo.config.guilds.find_one({'guild_id': str(payload.guild_id), 'claninfo.message': str(payload.message_id)})
+        data = await self.bot.mongo.config.guilds.find_one({'guild_id': str(payload.guild_id), 'bsclubinfo.message': str(payload.message_id)})
         if data:
             member = self.bot.get_guild(payload.guild_id).get_member(payload.user_id)
 
