@@ -271,11 +271,12 @@ class Brawl_Stars:
     @utils.has_perms()
     async def roborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
-        async with ctx.typing():
-            leaderboard = await self.request('rumbleboard', leaderboard=True)
-            ems = brawlstars.format_robo(ctx, leaderboard)
+        await ctx.send('Too many people to show!')
+        # async with ctx.typing():
+        #     leaderboard = await self.request('rumbleboard', leaderboard=True)
+        #     ems = brawlstars.format_robo(ctx, leaderboard)
 
-        await Paginator(ctx, *ems).start()
+        # await Paginator(ctx, *ems).start()
 
     @command(aliases=['boss'])
     @utils.has_perms()
