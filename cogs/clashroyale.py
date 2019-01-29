@@ -260,6 +260,9 @@ class Clash_Royale:
         guilds = self.bot.mongo.config.guilds.find({'tournament.types': {'$in': t_filter}})
         async for g in guilds:
             guild = self.bot.get_guild(int(g['guild_id']))
+            if guild is None:
+                continue
+
             mention = g['tournament']['mention']
             change_permissions = False
 
