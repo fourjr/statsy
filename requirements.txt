@@ -10,5 +10,5 @@ datadog==0.22.0
 oauth2client==4.1.2
 dhooks
 objgraph
-brawlstats==2.1.9
+git+https://github.com/fourjr/brawlstats@patch-1
 prettytable
