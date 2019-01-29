@@ -63,7 +63,7 @@ def format_profile(ctx, p):
         (_('3v3 Victories'), f"{p.victories} {e('bountystar')}", True),
         (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('showdown')}", True),
         (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
-        (_('Best time as Boss'), f"{p.best_time_as_boss} {e('bossfight')}", True),
+        (_('Best time as Big Brawler'), f"{p.best_time_as_boss} {e('biggame')}", True),
         (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
         (_('XP Level'), f"{p.exp_level} ({p.exp_fmt}) {e('xp')}", True),
         (_('Club Name'), p.club.name if club else None, True),
@@ -275,7 +275,7 @@ def format_events(ctx, events, type_):
         for i in events.current:
             ems[0].append(
                 discord.Embed(
-                    color=colors[i.game_mode],
+                    color=colors.get(i.game_mode, 0xfbce3f),
                     timestamp=ctx.cog.bs.get_datetime(i.end_time, unix=False)
                 ).add_field(
                     name=f'{e(i.game_mode)} {i.game_mode}: {i.map_name}',
@@ -294,7 +294,7 @@ def format_events(ctx, events, type_):
         for i in events.upcoming:
             ems[-1].append(
                 discord.Embed(
-                    color=colors[i.game_mode],
+                    color=color=colors.get(i.game_mode, 0xfbce3f),
                     timestamp=ctx.cog.bs.get_datetime(i.start_time, unix=False)
                 ).add_field(
                     name=f'{e(i.game_mode)} {i.game_mode}: {i.map_name}',

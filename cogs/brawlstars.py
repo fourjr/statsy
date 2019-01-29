@@ -278,10 +278,9 @@ class Brawl_Stars:
 
         # await Paginator(ctx, *ems).start()
 
-    @command(aliases=['boss'])
     @utils.has_perms()
-    async def bossfight(self, ctx):
-        """Shows the boss fight leaderboard"""
+    async def biggame(self, ctx):
+        """Shows the big game leaderboard"""
         async with ctx.typing():
             leaderboard = await self.request('bossboard', leaderboard=True)
             ems = brawlstars.format_boss(ctx, leaderboard)
