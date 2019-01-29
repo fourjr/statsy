@@ -294,7 +294,7 @@ def format_events(ctx, events, type_):
         for i in events.upcoming:
             ems[-1].append(
                 discord.Embed(
-                    color=color=colors.get(i.game_mode, 0xfbce3f),
+                    color=colors.get(i.game_mode, 0xfbce3f),
                     timestamp=ctx.cog.bs.get_datetime(i.start_time, unix=False)
                 ).add_field(
                     name=f'{e(i.game_mode)} {i.game_mode}: {i.map_name}',
