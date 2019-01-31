@@ -24,7 +24,11 @@ _ = Translator('Brawl Stars', __file__)
 
 shortcuts = {
     'juice': '2PP00',
-    'pulp': 'PY9JLV'
+    'pulp': 'PY9JLV',
+    'cactus': 'QCGV8PG',
+    'whiskey': 'QCCQCGV',
+    'barrel': 'QCGVPV8',
+    'boom': 'QCGUUYJ'
 }
 
 
