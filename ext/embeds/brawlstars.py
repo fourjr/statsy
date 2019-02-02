@@ -51,7 +51,7 @@ def format_profile(ctx, p):
         pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-    brawlers = ' '.join([f'{e(i.name)} {i.level}  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {i.level}\n' for n, i in enumerate(p.brawlers)])
+    brawlers = ' '.join([f'{e(i.name)} {i.power}  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {i.power}\n' for n, i in enumerate(p.brawlers)])
 
     try:
         club = p.club.name
@@ -63,7 +63,7 @@ def format_profile(ctx, p):
         (_('3v3 Victories'), f"{p.victories} {e('bountystar')}", True),
         (_('Solo Showdown Wins'), f"{p.solo_showdown_victories} {e('showdown')}", True),
         (_('Duo Showdown Wins'), f"{p.duo_showdown_victories} {e('duoshowdown')}", True),
-        (_('Best time as Big Brawler'), f"{p.best_time_as_boss} {e('biggame')}", True),
+        (_('Best time as Big Brawler'), f"{p.best_time_as_big_brawler} {e('biggame')}", True),
         (_('Best Robo Rumble Time'), f"{p.best_robo_rumble_time} {e('roborumble')}", True),
         (_('XP Level'), f"{p.exp_level} ({p.exp_fmt}) {e('xp')}", True),
         (_('Club Name'), p.club.name if club else None, True),

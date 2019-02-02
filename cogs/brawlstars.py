@@ -265,7 +265,10 @@ class Brawl_Stars:
             ems = brawlstars.format_events(ctx, events, type)
 
         for i in ems:
-            await Paginator(ctx, *i).start()
+            try:
+                await Paginator(ctx, *i).start()
+            except:
+                await ctx.send('Unable to get event data')
 
     @command(aliases=['robo'])
     @utils.has_perms()
