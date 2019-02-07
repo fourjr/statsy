@@ -2,7 +2,7 @@ import asyncio
 import functools
 import inspect
 import random
-from datetime import datetime
+import re
 
 import discord
 from discord.ext import commands
@@ -124,3 +124,11 @@ def cdir(obj):
 
 def lower(arg):
     return arg.lower()
+
+
+def camel_case(text, split=' '):
+    # from stackoverflow :p
+    if text in (None, 'PvP'):
+        return text
+    matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
+    return split.join(m.group(0) for m in matches).title()

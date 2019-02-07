@@ -76,10 +76,10 @@ class Brawl_Stars:
             timeout=30,
             url=os.getenv('bs_url')
         )
+        self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
         if not self.bot.dev_mode:
-            self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
-        self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
-        self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
+            self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
+            self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -297,6 +297,20 @@ class Brawl_Stars:
         async with ctx.typing():
             brawler = random.choice([i for i in self.constants.characters if i.tID]).tID
             await brawlstars.format_random_brawler_and_send(ctx, brawler)
+
+    @command(aliaes=['brawler', 'wiki'])
+    @utils.has_perms()
+    async def brawlerstats(self, ctx, *, brawler_name: str.lower):
+        """Gets a random brawler"""
+        try:
+            brawler = next(i for i in self.constants.characters if (i.tID or '').lower() == brawler_name)
+        except StopIteration:
+            await ctx.send('Invalid brawler name')
+        else:
+            if brawler.tID == 'Gene':
+                return await ctx.send('Invalid brawler name')
+            ems = brawlstars.format_brawler_stats(ctx, brawler)
+            await Paginator(ctx, *ems).start()
 
     async def on_typing(self, channel, user, when):
         if self.bot.is_closed() or not await self.__local_check(channel) or user.bot:

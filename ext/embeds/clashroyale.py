@@ -1,12 +1,11 @@
 import copy
 import datetime
 import math
-import re
 import asyncio
 
 import discord
 
-from ext.utils import e, random_color, asyncexecutor
+from ext.utils import e, random_color, asyncexecutor, camel_case
 from locales.i18n import Translator
 
 import io
@@ -17,14 +16,6 @@ from PIL import ImageFont
 _ = Translator('CR Embeds', __file__)
 
 images = 'https://royaleapi.github.io/cr-api-assets/cards-png8'
-
-
-def camel_case(text):
-    # from stackoverflow :p
-    if text in (None, 'PvP'):
-        return text
-    matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
-    return ' '.join(m.group(0) for m in matches).title()
 
 
 def get_card_level(card):

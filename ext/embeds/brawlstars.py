@@ -2,17 +2,24 @@ import copy
 import io
 import json
 import math
+import re
 from datetime import datetime
 
 import box
 import discord
 
-from ext.utils import e, random_color
+from ext.utils import e, random_color, camel_case
 from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
 
 url = 'https://fourjr.github.io/bs-assets'
+
+
+def clean(text):
+    """Clean color codes from text"""
+    p = re.sub(r'<c(\w|\d)+>(.+)<\/c>', r'\2', text)
+    return p or text
 
 
 def format_timestamp(seconds: int):
@@ -408,3 +415,121 @@ def format_club_stats(clan):
             f"{e('bstrophy2')} {clan.required_trophies} Required"
         )
     )
+
+
+def format_brawler_stats(ctx, brawler):
+    name = (brawler.tID or camel_case(brawler.name)).title()
+    camel_name = camel_case(brawler.name, split='_').upper()
+    rarity = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unlock').rarity
+
+    colors = {
+        'common': 0x94d7f4,
+        'rare': 0x2edd1c,
+        'epic': 0x0087fa,  # uncommon
+        'super_rare': 0xb116ed,
+        'mega_epic': 0xff0020,  # mythic
+        'legendary': 0xfff11e
+    }
+    color = colors[rarity]
+    ems = []
+    ems.append(discord.Embed(
+        # title='**`Basic Statistics`**',
+        # description=,
+        color=color
+    ))
+    ems[0].set_author(name=name, icon_url=e(brawler.tID).url)
+
+    # page 1 - basic stats
+    weapon_skill = next(i for i in ctx.cog.constants.skills if i.name == brawler.weapon_skill)
+    weapon_card = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_abi')
+    ulti_skill = next(i for i in ctx.cog.constants.skills if i.name == brawler.ultimate_skill)
+    ulti_card = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_ulti')
+    hp_card = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_hp')
+
+    if ulti_skill.summoned_character:
+        pet = next(i for i in ctx.cog.constants.characters if i.name == ulti_skill.summoned_character)
+    elif brawler.pet:
+        pet = next(i for i in ctx.cog.constants.characters if i.name == brawler.pet)
+    else:
+        pet = None
+
+    increase_hp = brawler.hitpoints // 20
+    increase_weapon_damage = weapon_skill.damage // 20
+
+    if ulti_skill.damage:
+        increase_ulti_damage = ulti_skill.damage // 20
+
+    ems[0].add_field(
+        name='`Basic Statistics`',
+        value=f"**```{ctx.cog.constants.texts[f'{camel_name}_DESC']}```**",
+        inline=False
+    )
+
+    ems[0].add_field(name=f"{e('speedstat')} Speed", value=brawler.speed)
+    ems[0].add_field(name=f"{e('superstat')} Super Charge", value=brawler.ulti_charge_ulti_mul)
+    # ems[0].add_field(name='Attack start effect offset', value=brawler.attack_start_effect_offset)
+
+    if pet:
+        ems[0].add_field(
+            name=f"`{ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
+            value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
+            inline=False
+        )
+        increase_pet_hp = pet.hitpoints // 20
+        increase_pet_damage = pet.auto_attack_damage // 20
+        ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=pet.speed)
+        ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=pet.auto_attack_speed_ms)
+
+    if brawler.charge_ulti_automatically:
+        ems[0].add_field(name=f"{e('superstat')} Super regenerate/second", value=brawler.charge_ulti_automatically)
+
+    # page 1-9 brawler stats
+    for i in range(9):
+        ems.append(discord.Embed(
+            title=f'Level {i + 1}',
+            color=color
+        ))
+        ems[-1].set_author(name=name, icon_url=e(brawler.tID).url)
+
+        ems[-1].add_field(
+            name=f"`{ctx.cog.constants.texts[f'{camel_name}_WEAPON'].title()}`",
+            value=f"**```{ctx.cog.constants.texts[f'{camel_name}_WEAPON_DESC'].title()}```**",
+            inline=False
+        )
+
+        brawler.hitpoints += increase_hp
+        weapon_skill.damage += increase_weapon_damage
+
+        ems[-1].add_field(name=f"{e('healthstat')} {hp_card.powerNumberTID}", value=brawler.hitpoints)
+        ems[-1].add_field(name=f"{e('attackstat')} {weapon_card.powerNumberTID}", value=weapon_skill.damage)
+
+        ems[-1].add_field(
+            name=f"`{ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
+            value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
+            inline=False
+        )
+
+        if ulti_skill.damage:
+            ulti_skill.damage += increase_ulti_damage
+            ems[-1].add_field(name=f"{e('superstat')} Super {ulti_card.powerNumberTID}", value=ulti_skill.damage)
+
+        if pet:
+            pet.hitpoints += increase_pet_hp
+            pet.auto_attack_damage += increase_pet_damage
+            ems[-1].add_field(name=f"{e('healthstat')} {ulti_card.powerNumber2TID or 'Pet HP'}", value=pet.hitpoints)
+            ems[-1].add_field(name=f"{e('attackstat')} {ulti_card.powerNumberTID}", value=pet.auto_attack_damage)
+
+    # star power
+    star_power = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unique')
+    description = clean(
+        ctx.cog.constants.texts.get(f'SPEC_ABI_{star_power.type.upper()}_DESC', f'SPEC_ABI_{star_power.type.upper()}_DESC')
+    ).replace('<VALUE1>', str(star_power.value)).replace('<VALUE2>', str(star_power.value2))
+
+    ems.append(discord.Embed(
+        title=f'Star Power - {star_power.tID}',
+        description=description,
+        color=color
+    ))
+    ems[-1].set_author(name=name, icon_url=e(brawler.tID).url)
+
+    return ems
