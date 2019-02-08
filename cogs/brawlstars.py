@@ -157,7 +157,11 @@ class Brawl_Stars:
                     data = box.Box(json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2]), camel_killer_box=True)
             else:
                 speed = time.time()
-                data = await getattr(self.bs, method)(*args, **kwargs)
+                try:
+                    data = await getattr(self.bs, method)(*args, **kwargs)
+                except brawlstats.RequestError:
+                    return
+
                 speed = time.time() - speed
 
                 if isinstance(data, list):

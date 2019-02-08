@@ -18,7 +18,7 @@ url = 'https://fourjr.github.io/bs-assets'
 
 def clean(text):
     """Clean color codes from text"""
-    p = re.sub(r'<c(\w|\d)+>(.+)<\/c>', r'\2', text)
+    p = re.sub(r'<c(\w|\d)+>(.+?)<\/c>', r'\2', text)
     return p or text
 
 
@@ -465,20 +465,23 @@ def format_brawler_stats(ctx, brawler):
         inline=False
     )
 
-    ems[0].add_field(name=f"{e('speedstat')} Speed", value=brawler.speed)
-    ems[0].add_field(name=f"{e('superstat')} Super Charge", value=brawler.ulti_charge_ulti_mul)
-    ems[0].add_field(name=f"{e('rangestat')} Range", value=f'{weapon_skill.casting_range / 3:.2f}')
-    ems[0].add_field(name=f"{e('reloadstat')} Reload Time (ms)", value=weapon_skill.recharge_time)
+    ems[0].add_field(name=f"{e('speedstat')} Speed", value=f'{brawler.speed / 300:.2f} tiles/second')
+    ems[0].add_field(name=f"{e('rangestat')} Attack Range", value=f'{weapon_skill.casting_range / 3:.2f} tiles')
+
+    if ulti_skill.casting_range and weapon_skill.casting_range != ulti_skill.casting_range:
+        ems[0].add_field(name=f"{e('rangestat')} Super Range", value=f'{ulti_skill.casting_range / 3:.2f} tiles')
+
+    ems[0].add_field(name=f"{e('reloadstat')} Reload Time", value=f'{weapon_skill.recharge_time} ms')
     ems[0].add_field(
-        name=f"{e('reloadstat')} Animation Time (ms)",
-        value=(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)
+        name=f"{e('reloadstat')} Animation Time",
+        value=f'{(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)} ms'
     )  # might not be right :)
 
     # if weapon_skill.num_bullets_in_one_attack:
     #     ems[0].add_field(name=f"{e('bulletstat')} Number of bullets/attack", value=weapon_skill.num_bullets_in_one_attack)
 
     if weapon_skill.spread:
-        ems[0].add_field(name=f"{e('bulletstat')} Bullet spread", value=weapon_skill.spread)
+        ems[0].add_field(name=f"{e('bulletstat')} Bullet Spread", value=f'{weapon_skill.spread * 0.38:.2f}°')
 
     if pet:
         ems[0].add_field(
@@ -487,14 +490,12 @@ def format_brawler_stats(ctx, brawler):
             inline=False
         )
         increase_pet_hp = pet.hitpoints // 20
-        ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=pet.speed)
+        if pet.speed:
+            ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=pet.speed)
 
         if pet.auto_attack_damage:
             increase_pet_damage = pet.auto_attack_damage // 20
             ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=pet.auto_attack_speed_ms)
-
-    if brawler.charge_ulti_automatically:
-        ems[0].add_field(name=f"{e('superstat')} Super regenerate/second", value=brawler.charge_ulti_automatically)
 
     # page 1-9 brawler stats
     for i in range(9):
@@ -515,6 +516,10 @@ def format_brawler_stats(ctx, brawler):
 
         ems[-1].add_field(name=f"{e('healthstat')} {hp_card.powerNumberTID.title()}", value=brawler.hitpoints)
         ems[-1].add_field(name=f"{e('attackstat')} {weapon_card.powerNumberTID.title()}", value=weapon_skill.damage)
+        ems[-1].add_field(name=f"{e('superstat')} Super Charge", value=f'{weapon_skill.damage * brawler.ulti_charge_mul / math.pi / 360 / 360 * 100:.2f}%')  # damage*UltiChargeMul/360/pi
+
+        if brawler.charge_ulti_automatically:
+            ems[-1].add_field(name=f"{e('superstat')} Super Regeneration", value=f'{weapon_skill.damage * brawler.charge_ulti_automatically / math.pi / 360 / 360 * 100:.2f}%/second')
 
         ems[-1].add_field(
             name=f"`Super - {ulti_card.tID.title()}`",
