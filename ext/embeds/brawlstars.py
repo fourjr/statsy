@@ -473,8 +473,10 @@ def format_brawler_stats(ctx, brawler):
         name=f"{e('reloadstat')} Animation Time (ms)",
         value=(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)
     )  # might not be right :)
-    if weapon_skill.num_bullets_in_one_attack:
-        ems[0].add_field(name=f"{e('bulletstat')} Number of bullets/attack", value=weapon_skill.num_bullets_in_one_attack)
+
+    # if weapon_skill.num_bullets_in_one_attack:
+    #     ems[0].add_field(name=f"{e('bulletstat')} Number of bullets/attack", value=weapon_skill.num_bullets_in_one_attack)
+
     if weapon_skill.spread:
         ems[0].add_field(name=f"{e('bulletstat')} Bullet spread", value=weapon_skill.spread)
 
@@ -485,9 +487,11 @@ def format_brawler_stats(ctx, brawler):
             inline=False
         )
         increase_pet_hp = pet.hitpoints // 20
-        increase_pet_damage = pet.auto_attack_damage // 20
         ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=pet.speed)
-        ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=pet.auto_attack_speed_ms)
+
+        if pet.auto_attack_damage:
+            increase_pet_damage = pet.auto_attack_damage // 20
+            ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=pet.auto_attack_speed_ms)
 
     if brawler.charge_ulti_automatically:
         ems[0].add_field(name=f"{e('superstat')} Super regenerate/second", value=brawler.charge_ulti_automatically)
@@ -524,9 +528,11 @@ def format_brawler_stats(ctx, brawler):
 
         if pet:
             pet.hitpoints += increase_pet_hp
-            pet.auto_attack_damage += increase_pet_damage
-            ems[-1].add_field(name=f"{e('healthstat')} {ulti_card.powerNumber2TID.title() or 'Pet HP'}", value=pet.hitpoints)
-            ems[-1].add_field(name=f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", value=pet.auto_attack_damage)
+            ems[-1].add_field(name=f"{e('healthstat')} {(ulti_card.powerNumber2TID or 'Pet HP').title()}", value=pet.hitpoints)
+
+            if pet.auto_attack_damage:
+                pet.auto_attack_damage += increase_pet_damage
+                ems[-1].add_field(name=f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", value=pet.auto_attack_damage)
 
     # star power
     star_power = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unique')
