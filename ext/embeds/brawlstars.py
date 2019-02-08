@@ -491,11 +491,11 @@ def format_brawler_stats(ctx, brawler):
         )
         increase_pet_hp = pet.hitpoints // 20
         if pet.speed:
-            ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=pet.speed)
+            ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=f'{pet.speed / 300:.2f} tiles/second')
 
         if pet.auto_attack_damage:
             increase_pet_damage = pet.auto_attack_damage // 20
-            ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=pet.auto_attack_speed_ms)
+            ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=f'{pet.auto_attack_speed_ms / 300:.2f} attacks/second')
 
     # page 1-9 brawler stats
     for i in range(9):
