@@ -298,7 +298,7 @@ class Brawl_Stars:
             brawler = random.choice([i for i in self.constants.characters if i.tID]).tID
             await brawlstars.format_random_brawler_and_send(ctx, brawler)
 
-    @command(aliaes=['brawler', 'wiki'])
+    @command(aliases=['brawler', 'wiki'])
     @utils.has_perms()
     async def brawlerstats(self, ctx, *, brawler_name: str.lower):
         """Gets a random brawler"""

@@ -467,11 +467,20 @@ def format_brawler_stats(ctx, brawler):
 
     ems[0].add_field(name=f"{e('speedstat')} Speed", value=brawler.speed)
     ems[0].add_field(name=f"{e('superstat')} Super Charge", value=brawler.ulti_charge_ulti_mul)
-    # ems[0].add_field(name='Attack start effect offset', value=brawler.attack_start_effect_offset)
+    ems[0].add_field(name=f"{e('rangestat')} Range", value=f'{weapon_skill.casting_range / 3:.2f}')
+    ems[0].add_field(name=f"{e('reloadstat')} Reload Time (ms)", value=weapon_skill.recharge_time)
+    ems[0].add_field(
+        name=f"{e('reloadstat')} Animation Time (ms)",
+        value=(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)
+    )  # might not be right :)
+    if weapon_skill.num_bullets_in_one_attack:
+        ems[0].add_field(name=f"{e('bulletstat')} Number of bullets/attack", value=weapon_skill.num_bullets_in_one_attack)
+    if weapon_skill.spread:
+        ems[0].add_field(name=f"{e('bulletstat')} Bullet spread", value=weapon_skill.spread)
 
     if pet:
         ems[0].add_field(
-            name=f"`{ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
+            name=f"`Super - {ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
             value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
             inline=False
         )
@@ -492,32 +501,32 @@ def format_brawler_stats(ctx, brawler):
         ems[-1].set_author(name=name, icon_url=e(brawler.tID).url)
 
         ems[-1].add_field(
-            name=f"`{ctx.cog.constants.texts[f'{camel_name}_WEAPON'].title()}`",
-            value=f"**```{ctx.cog.constants.texts[f'{camel_name}_WEAPON_DESC'].title()}```**",
+            name=f"`Attack - {weapon_card.tID.title()}`",
+            value=f"**```{ctx.cog.constants.texts[f'{weapon_card.rawTID}_DESC'].title()}```**",
             inline=False
         )
 
         brawler.hitpoints += increase_hp
         weapon_skill.damage += increase_weapon_damage
 
-        ems[-1].add_field(name=f"{e('healthstat')} {hp_card.powerNumberTID}", value=brawler.hitpoints)
-        ems[-1].add_field(name=f"{e('attackstat')} {weapon_card.powerNumberTID}", value=weapon_skill.damage)
+        ems[-1].add_field(name=f"{e('healthstat')} {hp_card.powerNumberTID.title()}", value=brawler.hitpoints)
+        ems[-1].add_field(name=f"{e('attackstat')} {weapon_card.powerNumberTID.title()}", value=weapon_skill.damage)
 
         ems[-1].add_field(
-            name=f"`{ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
-            value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
+            name=f"`Super - {ulti_card.tID.title()}`",
+            value=f"**```{ctx.cog.constants.texts[f'{ulti_card.rawTID}_DESC'].title()}```**",
             inline=False
         )
 
         if ulti_skill.damage:
             ulti_skill.damage += increase_ulti_damage
-            ems[-1].add_field(name=f"{e('superstat')} Super {ulti_card.powerNumberTID}", value=ulti_skill.damage)
+            ems[-1].add_field(name=f"{e('superstat')} Super {ulti_card.powerNumberTID.title()}", value=ulti_skill.damage)
 
         if pet:
             pet.hitpoints += increase_pet_hp
             pet.auto_attack_damage += increase_pet_damage
-            ems[-1].add_field(name=f"{e('healthstat')} {ulti_card.powerNumber2TID or 'Pet HP'}", value=pet.hitpoints)
-            ems[-1].add_field(name=f"{e('attackstat')} {ulti_card.powerNumberTID}", value=pet.auto_attack_damage)
+            ems[-1].add_field(name=f"{e('healthstat')} {ulti_card.powerNumber2TID.title() or 'Pet HP'}", value=pet.hitpoints)
+            ems[-1].add_field(name=f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", value=pet.auto_attack_damage)
 
     # star power
     star_power = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unique')
