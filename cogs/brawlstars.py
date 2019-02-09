@@ -76,7 +76,10 @@ class Brawl_Stars:
             timeout=30,
             url=os.getenv('bs_url')
         )
-        self.constants = box.Box(json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text), camel_killer_box=True)
+        self.constants = box.Box(
+            json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text),
+            camel_killer_box=True
+        )
         if not self.bot.dev_mode:
             self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
             self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())

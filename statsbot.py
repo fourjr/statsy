@@ -31,7 +31,7 @@ from locales.i18n import Translator
 _ = Translator('Core', __file__)
 
 
-class StatsBot(commands.AutoShardedBot):
+class Statsy(commands.AutoShardedBot):
     """Custom client for statsy made by Kyber"""
     emoji_servers = [
         376364364636094465,
@@ -465,4 +465,4 @@ if __name__ == '__main__':
     logger.addHandler(handler)
 
     datadog.initialize(api_key=os.getenv('api_key'), app_key=os.getenv('app_key'))
-    StatsBot()
+    Statsy()

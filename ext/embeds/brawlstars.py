@@ -8,7 +8,8 @@ from datetime import datetime
 import box
 import discord
 
-from ext.utils import e, random_color, camel_case
+from ext.utils import random_color, camel_case, get_stack_variable
+from ext.utils import e as emoji
 from locales.i18n import Translator
 
 _ = Translator('BS Embeds', __file__)
@@ -42,6 +43,25 @@ def format_timestamp(seconds: int):
     return timeleft
 
 
+def e(name):
+    """Wrapper to the default emoji function to support brawler names"""
+    ctx = get_stack_variable('ctx')
+    name = name.lower()
+    try:
+        brawler = next(i for i in ctx.cog.constants.characters if i.name.lower() == name or (i.tID or '').lower() == name)
+    except StopIteration:
+        return emoji(name, ctx=ctx)
+    else:
+        return emoji(next(i for i in ctx.cog.constants.player_thumbnails if i.required_hero == brawler.name).sc_id, ctx=ctx)
+
+
+def format_0(val):
+    if val < 10:
+        return f'0{val}'
+    else:
+        return str(val)
+
+
 def format_profile(ctx, p):
     em = discord.Embed(color=random_color())
     if ctx.bot.psa_message:
@@ -58,7 +78,7 @@ def format_profile(ctx, p):
         pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-    brawlers = ' '.join([f'{e(i.name)} {i.power}  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {i.power}\n' for n, i in enumerate(p.brawlers)])
+    brawlers = ' '.join([f'{e(i.name)} `{format_0(i.power)}`  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {format_0(i.power)}\n' for n, i in enumerate(p.brawlers)])
 
     try:
         club = p.club.name
@@ -432,12 +452,6 @@ def format_brawler_stats(ctx, brawler):
     }
     color = colors[rarity]
     ems = []
-    ems.append(discord.Embed(
-        # title='**`Basic Statistics`**',
-        # description=,
-        color=color
-    ))
-    ems[0].set_author(name=name, icon_url=e(brawler.tID).url)
 
     # page 1 - basic stats
     weapon_skill = next(i for i in ctx.cog.constants.skills if i.name == brawler.weapon_skill)
@@ -459,51 +473,63 @@ def format_brawler_stats(ctx, brawler):
     if ulti_skill.damage:
         increase_ulti_damage = ulti_skill.damage // 20
 
-    ems[0].add_field(
+    def add_fields(*stats):
+        for n, v, c in stats:
+            if c:
+                ems[-1].add_field(name=n, value=v)
+
+    def decimal(value):
+        return f'{value:.2f}'.rstrip('0').rstrip('.')
+
+    ems.append(discord.Embed(
+        title=name,
+        color=color
+    ))
+    ems[-1].set_thumbnail(url=e(brawler.tID).url)
+
+    ems[-1].add_field(
         name='`Basic Statistics`',
         value=f"**```{ctx.cog.constants.texts[f'{camel_name}_DESC']}```**",
         inline=False
     )
 
-    ems[0].add_field(name=f"{e('speedstat')} Speed", value=f'{brawler.speed / 300:.2f} tiles/second')
-    ems[0].add_field(name=f"{e('rangestat')} Attack Range", value=f'{weapon_skill.casting_range / 3:.2f} tiles')
-
-    if ulti_skill.casting_range and weapon_skill.casting_range != ulti_skill.casting_range:
-        ems[0].add_field(name=f"{e('rangestat')} Super Range", value=f'{ulti_skill.casting_range / 3:.2f} tiles')
-
-    ems[0].add_field(name=f"{e('reloadstat')} Reload Time", value=f'{weapon_skill.recharge_time} ms')
-    ems[0].add_field(
-        name=f"{e('reloadstat')} Animation Time",
-        value=f'{(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)} ms'
-    )  # might not be right :)
-
-    # if weapon_skill.num_bullets_in_one_attack:
-    #     ems[0].add_field(name=f"{e('bulletstat')} Number of bullets/attack", value=weapon_skill.num_bullets_in_one_attack)
-
-    if weapon_skill.spread:
-        ems[0].add_field(name=f"{e('bulletstat')} Bullet Spread", value=f'{weapon_skill.spread * 0.38:.2f}°')
+    add_fields(
+        # (name, value, condition)
+        (f"{e('speedstat')} Speed", f'{decimal(brawler.speed / 300)} tiles/second', True),
+        (f"{e('rangestat')} Attack Range", f'{decimal(weapon_skill.casting_range / 3)} tiles', True),
+        (f"{e('rangestat')} Super Range", f'{decimal((ulti_skill.casting_range or 0) / 3)} tiles', ulti_skill.casting_range and weapon_skill.casting_range != ulti_skill.casting_range),
+        (f"{e('reloadstat')} Reload Time", f'{weapon_skill.recharge_time} ms', True),
+        (f"{e('reloadstat')} Animation Time", f'{(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)} ms', True),
+        (f"{e('bulletstat')} Bullet Spread", f'{decimal(weapon_skill.spread * 0.38)}°', weapon_skill.spread)
+    )
 
     if pet:
-        ems[0].add_field(
+        ems[-1].add_field(
             name=f"`Super - {ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
             value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
             inline=False
         )
         increase_pet_hp = pet.hitpoints // 20
-        if pet.speed:
-            ems[0].add_field(name=f"{e('speedstat')} Pet Speed", value=f'{pet.speed / 300:.2f} tiles/second')
-
         if pet.auto_attack_damage:
             increase_pet_damage = pet.auto_attack_damage // 20
-            ems[0].add_field(name=f"{e('speedstat')} Pet Attack Speed", value=f'{pet.auto_attack_speed_ms / 300:.2f} attacks/second')
+
+        add_fields(
+            (f"{e('speedstat')} Pet Speed", f'{decimal(pet.speed / 300)} tiles/second', pet.speed),
+            (f"{e('speedstat')} Pet Attack Speed", f'{decimal(pet.auto_attack_speed_ms / 300)} attacks/second', pet.auto_attack_damage)
+        )
+
+    def get_super_charge(charge):
+        """Credit to Kairos + Tryso"""
+        charge = charge or 0
+        return decimal(weapon_skill.damage * charge / math.pi / 360 / 360 * 100)
 
     # page 1-9 brawler stats
     for i in range(9):
         ems.append(discord.Embed(
-            title=f'Level {i + 1}',
+            title=f'Level {i + 1} {name}',
             color=color
         ))
-        ems[-1].set_author(name=name, icon_url=e(brawler.tID).url)
+        ems[-1].set_thumbnail(url=e(brawler.tID).url)
 
         ems[-1].add_field(
             name=f"`Attack - {weapon_card.tID.title()}`",
@@ -514,12 +540,12 @@ def format_brawler_stats(ctx, brawler):
         brawler.hitpoints += increase_hp
         weapon_skill.damage += increase_weapon_damage
 
-        ems[-1].add_field(name=f"{e('healthstat')} {hp_card.powerNumberTID.title()}", value=brawler.hitpoints)
-        ems[-1].add_field(name=f"{e('attackstat')} {weapon_card.powerNumberTID.title()}", value=weapon_skill.damage)
-        ems[-1].add_field(name=f"{e('superstat')} Super Charge", value=f'{weapon_skill.damage * brawler.ulti_charge_mul / math.pi / 360 / 360 * 100:.2f}%')  # damage*UltiChargeMul/360/pi
-
-        if brawler.charge_ulti_automatically:
-            ems[-1].add_field(name=f"{e('superstat')} Super Regeneration", value=f'{weapon_skill.damage * brawler.charge_ulti_automatically / math.pi / 360 / 360 * 100:.2f}%/second')
+        add_fields(
+            (f"{e('healthstat')} {hp_card.powerNumberTID.title()}", brawler.hitpoints, True),
+            (f"{e('attackstat')} {weapon_card.powerNumberTID.title()}", weapon_skill.damage, True),
+            (f"{e('superstat')} Super Charge", f'{get_super_charge(brawler.ulti_charge_mul)}%', True),
+            (f"{e('superstat')} Super Regeneration", f'{get_super_charge(brawler.charge_ulti_automatically)}%', brawler.charge_ulti_automatically)
+        )
 
         ems[-1].add_field(
             name=f"`Super - {ulti_card.tID.title()}`",
@@ -527,29 +553,53 @@ def format_brawler_stats(ctx, brawler):
             inline=False
         )
 
+        # level scaling
         if ulti_skill.damage:
             ulti_skill.damage += increase_ulti_damage
-            ems[-1].add_field(name=f"{e('superstat')} Super {ulti_card.powerNumberTID.title()}", value=ulti_skill.damage)
 
         if pet:
             pet.hitpoints += increase_pet_hp
-            ems[-1].add_field(name=f"{e('healthstat')} {(ulti_card.powerNumber2TID or 'Pet HP').title()}", value=pet.hitpoints)
-
             if pet.auto_attack_damage:
                 pet.auto_attack_damage += increase_pet_damage
-                ems[-1].add_field(name=f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", value=pet.auto_attack_damage)
+
+        add_fields(
+            (f"{e('superstat')} Super {ulti_card.powerNumberTID.title()}", ulti_skill.damage, ulti_skill.damage)
+        )
+
+        if pet:
+            add_fields(
+                (f"{e('healthstat')} {(ulti_card.powerNumber2TID or 'Pet HP').title()}", pet.hitpoints, pet),
+                (f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", pet.auto_attack_damage, pet and pet.auto_attack_damage)
+            )
 
     # star power
     star_power = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unique')
     description = clean(
         ctx.cog.constants.texts.get(f'SPEC_ABI_{star_power.type.upper()}_DESC', f'SPEC_ABI_{star_power.type.upper()}_DESC')
-    ).replace('<VALUE1>', str(star_power.value)).replace('<VALUE2>', str(star_power.value2))
+    ).split(' ')
+
+    # parsing value1 & value2
+    for n, word in enumerate(description):
+        if word.startswith('<VALUE'):
+
+            if word.startswith('<VALUE1>'):
+                old = '<VALUE1>'
+                new = star_power.value
+            elif word.startswith('<VALUE2>'):
+                old = '<VALUE2>'
+                new = star_power.value2
+
+            # its a variable
+            if description[n + 1].startswith('second'):
+                description[n] = word.replace(old, str(new / 20))
+            else:
+                description[n] = word.replace(old, str(new))
 
     ems.append(discord.Embed(
-        title=f'Star Power - {star_power.tID}',
-        description=description,
+        title=f"{name}'s Star Power - {star_power.tID}",
+        description=' '.join(description),
         color=color
     ))
-    ems[-1].set_author(name=name, icon_url=e(brawler.tID).url)
+    ems[-1].set_thumbnail(url=e(brawler.tID).url)
 
     return ems

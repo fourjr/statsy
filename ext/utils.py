@@ -90,8 +90,8 @@ def get_stack_variable(name):
         del stack
 
 
-def e(name, should_format=True):
-    ctx = get_stack_variable('ctx') or get_stack_variable('self')
+def e(name, *, should_format=True, ctx=None):
+    ctx = ctx or get_stack_variable('ctx') or get_stack_variable('self')
 
     name = str(name)
     if should_format:
@@ -99,13 +99,7 @@ def e(name, should_format=True):
         replace = {
             # new: to_replace
             '': ['.', ' ', '_', '-'],
-            'chestgold': 'chestgolden',
-            'rico': 'ricochet',
-            'primo': 'elprimo',
-            'pekka': 'p.e.k.k.a',
-            'jess': 'jessie',
-            'mike': 'dynamike',
-            'frank': 'franky'
+            'chestgold': 'chestgolden'
         }
         for key, value in replace.items():
             if isinstance(value, list):

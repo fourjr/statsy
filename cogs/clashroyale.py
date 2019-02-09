@@ -285,10 +285,12 @@ class Clash_Royale:
                 fmt = _('{}, new tournament found!').format(role_mention)
             else:
                 fmt = _('New tournament found!')
-            await guild.get_channel(int(g['tournament']['channel_id'])).send(
-                content=fmt,
-                embed=em
-            )
+            channel = guild.get_channel(int(g['tournament']['channel_id']))
+            if channel:
+                await channel.send(
+                    content=fmt,
+                    embed=em
+                )
             if change_permissions:
                 await role.edit(mentionable=False)
 
