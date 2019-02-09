@@ -523,7 +523,7 @@ def format_brawler_stats(ctx, brawler):
 
         add_fields(
             (f"{e('speedstat')} Pet Speed", f'{decimal(pet.speed / 300)} tiles/second', pet.speed),
-            (f"{e('speedstat')} Pet Attack Speed", f'{decimal(pet.auto_attack_speed_ms / 300)} attacks/second', pet.auto_attack_damage)
+            (f"{e('speedstat')} Pet Attack Speed", f'{decimal((pet.auto_attack_speed_ms or 0) / 300)} attacks/second', pet.auto_attack_damage)
         )
 
     def get_super_charge(charge):
