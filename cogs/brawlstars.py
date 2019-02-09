@@ -17,7 +17,7 @@ from ext import utils
 from ext.command import cog, command
 from ext.context import NoContext
 from ext.embeds import brawlstars
-from ext.paginator import Paginator
+from ext.paginator import Paginator, WikiPaginator
 from locales.i18n import Translator
 
 _ = Translator('Brawl Stars', __file__)
@@ -318,10 +318,25 @@ class Brawl_Stars:
         except StopIteration:
             await ctx.send('Invalid brawler name')
         else:
-            if brawler.tID == 'Gene':
-                return await ctx.send('Invalid brawler name')
+            # if brawler.tID == 'GENE':
+            #     return await ctx.send('Invalid brawler name')
+            try:
+                tag = await ctx.get_tag('brawlstars', ctx.author.id)
+            except KeyError:
+                brawler_power = None
+
+            try:
+                player = await self.request('get_player', tag)
+            except brawlstats.RequestError:
+                brawler_power = None
+            else:
+                try:
+                    brawler_power = next(i.power for i in player.brawlers if i.name == brawler.tID.title())
+                except StopIteration:
+                    brawler_power = None
+
             ems = brawlstars.format_brawler_stats(ctx, brawler)
-            await Paginator(ctx, *ems).start()
+            await WikiPaginator(ctx, brawler_power, *ems).start()
 
     async def on_typing(self, channel, user, when):
         if self.bot.is_closed() or not await self.__local_check(channel) or user.bot:

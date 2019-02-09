@@ -78,7 +78,7 @@ def format_profile(ctx, p):
         pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-    brawlers = ' '.join([f'{e(i.name)} `{format_0(i.power)}`  ' if (n + 1) % 8 != 0 else f'{e(i.name)} {format_0(i.power)}\n' for n, i in enumerate(p.brawlers)])
+    brawlers = ' '.join([f'{e(i.name)} `{format_0(i.power)}`  ' if (n + 1) % 7 != 0 else f'{e(i.name)} {format_0(i.power)}\n' for n, i in enumerate(p.brawlers)])
 
     try:
         club = p.club.name
@@ -416,15 +416,17 @@ async def get_image(ctx, url):
     return file
 
 
-async def format_random_brawler_and_send(ctx, brawler):
-    image = await get_image(ctx, e(brawler).url)
-
+async def format_random_brawler_and_send(ctx, brawler):    
     em = discord.Embed(title=brawler.title(), color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
-    em.set_image(url='attachment://brawler.png')
 
-    await ctx.send(file=discord.File(image, 'brawler.png'), embed=em)
+    if isinstance(e(brawler), discord.Emoji):
+        image = await get_image(ctx, e(brawler).url)
+        em.set_image(url='attachment://brawler.png')
+        await ctx.send(file=discord.File(image, 'brawler.png'), embed=em)
+    else:
+        await ctx.send(embed=em)
 
 
 def format_club_stats(clan):
@@ -439,7 +441,7 @@ def format_club_stats(clan):
 
 def format_brawler_stats(ctx, brawler):
     name = (brawler.tID or camel_case(brawler.name)).title()
-    camel_name = camel_case(brawler.name, split='_').upper()
+    camel_name = brawler.rawTID
     rarity = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unlock').rarity
 
     colors = {
@@ -451,6 +453,12 @@ def format_brawler_stats(ctx, brawler):
         'legendary': 0xfff11e
     }
     color = colors[rarity]
+
+    if isinstance(e(brawler.tID), discord.Emoji):
+        image_url = e(brawler.tID).url
+    else:
+        image_url = 'http://gstatic.com/generate_204'
+
     ems = []
 
     # page 1 - basic stats
@@ -485,7 +493,7 @@ def format_brawler_stats(ctx, brawler):
         title=name,
         color=color
     ))
-    ems[-1].set_thumbnail(url=e(brawler.tID).url)
+    ems[-1].set_thumbnail(url=image_url)
 
     ems[-1].add_field(
         name='`Basic Statistics`',
@@ -529,7 +537,7 @@ def format_brawler_stats(ctx, brawler):
             title=f'Level {i + 1} {name}',
             color=color
         ))
-        ems[-1].set_thumbnail(url=e(brawler.tID).url)
+        ems[-1].set_thumbnail(url=image_url)
 
         ems[-1].add_field(
             name=f"`Attack - {weapon_card.tID.title()}`",
@@ -575,7 +583,7 @@ def format_brawler_stats(ctx, brawler):
     # star power
     star_power = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unique')
     description = clean(
-        ctx.cog.constants.texts.get(f'SPEC_ABI_{star_power.type.upper()}_DESC', f'SPEC_ABI_{star_power.type.upper()}_DESC')
+        ctx.cog.constants.texts.get(f'{star_power.rawTID}_DESC', f'{star_power.rawTID}_DESC')
     ).split(' ')
 
     # parsing value1 & value2
@@ -595,11 +603,12 @@ def format_brawler_stats(ctx, brawler):
             else:
                 description[n] = word.replace(old, str(new))
 
-    ems.append(discord.Embed(
-        title=f"{name}'s Star Power - {star_power.tID}",
-        description=' '.join(description),
-        color=color
-    ))
-    ems[-1].set_thumbnail(url=e(brawler.tID).url)
+    ems.append(copy.copy(ems[9]))
+    ems[-1].title = f'Level 10 {name}'
+    ems[-1].add_field(
+        name=f"`Star Power - {star_power.tID}`",
+        value=f"**```{' '.join(description)}```**",
+        inline=False
+    )
 
     return ems

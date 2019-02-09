@@ -2,6 +2,8 @@ import asyncio
 
 import discord
 
+from ext.utils import e
+
 
 class Paginator:
     """
@@ -10,19 +12,19 @@ class Paginator:
     ------------
     ctx: discord.Context
         The context of the command.
-    *embeds: discord.Embed
+    \*embeds: discord.Embed
         A list of entries to paginate.
 
-    **timeout: int[Optional]
+    \*\*timeout: int[Optional]
         How long to wait for before the session closes
         Default: 30
-    **footer_text: str[Optional]
+    \*\*footer_text: str[Optional]
         Footer text before the page number
-    **edit_footer: bool[Optional]
+    \*\*edit_footer: bool[Optional]
         Whether to update the footer with page number.
         Footers only get edited if there is more than one embed
         Default: True
-    **dest: discord.Messageable[Optional]
+    \*\*dest: discord.Messageable[Optional]
         Destination to send Paginated embeds
         Default: ctx
     Methods
@@ -109,47 +111,56 @@ class Paginator:
                     return True
         return False
 
+    async def _blank(self):
+        pass
+
     async def _reaction_action(self, reaction):
         """Fires an action based on the reaction"""
         if not self.running:
             return
         to_exec = self.emojis[str(reaction.emoji)]
 
-        try:
-            # allow for additional execs in inherited class
-            func = getattr(self, f'exec_{to_exec}')
-        except AttributeError as e:
-            if to_exec == 'arrow_backward':
-                if self.page != 0:
-                    self.page -= 1
-            elif to_exec == 'arrow_forward':
-                if self.page != len(self.embeds) - 1:
-                    self.page += 1
-            elif to_exec == 'stop_button':
-                await self.message.delete()
-                await self.ctx.message.add_reaction('check:383917703083327489')
-                return
-            elif to_exec == 'track_previous':
-                self.page = 0
-            elif to_exec == 'track_next':
-                self.page = len(self.embeds) - 1
-            else:
-                raise NotImplementedError(f'_reaction_action in paginator, exec_{to_exec} not implemented') from e
-        else:
-            await func()
-
-        try:
-            func = getattr(self, 'exec_before_edit')
-        except AttributeError:
-            pass
-        else:
-            await func()
+        await getattr(self, f'exec_{to_exec}')()
+        await getattr(self, 'exec_before_edit', self._blank)()
 
         try:
             await self.message.edit(embed=self.embeds[self.page])
         except discord.NotFound:
             await self.stop()
+
         try:
             await self.message.remove_reaction(reaction.emoji, self.ctx.author)
         except (discord.Forbidden, discord.NotFound):
             pass
+
+    async def exec_arrow_backward(self):
+        if self.page != 0:
+            self.page -= 1
+        return True
+
+    async def exec_arrow_forward(self):
+        if self.page != len(self.embeds) - 1:
+            self.page += 1
+        return True
+
+    async def exec_stop_button(self):
+        await self.message.delete()
+        await self.ctx.message.add_reaction('check:383917703083327489')
+        return False
+
+    async def exec_track_previous(self):
+        self.page = 0
+
+    async def exec_track_next(self):
+        self.page = len(self.embeds) - 1
+
+
+class WikiPaginator(Paginator):
+    def __init__(self, ctx, brawler_power, *embeds, **kwargs):
+        super().__init__(ctx, *embeds, **kwargs)
+        self.brawler_power = brawler_power
+        if self.brawler_power:
+            self.emojis[str(e('28000000', ctx=self.ctx))] = 'jump_to_player'
+
+    async def exec_jump_to_player(self):
+        self.page = self.brawler_power
