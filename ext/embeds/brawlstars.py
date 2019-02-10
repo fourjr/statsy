@@ -416,7 +416,7 @@ async def get_image(ctx, url):
     return file
 
 
-async def format_random_brawler_and_send(ctx, brawler):    
+async def format_random_brawler_and_send(ctx, brawler):
     em = discord.Embed(title=brawler.title(), color=random_color())
     if ctx.bot.psa_message:
         em.description = f'*{ctx.bot.psa_message}*'
@@ -475,11 +475,19 @@ def format_brawler_stats(ctx, brawler):
     else:
         pet = None
 
-    increase_hp = brawler.hitpoints // 20
-    increase_weapon_damage = weapon_skill.damage // 20
+    scaled_hitpoints = scaled_damage = scaled_ulti_damage = scaled_pet_hp = scaled_pet_damage = [0] * 10
 
-    if ulti_skill.damage:
-        increase_ulti_damage = ulti_skill.damage // 20
+    for i in range(9):
+        scaled_hitpoints[i] = brawler.hitpoints * (1 + 0.2 * (i + 1))
+        scaled_damage[i] = weapon_skill.damage * (1 + 0.2 * (i + 1))
+
+        if ulti_skill.damage:
+            scaled_ulti_damage[i] = ulti_skill.damage * (1 + 0.2 * (i + 1))
+
+        if pet:
+            scaled_pet_hp[i] = pet.hitpoints * (1 + 0.2 * (i + 1))
+            if pet.auto_attack_damage:
+                scaled_pet_damage[i] = pet.auto_attack_damage * (1 + 0.2 * (i + 1))
 
     def add_fields(*stats):
         for n, v, c in stats:
@@ -504,11 +512,11 @@ def format_brawler_stats(ctx, brawler):
     add_fields(
         # (name, value, condition)
         (f"{e('speedstat')} Speed", f'{decimal(brawler.speed / 300)} tiles/second', True),
-        (f"{e('rangestat')} Attack Range", f'{decimal(weapon_skill.casting_range / 3)} tiles', True),
+        (f"{e('rangestat')} Attack Range", f'{decimal((weapon_skill.casting_range or 0) / 3)} tiles', True),
         (f"{e('rangestat')} Super Range", f'{decimal((ulti_skill.casting_range or 0) / 3)} tiles', ulti_skill.casting_range and weapon_skill.casting_range != ulti_skill.casting_range),
         (f"{e('reloadstat')} Reload Time", f'{weapon_skill.recharge_time} ms', True),
         (f"{e('reloadstat')} Animation Time", f'{(weapon_skill.active_time or 0) + (weapon_skill.cooldown or 0) + (weapon_skill.ms_between_attacks or 0)} ms', True),
-        (f"{e('bulletstat')} Bullet Spread", f'{decimal(weapon_skill.spread * 0.38)}°', weapon_skill.spread)
+        (f"{e('bulletstat')} Bullet Spread", f'{decimal((weapon_skill.spread or 0) * 0.38)}°', weapon_skill.spread)
     )
 
     if pet:
@@ -517,19 +525,16 @@ def format_brawler_stats(ctx, brawler):
             value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
             inline=False
         )
-        increase_pet_hp = pet.hitpoints // 20
-        if pet.auto_attack_damage:
-            increase_pet_damage = pet.auto_attack_damage // 20
 
         add_fields(
             (f"{e('speedstat')} Pet Speed", f'{decimal(pet.speed / 300)} tiles/second', pet.speed),
             (f"{e('speedstat')} Pet Attack Speed", f'{decimal(pet.auto_attack_speed_ms / 300)} attacks/second', pet.auto_attack_damage)
         )
 
-    def get_super_charge(charge):
+    def get_super_charge(charge, damage):
         """Credit to Kairos + Tryso"""
         charge = charge or 0
-        return decimal(weapon_skill.damage * charge / math.pi / 360 / 360 * 100)
+        return decimal(damage * charge / math.pi / 360 / 360 * 100)
 
     # page 1-9 brawler stats
     for i in range(9):
@@ -545,14 +550,11 @@ def format_brawler_stats(ctx, brawler):
             inline=False
         )
 
-        brawler.hitpoints += increase_hp
-        weapon_skill.damage += increase_weapon_damage
-
         add_fields(
-            (f"{e('healthstat')} {hp_card.powerNumberTID.title()}", brawler.hitpoints, True),
-            (f"{e('attackstat')} {weapon_card.powerNumberTID.title()}", weapon_skill.damage, True),
-            (f"{e('superstat')} Super Charge", f'{get_super_charge(brawler.ulti_charge_mul)}%', True),
-            (f"{e('superstat')} Super Regeneration", f'{get_super_charge(brawler.charge_ulti_automatically)}%', brawler.charge_ulti_automatically)
+            (f"{e('healthstat')} {hp_card.powerNumberTID.title()}", scaled_hitpoints[i], True),
+            (f"{e('attackstat')} {weapon_card.powerNumberTID.title()}", scaled_damage[i], True),
+            (f"{e('superstat')} Super Charge", f'{get_super_charge(brawler.ulti_charge_mul, scaled_damage[i])}%', True),
+            (f"{e('superstat')} Super Regeneration", f'{get_super_charge(brawler.charge_ulti_automatically, scaled_damage[i])}%', brawler.charge_ulti_automatically)
         )
 
         ems[-1].add_field(
@@ -561,23 +563,14 @@ def format_brawler_stats(ctx, brawler):
             inline=False
         )
 
-        # level scaling
-        if ulti_skill.damage:
-            ulti_skill.damage += increase_ulti_damage
-
-        if pet:
-            pet.hitpoints += increase_pet_hp
-            if pet.auto_attack_damage:
-                pet.auto_attack_damage += increase_pet_damage
-
         add_fields(
-            (f"{e('superstat')} Super {ulti_card.powerNumberTID.title()}", ulti_skill.damage, ulti_skill.damage)
+            (f"{e('superstat')} Super {ulti_card.powerNumberTID.title()}", scaled_ulti_damage[i], ulti_skill.damage)
         )
 
         if pet:
             add_fields(
-                (f"{e('healthstat')} {(ulti_card.powerNumber2TID or 'Pet HP').title()}", pet.hitpoints, pet),
-                (f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", pet.auto_attack_damage, pet and pet.auto_attack_damage)
+                (f"{e('healthstat')} {(ulti_card.powerNumber2TID or 'Pet HP').title()}", scaled_pet_hp[i], pet),
+                (f"{e('attackstat')} {ulti_card.powerNumberTID.title()}", scaled_pet_damage[i], pet and pet.auto_attack_damage)
             )
 
     # star power

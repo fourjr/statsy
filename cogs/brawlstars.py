@@ -318,22 +318,15 @@ class Brawl_Stars:
         except StopIteration:
             await ctx.send('Invalid brawler name')
         else:
-            # if brawler.tID == 'GENE':
-            #     return await ctx.send('Invalid brawler name')
+            brawler_power = None
             try:
                 tag = await ctx.get_tag('brawlstars', ctx.author.id)
             except KeyError:
-                brawler_power = None
-
-            try:
-                player = await self.request('get_player', tag)
-            except brawlstats.RequestError:
-                brawler_power = None
+                pass
             else:
-                try:
+                player = await self.request('get_player', tag)
+                if player:
                     brawler_power = next(i.power for i in player.brawlers if i.name == brawler.tID.title())
-                except StopIteration:
-                    brawler_power = None
 
             ems = brawlstars.format_brawler_stats(ctx, brawler)
             await WikiPaginator(ctx, brawler_power, *ems).start()
