@@ -119,7 +119,7 @@ def format_brawlers(ctx, p):
 
         skin = e('tick') if i.has_skin else e('xmark')
 
-        val = f"{e('xp')}　Level {i.level}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {i.rank})"
+        val = f"{e('xp')}　Level {i.power}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {i.rank})"
         ems[-1].add_field(name=f"{e(i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
