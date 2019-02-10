@@ -360,7 +360,7 @@ class Brawl_Stars:
                 await self.request('get_club', player.club.tag, reason='magic caching')
             except (AttributeError, IndexError):
                 pass
-        except (utils.NoTag, commands.CheckFailure):
+        except (utils.NoTag, commands.CheckFailure, brawlstats.RequestError):
             pass
 
     async def event_notifications(self):
