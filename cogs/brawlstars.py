@@ -323,7 +323,7 @@ class Brawl_Stars:
             else:
                 try:
                     player = await self.request('get_player', tag)
-                except brwalstats.RequestError:
+                except brawlstats.RequestError:
                     pass
                 else:
                     try:
