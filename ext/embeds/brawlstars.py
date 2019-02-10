@@ -457,17 +457,19 @@ def format_brawler_stats(ctx, brawler):
     scaled_pet_damage = [0] * 10
 
     for i in range(9):
-        multiplier = 1 + 0.2 * (i + 1)
-        scaled_hitpoints[i] = int(brawler.hitpoints * multiplier)
-        scaled_damage[i] = int(weapon_skill.damage * multiplier)
+        def conv(val):
+            return val + val // 20 * i
+
+        scaled_hitpoints[i] = conv(brawler.hitpoints)
+        scaled_damage[i] = conv(weapon_skill.damage)
 
         if ulti_skill.damage:
-            scaled_ulti_damage[i] = int(ulti_skill.damage * multiplier)
+            scaled_ulti_damage[i] = conv(ulti_skill.damage)
 
         if pet:
-            scaled_pet_hp[i] = int(pet.hitpoints * multiplier)
+            scaled_pet_hp[i] = conv(pet.hitpoints)
             if pet.auto_attack_damage:
-                scaled_pet_damage[i] = int(pet.auto_attack_damage * multiplier)
+                scaled_pet_damage[i] = conv(pet.auto_attack_damage)
 
     def add_fields(*stats):
         for n, v, c in stats:
