@@ -113,9 +113,9 @@ class Brawl_Stars:
         profile = await self.request('get_player', tag)
         try:
             return profile.club.tag
-        except AttributeError:
+        except AttributeError as e:
             await ctx.send(message)
-            raise utils.NoTag
+            raise utils.NoTag(message) from e
 
     async def resolve_tag(self, ctx, tag_or_user, club=False):
         if not tag_or_user:
