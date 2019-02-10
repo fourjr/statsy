@@ -111,40 +111,15 @@ def format_profile(ctx, p):
 def format_brawlers(ctx, p):
     ems = []
 
-    ranks = [
-        0,
-        10,
-        20,
-        30,
-        40,
-        60,
-        80,
-        100,
-        120,
-        140,
-        160,
-        180,
-        220,
-        260,
-        300,
-        340,
-        380,
-        420,
-        460,
-        500
-    ]
-
     for n, i in enumerate(p.brawlers):
         if n % 6 == 0:
             ems.append(discord.Embed(color=random_color()))
             ems[-1].set_author(name=f'{p.name} (#{p.tag})')
             ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-        rank = ranks.index([r for r in ranks if i.highest_trophies >= r][-1]) + 1
-
         skin = e('tick') if i.has_skin else e('xmark')
 
-        val = f"{e('xp')}　Level {i.level}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {rank})"
+        val = f"{e('xp')}　Level {i.level}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {i.rank})"
         ems[-1].add_field(name=f"{e(i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
 
     return ems
@@ -475,19 +450,24 @@ def format_brawler_stats(ctx, brawler):
     else:
         pet = None
 
-    scaled_hitpoints = scaled_damage = scaled_ulti_damage = scaled_pet_hp = scaled_pet_damage = [0] * 10
+    scaled_hitpoints = [0] * 10
+    scaled_damage = [0] * 10
+    scaled_ulti_damage = [0] * 10
+    scaled_pet_hp = [0] * 10
+    scaled_pet_damage = [0] * 10
 
     for i in range(9):
-        scaled_hitpoints[i] = brawler.hitpoints * (1 + 0.2 * (i + 1))
-        scaled_damage[i] = weapon_skill.damage * (1 + 0.2 * (i + 1))
+        multiplier = 1 + 0.2 * (i + 1)
+        scaled_hitpoints[i] = int(brawler.hitpoints * multiplier)
+        scaled_damage[i] = int(weapon_skill.damage * multiplier)
 
         if ulti_skill.damage:
-            scaled_ulti_damage[i] = ulti_skill.damage * (1 + 0.2 * (i + 1))
+            scaled_ulti_damage[i] = int(ulti_skill.damage * multiplier)
 
         if pet:
-            scaled_pet_hp[i] = pet.hitpoints * (1 + 0.2 * (i + 1))
+            scaled_pet_hp[i] = int(pet.hitpoints * multiplier)
             if pet.auto_attack_damage:
-                scaled_pet_damage[i] = pet.auto_attack_damage * (1 + 0.2 * (i + 1))
+                scaled_pet_damage[i] = int(pet.auto_attack_damage * multiplier)
 
     def add_fields(*stats):
         for n, v, c in stats:
