@@ -52,7 +52,7 @@ def e(name):
     except StopIteration:
         return emoji(name)
     else:
-        return emoji(next(i for i in cog.constants.player_thumbnails if i.required_hero == brawler.name).sc_id, ctx=ctx)
+        return emoji(next(i for i in cog.constants.player_thumbnails if i.required_hero == brawler.name).sc_id)
 
 
 def format_0(val):
