@@ -45,14 +45,14 @@ def format_timestamp(seconds: int):
 
 def e(name):
     """Wrapper to the default emoji function to support brawler names"""
-    ctx = get_stack_variable('ctx')
+    cog = get_stack_variable('ctx').cog or get_stack_variable('self')
     name = str(name).lower()
     try:
-        brawler = next(i for i in ctx.cog.constants.characters if i.name.lower() == name or (i.tID or '').lower() == name)
+        brawler = next(i for i in cog.constants.characters if i.name.lower() == name or (i.tID or '').lower() == name)
     except StopIteration:
-        return emoji(name, ctx=ctx)
+        return emoji(name)
     else:
-        return emoji(next(i for i in ctx.cog.constants.player_thumbnails if i.required_hero == brawler.name).sc_id, ctx=ctx)
+        return emoji(next(i for i in cog.constants.player_thumbnails if i.required_hero == brawler.name).sc_id, ctx=ctx)
 
 
 def format_0(val):

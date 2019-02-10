@@ -326,7 +326,10 @@ class Brawl_Stars:
             else:
                 player = await self.request('get_player', tag)
                 if player:
-                    brawler_power = next(i.power for i in player.brawlers if i.name == brawler.tID.title())
+                    try:
+                        brawler_power = next(i.power for i in player.brawlers if i.name == brawler.tID.title())
+                    except StopIteration:
+                        pass
 
             ems = brawlstars.format_brawler_stats(ctx, brawler)
             await WikiPaginator(ctx, brawler_power, *ems).start()
