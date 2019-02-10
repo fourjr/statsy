@@ -383,7 +383,7 @@ class Statsy(commands.AutoShardedBot):
         )
 
         if not self.dev_mode:
-            await self.error_hook.send(content=description, embed=em)
+            await self.error_hook.send(embed=em)
         else:
             traceback.print_exc()
 
