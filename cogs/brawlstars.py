@@ -164,10 +164,7 @@ class Brawl_Stars:
                     data = box.Box(json.loads((await resp.text()).replace('jsonCallBack(', '')[:-2]), camel_killer_box=True)
             else:
                 speed = time.time()
-                try:
-                    data = await getattr(self.bs, method)(*args, **kwargs)
-                except brawlstats.RequestError:
-                    return
+                data = await getattr(self.bs, method)(*args, **kwargs)
 
                 speed = time.time() - speed
 
@@ -324,8 +321,11 @@ class Brawl_Stars:
             except KeyError:
                 pass
             else:
-                player = await self.request('get_player', tag)
-                if player:
+                try:
+                    player = await self.request('get_player', tag)
+                except brwalstats.RequestError:
+                    pass
+                else:
                     try:
                         brawler_power = next(i.power for i in player.brawlers if i.name == brawler.tID.title())
                     except StopIteration:
