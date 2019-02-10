@@ -45,7 +45,7 @@ def format_timestamp(seconds: int):
 
 def e(name):
     """Wrapper to the default emoji function to support brawler names"""
-    cog = get_stack_variable('ctx').cog or get_stack_variable('self')
+    cog = getattr(get_stack_variable('ctx'), 'cog', None) or get_stack_variable('self')
     name = str(name).lower()
     try:
         brawler = next(i for i in cog.constants.characters if i.name.lower() == name or (i.tID or '').lower() == name)
