@@ -389,7 +389,6 @@ class Statsy(commands.AutoShardedBot):
 
     async def on_message(self, message):
         """Called when a message is sent/recieved."""
-        raise TypeError('f')
         self.messages_sent += 1
         if not message.author.bot:
             await self.process_commands(message)
