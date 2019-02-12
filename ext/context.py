@@ -17,9 +17,11 @@ class CustomContext(commands.Context):
     @property
     def cog(self):
         """Returns the cog associated with this context's command. None if it does not exist."""
-        if self.command is None:
-            return None
-        return self.force_cog or self.command.instance
+        if self.force_cog:
+            return self.force_cog
+
+        if self.command:
+            return self.command.instance
 
     def delete(self):
         """shortcut"""

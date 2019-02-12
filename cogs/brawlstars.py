@@ -7,7 +7,6 @@ import os
 import brawlstats
 import datadog
 import discord
-import requests
 from cachetools import TTLCache
 from datetime import datetime
 from discord.ext import commands
@@ -80,13 +79,18 @@ class Brawl_Stars:
             timeout=30,
             url=os.getenv('bs_url')
         )
-        self.constants = box.Box(
-            json.loads(requests.get('https://fourjr.herokuapp.com/bs/constants').text),
-            camel_killer_box=True
-        )
+        self.constants = None
+        self.bot.loop.create_task(self.load_constants())
         if not self.bot.dev_mode:
             self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
             self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
+
+    async def load_constants(self):
+        async with self.bot.session.get('https://fourjr.herokuapp.com/bs/constants') as resp:
+            self.constants = box.Box(
+                await resp.json(),
+                camel_killer_box=True
+            )
 
     async def __local_check(self, ctx):
         if ctx.guild:
@@ -407,10 +411,17 @@ class Brawl_Stars:
                     except (AttributeError, discord.NotFound):
                         pass
 
+    async def get_club_inf(self, tag):
+        try:
+            return await self.request('get_club', tag, reason='clanstats')
+        except brawlstats.RequestError:
+            await asyncio.sleep(0.2)
+            return self.get_club_inf(tag)
+
     async def get_clubs(self, *tags):
         clans = []
         for t in tags:
-            clans.append(await self.request('get_club', t, reason='clanstats'))
+            clans.append(await self.get_club_inf(t))
             await asyncio.sleep(0.5)
         return clans
 
