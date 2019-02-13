@@ -310,7 +310,7 @@ class Bot_Related:
             if em:
                 return await ctx.send(embed=em)
             else:
-                if ctx.guild:
+                if isinstance(ctx.channel, discord.TextChannel):
                     default_cog = self.bot.get_cog(self.bot.default_game[ctx.guild.id])
                 else:
                     default_cog = self.bot.get_cog(self.bot.default_game[ctx.channel.id])

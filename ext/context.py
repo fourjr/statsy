@@ -114,12 +114,13 @@ class NoContext(CustomContext):
     """Designed to create a Context with only an author
     and no message. Some methods might fail
     """
-    def __init__(self, bot, user):
+    def __init__(self, bot, user, **kwargs):
         self.bot = bot
         self.author = user
         self.session = self.bot.session
         self.prefix = None
         self.guild = getattr(user, 'guild', None)
+        self.channel = kwargs.pop('channel', None)
 
     async def send(self, *args, **kwargs):
         pass

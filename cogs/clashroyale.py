@@ -160,7 +160,7 @@ class Clash_Royale:
             self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
     async def __local_check(self, ctx):
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
             return guild_info.get('games', {}).get(self.__class__.__name__, True)
         else:
@@ -302,7 +302,7 @@ class Clash_Royale:
         if m.channel.id == 480017443314597899 and m.author.bot:
             ctx = await self.bot.get_context(m)
             ctx.force_cog = self
-            if ctx.guild:
+            if isinstance(ctx.channel, discord.TextChannel):
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:
                 ctx.language = 'messages'
@@ -337,7 +337,7 @@ class Clash_Royale:
         if friend_config:
             ctx = await self.bot.get_context(m)
             ctx.force_cog = self
-            if ctx.guild:
+            if isinstance(ctx.channel, discord.TextChannel):
                 ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
             else:
                 ctx.language = 'messages'
@@ -405,11 +405,11 @@ class Clash_Royale:
                 await m.channel.send(text, embed=em)
 
     async def on_typing(self, channel, user, when):
-        if self.bot.is_closed() or not await self.__local_check(channel) or user.bot:
+        ctx = NoContext(self.bot, user, channel=channel)
+        if self.bot.is_closed() or not await self.__local_check(ctx) or user.bot:
             return
 
-        ctx = NoContext(self.bot, user)
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
         else:
             ctx.language = 'messages'
@@ -718,7 +718,10 @@ class Clash_Royale:
             del data
             del sorted_result
 
-        await Paginator(ctx, *ems).start()
+        try:
+            await Paginator(ctx, *ems).start()
+        except SyntaxError:
+            await ctx.send('Unable to retrieve leaderboard')
 
         del ems
 

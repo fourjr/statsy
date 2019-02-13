@@ -82,7 +82,7 @@ class Brawl_Stars:
         self.constants = None
         self.bot.loop.create_task(self.load_constants())
         if not self.bot.dev_mode:
-            self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
+            # self.bot.event_notifications_loop = self.bot.loop.create_task(self.event_notifications())
             self.bot.clan_update = self.bot.loop.create_task(self.clan_update_loop())
 
     async def load_constants(self):
@@ -93,7 +93,7 @@ class Brawl_Stars:
             )
 
     async def __local_check(self, ctx):
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
             return guild_info.get('games', {}).get(self.__class__.__name__, True)
         else:
@@ -340,11 +340,11 @@ class Brawl_Stars:
             await WikiPaginator(ctx, brawler_power, *ems).start()
 
     async def on_typing(self, channel, user, when):
-        if self.bot.is_closed() or not await self.__local_check(channel) or user.bot:
+        ctx = NoContext(self.bot, user, channel=channel)
+        if self.bot.is_closed() or not await self.__local_check(ctx) or user.bot:
             return
 
-        ctx = NoContext(self.bot, user)
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             ctx.language = (await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
         else:
             ctx.language = 'messages'
@@ -416,7 +416,7 @@ class Brawl_Stars:
             return await self.request('get_club', tag, reason='clanstats')
         except brawlstats.RequestError:
             await asyncio.sleep(0.2)
-            return self.get_club_inf(tag)
+            return await self.get_club_inf(tag)
 
     async def get_clubs(self, *tags):
         clans = []

@@ -78,7 +78,7 @@ def format_profile(ctx, p):
         pass
     em.set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-    brawlers = ' '.join([f'{e(i.name)} `{format_0(i.power)}`  ' if (n + 1) % 7 != 0 else f'{e(i.name)} {format_0(i.power)}\n' for n, i in enumerate(p.brawlers)])
+    brawlers = ' '.join([f'{e(i.name)} `{format_0(i.power)}`  ' if (n + 1) % 7 != 0 else f'{e(i.name)} `{format_0(i.power)}`\n' for n, i in enumerate(p.brawlers)])
 
     try:
         club = p.club.name
@@ -117,10 +117,8 @@ def format_brawlers(ctx, p):
             ems[-1].set_author(name=f'{p.name} (#{p.tag})')
             ems[-1].set_footer(text=_('Statsy | Powered by brawlapi.cf'))
 
-        skin = e('tick') if i.has_skin else e('xmark')
-
-        val = f"{e('xp')}　Level {i.power}\n{skin}　Skin Active?\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {i.rank})"
-        ems[-1].add_field(name=f"{e(i.name)}　{i.name.replace('Franky', 'Frank')}", value=val)
+        val = f"{e('xp')}　Level {i.power}\n{e('bstrophy')}　{i.trophies}/{i.highest_trophies} PB (Rank {i.rank})"
+        ems[-1].add_field(name=f"{e(i.name)}　{i.skin or i.name}", value=val)
 
     return ems
 

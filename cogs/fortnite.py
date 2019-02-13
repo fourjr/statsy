@@ -42,7 +42,7 @@ class Fortnite:
         self.session = aiohttp.ClientSession(loop=self.bot.loop)
 
     async def __local_check(self, ctx):
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             guild_info = await self.bot.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}
             return guild_info.get('games', {}).get(self.__class__.__name__, True)
         else:

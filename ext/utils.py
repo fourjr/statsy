@@ -47,7 +47,7 @@ def has_perms():
 
 def statsy_guild():
     def predicate(ctx):
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             return ctx.guild.id == 444482551139008522
         return False
     return commands.check(predicate)

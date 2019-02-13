@@ -240,7 +240,7 @@ class Statsy(commands.AutoShardedBot):
             else:
                 await self.invoke(ctx)
         else:
-            if ctx.guild:
+            if isinstance(ctx.channel, discord.TextChannel):
                 default_cog = self.get_cog(self.default_game[ctx.guild.id])
             else:
                 default_cog = self.get_cog(self.default_game[ctx.channel.id])
@@ -299,7 +299,7 @@ class Statsy(commands.AutoShardedBot):
         ctx.prefix = invoked_prefix
         ctx.command = self.all_commands.get(invoker)
 
-        if ctx.guild:
+        if isinstance(ctx.channel, discord.TextChannel):
             ctx.language = (await self.mongo.config.guilds.find_one({'guild_id': str(ctx.guild.id)}) or {}).get('language', 'messages')
         else:
             ctx.language = 'messages'
