@@ -103,11 +103,19 @@ class Brawl_Stars:
         error = getattr(error, 'original', error)
         if isinstance(error, brawlstats.NotFoundError):
             await ctx.send(_('The tag cannot be found!'))
+        elif isinstance(error, brawlstats.MaintenanceError):
+            er = discord.Embed(
+                title=_('Maintainence Break'),
+                color=discord.Color.red()
+            )
+            if ctx.bot.psa_message:
+                er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
+            await ctx.send(embed=er)
         elif isinstance(error, brawlstats.RequestError):
             er = discord.Embed(
                 title=_('Brawl Stars Server Down'),
                 color=discord.Color.red(),
-                description='This could be caused by a maintainence break.'
+                description='Please try again later.'
             )
             if ctx.bot.psa_message:
                 er.add_field(name=_('Please Note!'), value=ctx.bot.psa_message)
@@ -287,12 +295,11 @@ class Brawl_Stars:
     @utils.has_perms()
     async def roborumble(self, ctx):
         """Shows the robo rumble leaderboard"""
-        await ctx.send('Too many people to show!')
-        # async with ctx.typing():
-        #     leaderboard = await self.request('rumbleboard', leaderboard=True)
-        #     ems = brawlstars.format_robo(ctx, leaderboard)
+        async with ctx.typing():
+            leaderboard = await self.request('rumbleboard', leaderboard=True)
+            ems = brawlstars.format_robo(ctx, leaderboard)
 
-        # await Paginator(ctx, *ems).start()
+        await Paginator(ctx, *ems).start()
 
     @utils.has_perms()
     async def biggame(self, ctx):
@@ -414,8 +421,11 @@ class Brawl_Stars:
     async def get_club_inf(self, tag):
         try:
             return await self.request('get_club', tag, reason='clanstats')
+        except brawlstats.MaintenanceError:
+            await asyncio.sleep(60 * 5)
+            return await self.get_club_inf(tag)
         except brawlstats.RequestError:
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(1)
             return await self.get_club_inf(tag)
 
     async def get_clubs(self, *tags):
