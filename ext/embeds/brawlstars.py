@@ -485,7 +485,7 @@ def format_brawler_stats(ctx, brawler):
 
     ems[-1].add_field(
         name='`Basic Statistics`',
-        value=f"**```{ctx.cog.constants.texts[f'{camel_name}_DESC']}```**",
+        value=f"**```{ctx.cog.constants.tid[f'{camel_name}_DESC']}```**",
         inline=False
     )
 
@@ -501,8 +501,8 @@ def format_brawler_stats(ctx, brawler):
 
     if pet:
         ems[-1].add_field(
-            name=f"`Super - {ctx.cog.constants.texts[f'{camel_name}_ULTI'].title()}`",
-            value=f"**```{ctx.cog.constants.texts[f'{camel_name}_ULTI_DESC'].title()}```**",
+            name=f"`Super - {ctx.cog.constants.tid[f'{camel_name}_ULTI'].title()}`",
+            value=f"**```{ctx.cog.constants.tid[f'{camel_name}_ULTI_DESC'].title()}```**",
             inline=False
         )
 
@@ -526,7 +526,7 @@ def format_brawler_stats(ctx, brawler):
 
         ems[-1].add_field(
             name=f"`Attack - {weapon_card.tID.title()}`",
-            value=f"**```{ctx.cog.constants.texts[f'{weapon_card.rawTID}_DESC'].title()}```**",
+            value=f"**```{ctx.cog.constants.tid[f'{weapon_card.rawTID}_DESC'].title()}```**",
             inline=False
         )
 
@@ -539,7 +539,7 @@ def format_brawler_stats(ctx, brawler):
 
         ems[-1].add_field(
             name=f"`Super - {ulti_card.tID.title()}`",
-            value=f"**```{ctx.cog.constants.texts[f'{ulti_card.rawTID}_DESC'].title()}```**",
+            value=f"**```{ctx.cog.constants.tid[f'{ulti_card.rawTID}_DESC'].title()}```**",
             inline=False
         )
 
@@ -556,7 +556,7 @@ def format_brawler_stats(ctx, brawler):
     # star power
     star_power = next(i for i in ctx.cog.constants.cards if i.name == f'{brawler.name}_unique')
     description = clean(
-        ctx.cog.constants.texts.get(f'{star_power.rawTID}_DESC', f'{star_power.rawTID}_DESC')
+        ctx.cog.constants.tid.get(f'{star_power.rawTID}_DESC', f'{star_power.rawTID}_DESC')
     ).split(' ')
 
     # parsing value1 & value2
