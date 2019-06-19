@@ -131,20 +131,12 @@ def format_club(ctx, b):
     if len(b.members) >= 3:
         for i in range(3):
             push_avatar = e(b.members[i].avatar_id)
-            exp_avatar = e(_experiences[i].avatar_id)
-
+            
             pushers.append(
                 f"**{push_avatar} {b.members[i].name}**"
                 f"\n{e('bstrophy')}"
                 f" {b.members[i].trophies} "
                 f"\n#{b.members[i].tag}"
-            )
-
-            experiences.append(
-                f"**{exp_avatar} {_experiences[i].name}**"
-                f"\n{e('xp')}"
-                f" {_experiences[i].exp_level}"
-                f"\n#{_experiences[i].tag}"
             )
 
     page1 = discord.Embed(description=b.description, color=random_color())
@@ -162,8 +154,7 @@ def format_club(ctx, b):
         (_('Online Players'), f'{b.online_members} {e("online")}')
     ]
     fields2 = [
-        ("Top Players", '\n\n'.join(pushers)),
-        ("Top Experience", '\n\n'.join(experiences))
+        ("Top Players", '\n\n'.join(pushers))
     ]
 
     for f, v in fields1:
