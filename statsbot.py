@@ -104,7 +104,7 @@ class Statsy(commands.AutoShardedBot):
             print('Fatal exception')
             traceback.print_exc(file=sys.stderr)
         finally:
-            requests.get(f'https://fourjr-herokustartup/logout/{os.getenv("HEROKU_APP_NAME")}')
+            requests.get(f'https://fourjr-herokustartup.herokuapp.com/logout/{os.getenv("HEROKU_APP_NAME")}')
             if not self.dev_mode:
                 self.backup_task_loop.cancel()
                 self.clan_update.cancel()
@@ -472,7 +472,7 @@ class Statsy(commands.AutoShardedBot):
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
-    requests.get(f'https://fourjr-herokustartup/login/{os.getenv("HEROKU_APP_NAME")}')
+    requests.get(f'https://fourjr-herokustartup.herokuapp.com/login/{os.getenv("HEROKU_APP_NAME")}')
 
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
